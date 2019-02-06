@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':util')
+}
+
+ext.description = 'Common API to for injecting runtime arguments into Attach applications, ' +
+        'and listening for these arguments.'

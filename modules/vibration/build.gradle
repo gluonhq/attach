@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':util')
+}
+
+ext.description = 'Common API to access vibration features'

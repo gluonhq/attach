@@ -1,0 +1,111 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = "Gluon Attach (${project.name})"
+                description = "API for accessing ${project.name} features"
+                url = 'https://gluonhq.com/products/mobile/'
+
+                developers {
+                    developer {
+                        name = 'Johan Vos'
+                        email = 'johan.vos@gluonhq.com'
+                        organization = 'Gluon'
+                        organizationUrl = 'https://gluonhq.com'
+                    }
+                    developer {
+                        name = 'Joeri Sykora'
+                        email = 'joeri.sykora@gluonhq.com'
+                        organization = 'Gluon'
+                        organizationUrl = 'https://gluonhq.com'
+                    }
+                    developer {
+                        name = 'Erwin Morrhey'
+                        email = 'erwin.morrhey@gluonhq.com'
+                        organization = 'Gluon'
+                        organizationUrl = 'https://gluonhq.com'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name = 'The GNU General Public License'
+                        url = 'https://opensource.org/licenses/GPL-3.0'
+                        distribution = 'repo'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/tiainen/attach.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/tiainen/attach.git'
+                    url = 'https://github.com/tiainen/attach'
+                }
+            }
+
+            pom.withXml {
+                Node pomNode = asNode()
+                pomNode.dependencies.'*'.findAll() {
+                    it.groupId.text() == 'org.openjfx'
+                }.each {
+                    it.parent().remove(it)
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            // to upload release, use:
+            // ./gradlew -PrepositoryUrl=https://oss.sonatype.org/service/local/staging/deploy/maven2 publish
+            url = getStringProperty('repositoryUrl', 'https://oss.sonatype.org/content/repositories/snapshots/')
+            credentials {
+                username = getStringPropertyDefaultAsProperty('repositoryUsername', 'sonatypeUsername')
+                password = getStringPropertyDefaultAsProperty('repositoryPassword', 'sonatypePassword')
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven
+    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
+}
+
+private String getStringProperty(String name, String defaultValue) {
+    if (!project.hasProperty(name)) {
+        return defaultValue
+    }
+
+    def propertyValue = project.property(name)
+    return propertyValue != null ? propertyValue.toString().trim() : defaultValue
+}
+
+private String getStringPropertyDefaultAsProperty(String name, String defaultProperty) {
+    if (!project.hasProperty(name)) {
+        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
+    }
+
+    def propertyValue = project.property(name)
+    if (propertyValue != null) {
+        return propertyValue.toString().trim()
+    } else {
+        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
+    }
+}

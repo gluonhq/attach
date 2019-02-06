@@ -1,0 +1,10 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+dependencies {
+    implementation project(":util")
+    implementation project(":lifecycle")
+}
+
+javafx {
+    modules 'javafx.graphics'
+}

@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':settings')
+}
+
+ext.description = 'API to access settings features for the desktop platform'

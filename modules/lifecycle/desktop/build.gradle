@@ -1,0 +1,11 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+javafx {
+    modules 'javafx.graphics'
+}
+
+dependencies {
+    implementation project(':lifecycle')
+}
+
+ext.description = 'API to access lifecycle features for the desktop platform'

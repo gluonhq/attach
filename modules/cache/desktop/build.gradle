@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':cache')
+}
+
+ext.description = 'API to access cache features for the desktop platform'

@@ -1,0 +1,11 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+javafx {
+    modules 'javafx.graphics'
+}
+
+dependencies {
+    implementation project(':display')
+}
+
+ext.description = 'API to access display features for the desktop platform'

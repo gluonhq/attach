@@ -1,0 +1,9 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+dependencies {
+    implementation project(":util")
+}
+
+javafx {
+    modules 'javafx.base'
+}

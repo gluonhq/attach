@@ -1,0 +1,12 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+javafx {
+    modules 'javafx.graphics'
+}
+
+dependencies {
+    implementation project(':util')
+    implementation project(':runtime-args')
+}
+
+ext.description = 'Common API to access local notifications features'

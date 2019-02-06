@@ -1,0 +1,11 @@
+apply plugin: 'org.openjfx.javafxplugin'
+
+javafx {
+    modules 'javafx.graphics'
+}
+
+dependencies {
+    implementation project(':util')
+}
+
+ext.description = 'Common API to access status bar features'
