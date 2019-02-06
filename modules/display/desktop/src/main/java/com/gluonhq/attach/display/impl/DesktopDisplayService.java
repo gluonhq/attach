@@ -28,16 +28,14 @@
 package com.gluonhq.attach.display.impl;
 
 import com.gluonhq.attach.display.DisplayService;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
 public class DesktopDisplayService implements DisplayService {
 
@@ -66,7 +64,7 @@ public class DesktopDisplayService implements DisplayService {
     }
 
     /**
-     * Retrieve the dimension of the primary screen based on its bounds 
+     * Retrieve the dimension of the primary screen based on its bounds
      * @return Dimension of the Screen
      */
     @Override
@@ -85,27 +83,7 @@ public class DesktopDisplayService implements DisplayService {
      */
     @Override
     public float getScreenScale() {
-        if (renderScaleMethod != null) {
-            try {
-                return (float) renderScaleMethod.invoke(Screen.getPrimary());
-            } catch (IllegalAccessException e) {
-                LOG.log(Level.SEVERE, "Could not get render scale from screen.", e);
-            } catch (InvocationTargetException e) {
-                LOG.log(Level.SEVERE, "Could not get render scale from screen.", e);
-            }
-        } else if (outputScaleXMethod != null && outputScaleYMethod != null) {
-            try {
-                double outputScaleX = (double) outputScaleXMethod.invoke(Screen.getPrimary());
-                double outputScaleY = (double) outputScaleYMethod.invoke(Screen.getPrimary());
-                return (float) Math.min(outputScaleX, outputScaleY);
-            } catch (IllegalAccessException e) {
-                LOG.log(Level.SEVERE, "Could not get output scale from screen.", e);
-            } catch (InvocationTargetException e) {
-                LOG.log(Level.SEVERE, "Could not get output scale from screen.", e);
-            }
-        }
-
-        return 1.0f;
+        return (float) Math.min(Screen.getPrimary().getOutputScaleX(), Screen.getPrimary().getOutputScaleY());
     }
 
     @Override
@@ -121,35 +99,6 @@ public class DesktopDisplayService implements DisplayService {
     @Override
     public ReadOnlyObjectProperty<Notch> notchProperty() {
         return new ReadOnlyObjectWrapper<>(Notch.UNKNOWN).getReadOnlyProperty();
-    }
-
-    private static Method renderScaleMethod = null;
-    private static Method outputScaleXMethod = null;
-    private static Method outputScaleYMethod = null;
-    static {
-        try {
-            outputScaleXMethod = Screen.class.getMethod("getOutputScaleX");
-            outputScaleYMethod = Screen.class.getMethod("getOutputScaleY");
-        } catch (NoSuchMethodException e) {
-            log("Could not find method getOutputScaleX/Y on javafx.stage.Screen", e);
-        } catch (SecurityException e) {
-            log("Could not find method getOutputScaleX/Y on javafx.stage.Screen", e);
-        }
-
-        if (outputScaleXMethod == null || outputScaleYMethod == null) {
-            try {
-                renderScaleMethod = Screen.class.getDeclaredMethod("getRenderScale");
-                renderScaleMethod.setAccessible(true);
-            } catch (NoSuchMethodException e) {
-                log("Could not find method getRenderScale on javafx.stage.Screen", e);
-            } catch (SecurityException e) {
-                log("Could not find method getRenderScale on javafx.stage.Screen", e);
-            }
-        }
-
-        if ((outputScaleXMethod == null || outputScaleYMethod == null) && renderScaleMethod == null) {
-            LOG.log(Level.SEVERE, "Failed to detect valid render scale method. Set log level for this logger to FINE for more details.");
-        }
     }
 
     private static void log(String message, Throwable cause) {
