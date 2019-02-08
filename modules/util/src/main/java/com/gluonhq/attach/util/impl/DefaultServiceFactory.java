@@ -66,7 +66,7 @@ public class DefaultServiceFactory<T> implements ServiceFactory<T> {
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(DefaultServiceFactory.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
+            // no-op
         }
         Logger.getLogger(DefaultServiceFactory.class.getName()).log(Level.WARNING, "No new instance for " + serviceType);
         return null;
