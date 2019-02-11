@@ -3,3 +3,5 @@ apply plugin: 'org.openjfx.javafxplugin'
 javafx {
     modules 'javafx.graphics'
 }
+
+ext.description = 'Common API'

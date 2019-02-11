@@ -1,10 +1,12 @@
 apply plugin: 'org.openjfx.javafxplugin'
 
+javafx {
+    modules 'javafx.graphics'
+}
+
 dependencies {
     implementation project(":util")
     implementation project(":lifecycle")
 }
 
-javafx {
-    modules 'javafx.graphics'
-}
+ext.description = 'Common API to access display features'

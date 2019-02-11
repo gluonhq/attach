@@ -7,3 +7,5 @@ dependencies {
 javafx {
     modules 'javafx.graphics'
 }
+
+ext.description = 'Common API to access in-app billing features'

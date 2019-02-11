@@ -1,3 +1,5 @@
 dependencies {
     implementation project(":storage")
 }
+
+ext.description = 'API to access storage features for the desktop platform'
