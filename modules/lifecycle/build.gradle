@@ -1,9 +1,11 @@
 apply plugin: 'org.openjfx.javafxplugin'
 
+javafx {
+    modules 'javafx.graphics'
+}
+
 dependencies {
     implementation project(":util")
 }
 
-javafx {
-    modules 'javafx.base'
-}
+ext.description = 'Common API to access lifecycle features'
