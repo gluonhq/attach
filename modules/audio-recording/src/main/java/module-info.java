@@ -27,7 +27,7 @@
  */
 module com.gluonhq.attach.audio.recording {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.storage;
 
