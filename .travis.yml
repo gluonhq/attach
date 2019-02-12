@@ -22,13 +22,13 @@ cache:
 # Deploy releases on every tag push
 deploy:
   - provider: script
-    script: ./gradlew publish -PrepositoryUrl=$url/public-snapshots/ -PrepositoryUsername=$username -PrepositoryPassword=$password
+    script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/public-snapshots/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
     skip_cleanup: true
     on:
       branch: master
 
   - provider: script
-    script: ./gradlew publish -PrepositoryUrl=$url/releases/ -PrepositoryUsername=$username -PrepositoryPassword=$password
+    script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/releases/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
     skip_cleanup: true
     on:
       tags: true
