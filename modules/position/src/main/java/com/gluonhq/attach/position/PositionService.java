@@ -118,6 +118,14 @@ public interface PositionService {
     Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Accuracy.MEDIUM, false);
 
     /**
+     * Returns an instance of {@link PositionService}.
+     * @return An instance of {@link PositionService}.
+     */
+    static Optional<PositionService> create() {
+        return Services.get(PositionService.class);
+    }
+
+    /**
      * A read-only property containing information about the device's current
      * location on earth. The property can contain a <code>null</code> object
      * when the position of the device could be determined.
