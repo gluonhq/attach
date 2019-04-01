@@ -17,7 +17,7 @@ def sdkPath(String platform) {
 
 ext.nativeBuild = { buildDir, projectDir, name, os ->
 
-    println("native build start")
+    println("native build for $name  started")
     File shareDir = file("$projectDir/src/main/native/share")
     if (!shareDir.exists()) {
         // TODO
@@ -131,4 +131,6 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             workingDir compileOutput
         }
     }
+    println("native build for $name finished")
+
 }

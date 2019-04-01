@@ -31,7 +31,7 @@ import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import javafx.application.Platform;
 
-public class DesktopLifecycleService implements LifecycleService {
+public class DesktopLifecycleService extends LifecycleServiceBase {
 
     @Override public void shutdown() {
         Platform.exit();

@@ -19,7 +19,7 @@ subprojects {
         def osname = project.os
         def service = getServiceName(project.name)
         task nativeLib {
-            doLast {
+            doFirst {
                 nativeBuild("$project.buildDir", "$project.projectDir", "$service", "$osname");
             }
         }
@@ -36,10 +36,12 @@ subprojects {
             }
             File n = new File("$project.buildDir/native/${osname}")
             if (n.exists()) {
-                printf "Adding lib${service} to native jar"
+                println "Adding lib${service} to native jar"
                 from(n.listFiles().find { it.name.startsWith("lib${service}") }) {
                     into "native"
                 }
+            } else {
+                println "lib${service} not added to native jar"
             }
         }
     } else {
