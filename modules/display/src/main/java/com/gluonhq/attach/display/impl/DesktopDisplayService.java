@@ -34,8 +34,10 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.gluonhq.attach.util.Level;
+import com.gluonhq.attach.util.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 public class DesktopDisplayService implements DisplayService {
 

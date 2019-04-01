@@ -1,7 +1,7 @@
 apply plugin: 'org.openjfx.javafxplugin'
 
 javafx {
-    modules 'javafx.graphics'
+    modules = ['javafx.graphics']
 }
 
 dependencies {

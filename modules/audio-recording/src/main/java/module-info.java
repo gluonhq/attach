@@ -30,6 +30,7 @@ module com.gluonhq.attach.audio.recording {
     requires javafx.graphics;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.storage;
+    requires java.desktop;
 
     exports com.gluonhq.attach.audiorecording;
     exports com.gluonhq.attach.audiorecording.impl to com.gluonhq.attach.util;

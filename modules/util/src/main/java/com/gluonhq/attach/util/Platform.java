@@ -28,8 +28,6 @@
 package com.gluonhq.attach.util;
 
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An enumeration of the platforms that are supported by Attach.

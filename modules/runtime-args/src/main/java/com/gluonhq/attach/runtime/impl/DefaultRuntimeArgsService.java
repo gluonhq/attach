@@ -28,12 +28,14 @@
 package com.gluonhq.attach.runtime.impl;
 
 import com.gluonhq.attach.runtime.RuntimeArgsService;
+import com.gluonhq.attach.util.Level;
+import com.gluonhq.attach.util.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 public class DefaultRuntimeArgsService implements RuntimeArgsService {
 

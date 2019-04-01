@@ -5,6 +5,8 @@ plugins {
 subprojects {
     apply plugin: "java-library"
     apply plugin: "org.openjfx.javafxplugin"
+    apply from: rootProject.file("gradle/native-build.gradle")
+    apply from: rootProject.file('gradle/mavenPublish.gradle')
 
     sourceCompatibility = 11
     targetCompatibility = 11
@@ -13,39 +15,39 @@ subprojects {
         mavenCentral()
     }
 
-    if (project.hasProperty('classifier')) {
+    if (project.hasProperty('os')) {
+        def osname = project.os
+        def service = getServiceName(project.name)
+        task nativeLib {
+            doLast {
+                nativeBuild("$project.buildDir", "$project.projectDir", "$service", "$osname");
+            }
+        }
+        // TODO: skip if there is no platform implementation (desktop)
         jar {
-            archiveBaseName   = project.parent.name
-            archiveClassifier = project.classifier
-
-            from(zipTree(project.parent.tasks.jar.archivePath)) {
-                exclude '**/*/impl/Dummy*ServiceImpl.class'
+            dependsOn nativeLib
+            archiveBaseName = project.name
+            if (osname == 'mac' || osname == 'linux' || osname == 'win' || osname == 'desktop') {
+                archiveClassifier = 'desktop'
+                exclude '**/*/impl/Dummy**', "**/impl/IOS**"
+            } else {
+                archiveClassifier = osname
+                exclude '**/*/impl/Dummy**', "**/impl/Desktop**"
             }
-        }
-
-        project.parent.publishing.publications.maven {
-            artifact jar
-        }
-
-        // IOS specific changes
-        if (project.property('classifier') == 'ios') {
-            def service = getServiceName(project.parent.name)
-
-            task xcodebuild {
-                doLast {
-                    xcodebuildIOS("$project.buildDir","$project.projectDir", "$service")
-                }
-            }
-
-            jar {
-                dependsOn xcodebuild
-                from("$project.buildDir/native/lib${service}.a") {
+            File n = new File("$project.buildDir/native/${osname}")
+            if (n.exists()) {
+                printf "Adding lib${service} to native jar"
+                from(n.listFiles().find { it.name.startsWith("lib${service}") }) {
                     into "native"
                 }
             }
         }
     } else {
-        apply from: rootProject.file('gradle/mavenPublish.gradle')
+        jar {
+            if (! project.name.contains("util")) {
+                exclude "**/impl/Desktop**", "**/impl/IOS**"
+            }
+        }
     }
 }
 

@@ -27,13 +27,15 @@
  */
 package com.gluonhq.attach.audiorecording.impl;
 
+import com.gluonhq.attach.util.Level;
+import com.gluonhq.attach.util.Logger;
 import com.gluonhq.attach.util.Services;
 import com.gluonhq.attach.audiorecording.AudioRecordingService;
 import com.gluonhq.attach.storage.StorageService;
 import java.io.File;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyListProperty;
