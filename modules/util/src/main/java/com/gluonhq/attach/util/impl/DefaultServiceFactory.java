@@ -38,6 +38,8 @@ import java.util.Optional;
 
 public class DefaultServiceFactory<T> implements ServiceFactory<T> {
 
+    private static final Logger LOGGER = Logger.getLogger(DefaultServiceFactory.class.getName());
+
     private final Class<T> serviceType;
     private T instance;
 
@@ -66,11 +68,11 @@ public class DefaultServiceFactory<T> implements ServiceFactory<T> {
                 return clazz.getDeclaredConstructor().newInstance();
             }
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(DefaultServiceFactory.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             // no-op
+            LOGGER.log(Level.WARNING, "No new instance for " + serviceType);
         }
-        Logger.getLogger(DefaultServiceFactory.class.getName()).log(Level.WARNING, "No new instance for " + serviceType);
         return null;
     }
 
