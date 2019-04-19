@@ -25,7 +25,7 @@ deploy:
     script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/public-snapshots/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
     skip_cleanup: true
     on:
-      branch: master
+      branch: desktop
 
   - provider: script
     script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/releases/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
