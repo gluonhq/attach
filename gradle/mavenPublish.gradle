@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task sourcesJar(type: Jar) {
+/*task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
     archiveClassifier = 'sources'
 }
@@ -9,14 +9,14 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
     archiveClassifier = 'javadoc'
-}
+}*/
 
 publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
+            /*artifact sourcesJar
+            artifact javadocJar*/
 
             pom {
                 name = "Gluon Attach (${project.name})"
