@@ -13,40 +13,14 @@ subprojects {
         mavenCentral()
     }
 
-    if (project.hasProperty('classifier')) {
+    if (project.name == "desktop") {
         jar {
-            archiveBaseName   = project.parent.name
-            archiveClassifier = project.classifier
-
-            from(zipTree(project.parent.tasks.jar.archivePath)) {
-                exclude '**/*/impl/Dummy*ServiceImpl.class'
-            }
+            archiveBaseName = project.parent.name
+            archiveClassifier = "desktop"
         }
-
-        project.parent.publishing.publications.maven {
-            artifact jar
-        }
-
-        // IOS specific changes
-        if (project.property('classifier') == 'ios') {
-            def service = getServiceName(project.parent.name)
-
-            task xcodebuild {
-                doLast {
-                    xcodebuildIOS("$project.buildDir","$project.projectDir", "$service")
-                }
-            }
-
-            jar {
-                dependsOn xcodebuild
-                from("$project.buildDir/native/lib${service}.a") {
-                    into "native"
-                }
-            }
-        }
-    } else {
-        apply from: rootProject.file('gradle/mavenPublish.gradle')
     }
+
+    apply from: rootProject.file('gradle/mavenPublish.gradle')
 }
 
 private String getServiceName(projectName) {
