@@ -14,51 +14,5 @@ subprojects {
     repositories {
         mavenCentral()
     }
-
-    if (project.hasProperty('os')) {
-        def osname = project.os
-        def service = getServiceName(project.name)
-        task nativeLib {
-            doFirst {
-                nativeBuild("$project.buildDir", "$project.projectDir", "$service", "$osname");
-            }
-        }
-        // TODO: skip if there is no platform implementation (desktop)
-        jar {
-            dependsOn nativeLib
-            archiveBaseName = project.name
-            if (osname == 'mac' || osname == 'linux' || osname == 'win' || osname == 'desktop') {
-                archiveClassifier = 'desktop'
-                exclude '**/*/impl/Dummy**', "**/impl/IOS**"
-            } else {
-                archiveClassifier = osname
-                exclude '**/*/impl/Dummy**', "**/impl/Desktop**"
-            }
-            File n = new File("$project.buildDir/native/${osname}")
-            if (n.exists()) {
-                println "Adding lib${service} to native jar"
-                from(n.listFiles().find { it.name.startsWith("lib${service}") }) {
-                    into "native"
-                }
-            } else {
-                println "lib${service} not added to native jar"
-            }
-        }
-    } else {
-        jar {
-            if (! project.name.contains("util")) {
-                exclude "**/impl/Desktop**", "**/impl/IOS**"
-            }
-        }
-    }
 }
 
-private String getServiceName(projectName) {
-    if (projectName.contains("-")) { // in-app-billing -> InAppBilling
-        def values = projectName.tokenize("-")
-        return values.inject("") { name, pn -> name + pn.capitalize()  }
-    } else if (projectName == "util") {
-        projectName = "attach"
-    }
-    return projectName.capitalize()
-}
