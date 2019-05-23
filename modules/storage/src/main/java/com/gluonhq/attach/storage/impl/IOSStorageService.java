@@ -36,10 +36,14 @@ import java.util.Optional;
 
 public class IOSStorageService implements StorageService {
 
-    static {
+    static void postClinit() {
         System.loadLibrary("Storage");
     }
 
+    public IOSStorageService() {
+        postClinit();
+    }
+    
     @Override
     public Optional<File> getPrivateStorage() {
         try {

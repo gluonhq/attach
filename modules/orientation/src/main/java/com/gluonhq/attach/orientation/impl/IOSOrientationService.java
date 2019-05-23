@@ -41,7 +41,7 @@ import java.util.Optional;
 
 public class IOSOrientationService implements OrientationService {
 
-    static {
+    static void postClinit() {
         System.loadLibrary("Orientation");
         initOrientation();
     }
@@ -50,6 +50,7 @@ public class IOSOrientationService implements OrientationService {
     private static String orientationText = "Unknown";
 
     public IOSOrientationService() {
+        postClinit();
         orientation = new ReadOnlyObjectWrapper<>();
         
         Services.get(LifecycleService.class).ifPresent(l -> {

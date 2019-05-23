@@ -38,7 +38,7 @@ import javafx.geometry.Dimension2D;
 
 public class IOSDisplayService implements DisplayService {
 
-    static {
+    private static void postClinit() {
         System.loadLibrary("Display");
         initDisplay();
     }
@@ -47,6 +47,7 @@ public class IOSDisplayService implements DisplayService {
 
     public IOSDisplayService() {
         notch = new ReadOnlyObjectWrapper<>(Notch.UNKNOWN);
+        postClinit();
 
         Services.get(LifecycleService.class).ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSDisplayService::stopObserver);
