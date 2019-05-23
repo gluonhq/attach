@@ -28,7 +28,7 @@
 module com.gluonhq.attach.util {
 
     requires javafx.graphics;
-//    requires transitive java.logging;
+    requires transitive java.logging;
 
     exports com.gluonhq.attach.util;
 }

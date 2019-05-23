@@ -27,14 +27,12 @@
  */
 package com.gluonhq.attach.util.impl;
 
-import com.gluonhq.attach.util.Level;
-import com.gluonhq.attach.util.Logger;
 import com.gluonhq.attach.util.Platform;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DefaultServiceFactory<T> implements ServiceFactory<T> {
 
@@ -65,6 +63,7 @@ public class DefaultServiceFactory<T> implements ServiceFactory<T> {
         try {
             Class<T> clazz = (Class<T>) Class.forName(fqn);
             if (clazz != null) {
+                LOGGER.fine("Service class for: " + clazz.getName());
                 return clazz.getDeclaredConstructor().newInstance();
             }
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {

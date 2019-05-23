@@ -33,8 +33,11 @@ import com.gluonhq.attach.util.impl.ServiceFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class Services<T> {
+
+    private static final Logger LOGGER = Logger.getLogger(Services.class.getName());
 
     private static final Map<Class, ServiceFactory> FACTORY_MAP = new HashMap<>();
     private static final Map<Class, Object> SERVICE_MAP = new HashMap<>();
@@ -52,6 +55,7 @@ public class Services<T> {
      * @param factory The ServiceFactory instance
      */
     public static <T> void registerServiceFactory(ServiceFactory<T> factory) {
+        LOGGER.fine("Register " + factory);
         FACTORY_MAP.put(factory.getServiceType(), factory);
     }
 
@@ -67,6 +71,7 @@ public class Services<T> {
      * @return An optional with the service 
      */
     public static <T> Optional<T> get(Class<T> service) {
+        LOGGER.fine("Get Service " + service.getName());
         if (!FACTORY_MAP.containsKey(service)) {
             final ServiceFactory<T> factory = getFactory(service);
             if (factory != null) {
@@ -80,6 +85,7 @@ public class Services<T> {
             FACTORY_MAP.get(service).getInstance()
                     .ifPresent(t -> SERVICE_MAP.put(service, t));
         }
+        LOGGER.fine("Return service: " + SERVICE_MAP.get(service));
         return Optional.ofNullable((T) SERVICE_MAP.get(service));
     }
 

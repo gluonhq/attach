@@ -4,7 +4,7 @@ package com.gluonhq.attach.ar.impl;
 
 import com.gluonhq.attach.ar.AugmentedRealityService;
 import com.gluonhq.attach.util.Constants;
-import com.gluonhq.attach.util.Logger;
+import java.util.logging.Logger;
 
 public abstract class DefaultAugmentedRealityService implements AugmentedRealityService {
 

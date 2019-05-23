@@ -36,10 +36,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Properties;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-import com.gluonhq.attach.util.Level;
-import com.gluonhq.attach.util.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of SettingService that stores all settings in a Properties

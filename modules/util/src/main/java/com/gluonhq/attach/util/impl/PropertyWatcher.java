@@ -27,13 +27,10 @@
  */
 package com.gluonhq.attach.util.impl;
 
-import com.gluonhq.attach.util.Level;
-import com.gluonhq.attach.util.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A thread that watches certain properties in the native platform to determine whether

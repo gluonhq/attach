@@ -28,6 +28,7 @@
 package com.gluonhq.attach.util;
 
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * An enumeration of the platforms that are supported by Attach.
@@ -63,7 +64,7 @@ public enum Platform {
 
     private static final Logger LOGGER = Logger.getLogger(Platform.class.getName());
 
-    private static void postClinit() {
+    static {
         String s = System.getProperty("javafx.platform", null);
         if (s == null) {
             String os = System.getProperty("os.target", null);
@@ -78,7 +79,6 @@ public enum Platform {
         String name = s.toUpperCase(Locale.ROOT);
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
-
     }
 
     /**
@@ -87,10 +87,6 @@ public enum Platform {
      * @return The current {@link Platform}.
      */
     public static Platform getCurrent() {
-        // TODO: fix this, allowing changes in os.target?
-//        if (current == null) {
-        postClinit();
-//        }
         return current;
     }
 

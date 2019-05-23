@@ -43,10 +43,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-import com.gluonhq.attach.util.Level;
-import com.gluonhq.attach.util.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.gluonhq.attach.util.Constants;
 import javafx.collections.FXCollections;
