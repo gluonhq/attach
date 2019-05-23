@@ -31,7 +31,7 @@ import com.gluonhq.attach.device.DeviceService;
 
 public class IOSDeviceService implements DeviceService {
 
-    static void postClinit() {
+    static {
         System.loadLibrary("Device");
         initDevice();
     }
@@ -40,10 +40,6 @@ public class IOSDeviceService implements DeviceService {
     private static String uuid;
     private static String platform;
     private static String version;
-
-    public IOSDeviceService() {
-        postClinit();
-    }
 
     @Override
     public String getModel() {

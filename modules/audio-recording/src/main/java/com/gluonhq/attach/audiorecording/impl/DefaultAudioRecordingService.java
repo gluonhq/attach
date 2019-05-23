@@ -27,18 +27,19 @@
  */
 package com.gluonhq.attach.audiorecording.impl;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.gluonhq.attach.util.Services;
 import com.gluonhq.attach.audiorecording.AudioRecordingService;
 import com.gluonhq.attach.storage.StorageService;
-import java.io.File;
-import java.util.function.Function;
+import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.collections.FXCollections;
+
+import java.io.File;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class DefaultAudioRecordingService implements AudioRecordingService {
 

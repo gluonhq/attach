@@ -37,15 +37,11 @@ import com.gluonhq.attach.settings.SettingsService;
  */
 public class IOSSettingsService implements SettingsService {
 
-    static void postClinit() {
+    static {
         System.loadLibrary("Settings");
         initSettings();
     }
 
-    public IOSSettingsService() {
-        postClinit();
-    }
-    
     @Override
     public void store(String key, String value) {
         settingsStore(key, value);
