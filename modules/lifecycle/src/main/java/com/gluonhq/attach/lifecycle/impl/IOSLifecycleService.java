@@ -31,13 +31,9 @@ import com.gluonhq.attach.lifecycle.LifecycleEvent;
 
 public class IOSLifecycleService extends LifecycleServiceBase {
 
-    private static void postClinit() {
+    static {
         System.loadLibrary("Lifecycle");
         initLifecycle();
-    }
-
-    public IOSLifecycleService() {
-        postClinit();
     }
 
     @Override public void shutdown() {
