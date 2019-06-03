@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.orientation {
+package com.gluonhq.attach.lifecycle.impl;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.lifecycle;
-    requires com.gluonhq.attach.util;
+import com.gluonhq.attach.lifecycle.LifecycleEvent;
 
-    exports com.gluonhq.attach.orientation;
-    exports com.gluonhq.attach.orientation.impl to com.gluonhq.attach.util;
+public class IOSLifecycleService extends LifecycleServiceBase {
+
+    static {
+        System.loadLibrary("Lifecycle");
+        initLifecycle();
+    }
+
+    @Override public void shutdown() {
+        // no-op
+    }
+
+    // native
+    private static native void initLifecycle(); // init IDs for java callbacks from native
+    private static native void stopEvents();
+
+    // callback
+    public static void setEvent(String v) {
+        if (v != null && !v.isEmpty()) {
+            switch (v) {
+                case "pause":
+                    System.err.println("Application was paused");
+                    doCheck(LifecycleEvent.PAUSE);
+                    break;
+                case "resume":
+                    System.err.println("Application was resumed");
+                    doCheck(LifecycleEvent.RESUME);
+                    break;
+                default: break;
+            }
+        }
+    }
+
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2018, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.orientation {
+package com.gluonhq.attach.audiorecording.impl;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.lifecycle;
-    requires com.gluonhq.attach.util;
+import com.gluonhq.attach.audiorecording.AudioRecordingService;
 
-    exports com.gluonhq.attach.orientation;
-    exports com.gluonhq.attach.orientation.impl to com.gluonhq.attach.util;
+// no-op
+public abstract class DummyAudioRecordingService implements AudioRecordingService {
 }

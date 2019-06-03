@@ -5,6 +5,8 @@ plugins {
 subprojects {
     apply plugin: "java-library"
     apply plugin: "org.openjfx.javafxplugin"
+    apply from: rootProject.file("gradle/native-build.gradle")
+    apply from: rootProject.file('gradle/mavenPublish.gradle')
 
     sourceCompatibility = 11
     targetCompatibility = 11
@@ -12,49 +14,5 @@ subprojects {
     repositories {
         mavenCentral()
     }
-
-    if (project.hasProperty('classifier')) {
-        jar {
-            archiveBaseName   = project.parent.name
-            archiveClassifier = project.classifier
-
-            from(zipTree(project.parent.tasks.jar.archivePath)) {
-                exclude '**/*/impl/Dummy*ServiceImpl.class'
-            }
-        }
-
-        project.parent.publishing.publications.maven {
-            artifact jar
-        }
-
-        // IOS specific changes
-        if (project.property('classifier') == 'ios') {
-            def service = getServiceName(project.parent.name)
-
-            task xcodebuild {
-                doLast {
-                    xcodebuildIOS("$project.buildDir","$project.projectDir", "$service")
-                }
-            }
-
-            jar {
-                dependsOn xcodebuild
-                from("$project.buildDir/native/lib${service}.a") {
-                    into "native"
-                }
-            }
-        }
-    } else {
-        apply from: rootProject.file('gradle/mavenPublish.gradle')
-    }
 }
 
-private String getServiceName(projectName) {
-    if (projectName.contains("-")) { // in-app-billing -> InAppBilling
-        def values = projectName.tokenize("-")
-        return values.inject("") { name, pn -> name + pn.capitalize()  }
-    } else if (projectName == "util") {
-        projectName = "attach"
-    }
-    return projectName.capitalize()
-}

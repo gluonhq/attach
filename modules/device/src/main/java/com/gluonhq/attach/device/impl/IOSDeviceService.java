@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,62 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.orientation {
+package com.gluonhq.attach.device.impl;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.lifecycle;
-    requires com.gluonhq.attach.util;
+import com.gluonhq.attach.device.DeviceService;
 
-    exports com.gluonhq.attach.orientation;
-    exports com.gluonhq.attach.orientation.impl to com.gluonhq.attach.util;
+public class IOSDeviceService implements DeviceService {
+
+    static {
+        System.loadLibrary("Device");
+        initDevice();
+    }
+    
+    private static String model;
+    private static String uuid;
+    private static String platform;
+    private static String version;
+
+    @Override
+    public String getModel() {
+        return model;
+    }
+
+    @Override
+    public String getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public String getPlatform() {
+        return platform;
+    }
+
+    @Override
+    public String getVersion() {
+        return version;
+    }
+
+    @Override
+    public String getSerial() { // Not available on iOS
+        return null;
+    }
+
+    @Override
+    public boolean isWearable() {
+        // TODO: Find out if iOS device is wearable
+        return false; 
+    }
+    
+    // native
+    private native static void initDevice();
+    
+    // callback
+    private static void sendDeviceData(String model, String uuid, String platform, String version) {
+        IOSDeviceService.model = model;
+        IOSDeviceService.uuid = uuid;
+        IOSDeviceService.platform = platform;
+        IOSDeviceService.version = version;
+    }
+    
 }

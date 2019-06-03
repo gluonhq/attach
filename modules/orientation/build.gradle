@@ -6,6 +6,7 @@ javafx {
 
 dependencies {
     implementation project(":util")
+    implementation project(":lifecycle")
 }
 
 ext.description = 'Common API to access orientation features'

@@ -28,7 +28,6 @@
 package com.gluonhq.attach.util;
 
 import java.util.Locale;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -54,21 +53,32 @@ public enum Platform {
      */
     IOS("IOS");
 
+
     private final String javafxPlatformName;
 
     Platform(String javafxPlatformName) {
         this.javafxPlatformName = javafxPlatformName;
     }
 
-    private final static Platform current;
+    private static Platform current;
+
+    private static final Logger LOGGER = Logger.getLogger(Platform.class.getName());
 
     static {
         String s = System.getProperty("javafx.platform", null);
         if (s == null) {
-            Logger.getLogger(Platform.class.getName()).log(Level.SEVERE, "javafx.platform is not defined. Desktop will be assumed by default.");
-            s = DESKTOP.getName();
+            String os = System.getProperty("os.target", null);
+            if (os != null) {
+                LOGGER.info("javafx.platform is not defined, using: " + os + " from os.target");
+                s = os;
+            } else {
+                LOGGER.severe("javafx.platform is not defined. Desktop will be assumed by default.");
+                s = DESKTOP.getName();
+            }
         }
-        current = valueOf(s.toUpperCase(Locale.ROOT));
+        String name = s.toUpperCase(Locale.ROOT);
+        current = valueOf(name);
+        LOGGER.fine("Current platform: "  + current);
     }
 
     /**
@@ -76,7 +86,7 @@ public enum Platform {
      * execution of the code.
      * @return The current {@link Platform}.
      */
-    public static final Platform getCurrent() {
+    public static Platform getCurrent() {
         return current;
     }
 
@@ -84,24 +94,24 @@ public enum Platform {
      * Returns whether the current platform is desktop.
      * @return True if the current platform is desktop.
      */
-    public static final boolean isDesktop() {
-        return DESKTOP == current;
+    public static boolean isDesktop() {
+        return DESKTOP == getCurrent();
     }
 
     /**
      * Returns whether the current platform is android.
      * @return True if the current platform is android.
      */
-    public static final boolean isAndroid() {
-        return ANDROID == current;
+    public static boolean isAndroid() {
+        return ANDROID == getCurrent();
     }
 
     /**
      * Returns whether the current platform is iOS.
      * @return True if the current platform is iOS.
      */
-    public static final boolean isIOS() {
-        return IOS == current;
+    public static boolean isIOS() {
+        return IOS == getCurrent();
     }
 
     public final String getName() {

@@ -1,5 +1,0 @@
-dependencies {
-    implementation project(':runtime-args')
-}
-
-ext.description = 'API to access runtime arguments features for the desktop platform'

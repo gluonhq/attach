@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.orientation {
+package com.gluonhq.attach.settings.impl;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.lifecycle;
-    requires com.gluonhq.attach.util;
 
-    exports com.gluonhq.attach.orientation;
-    exports com.gluonhq.attach.orientation.impl to com.gluonhq.attach.util;
+import com.gluonhq.attach.settings.SettingsService;
+
+/**
+ * An implementation of the
+ * {@link SettingsService SettingsService} for the
+ * iOS platform. It makes use of the application's standard UserDefaults.
+ */
+public class IOSSettingsService implements SettingsService {
+
+    static {
+        System.loadLibrary("Settings");
+        initSettings();
+    }
+
+    @Override
+    public void store(String key, String value) {
+        settingsStore(key, value);
+    }
+
+    @Override
+    public void remove(String key) {
+        settingsRemove(key);
+    }
+
+    @Override
+    public String retrieve(String key) {
+        return settingsRetrieve(key);
+    }
+    
+    private static native void initSettings();
+    private static native void settingsStore(String key, String value);
+    private static native void settingsRemove(String key);
+    private static native String settingsRetrieve(String key);
+
 }

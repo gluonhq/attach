@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2018, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.orientation {
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.lifecycle;
-    requires com.gluonhq.attach.util;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-    exports com.gluonhq.attach.orientation;
-    exports com.gluonhq.attach.orientation.impl to com.gluonhq.attach.util;
-}
+@interface Lifecycle : UIViewController <UIApplicationDelegate> {}
+ - (void) initEvents;
+ - (void) stopEvents;
+@end
+
+void sendLifecycleEvent(NSString *event);

@@ -1,0 +1,136 @@
+if (System.getProperty('os.name').toLowerCase().contains("mac")) {
+    new ByteArrayOutputStream().withStream { os ->
+        exec {
+            args '-version', '-sdk', 'iphoneos', 'SDKVersion'
+            executable 'xcodebuild'
+            standardOutput = os
+        }
+        ext.IOS_VERSION = os.toString().trim()
+    }
+} else {
+    ext.IOS_VERSION = ""
+}
+
+def sdkPath(String platform) {
+    return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
+}
+
+ext.nativeBuild = { buildDir, projectDir, name, os ->
+
+    println("native build for $name  started")
+    File shareDir = file("$projectDir/src/main/native/share")
+    if (!shareDir.exists()) {
+        // TODO
+        //println("No share lib dir found for $name")
+        //return
+    }
+    def sharedSources = shareDir.listFiles()
+
+    def osSources = []
+    File osDir = file("$projectDir/src/main/native/$os")
+    if (osDir.exists()) {
+        osSources = osDir.listFiles()
+    } else {
+        println("No native lib dir found for $name at $osDir")
+        return
+    }
+
+    def JAVAHOME = System.getenv("JAVA_HOME")
+    def includeFlags = "-I$JAVAHOME/include"
+    def osIncludeFlags = ""
+
+    if (os == "ios") {
+        osIncludeFlags = "-I$JAVAHOME/include/darwin"
+
+        def linkerOutputs = []
+        def lipoOutput = "$buildDir/native/ios/lib${name}.a"
+
+        def buildSystems = ["iPhoneOS+arm64", "iPhoneSimulator+x86_64"]
+        buildSystems.each { buildSystem ->
+
+            def (platform, arch) = buildSystem.tokenize("+")
+            if (!file(sdkPath(platform)).exists()) {
+                println "Skipping native-build on iOS: path for ${platform} doesn't exist"
+                return
+            }
+            
+            osSources = "$projectDir/src/main/native/$os/${name}.m"
+            
+            def compileOutput = "$buildDir/native/ios/$arch"
+            new File(compileOutput).mkdirs()
+            def compileOutputs = ["$buildDir/native/ios/$arch/${name}.o"]
+            def linkerOutput = "$buildDir/native/ios/$arch/lib${name}.a"
+            
+            def clangArgs = [
+                "-xobjective-c",
+                "-mios-version-min=11.0",
+                includeFlags,
+                osIncludeFlags,
+                "-c",
+                "-fPIC",
+                "-arch", arch,
+                "-isysroot",
+                sdkPath(platform),
+                osSources].flatten()
+
+            exec {
+                executable "clang"
+                args clangArgs
+                workingDir compileOutput
+            }
+
+            def linkerArgs = [
+                    "-static",
+                    "-framework", "Foundation",
+                    "-framework", "CoreGraphics",
+                    "-framework", "CoreBluetooth",
+                    "-framework", "CoreLocation",
+                    "-framework", "CoreMotion",
+                    "-framework", "CoreText",
+                    "-framework", "UIKit",
+                    "-framework", "QuartzCore",
+                    "-framework", "OpenGLES",
+                    "-framework", "StoreKit",
+                    "-framework", "UserNotifications",
+                    "-arch_only", arch,
+                    "-syslibroot", sdkPath(platform),
+                    "-L${sdkPath(platform)}/usr/lib",
+                    "-o", linkerOutput,
+                    compileOutputs
+            ].flatten()
+
+            exec {
+                executable "libtool"
+                args linkerArgs
+                workingDir compileOutput
+            }
+            linkerOutputs.add(linkerOutput)
+        }
+
+        // execute lipo to combine all linker output in one archive
+        def lipoArgs = ["-create", linkerOutputs, "-o", lipoOutput].flatten()
+        exec {
+            executable "lipo"
+            args lipoArgs
+        }
+
+    } else {
+        // TODO
+        def compileOutput = "$buildDir/native/$os"
+        new File(compileOutput).mkdirs()
+
+        def compiler = "gcc"
+
+        def cargs = [
+                "-c", includeFlags, osIncludeFlags, sharedSources, osSources
+        ].flatten()
+    
+        exec {
+            executable "/usr/bin/gcc"
+            args cargs
+            workingDir compileOutput
+        }
+    }
+    println("native build for $name finished")
+
+}

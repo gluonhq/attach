@@ -11,54 +11,50 @@ pluginManagement {
 rootProject.name = 'attach'
 
 include 'accelerometer'
-include 'audio-recording', 'audio-recording:desktop'
+include 'audio-recording'
 include 'augmented-reality'
 include 'barcode-scan'
 include 'battery'
 include 'ble'
 include 'browser'
-include 'cache', 'cache:desktop'
+include 'cache'
 include 'compass'
 include 'connectivity'
 include 'device'
 include 'dialer'
-include 'display', 'display:desktop'
+include 'display'
 include 'in-app-billing'
-include 'lifecycle', 'lifecycle:desktop'
+include 'lifecycle'
 include 'local-notifications'
 include 'magnetometer'
 include 'orientation'
 include 'pictures'
 include 'position'
 include 'push-notifications'
-include 'runtime-args', 'runtime-args:desktop'
-include 'settings', 'settings:desktop'
+include 'runtime-args'
+include 'settings'
 include 'share'
 include 'statusbar'
-include 'storage', 'storage:desktop'
+include 'storage'
 include 'vibration'
 include 'video'
 include 'util'
 
 project(':accelerometer').projectDir           = file('modules/accelerometer')
 project(':audio-recording').projectDir         = file('modules/audio-recording')
-project(':audio-recording:desktop').projectDir = file('modules/audio-recording/desktop')
 project(':augmented-reality').projectDir       = file('modules/augmented-reality')
 project(':barcode-scan').projectDir            = file('modules/barcode-scan')
 project(':battery').projectDir                 = file('modules/battery')
 project(':ble').projectDir                     = file('modules/ble')
 project(':browser').projectDir                 = file('modules/browser')
 project(':cache').projectDir                   = file('modules/cache')
-project(':cache:desktop').projectDir           = file('modules/cache/desktop')
 project(':compass').projectDir                 = file('modules/compass')
 project(':connectivity').projectDir            = file('modules/connectivity')
 project(':device').projectDir                  = file('modules/device')
 project(':dialer').projectDir                  = file('modules/dialer')
 project(':display').projectDir                 = file('modules/display')
-project(':display:desktop').projectDir         = file('modules/display/desktop')
 project(':in-app-billing').projectDir          = file('modules/in-app-billing')
 project(':lifecycle').projectDir               = file('modules/lifecycle')
-project(':lifecycle:desktop').projectDir       = file('modules/lifecycle/desktop')
 project(':local-notifications').projectDir     = file('modules/local-notifications')
 project(':magnetometer').projectDir            = file('modules/magnetometer')
 project(':orientation').projectDir             = file('modules/orientation')
@@ -66,13 +62,10 @@ project(':pictures').projectDir                = file('modules/pictures')
 project(':position').projectDir                = file('modules/position')
 project(':push-notifications').projectDir      = file('modules/push-notifications')
 project(':runtime-args').projectDir            = file('modules/runtime-args')
-project(':runtime-args:desktop').projectDir    = file('modules/runtime-args/desktop')
 project(':settings').projectDir                = file('modules/settings')
-project(':settings:desktop').projectDir        = file('modules/settings/desktop')
 project(':share').projectDir                   = file('modules/share')
 project(':statusbar').projectDir               = file('modules/statusbar')
 project(':storage').projectDir                 = file('modules/storage')
-project(':storage:desktop').projectDir         = file('modules/storage/desktop')
 project(':vibration').projectDir               = file('modules/vibration')
 project(':video').projectDir                   = file('modules/video')
 project(':util').projectDir                    = file('modules/util')

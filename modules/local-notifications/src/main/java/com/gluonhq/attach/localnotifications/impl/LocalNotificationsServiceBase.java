@@ -28,10 +28,11 @@
 package com.gluonhq.attach.localnotifications.impl;
 
 import com.gluonhq.attach.runtime.RuntimeArgsService;
+import java.util.logging.Logger;
 import com.gluonhq.attach.util.Services;
 import com.gluonhq.attach.localnotifications.LocalNotificationsService;
 import com.gluonhq.attach.localnotifications.Notification;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
