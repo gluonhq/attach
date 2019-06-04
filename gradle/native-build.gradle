@@ -1,16 +1,3 @@
-if (System.getProperty('os.name').toLowerCase().contains("mac")) {
-    new ByteArrayOutputStream().withStream { os ->
-        exec {
-            args '-version', '-sdk', 'iphoneos', 'SDKVersion'
-            executable 'xcodebuild'
-            standardOutput = os
-        }
-        ext.IOS_VERSION = os.toString().trim()
-    }
-} else {
-    ext.IOS_VERSION = ""
-}
-
 def sdkPath(String platform) {
     return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
 }
@@ -131,6 +118,12 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             workingDir compileOutput
         }
     }
+    
     println("native build for $name finished")
-
+    File n = new File("$buildDir/native/${os}")
+    if (n.exists()) {
+        println "Adding lib${name} to native jar"
+        fileTree("$buildDir/native/${os}").filter { it.isFile() }.files
+                .first()
+    }
 }

@@ -2,10 +2,25 @@ plugins {
     id "org.openjfx.javafxplugin" version "0.0.7" apply false
 }
 
+apply from: rootProject.file("gradle/native-build.gradle")
+
+if (System.getProperty('os.name').toLowerCase().contains("mac")) {
+    new ByteArrayOutputStream().withStream { os ->
+        exec {
+            args '-version', '-sdk', 'iphoneos', 'SDKVersion'
+            executable 'xcodebuild'
+            standardOutput = os
+        }
+        ext.IOS_VERSION = os.toString().trim()
+        println "IOS version: $IOS_VERSION"
+    }
+} else {
+    ext.IOS_VERSION = ""
+}
+
 subprojects {
     apply plugin: "java-library"
     apply plugin: "org.openjfx.javafxplugin"
-    apply from: rootProject.file("gradle/native-build.gradle")
     apply from: rootProject.file('gradle/mavenPublish.gradle')
 
     sourceCompatibility = 11
@@ -15,4 +30,3 @@ subprojects {
         mavenCentral()
     }
 }
-
