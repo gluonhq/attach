@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_in
         return;
     }
     DisplayInited = 1;
-    printf("INIT\n ");
+
     mat_jDisplayServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/display/impl/IOSDisplayService"));
     mat_jDisplayService_notifyDisplay = (*env)->GetStaticMethodID(env, mat_jDisplayServiceClass, "notifyDisplay", "(Ljava/lang/String;)V");
 

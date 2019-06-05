@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2017, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.accelerometer {
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.lifecycle;
+#import <AVFoundation/AVFoundation.h>
+#include "jni.h"
+#import <UIKit/UIKit.h>
 
-    exports com.gluonhq.attach.accelerometer;
-    exports com.gluonhq.attach.accelerometer.impl to com.gluonhq.attach.util;
+@interface AudioRecording : UIViewController <AVAudioRecorderDelegate>
+{
 }
+
+    @property (nonatomic, retain) AVAudioRecorder *avAudioRecorderController;
+    @property (strong, nonatomic) NSTimer *timer;
+    @property BOOL restart;
+    
+    - (void) playAudioRecorder;
+    - (void) startRecording:(AVAudioSession *)session;
+    - (void) stopAudioRecorder;
+    - (void) restartAudioRecorder;
+@end
+
+void sendRecordingStatus(BOOL recording);
+void sendRecordingChunk(NSString *fileName);

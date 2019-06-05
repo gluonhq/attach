@@ -27,7 +27,10 @@
  */
 package com.gluonhq.attach.ar;
 
+import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+
+import java.util.Optional;
 
 /**
  * The Augmented Reality Service allows accesing the native AR kit, if it is available.
@@ -125,10 +128,18 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
  */
 public interface AugmentedRealityService {
     
-    public enum Availability {
+    enum Availability {
         AR_NOT_SUPPORTED, ARCORE_NOT_INSTALLED, ARCORE_OUTDATED, IOS_NOT_UPDATED, AR_SUPPORTED
     }
-    
+
+    /**
+     * Returns an instance of {@link AugmentedRealityService}.
+     * @return An instance of {@link AugmentedRealityService}.
+     */
+    static Optional<AugmentedRealityService> create() {
+        return Services.get(AugmentedRealityService.class);
+    }
+
     /**
      * Checks if device supports AR
      * @param afterInstall action that can be performed if AR is installed 
@@ -146,7 +157,7 @@ public interface AugmentedRealityService {
      * {@code /src/ios/assets/} for iOS, while for Android these can be placed 
      * under {@code /src/android/assets/} or {@code /src/main/resources/assets/}.
      * 
-     * @param model 
+     * @param model the entity model
      */
     void setModel(ARModel model);
     
@@ -158,7 +169,7 @@ public interface AugmentedRealityService {
     /**
      * Shows debug information
      * 
-     * @param enable
+     * @param enable set to true to get verbose output
      */
     void debugAR(boolean enable);
     

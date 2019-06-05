@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Audio Recording plugin, 
+ * Primary API package for Attach - Audio Recording plugin,
  * contains the interface {@link com.gluonhq.attach.audiorecording.AudioRecordingService} and related classes.
  */
 package com.gluonhq.attach.audiorecording;

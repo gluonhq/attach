@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Accelerometer plugin, 
+ * Primary API package for Attach - Accelerometer plugin,
  * contains the interface {@link com.gluonhq.attach.accelerometer.AccelerometerService} and related classes.
  */
 package com.gluonhq.attach.accelerometer;
