@@ -8,7 +8,8 @@ sudo: false
 
 # use linux as operating system
 os:
-  - linux
+  - osx
+    osx_image: xcode10.1
 
 # run maven build
 script:

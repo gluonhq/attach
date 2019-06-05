@@ -41,13 +41,11 @@ def jarPackage(buildDir, projectDir, service, osname) {
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
-    println "*** SourcesJar"
     archiveClassifier = 'sources'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
-    println "*** JavaDocJar"
     archiveClassifier = 'javadoc'
 }
 
