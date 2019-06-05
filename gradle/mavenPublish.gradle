@@ -1,71 +1,65 @@
+apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+def nativeLib(buildDir, projectDir, service, osname) {
+    return tasks.create("nativeLib${service}${osname}") {
+        doLast {
+            File lib = nativeBuild("$buildDir", "$projectDir", "$service", "$osname")
+            if (lib != null) {
+                tasks["jar${service}${osname}"].configure {
+                    into("native") {
+                        from lib
+                    }
+                }
+            }
+        }
+    }
+}
+
+def jarPackage(buildDir, projectDir, service, osname) {
+    return tasks.create("jar${service}${osname}", Jar) {
+        if (osname != "") {
+            def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
+            dependsOn(nativeTask)
+            archiveBaseName = "${service}".toLowerCase()
+            archiveClassifier = osname
+            into ("") {
+                from "${buildDir}/classes/java/main"
+                if (osname == 'desktop') {
+                    exclude '**/*/impl/Dummy**', "**/impl/IOS**"
+                } else {
+                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**"
+                }
+            }
+        } else {
+            from "${buildDir}/classes/java/main"
+            exclude "**/impl/Desktop**", "**/impl/IOS**"
+        }
+    }
+}
+
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
+    println "*** SourcesJar"
     archiveClassifier = 'sources'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
+    println "*** JavaDocJar"
     archiveClassifier = 'javadoc'
-}
-
-task nativeLib (dependsOn: classes) {
-    if (project.hasProperty('os')) {
-        def osname = project.os
-        def service = getServiceName(project.name)
-
-        doFirst {
-            nativeBuild("$project.buildDir", "$project.projectDir", "$service", "$osname");
-        }
-    }
-}
-
-task nativeJar(type: Jar, dependsOn: nativeLib) {
-    from sourceSets.main.output
-
-    if (project.hasProperty('os')) {
-        def osname = project.os
-        def service = getServiceName(project.name)
-
-        archiveBaseName = project.name
-        if (osname == 'mac' || osname == 'linux' || osname == 'win' || osname == 'desktop') {
-            archiveClassifier = 'desktop'
-            exclude '**/*/impl/Dummy**', "**/impl/IOS**"
-        } else {
-            archiveClassifier = osname
-            exclude '**/*/impl/Dummy**', "**/impl/Desktop**"
-        }
-        File n = new File("$project.buildDir/native/${osname}")
-        if (n.exists()) {
-            println "Adding lib${service} to native jar"
-            from(n.listFiles().find { it.name.startsWith("lib${service}") }) {
-                into "native"
-            }
-        } else {
-            println "lib${service} not added to native jar"
-        }
-    } else {
-        exclude "**/impl/Desktop**", "**/impl/IOS**"
-    }
-}
-
-private String getServiceName(projectName) {
-    if (projectName.contains("-")) { // in-app-billing -> InAppBilling
-        def values = projectName.tokenize("-")
-        return values.inject("") { name, pn -> name + pn.capitalize()  }
-    } else if (projectName == "util") {
-        projectName = "attach"
-    }
-    return projectName.capitalize()
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
-//            from components.java
-            artifact nativeJar
+            def service = getServiceName(project.name)
+            if (service != "Util") {
+                artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "ios")
+                artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
+            }
+            artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "")
             artifact sourcesJar
             artifact javadocJar
 
@@ -138,6 +132,14 @@ publishing {
 signing {
     sign publishing.publications.maven
     required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
+}
+
+private String getServiceName(projectName) {
+    if (projectName.contains("-")) { // in-app-billing -> InAppBilling
+        def values = projectName.tokenize("-")
+        return values.inject("") { name, pn -> name + pn.capitalize()  }
+    }
+    return projectName.capitalize()
 }
 
 private String getStringProperty(String name, String defaultValue) {
