@@ -1,14 +1,13 @@
 # use java support
 language: java
-jdk:
-  - openjdk11
+jdk: openjdk11
 
 # run in container
 sudo: false
 
-# use linux as operating system
-os:
-  - linux
+# use Mac OS X as operating system to build iOS native libraries
+os: osx
+osx_image: xcode10.2
 
 # run maven build
 script:
