@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.localnotifications.impl;
+
+
+import com.gluonhq.attach.localnotifications.Notification;
+import com.gluonhq.attach.util.Constants;
 
 /**
- * Primary API package for Attach - Local Notifications plugin,
- * contains the interface {@link com.gluonhq.attach.localnotifications.LocalNotificationsService} and related classes.
+ *  iOS implementation of LocalNotificationsService.
  */
-package com.gluonhq.attach.localnotifications;
+public class IOSLocalNotificationsService extends LocalNotificationsServiceBase {
+
+    static {
+        System.loadLibrary("LocalNotifications");
+        initLocalNotification();
+    }
+
+    public IOSLocalNotificationsService() {
+        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
+            enableDebug();
+        }
+    }
+
+    @Override
+    protected void unscheduleNotification(Notification notification) {
+        if (notification != null) {
+            unregisterNotification(notification.getId());
+        }
+    }
+    
+    @Override
+    protected void scheduleNotification(Notification notification) {
+        registerNotification(notification.getTitle() == null ? "" : notification.getTitle(), 
+                notification.getText(), notification.getId(), notification.getDateTime().toEpochSecond());
+    }
+    
+    private native void registerNotification(String title, String text, String identifier, double seconds);
+    
+    private native void unregisterNotification(String identifier);
+    
+    private static native void initLocalNotification();
+    private static native void enableDebug();
+
+
+}

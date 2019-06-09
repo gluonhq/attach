@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Primary API package for Attach - Local Notifications plugin,
- * contains the interface {@link com.gluonhq.attach.localnotifications.LocalNotificationsService} and related classes.
- */
-package com.gluonhq.attach.localnotifications;
+#import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
+#include "jni.h"
+
+API_AVAILABLE(ios(10.0))
+@interface LocalNotifications : NSObject <UNUserNotificationCenterDelegate>
+{
+}
+
+@end
