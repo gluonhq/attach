@@ -29,6 +29,7 @@ module com.gluonhq.attach.compass {
 
     requires javafx.base;
     requires com.gluonhq.attach.util;
+    requires com.gluonhq.attach.magnetometer;
 
     exports com.gluonhq.attach.compass;
     exports com.gluonhq.attach.compass.impl to com.gluonhq.attach.util;

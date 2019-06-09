@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.connectivity.impl;
+ #import <UIKit/UIKit.h>
 
-import com.gluonhq.attach.connectivity.ConnectivityService;
+#include "jni.h"
+#include<unistd.h>
+#include<netdb.h>
 
-public abstract class DummyConnectivityService implements ConnectivityService {
+JNIEnv *env;
+
+JNIEXPORT jint JNICALL
+JNI_OnLoad_Connectivity(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
+    }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
+}
+
+JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_connectivity_impl_IOSConnectivityService_singleCheck
+(JNIEnv *env, jclass jClass) {
+
+    char *hostname;
+    struct hostent *hostinfo;
+    hostname = "apple.com";
+    hostinfo = gethostbyname(hostname);
+    if (hostinfo == NULL) {
+        return JNI_FALSE;
+    }
+    else {
+        return JNI_TRUE;
+    };
 }

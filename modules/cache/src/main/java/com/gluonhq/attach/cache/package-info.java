@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Cache plugin, 
+ * Primary API package for Attach - Cache plugin,
  * contains the interface {@link com.gluonhq.attach.cache.CacheService} and related classes.
  */
 package com.gluonhq.attach.cache;

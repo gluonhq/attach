@@ -27,7 +27,7 @@
  */
 module com.gluonhq.attach.connectivity {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
 
     exports com.gluonhq.attach.connectivity;

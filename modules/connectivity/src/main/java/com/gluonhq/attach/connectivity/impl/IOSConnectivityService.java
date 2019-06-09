@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,37 @@
 package com.gluonhq.attach.connectivity.impl;
 
 import com.gluonhq.attach.connectivity.ConnectivityService;
+import com.gluonhq.attach.util.PropertyWatcher;
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 
-public abstract class DummyConnectivityService implements ConnectivityService {
+public class IOSConnectivityService implements ConnectivityService {
+
+    static {
+        System.loadLibrary("Connectivity");
+    }
+
+    private native boolean singleCheck();
+
+    private ReadOnlyBooleanWrapper connectedProperty;
+
+    @Override
+    public ReadOnlyBooleanProperty connectedProperty() {
+        if (connectedProperty == null) {
+            connectedProperty = new ReadOnlyBooleanWrapper();
+            PropertyWatcher.addPropertyWatcher(() -> {
+                final boolean connected = isConnected();
+                if (connectedProperty.getValue() != connected) {
+                    Platform.runLater(() -> connectedProperty.setValue(connected));
+                }
+            });
+        }
+        return connectedProperty.getReadOnlyProperty();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return singleCheck();
+    }
 }

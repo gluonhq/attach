@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.connectivity.impl;
+package com.gluonhq.attach.compass.impl;
 
-import com.gluonhq.attach.connectivity.ConnectivityService;
+import com.gluonhq.attach.compass.CompassService;
+import com.gluonhq.attach.magnetometer.MagnetometerService;
+import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 
-public abstract class DummyConnectivityService implements ConnectivityService {
+public class IOSCompassService implements CompassService {
+
+    private final ReadOnlyDoubleWrapper heading;
+    
+    public IOSCompassService() {
+        heading = new ReadOnlyDoubleWrapper();
+
+        Services.get(MagnetometerService.class).ifPresent(m -> {
+            m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
+        });
+    }
+
+    @Override
+    public double getHeading() {
+        return heading.get();
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty headingProperty() {
+        return heading.getReadOnlyProperty();
+    }
+
 }
