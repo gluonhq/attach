@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2017, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.inappbilling.impl;
 
-import com.gluonhq.attach.inappbilling.InAppBillingService;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#import <StoreKit/StoreKit.h>
 
-abstract class DummyInAppBillingService implements InAppBillingService {
+@interface InAppBilling : UIViewController <SKPaymentTransactionObserver, SKProductsRequestDelegate, SKRequestDelegate>
+{
+    SKProductsRequest *productsRequest;
 }
+
+    - (void) setup;
+    - (void) fetchProducts;
+    - (void) purchaseProduct:(NSString *)productId;
+
+    - (void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions;
+    - (void) paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error;
+    - (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue;
+    - (void) logMessage:(NSString *)format, ...;
+
+@end
+
+void sendProduct(SKProduct *product);
+void ready(BOOL value);
+void doneFetching(BOOL value);
+void sendPurchases(NSArray *purchasedIDs);
+void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *transactionReceipt);
