@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.dialer.impl;
 
-import com.gluonhq.attach.dialer.DialerService;
-
-public abstract class DummyDialerService implements DialerService {
-}
+/**
+ * Primary API package for Attach - Device plugin,
+ * contains the interface {@link com.gluonhq.attach.device.DeviceService} and related classes.
+ */
+package com.gluonhq.attach.device;

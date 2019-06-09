@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Dialer plugin, 
+ * Primary API package for Attach - Dialer plugin,
  * contains the interface {@link com.gluonhq.attach.dialer.DialerService} and related classes.
  */
 package com.gluonhq.attach.dialer;

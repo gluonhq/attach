@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.dialer.impl;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-import com.gluonhq.attach.dialer.DialerService;
+JNIEnv *env;
 
-public abstract class DummyDialerService implements DialerService {
+JNIEXPORT jint JNICALL
+JNI_OnLoad_Dialer(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
+    }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
 }
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_dialer_impl_IOSDialerService_callNumber
+(JNIEnv *env, jclass jClass, jstring jNumber)
+{
+    const jchar *chars = (*env)->GetStringChars(env, jNumber, NULL);
+    NSString *number = [NSString stringWithCharacters:(UniChar *)chars length:(*env)->GetStringLength(env, jNumber)];
+    (*env)->ReleaseStringChars(env, jNumber, chars);
+    NSURL *phoneUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@",number]];
+    if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
+        [[UIApplication sharedApplication] openURL:phoneUrl];
+        NSLog(@"Done calling to %@", number);
+    } else {
+        NSLog(@"Can't call to %@", number);
+    }
+}
+

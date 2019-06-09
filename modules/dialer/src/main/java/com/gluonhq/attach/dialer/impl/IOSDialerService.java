@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,22 @@
  */
 package com.gluonhq.attach.dialer.impl;
 
+
 import com.gluonhq.attach.dialer.DialerService;
 
-public abstract class DummyDialerService implements DialerService {
+public class IOSDialerService implements DialerService {
+
+    static {
+        System.loadLibrary("Dialer");
+    }
+
+    @Override
+    public void call(String number) {
+        if (number != null && !number.isEmpty()) {
+            callNumber(number);
+        }
+    }
+    
+    private native void callNumber(String number);
+    
 }
