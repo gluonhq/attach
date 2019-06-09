@@ -25,9 +25,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ble.impl;
+package com.gluonhq.attach.browser.impl;
 
-import com.gluonhq.attach.ble.BleService;
 
-public abstract class DummyBleService implements BleService {
+import com.gluonhq.attach.browser.BrowserService;
+
+import java.io.IOException;
+
+public class IOSBrowserService implements BrowserService {
+
+    static {
+        System.loadLibrary("Browser");
+    }
+
+    @Override
+    public void launchExternalBrowser(String url) throws IOException {
+        if (!launchURL(url)) {
+            throw new IOException("Error launching url " + url);
+        }
+    }
+    
+    private native boolean launchURL(String url);
+    
 }

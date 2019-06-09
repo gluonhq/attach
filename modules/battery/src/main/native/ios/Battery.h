@@ -25,9 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ble.impl;
 
-import com.gluonhq.attach.ble.BleService;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-public abstract class DummyBleService implements BleService {
-}
+@interface Battery : NSObject {}
+    - (void) startObserver;
+    - (void) stopObserver;
+    - (NSString*) getBatteryState;
+@end
+
+void sendBatteryState();
+void sendBatteryLevel();

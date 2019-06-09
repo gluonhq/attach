@@ -62,8 +62,8 @@ public interface BrowserService {
      * Launches the user-default browser to show a specified URL.
      *
      * @param url The URL to load when the browser application opens.
-     * @throws java.io.IOException
-     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException If the URL can't be opened
+     * @throws java.net.URISyntaxException If it is not a valid URL string
      */
     void launchExternalBrowser(String url) throws IOException, URISyntaxException;
 }

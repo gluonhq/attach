@@ -27,8 +27,9 @@
  */
 module com.gluonhq.attach.battery {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
+    requires com.gluonhq.attach.lifecycle;
 
     exports com.gluonhq.attach.battery;
     exports com.gluonhq.attach.battery.impl to com.gluonhq.attach.util;

@@ -25,9 +25,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ble.impl;
 
-import com.gluonhq.attach.ble.BleService;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#import <CoreLocation/CoreLocation.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 
-public abstract class DummyBleService implements BleService {
+@interface Ble : UIViewController <CLLocationManagerDelegate, CBCentralManagerDelegate> 
+{
 }
+    @property(nonatomic, strong) CLLocationManager *locationManager;
+    @property(nonatomic, strong) CBCentralManager *bluetoothManager;
+    - (void) startObserver;
+    - (void) stopObserver;
+@end
+
+void setDetection(CLBeacon *foundBeacon);

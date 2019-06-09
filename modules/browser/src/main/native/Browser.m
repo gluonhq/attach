@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ble.impl;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-import com.gluonhq.attach.ble.BleService;
+JNIEnv *env;
 
-public abstract class DummyBleService implements BleService {
+JNIEXPORT jint JNICALL
+JNI_OnLoad_Browser(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
+    }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
 }
+
+JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserService_launchURL
+(JNIEnv *env, jclass jClass, jstring jUrl)
+{
+    const jchar *chars = (*env)->GetStringChars(env, jUrl, NULL);
+    NSString *url = [NSString stringWithCharacters:(UniChar *)chars length:(*env)->GetStringLength(env, jUrl)];
+    (*env)->ReleaseStringChars(env, jUrl, chars);
+
+    NSURL *nsUrl = [NSURL URLWithString:url];
+    if ([[UIApplication sharedApplication] canOpenURL:nsUrl]) {
+        [[UIApplication sharedApplication] openURL:nsUrl];
+        NSLog(@"Done opening url %@", url);
+        return JNI_TRUE;
+    } else {
+        NSLog(@"Can't open url %@", url);
+        return JNI_FALSE;
+    }
+}
+

@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - BarcodeScan plugin, 
+ * Primary API package for Attach - BarcodeScan plugin,
  * contains the interface {@link com.gluonhq.attach.barcode.BarcodeScanService} and related classes.
  */
 package com.gluonhq.attach.barcode;

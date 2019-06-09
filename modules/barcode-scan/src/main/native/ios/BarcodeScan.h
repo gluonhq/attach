@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ble.impl;
 
-import com.gluonhq.attach.ble.BleService;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#import <AVFoundation/AVFoundation.h>
 
-public abstract class DummyBleService implements BleService {
-}
+@interface BarcodeScan : UIViewController <AVCaptureMetadataOutputObjectsDelegate> {}
+	- (void) display:(NSString *)title legend:(NSString *)legend resultText:(NSString *)resultText;
+@end
+
+void sendScanResult(NSString *scanResult);
