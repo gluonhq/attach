@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.vibration.impl;
 
-/**
- * Primary API package for Attach - Video plugin,
- * contains the interface {@link com.gluonhq.attach.video.VideoService} and related classes.
- */
-package com.gluonhq.attach.video;
+
+import com.gluonhq.attach.vibration.VibrationService;
+
+public class IOSVibrationService implements VibrationService {
+
+    static {
+        System.loadLibrary("Vibration");
+    }
+    
+    @Override
+    public void vibrate() {
+        doVibrate();
+    }
+    
+    @Override
+    public void vibrate(long... pattern) {
+        // pattern not supported on iOS
+        vibrate(); 
+    }
+
+    private native static void doVibrate();
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2017, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#import <AVFoundation/AVFoundation.h>
+#include "jni.h"
+#import <UIKit/UIKit.h>
+#import <AVKit/AVKit.h>
 
-/**
- * Primary API package for Attach - Video plugin,
- * contains the interface {@link com.gluonhq.attach.video.VideoService} and related classes.
- */
-package com.gluonhq.attach.video;
+typedef NS_ENUM(NSInteger, MediaPlayerStatus) {
+    MediaPlayerStatusUnknown,
+    MediaPlayerStatusReady,
+    MediaPlayerStatusPaused,
+    MediaPlayerStatusPlaying,
+    MediaPlayerStatusStopped,
+    MediaPlayerStatusDisposed
+};
+
+@interface Video :UIViewController <AVPlayerViewControllerDelegate, UIGestureRecognizerDelegate>
+{
+}
+    @property (nonatomic, strong) NSArray *arrayOfPlaylist;
+    @property (nonatomic, strong) AVPlayerViewController *avPlayerViewcontroller;
+    @property (nonatomic, strong) dispatch_semaphore_t semaphore;
+
+    - (void) initPlaylist:(NSArray *)playlist;
+    - (void) showVideo;
+    - (void) playVideo;
+    - (void) pauseVideo;
+    - (void) stopVideo;
+    - (void) hideVideo;
+    - (void) internalHide;
+    - (void) fullScreenVideo: (BOOL) value;
+    - (void) currentIndex: (int) index;
+    - (void) resizeRelocateVideo;
+@end
+
+void status(MediaPlayerStatus status);
+void updateFullScreen(BOOL value);
+void updateCurrentIndex(int index);

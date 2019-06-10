@@ -159,7 +159,9 @@ void sendNotch() {
 {
     iPhoneX = NO;
     if ([[UIDevice currentDevice].model hasPrefix:@"iPhone"] &&
-        [[UIScreen mainScreen] nativeBounds].size.height == 2436)
+        ([[UIScreen mainScreen] nativeBounds].size.height == 1792 || // XR
+         [[UIScreen mainScreen] nativeBounds].size.height == 2436 || // X, XS
+         [[UIScreen mainScreen] nativeBounds].size.height == 2688)) // XS MAX
     {
         iPhoneX = YES;
     }
