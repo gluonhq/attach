@@ -67,6 +67,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsSe
     [_rasDelegate register];
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsService_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    debugRuntimeArgs = YES;
+}
+
 void processRuntimeArgs(NSString* key, NSString* value) {
     const char *keyChars = [key UTF8String];
     jstring jkey = (*env)->NewStringUTF(env, keyChars);
