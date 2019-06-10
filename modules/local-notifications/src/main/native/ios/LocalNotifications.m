@@ -28,8 +28,6 @@
 
 #include "LocalNotifications.h"
 
-#define SYSTEM_VERSION_GREATERTHAN_OR_EQUALTO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-
 JNIEnv *env;
 
 JNIEXPORT jint JNICALL
@@ -60,7 +58,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     }
     notificationsInited = 1;
     
-    if (SYSTEM_VERSION_GREATERTHAN_OR_EQUALTO(@"10.0"))
+    if (@available(iOS 10.0, *))
     {
         if (debugLocalNotifications) {
             NSLog(@"Initialize UNUserNotificationCenter iOS 10+");
@@ -140,7 +138,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     NSString *identifier = [NSString stringWithCharacters:(UniChar *)charsIdentifier length:(*env)->GetStringLength(env, jIdentifier)];
     (*env)->ReleaseStringChars(env, jIdentifier, charsIdentifier);
 
-    if (SYSTEM_VERSION_GREATERTHAN_OR_EQUALTO(@"10.0"))
+    if (@available(iOS 10.0, *))
     {
         UNMutableNotificationContent *content = [UNMutableNotificationContent new];
         content.title = name;
@@ -202,7 +200,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     NSString *identifier = [NSString stringWithCharacters:(UniChar *)charsIdentifier length:(*env)->GetStringLength(env, jIdentifier)];
     (*env)->ReleaseStringChars(env, jIdentifier, charsIdentifier);
 
-    if (SYSTEM_VERSION_GREATERTHAN_OR_EQUALTO(@"10.0"))
+    if (@available(iOS 10.0, *))
     {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         NSArray *array = [NSArray arrayWithObjects:identifier, nil];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.runtime.impl;
+
+import com.gluonhq.attach.runtime.RuntimeArgsService;
+import com.gluonhq.attach.util.Constants;
 
 /**
- * Primary API package for Attach - RuntimeArgs plugin,
- * contains the interface {@link com.gluonhq.attach.runtime.RuntimeArgsService} and related classes.
+ * An implementation of the
+ * {@link RuntimeArgsService RuntimeArgsService} for the
+ * iOS platform. 
  */
-package com.gluonhq.attach.runtime;
+public class IOSRuntimeArgsService extends DefaultRuntimeArgsService {
+
+    static {
+        System.loadLibrary("RuntimeArgs");
+        initRuntimeArgs();
+    }
+
+    public IOSRuntimeArgsService() {
+        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
+            enableDebug();
+        }
+    }
+
+    // Native
+    
+    private static native void initRuntimeArgs();
+    private static native void enableDebug();
+
+    // callback
+    private void processRuntimeArgs(String key, String value) {
+        super.fire(key, value);
+    }
+}

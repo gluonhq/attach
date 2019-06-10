@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Attach - RuntimeArgs plugin,
- * contains the interface {@link com.gluonhq.attach.runtime.RuntimeArgsService} and related classes.
+ * Primary API package for Attach - Push Notifications plugin,
+ * contains the interface {@link com.gluonhq.attach.pushnotifications.PushNotificationsService} and related classes.
  */
-package com.gluonhq.attach.runtime;
+package com.gluonhq.attach.pushnotifications;

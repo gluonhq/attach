@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Primary API package for Attach - RuntimeArgs plugin,
- * contains the interface {@link com.gluonhq.attach.runtime.RuntimeArgsService} and related classes.
- */
-package com.gluonhq.attach.runtime;
+#import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
+#include "jni.h"
+
+@interface PushNotifications : NSObject <UIApplicationDelegate> { }
+@end
+
+@interface PushNotifications (NotificationsAdditions)
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+
+@end
