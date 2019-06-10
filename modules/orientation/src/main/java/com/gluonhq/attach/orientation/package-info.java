@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Orientation plugin, 
+ * Primary API package for Attach - Orientation plugin,
  * contains the interface {@link com.gluonhq.attach.orientation.OrientationService} and related classes.
  */
 package com.gluonhq.attach.orientation;

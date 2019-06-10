@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Settings plugin, 
+ * Primary API package for Attach - Settings plugin,
  * contains the interface {@link com.gluonhq.attach.settings.SettingsService} and related classes.
  */
 package com.gluonhq.attach.settings;
