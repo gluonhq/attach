@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Primary API package for Attach - Position plugin,
- * contains the interface {@link com.gluonhq.attach.position.PositionService} and related classes.
- */
-package com.gluonhq.attach.position;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#import <CoreLocation/CoreLocation.h>
+
+@interface Position : UIViewController <CLLocationManagerDelegate> {}
+    @property(nonatomic, strong) CLLocationManager *locationManager;
+    - (void) startObserver:(NSString *)accuracy interval:(long)interval distance:(CGFloat)distance background:(BOOL)background;
+    - (void) stopObserver;
+@end
+
+void setLocation(CLLocation *newLocation);

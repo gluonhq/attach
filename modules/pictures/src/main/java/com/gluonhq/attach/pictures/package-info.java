@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Pictures plugin, 
+ * Primary API package for Attach - Pictures plugin,
  * contains the interface {@link com.gluonhq.attach.pictures.PicturesService} and related classes.
  */
 package com.gluonhq.attach.pictures;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Primary API package for Attach - Position plugin,
- * contains the interface {@link com.gluonhq.attach.position.PositionService} and related classes.
- */
-package com.gluonhq.attach.position;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#import <CoreMotion/CoreMotion.h>
+
+@interface Magnetometer : UIViewController {}
+    @property (strong, nonatomic) CMMotionManager *motionManager;
+    - (void) startObserver;
+    - (void) stopObserver;
+@end
+
+void sendReading(CMDeviceMotion *motionData);

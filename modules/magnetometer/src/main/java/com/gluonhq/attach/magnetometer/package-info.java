@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Magnetometer plugin, 
+ * Primary API package for Attach - Magnetometer plugin,
  * contains the interface {@link com.gluonhq.attach.magnetometer.MagnetometerService} and related classes.
  */
 package com.gluonhq.attach.magnetometer;
