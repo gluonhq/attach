@@ -27,7 +27,7 @@
  */
 module com.gluonhq.attach.compass {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.magnetometer;
 

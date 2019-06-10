@@ -53,7 +53,23 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserServic
 
     NSURL *nsUrl = [NSURL URLWithString:url];
     if ([[UIApplication sharedApplication] canOpenURL:nsUrl]) {
-        [[UIApplication sharedApplication] openURL:nsUrl];
+        if (@available(iOS 10.0, *))
+        {
+            [[UIApplication sharedApplication] openURL:nsUrl options:@{}
+                completionHandler:^(BOOL success) {
+                     if (success) {
+                          NSLog(@"Opened url successfully");
+                     }
+                 }];
+        }
+        else {
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+            [[UIApplication sharedApplication] openURL:nsUrl];
+
+            #pragma clang diagnostic pop
+        }
         NSLog(@"Done opening url %@", url);
         return JNI_TRUE;
     } else {

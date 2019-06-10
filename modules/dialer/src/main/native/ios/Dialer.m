@@ -52,7 +52,19 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_dialer_impl_IOSDialerService_call
     (*env)->ReleaseStringChars(env, jNumber, chars);
     NSURL *phoneUrl = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@",number]];
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-        [[UIApplication sharedApplication] openURL:phoneUrl];
+        if (@available(iOS 10.0, *))
+        {
+            [[UIApplication sharedApplication] openURL:phoneUrl options:@{}
+                completionHandler:nil];
+        }
+        else {
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+            [[UIApplication sharedApplication] openURL:phoneUrl];
+
+            #pragma clang diagnostic pop
+        }
         NSLog(@"Done calling to %@", number);
     } else {
         NSLog(@"Can't call to %@", number);

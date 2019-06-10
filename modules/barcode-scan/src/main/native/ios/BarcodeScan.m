@@ -243,23 +243,18 @@ NSString *resultString;
 }
 
 - (AVCaptureVideoOrientation) videoOrientationFromCurrentDeviceOrientation {
-    switch (self.interfaceOrientation) {
-        case UIInterfaceOrientationPortrait: {
-            return AVCaptureVideoOrientationPortrait;
-        }
-        case UIInterfaceOrientationLandscapeLeft: {
-            return AVCaptureVideoOrientationLandscapeLeft;
-        }
-        case UIInterfaceOrientationLandscapeRight: {
-            return AVCaptureVideoOrientationLandscapeRight;
-        }
-        case UIInterfaceOrientationPortraitUpsideDown: {
-            return AVCaptureVideoOrientationPortraitUpsideDown;
-        }
-        case UIInterfaceOrientationUnknown: {
-            return AVCaptureVideoOrientationPortrait;
-        }
-    }
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+
+    if (orientation == UIDeviceOrientationPortraitUpsideDown)
+        return AVCaptureVideoOrientationPortraitUpsideDown;
+    else if(orientation == UIInterfaceOrientationPortrait)
+         return AVCaptureVideoOrientationPortrait;
+    else if(orientation == UIInterfaceOrientationLandscapeLeft)
+        return AVCaptureVideoOrientationLandscapeLeft;
+    else if(orientation == UIInterfaceOrientationLandscapeRight)
+        return AVCaptureVideoOrientationLandscapeRight;
+
+    return AVCaptureVideoOrientationPortrait;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection

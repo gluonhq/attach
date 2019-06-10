@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Ble.h"
+#include "BLE.h"
 
 JNIEnv *env;
 
@@ -188,14 +188,34 @@ void setDetection(CLBeacon *foundBeacon) {
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
     NSString *stateString = nil;
-    switch(_bluetoothManager.state)
+    if (@available(iOS 10.0, *))
     {
-        case CBCentralManagerStateResetting: stateString = @"The connection with the system service was momentarily lost, update imminent."; break;
-        case CBCentralManagerStateUnsupported: stateString = @"The platform doesn't support Bluetooth Low Energy."; break;
-        case CBCentralManagerStateUnauthorized: stateString = @"The app is not authorized to use Bluetooth Low Energy."; break;
-        case CBCentralManagerStatePoweredOff: stateString = @"Bluetooth is currently powered off."; break;
-        case CBCentralManagerStatePoweredOn: stateString = @"Bluetooth is currently powered on and available to use."; break;
-        default: stateString = @"State unknown, update imminent."; break;
+        switch(_bluetoothManager.state)
+        {
+            case CBManagerStateResetting: stateString = @"The connection with the system service was momentarily lost, update imminent."; break;
+            case CBManagerStateUnsupported: stateString = @"The platform doesn't support Bluetooth Low Energy."; break;
+            case CBManagerStateUnauthorized: stateString = @"The app is not authorized to use Bluetooth Low Energy."; break;
+            case CBManagerStatePoweredOff: stateString = @"Bluetooth is currently powered off."; break;
+            case CBManagerStatePoweredOn: stateString = @"Bluetooth is currently powered on and available to use."; break;
+            default: stateString = @"State unknown, update imminent."; break;
+        }
+    }
+    else
+    {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+        switch(_bluetoothManager.state)
+        {
+            case CBCentralManagerStateResetting: stateString = @"The connection with the system service was momentarily lost, update imminent."; break;
+            case CBCentralManagerStateUnsupported: stateString = @"The platform doesn't support Bluetooth Low Energy."; break;
+            case CBCentralManagerStateUnauthorized: stateString = @"The app is not authorized to use Bluetooth Low Energy."; break;
+            case CBCentralManagerStatePoweredOff: stateString = @"Bluetooth is currently powered off."; break;
+            case CBCentralManagerStatePoweredOn: stateString = @"Bluetooth is currently powered on and available to use."; break;
+            default: stateString = @"State unknown, update imminent."; break;
+        }
+
+        #pragma clang diagnostic pop
     }
     NSLog(@"Bluetooth State: %@",stateString);
 }
