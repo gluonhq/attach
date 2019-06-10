@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.settings.impl;
+package com.gluonhq.attach.statusbar.impl;
 
-import com.gluonhq.attach.settings.SettingsService;
+import com.gluonhq.attach.statusbar.StatusBarService;
+import javafx.scene.paint.Color;
 
-public abstract class DummySettingsService implements SettingsService {
+public class IOSStatusBarService implements StatusBarService {
+
+    static {
+        System.loadLibrary("StatusBar");
+    }
+
+    @Override
+    public void setColor(Color color) {
+        setNativeColor(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity());
+    }
+
+    private native void setNativeColor(double red, double green, double blue, double opacity);
 }

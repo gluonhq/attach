@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2017, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,49 +25,70 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.settings.impl;
+package com.gluonhq.attach.share.impl;
 
 
-import com.gluonhq.attach.settings.SettingsService;
+import com.gluonhq.attach.share.ShareService;
 import com.gluonhq.attach.util.Constants;
 
-/**
- * An implementation of the
- * {@link SettingsService SettingsService} for the
- * iOS platform. It makes use of the application's standard UserDefaults.
- */
-public class IOSSettingsService implements SettingsService {
+import java.io.File;
+
+
+public class IOSShareService implements ShareService {
 
     static {
-        System.loadLibrary("Settings");
-        initSettings();
+        System.loadLibrary("Share");
+        initShare();
     }
 
-    public IOSSettingsService() {
+    public IOSShareService() {
         if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
             enableDebug();
         }
     }
-
-    @Override
-    public void store(String key, String value) {
-        settingsStore(key, value);
-    }
-
-    @Override
-    public void remove(String key) {
-        settingsRemove(key);
-    }
-
-    @Override
-    public String retrieve(String key) {
-        return settingsRetrieve(key);
-    }
     
-    private static native void initSettings();
-    private static native void settingsStore(String key, String value);
-    private static native void settingsRemove(String key);
-    private static native String settingsRetrieve(String key);
+    @Override
+    public void share(String contentText) {
+        share(null, contentText);
+    }
+
+    @Override
+    public void share(String subject, String contentText) {
+        if (subject == null) {
+            subject = "";
+        }
+        if (contentText == null || contentText.isEmpty()) {
+            System.out.println("Error: contentText not valid");
+            return;
+        }
+        nativeShare(subject, contentText, "");
+    }
+
+    @Override
+    public void share(String type, File file) {
+        share(null, null, type, file);
+    }
+
+    @Override
+    public void share(String subject, String contentText, String type, File file) {
+        if (subject == null) {
+            subject = "";
+        }
+        if (contentText == null) {
+            contentText = "";
+        }
+        if (file != null && file.exists()) {
+            System.out.println("File to share: " + file);
+        } else {
+            System.out.println("Error: URL not valid");
+            return;
+        }
+        nativeShare(subject, contentText, file.getAbsolutePath());
+    }
+
+    // native
+    private static native void initShare(); // init IDs for java callbacks from native
     private static native void enableDebug();
+    private static native void nativeShare(String subject, String message, String filePath);
 
 }

@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Status Bar plugin, 
+ * Primary API package for Attach - Status Bar plugin,
  * contains the interface {@link com.gluonhq.attach.statusbar.StatusBarService} and related classes.
  */
 package com.gluonhq.attach.statusbar;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2017, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.settings.impl;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-import com.gluonhq.attach.settings.SettingsService;
-
-public abstract class DummySettingsService implements SettingsService {
+@interface Share : UIViewController <UIActivityItemSource>
+{
 }
+    @property (nonatomic, strong) NSString *message;
+    @property (nonatomic, strong) NSString *subject;
+    @property (nonatomic, strong) NSString *filePath;
+    - (void) shareText:(NSString *)subject message:(NSString *)message filePath:(NSString *)filePath;
+@end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.settings.impl;
+#import <UIKit/UIKit.h>
+#include "jni.h"
 
-import com.gluonhq.attach.settings.SettingsService;
+JNIEnv *env;
 
-public abstract class DummySettingsService implements SettingsService {
+JNIEXPORT jint JNICALL
+JNI_OnLoad_StatusBar(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
+    }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_IOSStatusBarService_setNativeColor
+(JNIEnv *env, jclass jClass, jdouble red, jdouble green, jdouble blue, jdouble opacity)
+{
+    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+
+    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+        statusBar.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:opacity];
+    }
 }

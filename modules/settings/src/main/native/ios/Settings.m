@@ -46,6 +46,7 @@ JNI_OnLoad_Settings(JavaVM *vm, void *reserved)
 }
 
 static int settingsInited = 0;
+BOOL debugSettings;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_initSettings
 (JNIEnv *env, jclass jClass)
@@ -61,6 +62,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_
     [defaults registerDefaults:defaultPreferences];
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    debugSettings = YES;
+}
+
+
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_settingsStore
 (JNIEnv *env, jclass jClass, jstring jKey, jstring jValue)
 {
@@ -73,8 +81,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_
     (*env)->ReleaseStringChars(env, jValue, charsVal);
 
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
-    NSLog(@"Done storing %@ to %@", key, value);
-    
+    if (debugSettings) {
+        NSLog(@"Done storing %@ to %@", key, value);
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_settingsRemove
@@ -85,7 +94,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_
     (*env)->ReleaseStringChars(env, jKey, charsKey);
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-    NSLog(@"Done removing %@", key);
+    if (debugSettings) {
+        NSLog(@"Done removing %@", key);
+    }
 }
 
 JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_settingsRetrieve
@@ -97,10 +108,12 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsServi
 
     NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     if (!value) {
-        NSLog(@"%@ not found", key);
+        NSLog(@"Error: %@ not found", key);
         return NULL;
     }   
-    NSLog(@"Done retreiving %@", key);
+    if (debugSettings) {
+        NSLog(@"Done retreiving %@", key);
+    }
     const char *valueChars = [value UTF8String];
     return (*env)->NewStringUTF(env, valueChars);
 }
