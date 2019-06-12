@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-apply plugin: 'signing'
+//apply plugin: 'signing'
 
 def nativeLib(buildDir, projectDir, service, osname) {
     return tasks.create("nativeLib${service}${osname}") {
@@ -127,10 +127,10 @@ publishing {
     }
 }
 
-signing {
-    sign publishing.publications.maven
-    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
-}
+//signing {
+//    sign publishing.publications.maven
+//    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
+//}
 
 private String getServiceName(projectName) {
     if (projectName.contains("-")) { // in-app-billing -> InAppBilling
