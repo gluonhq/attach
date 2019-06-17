@@ -65,18 +65,11 @@ public enum Platform {
     private static final Logger LOGGER = Logger.getLogger(Platform.class.getName());
 
     static {
-        String s = System.getProperty("javafx.platform", null);
-        if (s == null) {
-            String os = System.getProperty("os.target", null);
-            if (os != null) {
-                LOGGER.info("javafx.platform is not defined, using: " + os + " from os.target");
-                s = os;
-            } else {
-                LOGGER.severe("javafx.platform is not defined. Desktop will be assumed by default.");
-                s = DESKTOP.getName();
-            }
+        String os = System.getProperty("os.name", DESKTOP.getName()).toLowerCase(Locale.ROOT);
+        if (os.contains("mac") || os.contains("win") || os.contains("nux")) {
+            os = DESKTOP.getName();
         }
-        String name = s.toUpperCase(Locale.ROOT);
+        String name = os.toUpperCase(Locale.ROOT);
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
     }
