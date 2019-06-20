@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_position_impl_IOSPositionService_
     positionInited = 1;
     
     mat_jPositionServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/position/impl/IOSPositionService"));
-    mat_jPositionService_setLocation = (*env)->GetMethodID(env, mat_jPositionServiceClass, "setLocation", "(DDD)V");
+    mat_jPositionService_setLocation = (*env)->GetStaticMethodID(env, mat_jPositionServiceClass, "setLocation", "(DDD)V");
 
     _position = [[Position alloc] init];
 }
@@ -99,7 +99,7 @@ void setLocation(CLLocation *newLocation) {
         double lat = newLocation.coordinate.latitude;
         double lon = newLocation.coordinate.longitude;
         double alt = newLocation.altitude;
-        (*env)->CallVoidMethod(env, mat_jPositionServiceClass, mat_jPositionService_setLocation, lat, lon, alt);
+        (*env)->CallStaticVoidMethod(env, mat_jPositionServiceClass, mat_jPositionService_setLocation, lat, lon, alt);
     }
 
 }
