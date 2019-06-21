@@ -25,33 +25,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "jni.h"
 #import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
 #import <SceneKit/SceneKit.h>
 #import <ARKit/ARKit.h>
-#include <stdarg.h>
-
-static __inline__ void CharmLog(const char *file, int lineNumber, const char *funcName, NSString* format, ...)
-{
-    va_list argList;
-    va_start(argList, format);
-    NSString* formattedMessage = [[NSString alloc] initWithFormat: format arguments: argList];
-    va_end(argList);
-    NSLog(@"%@", formattedMessage);
-
-    /* Uncomment for GluonVM:
-    static NSDateFormatter* dateFormatter;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
-        [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
-    }
-    fprintf(stderr, "%s %s:%3d %s\n", [[dateFormatter stringFromDate:[NSDate date]] UTF8String], funcName, lineNumber, [formattedMessage UTF8String]);
-    [formattedMessage release];
-    */
-}
-
-#define NSLog(MSG, ...) CharmLog(__FILE__, __LINE__, __PRETTY_FUNCTION__, MSG, ## __VA_ARGS__ )
 
 API_AVAILABLE(ios(11.3))
 @interface AugmentedReality : UIViewController <ARSCNViewDelegate, ARSessionDelegate>

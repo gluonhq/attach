@@ -27,8 +27,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <UserNotifications/UserNotifications.h>
 #include "jni.h"
+#include "AttachMacros.h"
+#import <UserNotifications/UserNotifications.h>
 
 @interface PushNotifications : NSObject <UIApplicationDelegate> { }
 @end

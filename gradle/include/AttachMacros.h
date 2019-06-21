@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIKit.h>
-#include "jni.h"
-#include "AttachMacros.h"
-#import <CoreMotion/CoreMotion.h>
+#include <stdarg.h>
 
-@interface Accelerometer : UIViewController {}
-    @property (strong, nonatomic) CMMotionManager *motionManager;
-    - (void) startObserver;
-    - (void) stopObserver;
-@end
+static __inline__ void AttachLog(const char *file, int lineNumber, const char *funcName, NSString* format, ...)
+{
+    va_list argList;
+    va_start(argList, format);
+    NSString* formattedMessage = [[NSString alloc] initWithFormat: format arguments: argList];
+    va_end(argList);
+    NSLog(@"%@", formattedMessage);
 
-void sendAcceleration(CMAccelerometerData  *accelerometerData);
+    static NSDateFormatter* dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
+        [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    }
+    fprintf(stderr, "%s %s:%3d %s\n", [[dateFormatter stringFromDate:[NSDate date]] UTF8String], funcName, lineNumber, [formattedMessage UTF8String]);
+    [formattedMessage release];
+}
+
+#define NSLog(MSG, ...) AttachLog(__FILE__, __LINE__, __PRETTY_FUNCTION__, MSG, ## __VA_ARGS__ )

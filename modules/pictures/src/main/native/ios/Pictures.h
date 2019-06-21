@@ -28,6 +28,7 @@
 
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 
 @interface Pictures : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {}
 	- (void) takePicture;

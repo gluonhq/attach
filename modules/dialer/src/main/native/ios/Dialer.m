@@ -27,6 +27,7 @@
  */
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 
 JNIEnv *env;
 

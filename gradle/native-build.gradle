@@ -23,7 +23,10 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
     }
 
     def JAVAHOME = System.getenv("JAVA_HOME")
-    def includeFlags = "-I$JAVAHOME/include"
+    def includeFlags = [
+            "-I$JAVAHOME/include",
+            "-I$projectDir/../../gradle/include",
+    ]
     def osIncludeFlags = ""
 
     if (os == "ios") {

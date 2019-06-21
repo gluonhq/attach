@@ -27,8 +27,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <UserNotifications/UserNotifications.h>
 #include "jni.h"
+#include "AttachMacros.h"
+#import <UserNotifications/UserNotifications.h>
 
 API_AVAILABLE(ios(10.0))
 @interface LocalNotifications : NSObject <UNUserNotificationCenterDelegate>

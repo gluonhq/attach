@@ -28,6 +28,7 @@
 
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 #import <CoreMotion/CoreMotion.h>
 
 @interface Magnetometer : UIViewController {}

@@ -25,9 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import <AVFoundation/AVFoundation.h>
-#include "jni.h"
 #import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
+#import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 
 typedef NS_ENUM(NSInteger, MediaPlayerStatus) {

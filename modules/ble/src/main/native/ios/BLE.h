@@ -28,6 +28,7 @@
 
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 

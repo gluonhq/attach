@@ -26,9 +26,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <AVFoundation/AVFoundation.h>
-#include "jni.h"
 #import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface AudioRecording : UIViewController <AVAudioRecorderDelegate>
 {

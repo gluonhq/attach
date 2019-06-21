@@ -27,6 +27,7 @@
  */
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 #import <AudioToolbox/AudioServices.h>
 
 JNIEnv *env;
