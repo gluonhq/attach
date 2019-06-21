@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_initBle
     BleInited = 1;
     
     mat_jBleServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ble/impl/IOSBleService"));
-    mat_jBleService_setDetection = (*env)->GetMethodID(env, mat_jBleServiceClass, "setDetection", "(Ljava/lang/String;IIII)V");
+    mat_jBleService_setDetection = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "setDetection", "(Ljava/lang/String;IIII)V");
 
     _Ble = [[Ble alloc] init];
 }
@@ -111,7 +111,7 @@ void setDetection(CLBeacon *foundBeacon) {
         }
         const char *uuidChars = [uuid UTF8String];
         jstring juuid = (*env)->NewStringUTF(env, uuidChars);
-        (*env)->CallVoidMethod(env, mat_jBleServiceClass, mat_jBleService_setDetection, juuid, major, minor, rssi, proximity);
+        (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_setDetection, juuid, major, minor, rssi, proximity);
         (*env)->DeleteLocalRef(env, juuid);
     }
 }

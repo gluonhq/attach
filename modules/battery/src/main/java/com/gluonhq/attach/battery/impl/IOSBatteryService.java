@@ -80,7 +80,7 @@ public class IOSBatteryService implements BatteryService {
     private static native void stopObserver();
     
     // callback
-    private void notifyBatteryState(String state) {
+    private static void notifyBatteryState(String state) {
         if (state == null) {
             return;
         }
@@ -91,7 +91,7 @@ public class IOSBatteryService implements BatteryService {
             Platform.runLater(() -> PLUGGED_IN.set(plugged));
         }
     }
-    private void notifyBatteryLevel(float level) {
+    private static void notifyBatteryLevel(float level) {
         if (BATTERY_LEVEL != null && BATTERY_LEVEL.get() != level) {
             Platform.runLater(() -> BATTERY_LEVEL.set(level));
         }

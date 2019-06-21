@@ -63,8 +63,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_battery_impl_IOSBatteryService_in
     BatteryInited = 1;
     
     mat_jBatteryServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/battery/impl/IOSBatteryService"));
-    mat_jBatteryService_notifyBatteryLevel = (*env)->GetMethodID(env, mat_jBatteryServiceClass, "notifyBatteryLevel", "(F)V");
-    mat_jBatteryService_notifyBatteryState = (*env)->GetMethodID(env, mat_jBatteryServiceClass, "notifyBatteryState", "(Ljava/lang/String;)V");
+    mat_jBatteryService_notifyBatteryLevel = (*env)->GetStaticMethodID(env, mat_jBatteryServiceClass, "notifyBatteryLevel", "(F)V");
+    mat_jBatteryService_notifyBatteryState = (*env)->GetStaticMethodID(env, mat_jBatteryServiceClass, "notifyBatteryState", "(Ljava/lang/String;)V");
 
     _battery = [[Battery alloc] init];
     
@@ -91,13 +91,13 @@ void sendBatteryState() {
     const char *batteryChars = [battery UTF8String];
     jstring arg = (*env)->NewStringUTF(env, batteryChars);
         
-    (*env)->CallVoidMethod(env, mat_jBatteryServiceClass, mat_jBatteryService_notifyBatteryState, arg);
+    (*env)->CallStaticVoidMethod(env, mat_jBatteryServiceClass, mat_jBatteryService_notifyBatteryState, arg);
     (*env)->DeleteLocalRef(env, arg);
 }
 
 void sendBatteryLevel() {
     float batteryLevel = [[UIDevice currentDevice] batteryLevel];
-    (*env)->CallVoidMethod(env, mat_jBatteryServiceClass, mat_jBatteryService_notifyBatteryLevel, batteryLevel);
+    (*env)->CallStaticVoidMethod(env, mat_jBatteryServiceClass, mat_jBatteryService_notifyBatteryLevel, batteryLevel);
 }
 
 @implementation Battery 

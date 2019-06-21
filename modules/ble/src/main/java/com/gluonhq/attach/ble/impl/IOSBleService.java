@@ -90,7 +90,7 @@ public class IOSBleService implements BleService {
     private static native void stopObserver();
     
     // callback
-    private void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
+    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
         ScanDetection detection = new ScanDetection();
         detection.setUuid(uuid);
         detection.setMajor(major);
