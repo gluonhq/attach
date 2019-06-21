@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_IOSAcceleromet
     AccelerometerInited = 1;
     
     mat_jAccelerometerServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/accelerometer/impl/IOSAccelerometerService"));
-    mat_jAccelerometerService_notifyAcceleration = (*env)->GetMethodID(env, mat_jAccelerometerServiceClass, "notifyAcceleration", "(DDDD)V");
+    mat_jAccelerometerService_notifyAcceleration = (*env)->GetStaticMethodID(env, mat_jAccelerometerServiceClass, "notifyAcceleration", "(DDDD)V");
 
      _accelerometer = [[Accelerometer alloc] init];
 
@@ -113,7 +113,7 @@ void sendAcceleration(CMAccelerometerData  *accelerometerData) {
         z -= gravity[2];
     }
     double t = (accelerometerData.timestamp + offset) * 1000;
-    (*env)->CallVoidMethod(env, mat_jAccelerometerServiceClass, mat_jAccelerometerService_notifyAcceleration, x, y, z, t);
+    (*env)->CallStaticVoidMethod(env, mat_jAccelerometerServiceClass, mat_jAccelerometerService_notifyAcceleration, x, y, z, t);
 }
 
 @implementation Accelerometer 

@@ -74,7 +74,7 @@ public class IOSAccelerometerService implements AccelerometerService {
     private static native void stopObserver();
     
     // callback
-    private void notifyAcceleration(double x, double y, double z, double t) {
+    private static void notifyAcceleration(double x, double y, double z, double t) {
         Acceleration a = new Acceleration(x, y, z, toLocalDateTime(t));
         Platform.runLater(() -> acceleration.setValue(a));
     }

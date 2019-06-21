@@ -68,7 +68,7 @@ public class IOSMagnetometerService implements MagnetometerService {
     private static native void stopObserver();
     
     // callback
-    private void notifyReading(double x, double y, double z, double m, double a, double p, double r) {
+    private static void notifyReading(double x, double y, double z, double m, double a, double p, double r) {
         MagnetometerReading read = new MagnetometerReading(x, y, z, m, a, p, r);
         Platform.runLater(() -> reading.setValue(read));
     }

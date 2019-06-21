@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_magnetometer_impl_IOSMagnetometer
     MagnetometerInited = 1;
     
     mat_jMagnetometerServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/magnetometer/impl/IOSMagnetometerService"));
-    mat_jMagnetometerService_notifyReading = (*env)->GetMethodID(env, mat_jMagnetometerServiceClass, "notifyReading", "(DDDDDDD)V");
+    mat_jMagnetometerService_notifyReading = (*env)->GetStaticMethodID(env, mat_jMagnetometerServiceClass, "notifyReading", "(DDDDDDD)V");
 
      _magnetometer = [[Magnetometer alloc] init];
 }
@@ -94,7 +94,7 @@ void sendReading0(CMMagnetometerData  *magnetometerData) {
         double y = magnetometerData.magneticField.y;
         double z = magnetometerData.magneticField.z;
         double m = sqrt(x * x + y * y + z * z);
-        (*env)->CallVoidMethod(env, mat_jMagnetometerServiceClass, mat_jMagnetometerService_notifyReading, x, y, z, m, 0, 0, 0);
+        (*env)->CallStaticVoidMethod(env, mat_jMagnetometerServiceClass, mat_jMagnetometerService_notifyReading, x, y, z, m, 0, 0, 0);
     }
 }
 void sendReading(CMDeviceMotion *motionData) {
@@ -119,7 +119,7 @@ void sendReading(CMDeviceMotion *motionData) {
 
         double roll  = motionData.attitude.roll;
 
-        (*env)->CallVoidMethod(env, mat_jMagnetometerServiceClass, mat_jMagnetometerService_notifyReading, 
+        (*env)->CallStaticVoidMethod(env, mat_jMagnetometerServiceClass, mat_jMagnetometerService_notifyReading,
                     x, y, z, m, yaw, pitch, roll);
     }
 }
