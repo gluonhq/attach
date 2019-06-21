@@ -133,7 +133,7 @@ void setDetection(CLBeacon *foundBeacon) {
         [self.locationManager requestAlwaysAuthorization];
     }
 
-    NSLog(@"Start monitoring for regions");
+    AttachLog(@"Start monitoring for regions");
     for (NSString* uuidString in arrayOfUuids)
     {
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
@@ -146,7 +146,7 @@ void setDetection(CLBeacon *foundBeacon) {
 
 - (void)stopObserver 
 {
-    NSLog(@"Stop monitoring for regions");
+    AttachLog(@"Stop monitoring for regions");
     if (self.locationManager) 
     {
         NSSet *setOfRegions = [self.locationManager monitoredRegions];
@@ -169,7 +169,7 @@ void setDetection(CLBeacon *foundBeacon) {
 
 - (void)locationManager:(CLLocationManager *)manager rangingBeaconsDidFailForRegion:(CLBeaconRegion *)region withError:(NSError *)error
 {
-    NSLog(@"Ranging Beacons failed with error: %@", [error localizedDescription]);
+    AttachLog(@"Ranging Beacons failed with error: %@", [error localizedDescription]);
 }
 
 -(void)locationManager:(CLLocationManager*)manager didRangeBeacons:(NSArray*)beacons inRegion:(CLBeaconRegion*)region
@@ -181,7 +181,7 @@ void setDetection(CLBeacon *foundBeacon) {
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
 {
-    NSLog(@"Region monitoring failed with error: %@", [error localizedDescription]);
+    AttachLog(@"Region monitoring failed with error: %@", [error localizedDescription]);
 }
 
 
@@ -217,7 +217,7 @@ void setDetection(CLBeacon *foundBeacon) {
 
         #pragma clang diagnostic pop
     }
-    NSLog(@"Bluetooth State: %@",stateString);
+    AttachLog(@"Bluetooth State: %@",stateString);
 }
 
 @end

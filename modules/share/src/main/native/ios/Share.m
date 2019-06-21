@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_initSh
     }
     ShareInited = 1;
     
-    NSLog(@"Init Share");
+    AttachLog(@"Init Share");
     _share = [[Share alloc] init];
 }
 
@@ -97,20 +97,20 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_enable
     
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
 
     NSArray *views = [[[UIApplication sharedApplication] keyWindow] subviews];
     if(![views count]) {
-        NSLog(@"views size was 0");
+        AttachLog(@"views size was 0");
         return;
     }
 
     UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     if(!rootViewController)
     {
-        NSLog(@"rootViewController was nil");
+        AttachLog(@"rootViewController was nil");
         return;
     }
 
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_enable
             [self logMessage:@"Share fileUrl: %@", fileUrl];
             [items addObject:fileUrl];
         } else {
-            NSLog(@"File resource not reachable: %@", err);
+            AttachLog(@"File resource not reachable: %@", err);
         }
     }
     

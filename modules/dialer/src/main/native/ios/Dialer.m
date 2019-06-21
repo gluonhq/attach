@@ -66,9 +66,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_dialer_impl_IOSDialerService_call
 
             #pragma clang diagnostic pop
         }
-        NSLog(@"Done calling to %@", number);
+        AttachLog(@"Done calling to %@", number);
     } else {
-        NSLog(@"Can't call to %@", number);
+        AttachLog(@"Can't call to %@", number);
     }
 }
 

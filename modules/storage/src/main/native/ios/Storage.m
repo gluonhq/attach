@@ -62,7 +62,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     NSString *folderPath = [documentsDir stringByAppendingPathComponent:folder];
 
     if (!folderPath) {
-        NSLog(@"Error getting the private storage path");
+        AttachLog(@"Error getting the private storage path");
         return NULL;
     }   
 
@@ -70,7 +70,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     [manager createDirectoryAtPath: folderPath withIntermediateDirectories: NO attributes: nil error: nil];
 
     if (debugStorage) {
-        NSLog(@"Done creating private storage %@", folderPath);
+        AttachLog(@"Done creating private storage %@", folderPath);
     }
     const char *valueChars = [folderPath UTF8String];
     return (*env)->NewStringUTF(env, valueChars);
@@ -92,11 +92,11 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     [manager createDirectoryAtPath: folderPath withIntermediateDirectories: NO attributes: nil error: nil];
 
     if (!folderPath) {
-        NSLog(@"Error creating public storage path");
+        AttachLog(@"Error creating public storage path");
         return NULL;
     }   
     if (debugStorage) {
-        NSLog(@"Done creating public storage %@", folderPath);
+        AttachLog(@"Done creating public storage %@", folderPath);
     }
     const char *valueChars = [folderPath UTF8String];
     return (*env)->NewStringUTF(env, valueChars);

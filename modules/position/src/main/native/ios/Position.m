@@ -146,7 +146,7 @@ void setLocation(CLLocation *newLocation) {
 
     if (debugPosition)
     {
-        NSLog(@"Start updating location with accuracy: %f", self.locationManager.desiredAccuracy);
+        AttachLog(@"Start updating location with accuracy: %f", self.locationManager.desiredAccuracy);
     }
     [self.locationManager startUpdatingLocation];
 
@@ -159,7 +159,7 @@ void setLocation(CLLocation *newLocation) {
 {
     if (debugPosition)
     {
-        NSLog(@"Stop updating location");
+        AttachLog(@"Stop updating location");
     }
     [self.locationManager stopUpdatingLocation];
 }
@@ -168,13 +168,13 @@ void setLocation(CLLocation *newLocation) {
     CLLocation *newLocation = [locations lastObject];
     if (debugPosition)
     {
-        NSLog(@"NewLocation: %f, %f, %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
+        AttachLog(@"NewLocation: %f, %f, %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
     }
     if (newLocation.horizontalAccuracy < 0) 
     {
         if (debugPosition)
         {
-            NSLog(@"iOS location update, horizontal accuracy too small: %.2f", newLocation.horizontalAccuracy);
+            AttachLog(@"iOS location update, horizontal accuracy too small: %.2f", newLocation.horizontalAccuracy);
         }
         // return;
     }
@@ -184,7 +184,7 @@ void setLocation(CLLocation *newLocation) {
     {
         if (debugPosition)
         {
-            NSLog(@"iOS location update, time interval to large (probably cached): %.2f", interval);
+            AttachLog(@"iOS location update, time interval to large (probably cached): %.2f", interval);
         }
         // return;
     }
@@ -196,31 +196,31 @@ void setLocation(CLLocation *newLocation) {
 {
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
     {
-        NSLog(@"User has denied location services");
+        AttachLog(@"User has denied location services");
     } 
     else 
     {
-        NSLog(@"Location manager did fail with error: %@", error);
+        AttachLog(@"Location manager did fail with error: %@", error);
         switch([error code])
         {
             case kCLErrorNetwork: // general, network-related error
             {
-                NSLog(@"ErrorNetwork");
+                AttachLog(@"ErrorNetwork");
             }
             break;
             case kCLErrorDenied:
             {
-                NSLog(@"ErrorDenied");
+                AttachLog(@"ErrorDenied");
             }
             break;
             case kCLErrorLocationUnknown:
             {
-                NSLog(@"ErrorLocationUnknown");
+                AttachLog(@"ErrorLocationUnknown");
             }
             break;
             default:
             {
-                NSLog(@"Unknown error: %@", error);    
+                AttachLog(@"Unknown error: %@", error);
             }
             break;
         }

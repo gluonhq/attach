@@ -59,7 +59,7 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserServic
             [[UIApplication sharedApplication] openURL:nsUrl options:@{}
                 completionHandler:^(BOOL success) {
                      if (success) {
-                          NSLog(@"Opened url successfully");
+                          AttachLog(@"Opened url successfully");
                      }
                  }];
         }
@@ -71,10 +71,10 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserServic
 
             #pragma clang diagnostic pop
         }
-        NSLog(@"Done opening url %@", url);
+        AttachLog(@"Done opening url %@", url);
         return JNI_TRUE;
     } else {
-        NSLog(@"Can't open url %@", url);
+        AttachLog(@"Can't open url %@", url);
         return JNI_FALSE;
     }
 }

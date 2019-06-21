@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_
 
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
     if (debugSettings) {
-        NSLog(@"Done storing %@ to %@", key, value);
+        AttachLog(@"Done storing %@ to %@", key, value);
     }
 }
 
@@ -96,7 +96,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsService_
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
     if (debugSettings) {
-        NSLog(@"Done removing %@", key);
+        AttachLog(@"Done removing %@", key);
     }
 }
 
@@ -109,11 +109,11 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_IOSSettingsServi
 
     NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     if (!value) {
-        NSLog(@"Error: %@ not found", key);
+        AttachLog(@"Error: %@ not found", key);
         return NULL;
     }   
     if (debugSettings) {
-        NSLog(@"Done retreiving %@", key);
+        AttachLog(@"Done retreiving %@", key);
     }
     const char *valueChars = [value UTF8String];
     return (*env)->NewStringUTF(env, valueChars);

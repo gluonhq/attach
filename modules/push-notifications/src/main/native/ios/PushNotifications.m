@@ -70,20 +70,20 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     if (@available(iOS 10.0, *))
     {
         if (debugPushNotifications) {
-            NSLog(@"Initialize UIUserNotificationSettings - Push >= 10");
+            AttachLog(@"Initialize UIUserNotificationSettings - Push >= 10");
         }
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
             if (!error) 
             {
                 if (debugPushNotifications) {
-                    NSLog(@"Registering notifications");
+                    AttachLog(@"Registering notifications");
                 }
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
             } 
             else 
             {
-                NSLog(@"Registering notifications failed with error %@", [error localizedDescription]);
+                AttachLog(@"Registering notifications failed with error %@", [error localizedDescription]);
             }
         }]; 
     } 
@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
         #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
         if (debugPushNotifications) {
-            NSLog(@"Initialize UIUserNotificationSettings - Push < 10");
+            AttachLog(@"Initialize UIUserNotificationSettings - Push < 10");
         }
         UIUserNotificationSettings* settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings: settings];
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    NSLog(@"Error registering remote notifications %@", [error localizedDescription]);
+    AttachLog(@"Error registering remote notifications %@", [error localizedDescription]);
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     {
         NSString *errorDescString = [error localizedDescription];

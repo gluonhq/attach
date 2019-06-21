@@ -85,7 +85,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_initVi
     mat_jVideoService_updateFullScreen = (*env)->GetMethodID(env, mat_jVideoServiceClass, "updateFullScreen", "(Z)V");
     mat_jVideoService_updateCurrentIndex = (*env)->GetMethodID(env, mat_jVideoServiceClass, "updateCurrentIndex", "(I)V");
 
-    NSLog(@"Init Video");
+    AttachLog(@"Init Video");
     _video = [[Video alloc] init];
 }
 
@@ -103,7 +103,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_setVid
         [playItems addObject:playItem];
     }
     if (debugVideo) {
-        NSLog(@"Added video playlist with %lu items", (unsigned long)[playItems count]);
+        AttachLog(@"Added video playlist with %lu items", (unsigned long)[playItems count]);
     }
     [_video initPlaylist:playItems];
 }
@@ -204,7 +204,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_setPos
     NSString *sAlignV = [NSString stringWithCharacters:(UniChar *)charsAlignV length:(*env)->GetStringLength(env, jalignmentV)];
     (*env)->ReleaseStringChars(env, jalignmentV, charsAlignV);
     if (debugVideo) {
-        NSLog(@"Video Alignment H: %@, V: %@", sAlignH, sAlignV);
+        AttachLog(@"Video Alignment H: %@, V: %@", sAlignH, sAlignV);
     }
 
     if ([sAlignH isEqualToString:@"LEFT"]) {
@@ -239,7 +239,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_enable
 void status(MediaPlayerStatus status) {
     videoStatus = status;
     if (debugVideo) {
-        NSLog(@"Media Player Status: %ld", (long) status);
+        AttachLog(@"Media Player Status: %ld", (long) status);
     }
     (*env)->CallVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateStatus, status);
 }
@@ -287,13 +287,13 @@ void updateCurrentIndex(int index) {
     [self logMessage:@"Init window"];
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
 
     NSArray *views = [[[UIApplication sharedApplication] keyWindow] subviews];
     if(![views count]) {
-        NSLog(@"views size was 0");
+        AttachLog(@"views size was 0");
         return;
     }
 
@@ -302,7 +302,7 @@ void updateCurrentIndex(int index) {
     rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     if(!rootViewController)
     {
-        NSLog(@"rootViewController was nil");
+        AttachLog(@"rootViewController was nil");
         return;
     }
 
@@ -312,7 +312,7 @@ void updateCurrentIndex(int index) {
 - (void)showVideo
 {
     if ([_arrayOfPlaylist count] == 0) {
-        NSLog(@"There is no playlist available");
+        AttachLog(@"There is no playlist available");
         return;
     }
     
@@ -349,7 +349,7 @@ void updateCurrentIndex(int index) {
 - (void)playVideo
 {
     if ([_arrayOfPlaylist count] == 0) {
-        NSLog(@"There is no playlist available");
+        AttachLog(@"There is no playlist available");
         return;
     }
     
@@ -396,7 +396,7 @@ void updateCurrentIndex(int index) {
     }
     else
     {
-        NSLog(@"Error: %@ is not a valid name", videoName);
+        AttachLog(@"Error: %@ is not a valid name", videoName);
         return NO;
     }
 }
@@ -446,7 +446,7 @@ void updateCurrentIndex(int index) {
 
         if(!_avPlayerViewcontroller)
         {
-            NSLog(@"Error creating player: %@", error);
+            AttachLog(@"Error creating player: %@", error);
             return;
         }
         _avPlayerViewcontroller.showsPlaybackControls = useControls;
@@ -496,13 +496,13 @@ void updateCurrentIndex(int index) {
         @try {
             [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
         } @catch (NSException *exception) {
-            NSLog(@"Error removing NSNotificationCenter observer: %@", exception);
+            AttachLog(@"Error removing NSNotificationCenter observer: %@", exception);
         }
     }
     if (fullScreenMode) {
         [self fullScreenVideo:NO];
     }
-    NSLog(@"AVPlayer hidden");
+    AttachLog(@"AVPlayer hidden");
     showing = NO;
 }
 
@@ -513,7 +513,7 @@ void updateCurrentIndex(int index) {
     }
 
     if (useControls) {
-        NSLog(@"Please, use the fullscreen button from the embedded controls");
+        AttachLog(@"Please, use the fullscreen button from the embedded controls");
         updateFullScreen(false);
         return;
     }
@@ -641,22 +641,22 @@ void updateCurrentIndex(int index) {
     @try {
         [_avPlayerViewcontroller.player removeObserver:self forKeyPath:@"status" context:nil];
     } @catch (NSException *exception) {
-        NSLog(@"Error removing player status observer: %@", exception);
+        AttachLog(@"Error removing player status observer: %@", exception);
     }
     @try {
         [_avPlayerViewcontroller.player removeObserver:self forKeyPath:@"rate" context:nil];
     } @catch (NSException *exception) {
-        NSLog(@"Error removing player rate observer: %@", exception);
+        AttachLog(@"Error removing player rate observer: %@", exception);
     }
     @try {
         [_avPlayerViewcontroller.contentOverlayView removeObserver:self forKeyPath:@"bounds" context:nil];
     } @catch (NSException *exception) {
-        NSLog(@"Error removing contentOverlayView observer: %@", exception);
+        AttachLog(@"Error removing contentOverlayView observer: %@", exception);
     }
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     } @catch (NSException *exception) {
-        NSLog(@"Error removing orientation observer: %@", exception);
+        AttachLog(@"Error removing orientation observer: %@", exception);
     }
     [_avPlayerViewcontroller.player replaceCurrentItemWithPlayerItem:nil];
     [_avPlayerViewcontroller dismissViewControllerAnimated:YES completion:nil];
@@ -670,14 +670,14 @@ void updateCurrentIndex(int index) {
     if (object == _avPlayerViewcontroller.player && [keyPath isEqualToString:@"status"]) 
     {
         if (_avPlayerViewcontroller.player.status == AVPlayerStatusFailed) {
-            NSLog(@"AVPlayer Failed");
+            AttachLog(@"AVPlayer Failed");
             status(MediaPlayerStatusUnknown);
         } else if (_avPlayerViewcontroller.player.status == AVPlayerStatusReadyToPlay) {
-            NSLog(@"AVPlayerStatusReadyToPlay");
+            AttachLog(@"AVPlayerStatusReadyToPlay");
             status(MediaPlayerStatusReady);
             [self logMessage:@"Video ready"];
         } else if (_avPlayerViewcontroller.player.status == AVPlayerItemStatusUnknown) {
-            NSLog(@"AVPlayer Unknown");
+            AttachLog(@"AVPlayer Unknown");
             status(MediaPlayerStatusUnknown);
         }
         if (_semaphore) {

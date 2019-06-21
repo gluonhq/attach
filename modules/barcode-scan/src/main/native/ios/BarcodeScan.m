@@ -70,7 +70,7 @@ void sendScanResult(NSString *scanResult) {
     jstring arg = (*env)->NewStringUTF(env, scanChars);
     (*env)->CallStaticVoidMethod(env, mat_jScanServiceClass, mat_jScanService_setResult, arg);
     (*env)->DeleteLocalRef(env, arg);
-	NSLog(@"Finished sending scan result");
+	AttachLog(@"Finished sending scan result");
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcode_impl_IOSBarcodeScanService_startBarcodeScan
@@ -109,7 +109,7 @@ NSString *resultString;
 {
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
    
@@ -117,7 +117,7 @@ NSString *resultString;
     UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     if(!rootViewController)
     {
-        NSLog(@"rootViewController was nil");
+        AttachLog(@"rootViewController was nil");
         return;
     }
    
@@ -134,7 +134,7 @@ NSString *resultString;
     if (_input) {
         [_session addInput:_input];
     } else {
-        NSLog(@"Error: %@", error);
+        AttachLog(@"Error: %@", error);
     }
 
     _output = [[AVCaptureMetadataOutput alloc] init];
@@ -190,7 +190,7 @@ NSString *resultString;
 // hide barcodeScan preview and view controller
 - (IBAction)cancel:(id)sender
 {
-    NSLog(@"Scan cancelled");
+    AttachLog(@"Scan cancelled");
     NSString *result = nil;
     sendScanResult(result);
     [self end];
@@ -279,7 +279,7 @@ NSString *resultString;
         }
         else
         {
-            NSLog(@"String: none");
+            AttachLog(@"String: none");
             NSString *result = nil;
             sendScanResult(result);
         }
@@ -287,7 +287,7 @@ NSString *resultString;
 
     if (detectionString != nil)
     {
-        NSLog(@"String: %@", detectionString);
+        AttachLog(@"String: %@", detectionString);
         if ([resultString length] != 0) {
             if([_session isRunning])
             {

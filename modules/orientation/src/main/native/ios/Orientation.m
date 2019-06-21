@@ -85,7 +85,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_orientation_impl_IOSOrientationSe
 
 void sendOrientation() {
     NSString *orientation = [_orientation getOrientation];
-    NSLog(@"Orientation is %@", orientation);
+    AttachLog(@"Orientation is %@", orientation);
     const char *orientationChars = [orientation UTF8String];
     jstring arg = (*env)->NewStringUTF(env, orientationChars);
     (*env)->CallStaticVoidMethod(env, mat_jOrientationServiceClass, mat_jOrientationService_notifyOrientation, arg);

@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
     mat_jAudioRecordingService_notifyRecordingStatus = (*env)->GetMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingStatus", "(Z)V");
     mat_jAudioRecordingService_notifyRecordingChunk = (*env)->GetMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingChunk", "(Ljava/lang/String;)V");
 
-    NSLog(@"Initialize IOSAudioRecordingService");
+    AttachLog(@"Initialize IOSAudioRecordingService");
 
     format = [[NSDateFormatter alloc] init];
     [format setDateFormat:@"yyyy-MM-dd.HH-mm-ss.SSS"];
@@ -105,7 +105,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
     [recordSettings setValue:[NSNumber numberWithInt:sampleSizeInBits] forKey:AVEncoderBitRateKey];
     [recordSettings setValue:[NSNumber numberWithInt:channels] forKey:AVNumberOfChannelsKey];
     
-    NSLog(@"Start Recording");
+    AttachLog(@"Start Recording");
     [_audioRecording playAudioRecorder];
 
     return;
@@ -114,7 +114,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecordingService_stopAudioRecording
 (JNIEnv *env, jclass jClass)
 {
-    NSLog(@"Stop Recording");
+    AttachLog(@"Stop Recording");
     [_audioRecording stopAudioRecorder];
     return;   
 }
@@ -126,13 +126,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
 }
 
 void sendRecordingStatus(BOOL recording) {
-    NSLog(@"Recording Status is %s", recording ? "true" : "false");
+    AttachLog(@"Recording Status is %s", recording ? "true" : "false");
     (*env)->CallVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingStatus, recording ? JNI_TRUE : JNI_FALSE);
 }
 
 void sendRecordingChunk(NSString *fileName) {
     if (debugAudioRecording) {
-        NSLog(@"Send chunk file: %@", fileName);
+        AttachLog(@"Send chunk file: %@", fileName);
     }
     const char *chunkChars = [fileName UTF8String];
     jstring arg = (*env)->NewStringUTF(env, chunkChars);
@@ -163,7 +163,7 @@ void sendRecordingChunk(NSString *fileName) {
                 [self startRecording:session];
             }
             else {
-                NSLog(@"Microphone disabled");
+                AttachLog(@"Microphone disabled");
             }
         });
     }];
@@ -197,8 +197,8 @@ void sendRecordingChunk(NSString *fileName) {
         [self logMessage:@"recording started"];
         sendRecordingStatus(YES);
     } else {
-        NSLog(@"Error recorder: %@ %@ %@", [error domain], [error localizedDescription], [[error userInfo] description]);
-        NSLog(@"recording failed");
+        AttachLog(@"Error recorder: %@ %@ %@", [error domain], [error localizedDescription], [[error userInfo] description]);
+        AttachLog(@"recording failed");
     }
 }
 
@@ -235,7 +235,7 @@ void sendRecordingChunk(NSString *fileName) {
     NSError *error;
     BOOL result = [fileManager copyItemAtPath:recorderFilePath toPath:recorderFileFinalPath error:&error];
     if(!result) {
-        NSLog(@"Error copying file: %@", error);
+        AttachLog(@"Error copying file: %@", error);
     }
     sendRecordingChunk(recorderFileName);
     if (restart) {

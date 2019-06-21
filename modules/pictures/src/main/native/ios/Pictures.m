@@ -76,7 +76,7 @@ void sendPicturesResult(NSString *picResult, NSString *picPath) {
         (*env)->CallStaticVoidMethod(env, mat_jPicturesServiceClass, mat_jPicturesService_setResult, jpic, jpath);
         (*env)->DeleteLocalRef(env, jpic);
         (*env)->DeleteLocalRef(env, jpath);
-        NSLog(@"Finished sending picture");
+        AttachLog(@"Finished sending picture");
     } else 
     {
         (*env)->CallStaticVoidMethod(env, mat_jPicturesServiceClass, mat_jPicturesService_setResult, NULL, NULL);
@@ -105,18 +105,18 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_IOSPicturesService_
 - (void)takePicture {
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
    
     NSArray *views = [[[UIApplication sharedApplication] keyWindow] subviews];
     if(![views count]) {
-        NSLog(@"views size was 0");
+        AttachLog(@"views size was 0");
         return;
     }
    
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        NSLog(@"Device has no camera");
+        AttachLog(@"Device has no camera");
         return;
     }
 
@@ -134,13 +134,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_IOSPicturesService_
 - (void)selectPicture {
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
    
     NSArray *views = [[[UIApplication sharedApplication] keyWindow] subviews];
     if(![views count]) {
-        NSLog(@"views size was 0");
+        AttachLog(@"views size was 0");
         return;
     }
    
@@ -157,12 +157,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_IOSPicturesService_
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
-    NSLog(@"Encoding and sending retrieved picture");
+    AttachLog(@"Encoding and sending retrieved picture");
     UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
 
     if (savePhoto == YES) 
     {
-        NSLog(@"Saving picture...");
+        AttachLog(@"Saving picture...");
         UIImageWriteToSavedPhotosAlbum(originalImage, nil, nil, nil);
     }
 
@@ -198,7 +198,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_IOSPicturesService_
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 
-    NSLog(@"Camera cancelled");
+    AttachLog(@"Camera cancelled");
 
     NSString *result = nil;
     sendPicturesResult(result, result);

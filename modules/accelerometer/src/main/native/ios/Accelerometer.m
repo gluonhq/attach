@@ -134,7 +134,7 @@ void sendAcceleration(CMAccelerometerData  *accelerometerData) {
         }];
     } else
     {
-        NSLog(@"Error: No Accelerometer or Gyroscope Available");
+        AttachLog(@"Error: No Accelerometer or Gyroscope Available");
     }
 
 }

@@ -146,7 +146,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_st
 
 void sendNotch() {
     NSString *notch = [_display getNotch];
-    NSLog(@"Notch is %@", notch);
+    AttachLog(@"Notch is %@", notch);
     const char *notchChars = [notch UTF8String];
     jstring arg = (*env)->NewStringUTF(env, notchChars);
     (*env)->CallStaticVoidMethod(env, mat_jDisplayServiceClass, mat_jDisplayService_notifyDisplay, arg);

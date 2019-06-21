@@ -69,20 +69,20 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
     mat_jAugmentedRealityServiceClass = (*myenv)->NewGlobalRef(myenv, (*myenv)->FindClass(myenv, "com/gluonhq/attach/ar/impl/IOSAugmentedRealityService"));
     mat_jAugmentedRealityService_notifyCancel = (*myenv)->GetStaticMethodID(myenv, mat_jAugmentedRealityServiceClass, "notifyCancel", "()V");
 
-    NSLog(@"Init AugmentedReality");
+    AttachLog(@"Init AugmentedReality");
     if (@available(iOS 11.0, *)) { // First of all, ARConfiguration requires iOS 11.0+
         if (ARConfiguration.isSupported) { // Then, AR requires chip A9+ that supports AR
             if (@available(iOS 11.3, *)) { // this app uses APIs that require iOS 11.3+
-                NSLog(@"ARKit is supported and iOS is at least 11.3");
+                AttachLog(@"ARKit is supported and iOS is at least 11.3");
                 _ar = [[AugmentedReality alloc] init];
                 return 2;
             } else {
-                NSLog(@"ARKit requires at least 11.3. Please update your device");
+                AttachLog(@"ARKit requires at least 11.3. Please update your device");
                 return 1;
             }
         }
     }
-    NSLog(@"ARKit is not supported");
+    AttachLog(@"ARKit is not supported");
     return 0;
 }
 
@@ -127,7 +127,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
 }
 
 void sendCancelled() {
-    NSLog(@"Sending cancel action");
+    AttachLog(@"Sending cancel action");
     (*env)->CallStaticVoidMethod(env, mat_jAugmentedRealityServiceClass, mat_jAugmentedRealityService_notifyCancel);
 }
 
@@ -154,14 +154,14 @@ double modelScale = 1.0;
 
     if(![[UIApplication sharedApplication] keyWindow])
     {
-        NSLog(@"key window was nil");
+        AttachLog(@"key window was nil");
         return;
     }
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
     
     NSArray *views = [window subviews];
     if(![views count]) {
-        NSLog(@"views size was 0");
+        AttachLog(@"views size was 0");
         return;
     }
 
@@ -170,7 +170,7 @@ double modelScale = 1.0;
     UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     if(!rootViewController)
     {
-        NSLog(@"rootViewController was nil");
+        AttachLog(@"rootViewController was nil");
         return;
     }
 
@@ -305,7 +305,7 @@ double modelScale = 1.0;
     if (! estimate) {
         return;
     }
-    //NSLog(@"light estimate: %f", estimate.ambientIntensity);
+    //AttachLog(@"light estimate: %f", estimate.ambientIntensity);
 
     CGFloat intensity = estimate.ambientIntensity / 1000.0;
     self.sceneView.scene.lightingEnvironment.intensity = intensity;
@@ -313,17 +313,17 @@ double modelScale = 1.0;
 
 - (void)session:(ARSession *)session didFailWithError:(NSError *)error {
     // Present an error message to the user
-    NSLog(@"Session error: %@", error);
+    AttachLog(@"Session error: %@", error);
 }
 
 - (void)sessionWasInterrupted:(ARSession *)session {
     // Inform the user that the session has been interrupted, for example, by presenting an overlay
-    NSLog(@"session was interrupted: %@", session);
+    AttachLog(@"session was interrupted: %@", session);
 }
 
 - (void)sessionInterruptionEnded:(ARSession *)session {
     // Reset tracking and/or remove existing anchors if consistent tracking is required
-    NSLog(@"session interruption ended: %@", session);    
+    AttachLog(@"session interruption ended: %@", session);
 }
 
 #pragma mark - ARSessionDelegate
@@ -363,7 +363,7 @@ double modelScale = 1.0;
                 [model addChildNode:childNode];
             }
         } else {
-            NSLog(@"No model was set. Use AugmentedRealityService::setModel");
+            AttachLog(@"No model was set. Use AugmentedRealityService::setModel");
         }
         [self logMessage:@"node: %@", model];
         SCNMatrix4 sc = SCNMatrix4MakeScale(modelScale, modelScale, modelScale);
@@ -395,7 +395,7 @@ double modelScale = 1.0;
         va_list args;
         va_start(args, format);
         NSString* formattedMessage = [[NSString alloc] initWithFormat: format arguments: args];
-        NSLog([@"[Debug] " stringByAppendingString:formattedMessage]);
+        AttachLog([@"[Debug] " stringByAppendingString:formattedMessage]);
         va_end(args);
         [formattedMessage release];
     }

@@ -80,7 +80,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     debugInAppBilling = NO;
     orders = [[NSMutableDictionary alloc] init];
 
-    NSLog(@"Init InAppBilling");
+    AttachLog(@"Init InAppBilling");
     _InAppBilling = [[InAppBilling alloc] init];
 
     [_InAppBilling setup];
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     }
     arrayOfProductIds = [NSArray arrayWithArray:productIds];
 
-    NSLog(@"Fetching products");
+    AttachLog(@"Fetching products");
     [_InAppBilling fetchProducts];
 }
 
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     NSString *productId = [NSString stringWithCharacters:(UniChar *)productIdString length:(*env)->GetStringLength(env, jProductId)];
     (*env)->ReleaseStringChars(env, jProductId, productIdString);
 
-    NSLog(@"Purchasing product %@ with key %@", productId, key);
+    AttachLog(@"Purchasing product %@ with key %@", productId, key);
     [orders setObject:productId forKey:key];
     [_InAppBilling purchaseProduct:productId];
 }
@@ -150,7 +150,7 @@ void sendProduct(SKProduct *product) {
     (*env)->DeleteLocalRef(env, arg3);
     (*env)->DeleteLocalRef(env, arg4);
 
-    NSLog(@"Finished sending product");
+    AttachLog(@"Finished sending product");
 }
 
 void doneFetching(BOOL value)
@@ -175,7 +175,7 @@ void sendPurchases(NSArray *purchasedIDs)
 
 void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *transactionReceipt)
 {
-    NSLog(@"Sending purchase %@", purchasedID);
+    AttachLog(@"Sending purchase %@", purchasedID);
     NSString* key;
     for (NSString* k in orders)
     {
@@ -188,7 +188,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
     }
     if (!key) 
     {
-        NSLog(@"Error retrieving key from orders for product %@", purchasedID);
+        AttachLog(@"Error retrieving key from orders for product %@", purchasedID);
         return;
     }
 
@@ -214,7 +214,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
 {
     if (![SKPaymentQueue canMakePayments]) 
     {
-        NSLog(@"Can't make payments. Please enable In App Purchase in Settings");
+        AttachLog(@"Can't make payments. Please enable In App Purchase in Settings");
         ready(NO);
     } 
     else 
@@ -278,7 +278,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
             sendProduct(product);
         }
     } else {
-        NSLog(@"Products not found");
+        AttachLog(@"Products not found");
     }
 
     for (SKProduct *product in response.invalidProductIdentifiers)
@@ -379,7 +379,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
 
 -(void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
 {
-    NSLog(@"restoreCompletedTransactionsFailedWithError %@", error);
+    AttachLog(@"restoreCompletedTransactionsFailedWithError %@", error);
     doneFetching(NO);
 }
 

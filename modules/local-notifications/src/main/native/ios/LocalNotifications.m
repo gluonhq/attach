@@ -61,13 +61,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     if (@available(iOS 10.0, *))
     {
         if (debugLocalNotifications) {
-            NSLog(@"Initialize UNUserNotificationCenter iOS 10+");
+            AttachLog(@"Initialize UNUserNotificationCenter iOS 10+");
         }
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound;
         [center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
             if (!granted) {
-                NSLog(@"Error granting notification options");
+                AttachLog(@"Error granting notification options");
             }
         }];
 
@@ -75,13 +75,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
             // Authorization status of the UNNotificationSettings object
             switch (settings.authorizationStatus) {
             case UNAuthorizationStatusAuthorized:
-                NSLog(@"UNNotificationSettings Status Authorized");
+                AttachLog(@"UNNotificationSettings Status Authorized");
                 break;
             case UNAuthorizationStatusDenied:
-                NSLog(@"UNNotificationSettings Status Denied");
+                AttachLog(@"UNNotificationSettings Status Denied");
                 break;
             case UNAuthorizationStatusNotDetermined:
-                NSLog(@"UNNotificationSettings Status Undetermined");
+                AttachLog(@"UNNotificationSettings Status Undetermined");
                 break;
             default:
                 break;
@@ -89,15 +89,15 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
 
             // Status of specific settings
             if (settings.alertSetting != UNAuthorizationStatusAuthorized) {
-                NSLog(@"Alert settings not authorized");
+                AttachLog(@"Alert settings not authorized");
             }
 
             if (settings.badgeSetting != UNAuthorizationStatusAuthorized) {
-                NSLog(@"Badge settings not authorized");
+                AttachLog(@"Badge settings not authorized");
             }
 
             if (settings.soundSetting != UNAuthorizationStatusAuthorized) {
-                NSLog(@"Sound settings not authorized");
+                AttachLog(@"Sound settings not authorized");
             }
         }];
     }
@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
         if (debugLocalNotifications) {
-            NSLog(@"Initialize UIUserNotificationSettings iOS 10-");
+            AttachLog(@"Initialize UIUserNotificationSettings iOS 10-");
         }
         UIUserNotificationSettings* settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings: settings];
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
 (JNIEnv *env, jobject obj, jstring jTitle, jstring jText, jstring jIdentifier, jdouble seconds)
 {
     if (debugLocalNotifications) {
-        NSLog(@"Register notification");
+        AttachLog(@"Register notification");
     }
     const jchar *charsTitle = (*env)->GetStringChars(env, jTitle, NULL);
     NSString *name = [NSString stringWithCharacters:(UniChar *)charsTitle length:(*env)->GetStringLength(env, jTitle)];
@@ -160,9 +160,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
              if (error != nil) {
-                 NSLog(@"Something went wrong scheduling local notification: %@",error);
+                 AttachLog(@"Something went wrong scheduling local notification: %@",error);
              } else if (debugLocalNotifications) {
-                 NSLog(@"done register notifications for %@ with identifier %@", name, identifier);
+                 AttachLog(@"done register notifications for %@ with identifier %@", name, identifier);
              }
         }];
     }
@@ -186,7 +186,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         localNotification.category = @"sessionReminderCategory";
         [[UIApplication sharedApplication] scheduleLocalNotification: localNotification];
         if (debugLocalNotifications) {
-            NSLog(@"done register notifications for %@ with identifier %@", name, identifier);
+            AttachLog(@"done register notifications for %@ with identifier %@", name, identifier);
         }
        #pragma clang diagnostic pop
     }
@@ -206,7 +206,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         NSArray *array = [NSArray arrayWithObjects:identifier, nil];
         [center removePendingNotificationRequestsWithIdentifiers:array];
         if (debugLocalNotifications) {
-            NSLog(@"We did remove the notification with id: %@", identifier);
+            AttachLog(@"We did remove the notification with id: %@", identifier);
         }
     } else {
         #pragma clang diagnostic push
@@ -220,7 +220,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
             if ([myId isEqualToString:identifier]) {
                 [[UIApplication sharedApplication] cancelLocalNotification:candidate];
                 if (debugLocalNotifications) {
-                    NSLog(@"We did remove the notification with id: %@", identifier);
+                    AttachLog(@"We did remove the notification with id: %@", identifier);
                 }
             }
         }

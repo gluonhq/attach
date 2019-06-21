@@ -143,7 +143,7 @@ void sendReading(CMDeviceMotion *motionData) {
         }];
     } else
     {
-        NSLog(@"Error: No Magnetometer Available");
+        AttachLog(@"Error: No Magnetometer Available");
     }
 
 }
