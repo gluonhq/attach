@@ -101,6 +101,12 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             args lipoArgs
         }
 
+        println("native build for $name finished")
+        File n = new File(lipoOutput)
+        if (n.exists()) {
+            println "Adding $n to native jar"
+            n
+        }
     } else {
         // TODO
         def compileOutput = "$buildDir/native/$os"
@@ -111,19 +117,18 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         def cargs = [
                 "-c", includeFlags, osIncludeFlags, sharedSources, osSources
         ].flatten()
-    
+
         exec {
             executable "/usr/bin/gcc"
             args cargs
             workingDir compileOutput
         }
-    }
-    
-    println("native build for $name finished")
-    File n = new File("$buildDir/native/${os}")
-    if (n.exists()) {
-        println "Adding lib${name} to native jar"
-        fileTree("$buildDir/native/${os}").filter { it.isFile() }.files
-                .first()
+        // TODO
+        File n = new File("$buildDir/native/${os}")
+        if (n.exists()) {
+            println "Adding lib${name} to native jar"
+            fileTree("$buildDir/native/${os}").filter { it.isFile() }.files
+                    .first()
+        }
     }
 }
