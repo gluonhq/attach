@@ -60,8 +60,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsSe
     }
     runtimeArgsInited = 1;
 
-    mat_jRuntimeArgsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/runtime/impl/IOSRuntimeArgsService"));
-    mat_jProcessRuntimeArgsMethod = (*env)->GetMethodID(env, mat_jRuntimeArgsClass, "processRuntimeArgs", "(Ljava/lang/String;Ljava/lang/String;)V");
+    mat_jRuntimeArgsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/runtimeargs/impl/IOSRuntimeArgsService"));
+    mat_jProcessRuntimeArgsMethod = (*env)->GetStaticMethodID(env, mat_jRuntimeArgsClass, "processRuntimeArgs", "(Ljava/lang/String;Ljava/lang/String;)V");
 
     _rasDelegate = [[RasDelegate alloc] init];
     [_rasDelegate register];
@@ -78,12 +78,12 @@ void processRuntimeArgs(NSString* key, NSString* value) {
     jstring jkey = (*env)->NewStringUTF(env, keyChars);
     const char *valueChars = [value UTF8String];
     jstring jvalue = (*env)->NewStringUTF(env, valueChars);
-    (*env)->CallVoidMethod(env, mat_jRuntimeArgsClass, mat_jProcessRuntimeArgsMethod, jkey, jvalue);
+    (*env)->CallStaticVoidMethod(env, mat_jRuntimeArgsClass, mat_jProcessRuntimeArgsMethod, jkey, jvalue);
     (*env)->DeleteLocalRef(env, jkey);
     (*env)->DeleteLocalRef(env, jvalue);
 }
 
-@implementation RuntimeArgs (RuntimeArgsAdditions)
+@implementation RuntimeArgs
 
 // TODO: Add the rest of methods that allow opening externally the application
 

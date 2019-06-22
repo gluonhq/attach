@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.runtime.impl;
 
-import com.gluonhq.attach.runtime.RuntimeArgsService;
-
-// no-op
-public abstract class DummyRuntimeArgsService implements RuntimeArgsService {
-}
+/**
+ * Primary API package for Attach - RuntimeArgs plugin,
+ * contains the interface {@link com.gluonhq.attach.runtimeargs.RuntimeArgsService} and related classes.
+ */
+package com.gluonhq.attach.runtimeargs;

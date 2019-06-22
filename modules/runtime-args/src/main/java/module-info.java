@@ -29,6 +29,6 @@ module com.gluonhq.attach.runtime.args {
 
     requires com.gluonhq.attach.util;
 
-    exports com.gluonhq.attach.runtime;
-    exports com.gluonhq.attach.runtime.impl to com.gluonhq.attach.util;
+    exports com.gluonhq.attach.runtimeargs;
+    exports com.gluonhq.attach.runtimeargs.impl to com.gluonhq.attach.util;
 }

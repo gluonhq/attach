@@ -32,10 +32,6 @@
 #import <UserNotifications/UserNotifications.h>
 
 @interface RuntimeArgs : NSObject <UIApplicationDelegate> { }
-@end
-
-@interface RuntimeArgs (RuntimeArgsAdditions)
-
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options;
 

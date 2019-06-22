@@ -28,7 +28,7 @@
 package com.gluonhq.attach.pushnotifications.impl;
 
 import com.gluonhq.attach.pushnotifications.PushNotificationsService;
-import com.gluonhq.attach.runtime.RuntimeArgsService;
+import com.gluonhq.attach.runtimeargs.RuntimeArgsService;
 import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;

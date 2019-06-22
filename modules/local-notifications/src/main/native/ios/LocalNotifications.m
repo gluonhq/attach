@@ -60,9 +60,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     
     if (@available(iOS 10.0, *))
     {
-        if (debugLocalNotifications) {
-            AttachLog(@"Initialize UNUserNotificationCenter iOS 10+");
-        }
+        AttachLog(@"Initialize UNUserNotificationCenter iOS 10+");
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound;
         [center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
@@ -106,9 +104,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         #pragma clang diagnostic push
         #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-        if (debugLocalNotifications) {
-            AttachLog(@"Initialize UIUserNotificationSettings iOS 10-");
-        }
+        AttachLog(@"Initialize UIUserNotificationSettings iOS 10-");
         UIUserNotificationSettings* settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings: settings];
         #pragma clang diagnostic pop
@@ -116,7 +112,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSPushNotificationsService_enableDebug
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalNotificationsService_enableDebug
 (JNIEnv *env, jclass jClass)
 {
     debugLocalNotifications = YES;
