@@ -81,9 +81,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_initVi
     VideoInited = 1;
     
     mat_jVideoServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/video/impl/IOSVideoService"));
-    mat_jVideoService_updateStatus = (*env)->GetMethodID(env, mat_jVideoServiceClass, "updateStatus", "(I)V");
-    mat_jVideoService_updateFullScreen = (*env)->GetMethodID(env, mat_jVideoServiceClass, "updateFullScreen", "(Z)V");
-    mat_jVideoService_updateCurrentIndex = (*env)->GetMethodID(env, mat_jVideoServiceClass, "updateCurrentIndex", "(I)V");
+    mat_jVideoService_updateStatus = (*env)->GetStaticMethodID(env, mat_jVideoServiceClass, "updateStatus", "(I)V");
+    mat_jVideoService_updateFullScreen = (*env)->GetStaticMethodID(env, mat_jVideoServiceClass, "updateFullScreen", "(Z)V");
+    mat_jVideoService_updateCurrentIndex = (*env)->GetStaticMethodID(env, mat_jVideoServiceClass, "updateCurrentIndex", "(I)V");
 
     AttachLog(@"Init Video");
     _video = [[Video alloc] init];
@@ -241,17 +241,17 @@ void status(MediaPlayerStatus status) {
     if (debugVideo) {
         AttachLog(@"Media Player Status: %ld", (long) status);
     }
-    (*env)->CallVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateStatus, status);
+    (*env)->CallStaticVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateStatus, status);
 }
 
 void updateFullScreen(BOOL value) {
     fullScreenMode = value;
-    (*env)->CallVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateFullScreen, (value) ? JNI_TRUE : JNI_FALSE);
+    (*env)->CallStaticVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateFullScreen, (value) ? JNI_TRUE : JNI_FALSE);
 }
 
 void updateCurrentIndex(int index) {
     currentMediaIndex = index;
-    (*env)->CallVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateCurrentIndex, index);
+    (*env)->CallStaticVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateCurrentIndex, index);
 }
 
 @implementation Video 

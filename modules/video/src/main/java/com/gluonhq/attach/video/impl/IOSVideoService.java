@@ -158,7 +158,7 @@ public class IOSVideoService extends DefaultVideoService {
     private static native void enableDebug();
     
     // callbacks
-    private void updateStatus(int value) {
+    private static void updateStatus(int value) {
         Status s;
         switch (value) {
             case 0: s = Status.UNKNOWN; break;
@@ -172,15 +172,15 @@ public class IOSVideoService extends DefaultVideoService {
         Platform.runLater(() -> STATUS.set(s));
     }
     
-    private void updateFullScreen(boolean value) {
+    private static void updateFullScreen(boolean value) {
         if (FULL_SCREEN.get() != value) {
-            Platform.runLater(() -> setFullScreen(value));
+            Platform.runLater(() -> FULL_SCREEN.set(value));
         }
     }
     
-    private void updateCurrentIndex(int index) {
+    private static void updateCurrentIndex(int index) {
         if (CURRENT_INDEX.get() != index) {
-            Platform.runLater(() -> setCurrentIndex(index));
+            Platform.runLater(() -> CURRENT_INDEX.set(index));
         }
     }
 }

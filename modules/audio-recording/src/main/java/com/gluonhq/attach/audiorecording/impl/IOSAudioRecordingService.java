@@ -65,11 +65,11 @@ public class IOSAudioRecordingService extends DefaultAudioRecordingService {
     private static native void enableDebug();
     
     // callback
-    private void notifyRecordingStatus(boolean value) {
+    private static void notifyRecordingStatus(boolean value) {
         Platform.runLater(() -> updateRecordingStatus(value));
     }
     
-    private void notifyRecordingChunk(String file) {
+    private static void notifyRecordingChunk(String file) {
         Platform.runLater(() -> addChunk.apply(file));
     }
 

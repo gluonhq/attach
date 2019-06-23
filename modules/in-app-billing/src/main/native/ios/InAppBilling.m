@@ -71,11 +71,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     InAppBillingInited = 1;
     
     mat_jInAppBillingServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/inappbilling/impl/IOSInAppBillingService"));
-    mat_jInAppBillingService_setInAppReady = (*env)->GetMethodID(env, mat_jInAppBillingServiceClass, "setInAppReady", "(Z)V");
-    mat_jInAppBillingService_setProduct    = (*env)->GetMethodID(env, mat_jInAppBillingServiceClass, "setProduct", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-    mat_jInAppBillingService_doneFetching  = (*env)->GetMethodID(env, mat_jInAppBillingServiceClass, "doneFetching", "(Z)V");
-    mat_jInAppBillingService_restorePurchases  = (*env)->GetMethodID(env, mat_jInAppBillingServiceClass, "restorePurchases", "([Ljava/lang/String;)V");
-    mat_jInAppBillingService_setPurchase  = (*env)->GetMethodID(env, mat_jInAppBillingServiceClass, "setPurchase", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    mat_jInAppBillingService_setInAppReady = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "setInAppReady", "(Z)V");
+    mat_jInAppBillingService_setProduct    = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "setProduct", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    mat_jInAppBillingService_doneFetching  = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "doneFetching", "(Z)V");
+    mat_jInAppBillingService_restorePurchases  = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "restorePurchases", "([Ljava/lang/String;)V");
+    mat_jInAppBillingService_setPurchase  = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "setPurchase", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
     debugInAppBilling = NO;
     orders = [[NSMutableDictionary alloc] init];
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
 }
 
 void ready(BOOL value) {
-    (*env)->CallVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setInAppReady, (value) ? JNI_TRUE : JNI_FALSE);
+    (*env)->CallStaticVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setInAppReady, (value) ? JNI_TRUE : JNI_FALSE);
 }
 
 void sendProduct(SKProduct *product) {
@@ -143,7 +143,7 @@ void sendProduct(SKProduct *product) {
     jstring arg3 = (*env)->NewStringUTF(env, product3Chars);
     const char *product4Chars = [product.priceLocale.currencyCode UTF8String];
     jstring arg4 = (*env)->NewStringUTF(env, product4Chars);
-    (*env)->CallVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setProduct, arg0, arg1, arg2, arg3, arg4);
+    (*env)->CallStaticVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setProduct, arg0, arg1, arg2, arg3, arg4);
     (*env)->DeleteLocalRef(env, arg0);
     (*env)->DeleteLocalRef(env, arg1);
     (*env)->DeleteLocalRef(env, arg2);
@@ -155,7 +155,7 @@ void sendProduct(SKProduct *product) {
 
 void doneFetching(BOOL value)
 {
-    (*env)->CallVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_doneFetching, (value) ? JNI_TRUE : JNI_FALSE);
+    (*env)->CallStaticVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_doneFetching, (value) ? JNI_TRUE : JNI_FALSE);
 }
 
 void sendPurchases(NSArray *purchasedIDs) 
@@ -169,7 +169,7 @@ void sendPurchases(NSArray *purchasedIDs)
         const char *purchasedID = [purchasedIDs[i] UTF8String];
         (*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, purchasedID));
     }
-    (*env)->CallVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_restorePurchases, ret);
+    (*env)->CallStaticVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_restorePurchases, ret);
     (*env)->DeleteLocalRef(env, ret);
 }
 
@@ -201,7 +201,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
     jstring arg2 = (*env)->NewStringUTF(env, transactionIdChars);
     const char *transactionReceiptChars = [transactionReceipt UTF8String];
     jstring arg3 = (*env)->NewStringUTF(env, transactionReceiptChars);
-    (*env)->CallVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setPurchase, arg0, arg1, arg2, arg3);
+    (*env)->CallStaticVoidMethod(env, mat_jInAppBillingServiceClass, mat_jInAppBillingService_setPurchase, arg0, arg1, arg2, arg3);
     (*env)->DeleteLocalRef(env, arg0);
     (*env)->DeleteLocalRef(env, arg1);
     (*env)->DeleteLocalRef(env, arg2);

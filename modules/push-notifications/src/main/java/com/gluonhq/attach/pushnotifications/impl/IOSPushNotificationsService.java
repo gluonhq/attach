@@ -74,14 +74,14 @@ public class IOSPushNotificationsService implements PushNotificationsService {
     /**
      * @param s String with the error description
      */
-    private void failToRegisterForRemoteNotifications(String s) {
+    private static void failToRegisterForRemoteNotifications(String s) {
         Platform.runLater(() -> System.out.println("Failed registering Push Notifications with error: " + s));
     }
 
     /**
      * @param token String with the device token description
      */
-    private void didRegisterForRemoteNotifications(String token) {
+    private static void didRegisterForRemoteNotifications(String token) {
         if (token == null) {
             return;
         }

@@ -228,12 +228,12 @@ public class IOSInAppBillingService implements InAppBillingService {
     private static native void enableDebug();
     
     // callbacks
-    private void setInAppReady(boolean value) {
+    private static void setInAppReady(boolean value) {
         supported = value;
         Platform.runLater(() -> ready.set(value));
     }
     
-    private void setProduct(String id, String title, String description, String price, String currency) {
+    private static void setProduct(String id, String title, String description, String price, String currency) {
         ProductDetails details = new ProductDetails();
         details.setTitle(title);
         details.setDescription(description);
@@ -250,14 +250,14 @@ public class IOSInAppBillingService implements InAppBillingService {
         }
     }
     
-    private void doneFetching(boolean value) {
+    private static void doneFetching(boolean value) {
         if (!value) {
             System.out.println("There was an error fetching products");
         }
         Platform.runLater(() -> FETCH.set(true));
     }
     
-    private void restorePurchases(String[] puchasesId) {
+    private static void restorePurchases(String[] puchasesId) {
         InAppBillingQueryResult result = new InAppBillingQueryResult();
         for (String id: puchasesId) {
             for (Product product : detailedProducts) { 
@@ -277,7 +277,7 @@ public class IOSInAppBillingService implements InAppBillingService {
         Platform.runLater(() -> queryResultListener.onQueryResultReceived(result));
     }
     
-    private void setPurchase(String key, String purchasedId, String transactionId, String transactionReceipt) {
+    private static void setPurchase(String key, String purchasedId, String transactionId, String transactionReceipt) {
         if (purchasedId == null || purchasedId.isEmpty()) {
             Platform.runLater(() -> MAP_ORDERS.put(key, null));
             return;

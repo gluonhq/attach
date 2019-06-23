@@ -71,8 +71,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
     audioRecordingInited = 1;
     
     mat_jAudioRecordingServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/audiorecording/impl/IOSAudioRecordingService"));
-    mat_jAudioRecordingService_notifyRecordingStatus = (*env)->GetMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingStatus", "(Z)V");
-    mat_jAudioRecordingService_notifyRecordingChunk = (*env)->GetMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingChunk", "(Ljava/lang/String;)V");
+    mat_jAudioRecordingService_notifyRecordingStatus = (*env)->GetStaticMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingStatus", "(Z)V");
+    mat_jAudioRecordingService_notifyRecordingChunk = (*env)->GetStaticMethodID(env, mat_jAudioRecordingServiceClass, "notifyRecordingChunk", "(Ljava/lang/String;)V");
 
     AttachLog(@"Initialize IOSAudioRecordingService");
 
@@ -127,7 +127,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
 
 void sendRecordingStatus(BOOL recording) {
     AttachLog(@"Recording Status is %s", recording ? "true" : "false");
-    (*env)->CallVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingStatus, recording ? JNI_TRUE : JNI_FALSE);
+    (*env)->CallStaticVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingStatus, recording ? JNI_TRUE : JNI_FALSE);
 }
 
 void sendRecordingChunk(NSString *fileName) {
@@ -136,7 +136,7 @@ void sendRecordingChunk(NSString *fileName) {
     }
     const char *chunkChars = [fileName UTF8String];
     jstring arg = (*env)->NewStringUTF(env, chunkChars);
-    (*env)->CallVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingChunk, arg);
+    (*env)->CallStaticVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingChunk, arg);
     (*env)->DeleteLocalRef(env, arg);
 }
 

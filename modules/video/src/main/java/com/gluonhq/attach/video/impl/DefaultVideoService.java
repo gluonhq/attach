@@ -72,7 +72,7 @@ public abstract class DefaultVideoService implements VideoService {
 
         assetsFolder = new File(Services.get(StorageService.class)
                 .flatMap(service -> service.getPrivateStorage())
-                .orElseThrow(() -> new RuntimeException("Error accesing Private Storage folder")), "assets");
+                .orElseThrow(() -> new RuntimeException("Error accessing Private Storage folder")), "assets");
 
         if (! assetsFolder.exists()) {
             assetsFolder.mkdir();

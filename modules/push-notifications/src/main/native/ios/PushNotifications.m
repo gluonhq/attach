@@ -64,8 +64,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     
     // Push Notifications
     mat_jPushNotificationsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/pushnotifications/impl/IOSPushNotificationsService"));
-    mat_failToRegisterForRemoteNotifications = (*env)->GetMethodID(env, mat_jPushNotificationsClass, "failToRegisterForRemoteNotifications", "(Ljava/lang/String;)V");
-    mat_didRegisterForRemoteNotifications = (*env)->GetMethodID(env, mat_jPushNotificationsClass, "didRegisterForRemoteNotifications", "(Ljava/lang/String;)V");
+    mat_failToRegisterForRemoteNotifications = (*env)->GetStaticMethodID(env, mat_jPushNotificationsClass, "failToRegisterForRemoteNotifications", "(Ljava/lang/String;)V");
+    mat_didRegisterForRemoteNotifications = (*env)->GetStaticMethodID(env, mat_jPushNotificationsClass, "didRegisterForRemoteNotifications", "(Ljava/lang/String;)V");
 
     if (@available(iOS 10.0, *))
     {
@@ -125,7 +125,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
         jstring argToken = (*env)->NewStringUTF(env, deviceTokenChars);
 
         [self logMessage:@"Sending token %@", deviceTokenString];
-        (*env)->CallVoidMethod(env, mat_jPushNotificationsClass, mat_didRegisterForRemoteNotifications, argToken);
+        (*env)->CallStaticVoidMethod(env, mat_jPushNotificationsClass, mat_didRegisterForRemoteNotifications, argToken);
         (*env)->DeleteLocalRef(env, argToken);
     }
     [pool drain];
@@ -140,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
         const char *errorDescChars = [errorDescString UTF8String];
         jstring arg = (*env)->NewStringUTF(env, errorDescChars);
         [self logMessage:@"Sending error %@", errorDescString];
-        (*env)->CallVoidMethod(env, mat_jPushNotificationsClass, mat_failToRegisterForRemoteNotifications, arg);
+        (*env)->CallStaticVoidMethod(env, mat_jPushNotificationsClass, mat_failToRegisterForRemoteNotifications, arg);
         (*env)->DeleteLocalRef(env, arg);
     }
     [pool drain];
