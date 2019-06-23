@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Browser plugin, 
+ * Primary API package for Attach - Browser plugin,
  * contains the interface {@link com.gluonhq.attach.browser.BrowserService} and related classes.
  */
 package com.gluonhq.attach.browser;

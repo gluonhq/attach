@@ -27,7 +27,7 @@
  */
 package com.gluonhq.attach.localnotifications.impl;
 
-import com.gluonhq.attach.runtime.RuntimeArgsService;
+import com.gluonhq.attach.runtimeargs.RuntimeArgsService;
 import java.util.logging.Logger;
 import com.gluonhq.attach.util.Services;
 import com.gluonhq.attach.localnotifications.LocalNotificationsService;

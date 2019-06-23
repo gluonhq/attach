@@ -1,11 +1,12 @@
 apply plugin: 'org.openjfx.javafxplugin'
 
 javafx {
-    modules 'javafx.base'
+    modules 'javafx.graphics'
 }
 
 dependencies {
     implementation project(":util")
+    implementation project(":magnetometer")
 }
 
 ext.description = 'Common API to access compass features'

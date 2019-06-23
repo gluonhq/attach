@@ -99,7 +99,7 @@ void sendLifecycleEvent(NSString *event) {
 }
 
 - (void)stopEvents {
-    NSLog(@"Unregistering sending event");
+    AttachLog(@"Unregistering sending event");
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification
         object:[UIApplication sharedApplication]];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification

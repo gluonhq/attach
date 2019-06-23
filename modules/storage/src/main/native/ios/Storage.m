@@ -27,6 +27,7 @@
  */
 #import <UIKit/UIKit.h>
 #include "jni.h"
+#include "AttachMacros.h"
 
 JNIEnv *env;
 
@@ -44,6 +45,14 @@ JNI_OnLoad_Storage(JavaVM *vm, void *reserved)
 #endif
 }
 
+BOOL debugStorage;
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    debugStorage = YES;
+}
+
 JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService_privateStorageURL
 (JNIEnv *env, jclass jClass)
 {
@@ -53,14 +62,16 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     NSString *folderPath = [documentsDir stringByAppendingPathComponent:folder];
 
     if (!folderPath) {
-        NSLog(@"Error getting the private storage path");
+        AttachLog(@"Error getting the private storage path");
         return NULL;
     }   
 
     NSFileManager *manager = [NSFileManager defaultManager];
     [manager createDirectoryAtPath: folderPath withIntermediateDirectories: NO attributes: nil error: nil];
 
-    NSLog(@"Done creating private storage %@", folderPath);
+    if (debugStorage) {
+        AttachLog(@"Done creating private storage %@", folderPath);
+    }
     const char *valueChars = [folderPath UTF8String];
     return (*env)->NewStringUTF(env, valueChars);
 }
@@ -81,10 +92,12 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     [manager createDirectoryAtPath: folderPath withIntermediateDirectories: NO attributes: nil error: nil];
 
     if (!folderPath) {
-        NSLog(@"Error creating public storage path");
+        AttachLog(@"Error creating public storage path");
         return NULL;
     }   
-    NSLog(@"Done creating public storage %@", folderPath);
+    if (debugStorage) {
+        AttachLog(@"Done creating public storage %@", folderPath);
+    }
     const char *valueChars = [folderPath UTF8String];
     return (*env)->NewStringUTF(env, valueChars);
 }

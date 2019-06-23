@@ -27,6 +27,7 @@
  */
 module com.gluonhq.attach.ble {
 
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
 
     exports com.gluonhq.attach.ble;

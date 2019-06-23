@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.runtime.impl;
+package com.gluonhq.attach.runtimeargs.impl;
 
-import com.gluonhq.attach.runtime.RuntimeArgsService;
+import com.gluonhq.attach.runtimeargs.RuntimeArgsService;
 
 import java.util.HashMap;
 import java.util.Map;

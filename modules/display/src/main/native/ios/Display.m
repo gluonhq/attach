@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_in
         return;
     }
     DisplayInited = 1;
-    printf("INIT\n ");
+
     mat_jDisplayServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/display/impl/IOSDisplayService"));
     mat_jDisplayService_notifyDisplay = (*env)->GetStaticMethodID(env, mat_jDisplayServiceClass, "notifyDisplay", "(Ljava/lang/String;)V");
 
@@ -146,7 +146,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_st
 
 void sendNotch() {
     NSString *notch = [_display getNotch];
-    NSLog(@"Notch is %@", notch);
+    AttachLog(@"Notch is %@", notch);
     const char *notchChars = [notch UTF8String];
     jstring arg = (*env)->NewStringUTF(env, notchChars);
     (*env)->CallStaticVoidMethod(env, mat_jDisplayServiceClass, mat_jDisplayService_notifyDisplay, arg);
@@ -159,7 +159,9 @@ void sendNotch() {
 {
     iPhoneX = NO;
     if ([[UIDevice currentDevice].model hasPrefix:@"iPhone"] &&
-        [[UIScreen mainScreen] nativeBounds].size.height == 2436)
+        ([[UIScreen mainScreen] nativeBounds].size.height == 1792 || // XR
+         [[UIScreen mainScreen] nativeBounds].size.height == 2436 || // X, XS
+         [[UIScreen mainScreen] nativeBounds].size.height == 2688)) // XS MAX
     {
         iPhoneX = YES;
     }

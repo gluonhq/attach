@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Local Notifications plugin, 
+ * Primary API package for Attach - Local Notifications plugin,
  * contains the interface {@link com.gluonhq.attach.localnotifications.LocalNotificationsService} and related classes.
  */
 package com.gluonhq.attach.localnotifications;

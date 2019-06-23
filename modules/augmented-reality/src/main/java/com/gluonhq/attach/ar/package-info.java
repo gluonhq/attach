@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Augmented Reality plugin, 
+ * Primary API package for Attach - Augmented Reality plugin,
  * contains the interface {@link com.gluonhq.attach.ar.AugmentedRealityService} and related classes.
  */
 package com.gluonhq.attach.ar;

@@ -27,8 +27,9 @@
  */
 module com.gluonhq.attach.accelerometer {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
+    requires com.gluonhq.attach.lifecycle;
 
     exports com.gluonhq.attach.accelerometer;
     exports com.gluonhq.attach.accelerometer.impl to com.gluonhq.attach.util;

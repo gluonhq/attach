@@ -27,8 +27,9 @@
  */
 module com.gluonhq.attach.position {
 
-    requires javafx.base;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
+    requires com.gluonhq.attach.lifecycle;
 
     exports com.gluonhq.attach.position;
     exports com.gluonhq.attach.position.impl to com.gluonhq.attach.util;

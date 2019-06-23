@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.runtime.impl;
+package com.gluonhq.attach.dialer.impl;
 
-/**
- * An implementation of RuntimeArgsService on desktop
- */
-public class DesktopRuntimeArgsService extends DefaultRuntimeArgsService {
 
+import com.gluonhq.attach.dialer.DialerService;
+
+public class IOSDialerService implements DialerService {
+
+    static {
+        System.loadLibrary("Dialer");
+    }
+
+    @Override
+    public void call(String number) {
+        if (number != null && !number.isEmpty()) {
+            callNumber(number);
+        }
+    }
+    
+    private native void callNumber(String number);
+    
 }

@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Battery plugin, 
+ * Primary API package for Attach - Battery plugin,
  * contains the interface {@link com.gluonhq.attach.battery.BatteryService} and related classes.
  */
 package com.gluonhq.attach.battery;

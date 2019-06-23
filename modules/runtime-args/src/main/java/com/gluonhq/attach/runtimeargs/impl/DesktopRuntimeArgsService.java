@@ -25,9 +25,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.runtimeargs.impl;
 
 /**
- * Primary API package for Down - Vibration plugin, 
- * contains the interface {@link com.gluonhq.attach.runtime.RuntimeArgsService} and related classes.
+ * An implementation of RuntimeArgsService on desktop
  */
-package com.gluonhq.attach.runtime;
+public class DesktopRuntimeArgsService extends DefaultRuntimeArgsService {
+
+}

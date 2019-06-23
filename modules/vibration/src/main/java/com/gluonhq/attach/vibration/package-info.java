@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Vibration plugin, 
+ * Primary API package for Attach - Vibration plugin,
  * contains the interface {@link com.gluonhq.attach.vibration.VibrationService} and related classes.
  */
 package com.gluonhq.attach.vibration;

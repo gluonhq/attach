@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Position plugin, 
+ * Primary API package for Attach - Position plugin,
  * contains the interface {@link com.gluonhq.attach.position.PositionService} and related classes.
  */
 package com.gluonhq.attach.position;

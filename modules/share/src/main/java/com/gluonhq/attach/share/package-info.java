@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Share plugin, 
+ * Primary API package for Attach - Share plugin,
  * contains the interface {@link com.gluonhq.attach.share.ShareService} and related classes.
  */
 package com.gluonhq.attach.share;

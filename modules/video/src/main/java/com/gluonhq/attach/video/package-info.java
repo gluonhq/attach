@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Down - Video plugin, 
+ * Primary API package for Attach - Video plugin,
  * contains the interface {@link com.gluonhq.attach.video.VideoService} and related classes.
  */
 package com.gluonhq.attach.video;

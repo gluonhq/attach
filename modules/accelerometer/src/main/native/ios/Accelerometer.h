@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.runtime.impl;
 
-import com.gluonhq.attach.runtime.RuntimeArgsService;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
+#import <CoreMotion/CoreMotion.h>
 
-// no-op
-public abstract class DummyRuntimeArgsService implements RuntimeArgsService {
-}
+@interface Accelerometer : UIViewController {}
+    @property (strong, nonatomic) CMMotionManager *motionManager;
+    - (void) startObserver;
+    - (void) stopObserver;
+@end
+
+void sendAcceleration(CMAccelerometerData  *accelerometerData);
