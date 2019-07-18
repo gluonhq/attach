@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.util {
+package com.gluonhq.attach.util.impl;
 
-    requires javafx.graphics;
-    requires transitive java.logging;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
+import javafx.util.Duration;
 
-    exports com.gluonhq.attach.util;
-    exports com.gluonhq.attach.util.impl to com.gluonhq.attach.accelerometer,
-            com.gluonhq.attach.battery, com.gluonhq.attach.ble,
-            com.gluonhq.attach.display, com.gluonhq.attach.magnetometer,
-            com.gluonhq.attach.position, com.gluonhq.attach.orientation;
+public class Utils {
+
+    private static final long PAUSE_MILLIS = 100;
+
+    /**
+     * Runs the runnable in the JavaFX App thread, by waiting
+     * asynchronously until the JavaFX App thread has started.
+     *
+     * @param runnable to run from the JavaFX App thread
+     */
+    public static void runOnAppThread(Runnable runnable) {
+        if (Platform.isFxApplicationThread()) {
+            runnable.run();
+        } else {
+            PauseTransition p = new PauseTransition(Duration.millis(PAUSE_MILLIS));
+            p.setOnFinished(f -> runOnAppThread(runnable));
+            p.playFromStart();
+        }
+    }
 }

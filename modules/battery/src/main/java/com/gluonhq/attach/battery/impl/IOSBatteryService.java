@@ -30,6 +30,7 @@ package com.gluonhq.attach.battery.impl;
 import com.gluonhq.attach.battery.BatteryService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
+import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -47,6 +48,10 @@ public class IOSBatteryService implements BatteryService {
     private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper();
 
     public IOSBatteryService() {
+        Utils.runOnAppThread(this::setupObserver);
+    }
+
+    private void setupObserver() {
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSBatteryService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, IOSBatteryService::startObserver);

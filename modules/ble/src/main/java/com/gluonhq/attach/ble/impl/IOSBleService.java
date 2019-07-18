@@ -30,6 +30,7 @@ package com.gluonhq.attach.ble.impl;
 import com.gluonhq.attach.ble.BleService;
 import com.gluonhq.attach.ble.Configuration;
 import com.gluonhq.attach.ble.ScanDetection;
+import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 
 import java.util.function.Consumer;
@@ -69,9 +70,13 @@ public class IOSBleService implements BleService {
 
     @Override
     public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
-        this.callback = callback;
-        String[] uuids = new String[region.getUuids().size()];
-        uuids = region.getUuids().toArray(uuids);
+        IOSBleService.callback = callback;
+        String[] uuidSize = new String[region.getUuids().size()];
+        String[] uuids = region.getUuids().toArray(uuidSize);
+        Utils.runOnAppThread(() -> setupObserver(uuids));
+    }
+
+    private void setupObserver(String[] uuids) {
         startObserver(uuids);
     }
 

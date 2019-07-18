@@ -31,6 +31,7 @@ import com.gluonhq.attach.accelerometer.Acceleration;
 import com.gluonhq.attach.accelerometer.AccelerometerService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
+import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -50,7 +51,10 @@ public class IOSAccelerometerService implements AccelerometerService {
 
     public IOSAccelerometerService() {
         acceleration = new ReadOnlyObjectWrapper<>();
+        Utils.runOnAppThread(this::setupObserver);
+    }
 
+    private void setupObserver() {
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSAccelerometerService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, () -> startObserver(FILTER_GRAVITY, FREQUENCY));

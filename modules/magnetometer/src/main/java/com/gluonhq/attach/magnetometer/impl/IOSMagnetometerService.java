@@ -31,6 +31,7 @@ import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
 import com.gluonhq.attach.magnetometer.MagnetometerService;
+import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -45,6 +46,10 @@ public class IOSMagnetometerService implements MagnetometerService {
     private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
 
     public IOSMagnetometerService() {
+        Utils.runOnAppThread(this::setupObserver);
+    }
+
+    private void setupObserver() {
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSMagnetometerService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, () -> startObserver(FREQUENCY));
