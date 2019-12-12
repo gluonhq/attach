@@ -33,7 +33,6 @@ import com.gluonhq.attach.position.Parameters;
 import com.gluonhq.attach.position.Position;
 import com.gluonhq.attach.position.PositionService;
 import com.gluonhq.attach.util.Constants;
-import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -109,11 +108,7 @@ public class IOSPositionService implements PositionService {
             stop();
         }
         this.parameters = parameters;
-        Utils.runOnAppThread(this::setupObserver);
-    }
-
-    private void setupObserver() {
-        startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(), 
+        startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(),
                 parameters.getDistanceFilter(), parameters.isBackgroundModeEnabled());
         running  = true;
     }

@@ -30,7 +30,6 @@ package com.gluonhq.attach.display.impl;
 import com.gluonhq.attach.display.DisplayService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
-import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -47,10 +46,6 @@ public class IOSDisplayService implements DisplayService {
 
     public IOSDisplayService() {
         notch = new ReadOnlyObjectWrapper<>(Notch.UNKNOWN);
-        Utils.runOnAppThread(this::setupObserver);
-    }
-
-    private void setupObserver() {
         LifecycleService.create().ifPresent(l -> {
                 l.addListener(LifecycleEvent.PAUSE, IOSDisplayService::stopObserver);
                 l.addListener(LifecycleEvent.RESUME, IOSDisplayService::startObserver);

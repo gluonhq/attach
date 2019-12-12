@@ -31,8 +31,4 @@ module com.gluonhq.attach.util {
     requires transitive java.logging;
 
     exports com.gluonhq.attach.util;
-    exports com.gluonhq.attach.util.impl to com.gluonhq.attach.accelerometer,
-            com.gluonhq.attach.battery, com.gluonhq.attach.ble,
-            com.gluonhq.attach.display, com.gluonhq.attach.magnetometer,
-            com.gluonhq.attach.position, com.gluonhq.attach.orientation;
 }

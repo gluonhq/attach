@@ -31,7 +31,6 @@ package com.gluonhq.attach.orientation.impl;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.orientation.OrientationService;
-import com.gluonhq.attach.util.impl.Utils;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -51,10 +50,6 @@ public class IOSOrientationService implements OrientationService {
 
     public IOSOrientationService() {
         orientation = new ReadOnlyObjectWrapper<>();
-        Utils.runOnAppThread(this::setupObserver);
-    }
-
-    private void setupObserver() {
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSOrientationService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, IOSOrientationService::startObserver);
