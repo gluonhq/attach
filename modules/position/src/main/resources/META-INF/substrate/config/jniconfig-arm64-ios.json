@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.position.impl.IOSPositionService",
+    "methods":[{"name":"setLocation","parameterTypes":["double","double","double"] }]
+  }
+]

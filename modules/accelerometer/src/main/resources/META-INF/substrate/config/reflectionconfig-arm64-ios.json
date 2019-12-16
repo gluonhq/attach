@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.accelerometer.impl.IOSAccelerometerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.storage.impl.IOSStorageService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

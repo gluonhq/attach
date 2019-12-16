@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.impl.IOSAugmentedRealityService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

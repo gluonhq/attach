@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.impl.DesktopAugmentedRealityService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

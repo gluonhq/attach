@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.vibration.display.impl.IOSVibrationService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

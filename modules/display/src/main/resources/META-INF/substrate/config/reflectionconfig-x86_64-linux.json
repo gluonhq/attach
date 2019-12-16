@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.display.impl.DesktopDisplayService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

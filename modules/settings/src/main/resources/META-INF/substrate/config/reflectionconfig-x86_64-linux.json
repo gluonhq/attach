@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.settings.impl.DesktopSettingsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

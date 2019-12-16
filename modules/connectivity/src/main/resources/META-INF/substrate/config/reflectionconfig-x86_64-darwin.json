@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.connectivity.impl.DesktopConnectivityService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

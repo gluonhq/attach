@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.statusbar.impl.IOSStatusBarService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

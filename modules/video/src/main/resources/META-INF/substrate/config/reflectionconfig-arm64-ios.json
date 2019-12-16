@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.video.impl.IOSVideoService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

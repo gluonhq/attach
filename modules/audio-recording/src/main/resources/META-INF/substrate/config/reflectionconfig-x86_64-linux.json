@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audiorecording.impl.DesktopAudioRecordingService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

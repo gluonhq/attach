@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.localnotifications.impl.IOSLocalNotificationsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
