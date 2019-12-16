@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.runtimeargs.impl.DesktopRuntimeArgsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
