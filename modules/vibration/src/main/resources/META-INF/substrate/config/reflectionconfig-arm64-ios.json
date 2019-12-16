@@ -1,6 +1,6 @@
 [
   {
-    "name" : "com.gluonhq.vibration.display.impl.IOSVibrationService",
+    "name" : "com.gluonhq.attach.vibration.impl.IOSVibrationService",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]

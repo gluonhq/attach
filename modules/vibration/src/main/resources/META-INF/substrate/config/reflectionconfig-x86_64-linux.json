@@ -1,10 +1,6 @@
 [
   {
-    "name" : "com.gluonhq.attach.video.impl.IOSVideoService",
-    "methods":[
-      {"name":"updateStatus","parameterTypes":["int"]},
-      {"name":"updateFullScreen","parameterTypes":["boolean"]},
-      {"name":"updateCurrentIndex","parameterTypes":["int"]}
-    ]
+    "name" : "com.gluonhq.attach.vibration.impl.DesktopVibrationService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]
