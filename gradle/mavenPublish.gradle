@@ -31,7 +31,7 @@ def jarPackage(buildDir, projectDir, service, osname) {
                 if (osname == 'desktop') {
                     exclude '**/*/impl/Dummy**', "**/impl/IOS**", "**/**ios.json"
                 } else {
-                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json"
+                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
                 }
             }
         } else {
