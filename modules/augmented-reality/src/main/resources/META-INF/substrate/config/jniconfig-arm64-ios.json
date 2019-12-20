@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ar.impl.IOSAugmentedRealityService",
+    "methods":[{"name":"notifyCancel","parameterTypes":[] }]
+  }
+]

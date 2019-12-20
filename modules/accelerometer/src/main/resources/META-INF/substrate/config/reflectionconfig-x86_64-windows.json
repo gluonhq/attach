@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.accelerometer.impl.DesktopAccelerometerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

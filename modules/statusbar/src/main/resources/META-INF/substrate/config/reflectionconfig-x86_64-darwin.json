@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.statusbar.impl.DesktopStatusBarService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

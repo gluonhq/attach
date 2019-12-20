@@ -108,7 +108,7 @@ public class IOSPositionService implements PositionService {
             stop();
         }
         this.parameters = parameters;
-        startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(), 
+        startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(),
                 parameters.getDistanceFilter(), parameters.isBackgroundModeEnabled());
         running  = true;
     }

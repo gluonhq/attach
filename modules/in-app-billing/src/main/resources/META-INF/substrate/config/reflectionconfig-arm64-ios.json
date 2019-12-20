@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.inappbilling.impl.IOSInAppBillingService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

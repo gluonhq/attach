@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pushnotifications.impl.DesktopPushNotificationsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

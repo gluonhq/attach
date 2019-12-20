@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.settings.impl.IOSSettingsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

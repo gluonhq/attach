@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.barcode.impl.IOSBarcodeScanService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

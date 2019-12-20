@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.dialer.impl.DesktopDialerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

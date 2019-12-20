@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.compass.impl.DesktopCompassService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

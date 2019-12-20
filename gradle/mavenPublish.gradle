@@ -19,17 +19,19 @@ def nativeLib(buildDir, projectDir, service, osname) {
 
 def jarPackage(buildDir, projectDir, service, osname) {
     return tasks.create("jar${service}${osname}", Jar) {
+        dependsOn(build)
         if (osname != "") {
             def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
             dependsOn(nativeTask)
             archiveBaseName = "${service}".toLowerCase()
             archiveClassifier = osname
             into ("") {
+                from "${buildDir}/resources/main"
                 from "${buildDir}/classes/java/main"
                 if (osname == 'desktop') {
-                    exclude '**/*/impl/Dummy**', "**/impl/IOS**"
+                    exclude '**/*/impl/Dummy**', "**/impl/IOS**", "**/**ios.json"
                 } else {
-                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**"
+                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
                 }
             }
         } else {

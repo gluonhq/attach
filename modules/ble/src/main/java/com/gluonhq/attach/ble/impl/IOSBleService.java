@@ -69,7 +69,7 @@ public class IOSBleService implements BleService {
 
     @Override
     public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
-        this.callback = callback;
+        IOSBleService.callback = callback;
         String[] uuids = new String[region.getUuids().size()];
         uuids = region.getUuids().toArray(uuids);
         startObserver(uuids);

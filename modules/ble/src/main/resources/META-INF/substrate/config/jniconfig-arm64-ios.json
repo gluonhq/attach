@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ble.impl.IOSBleService",
+    "methods":[{"name":"setDetection","parameterTypes":["java.lang.String","int","int","int","int"] }]
+  }
+]

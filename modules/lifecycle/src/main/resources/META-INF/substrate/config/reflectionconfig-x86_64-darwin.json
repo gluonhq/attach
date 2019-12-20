@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.lifecycle.impl.DesktopLifecycleService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
