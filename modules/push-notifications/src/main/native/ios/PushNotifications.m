@@ -109,7 +109,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     debugPushNotifications = YES;
 }
 
-@implementation PushNotifications (NotificationsAdditions)
+@implementation GlassApplication (NotificationsAdditions)
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {

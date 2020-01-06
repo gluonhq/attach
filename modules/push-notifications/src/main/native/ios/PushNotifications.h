@@ -31,10 +31,10 @@
 #include "AttachMacros.h"
 #import <UserNotifications/UserNotifications.h>
 
-@interface PushNotifications : NSObject <UIApplicationDelegate> { }
+@interface GlassApplication : NSObject <UIApplicationDelegate> { }
 @end
 
-@interface PushNotifications (NotificationsAdditions)
+@interface GlassApplication (NotificationsAdditions)
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
