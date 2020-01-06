@@ -116,10 +116,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     {
 
-        NSString * deviceTokenString = [[[[deviceToken description]
-                        stringByReplacingOccurrencesOfString: @"<" withString: @""] 
-                        stringByReplacingOccurrencesOfString: @">" withString: @""] 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        NSString *deviceTokenString = [self stringFromDeviceToken:deviceToken];
+#else
+        NSString *deviceTokenString = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
+                        stringByReplacingOccurrencesOfString:@">" withString:@""]
                         stringByReplacingOccurrencesOfString: @" " withString: @""];
+#endif
 
         const char *deviceTokenChars = [deviceTokenString UTF8String];
         jstring argToken = (*env)->NewStringUTF(env, deviceTokenChars);
@@ -144,6 +147,19 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
         (*env)->DeleteLocalRef(env, arg);
     }
     [pool drain];
+}
+
+- (NSString *)stringFromDeviceToken:(NSData *)deviceToken {
+    NSUInteger length = deviceToken.length;
+    if (length == 0) {
+        return nil;
+    }
+    const unsigned char *buffer = deviceToken.bytes;
+    NSMutableString *hexString  = [NSMutableString stringWithCapacity:(length * 2)];
+    for (int i = 0; i < length; ++i) {
+        [hexString appendFormat:@"%02x", buffer[i]];
+    }
+    return [hexString copy];
 }
 
 - (void) logMessage:(NSString *)format, ...;
