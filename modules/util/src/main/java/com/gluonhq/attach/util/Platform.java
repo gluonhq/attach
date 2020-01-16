@@ -67,14 +67,8 @@ public enum Platform {
     static {
         String platform = System.getProperty("javafx.platform", null);
         if (platform == null) {
-            String os = System.getProperty("os.target", null);
-            if (os != null) {
-                LOGGER.info("javafx.platform is not defined, using: " + os + " from os.target");
-                platform = os;
-            } else {
-                LOGGER.info("javafx.platform is not defined. Desktop will be assumed by default.");
-                platform = DESKTOP.getName();
-            }
+            LOGGER.info("javafx.platform is not defined. Desktop will be assumed by default.");
+            platform = DESKTOP.getName();
         }
 
         String name = platform.toUpperCase(Locale.ROOT);
