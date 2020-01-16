@@ -70,7 +70,7 @@ public class DefaultServiceFactory<T> implements ServiceFactory<T> {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             // no-op
-            LOGGER.log(Level.WARNING, "No new instance for " + serviceType);
+            LOGGER.log(Level.WARNING, "No new instance for " + serviceType + " and class " + fqn);
         }
         return null;
     }
