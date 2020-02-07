@@ -623,6 +623,7 @@ void updateCurrentIndex(int index) {
             _avPlayerViewcontroller.view.frame = theVideoRect;
         } else {
             isVideo = false;
+            _avPlayerViewcontroller.view.frame = CGRectZero;
             [_currentView sendSubviewToBack:_avPlayerViewcontroller.view];
             if ([[_avPlayerViewcontroller.player.currentItem.asset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
                 AVAssetTrack *track = [_avPlayerViewcontroller.player.currentItem.asset tracksWithMediaType:AVMediaTypeAudio][0];
