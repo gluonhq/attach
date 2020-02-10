@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019, Gluon
+ * Copyright (c) 2017, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -623,6 +623,7 @@ void updateCurrentIndex(int index) {
             _avPlayerViewcontroller.view.frame = theVideoRect;
         } else {
             isVideo = false;
+            _avPlayerViewcontroller.view.frame = CGRectZero;
             [_currentView sendSubviewToBack:_avPlayerViewcontroller.view];
             if ([[_avPlayerViewcontroller.player.currentItem.asset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
                 AVAssetTrack *track = [_avPlayerViewcontroller.player.currentItem.asset tracksWithMediaType:AVMediaTypeAudio][0];
