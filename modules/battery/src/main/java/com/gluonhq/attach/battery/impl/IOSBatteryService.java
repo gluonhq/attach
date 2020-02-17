@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,13 @@ import javafx.beans.property.ReadOnlyFloatWrapper;
 
 public class IOSBatteryService implements BatteryService {
 
+    private static final ReadOnlyBooleanWrapper PLUGGED_IN = new ReadOnlyBooleanWrapper();
+    private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper();
+
     static {
         System.loadLibrary("Battery");
         initBattery();
     }
-     
-    private static final ReadOnlyBooleanWrapper PLUGGED_IN = new ReadOnlyBooleanWrapper();
-    private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper();
 
     public IOSBatteryService() {
         LifecycleService.create().ifPresent(l -> {
@@ -87,12 +87,12 @@ public class IOSBatteryService implements BatteryService {
         // ios docs: charging -> device is plugged into power and the battery is less than 100% charged
         // or full -> device is plugged into power and the battery is 100% charged
         boolean plugged = state.equals("Charging") || state.equals("Full");
-        if (PLUGGED_IN != null && PLUGGED_IN.get() != plugged) {
+        if (PLUGGED_IN.get() != plugged) {
             Platform.runLater(() -> PLUGGED_IN.set(plugged));
         }
     }
     private static void notifyBatteryLevel(float level) {
-        if (BATTERY_LEVEL != null && BATTERY_LEVEL.get() != level) {
+        if (BATTERY_LEVEL.get() != level) {
             Platform.runLater(() -> BATTERY_LEVEL.set(level));
         }
     }
