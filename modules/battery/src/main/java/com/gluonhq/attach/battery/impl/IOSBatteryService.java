@@ -38,13 +38,13 @@ import javafx.beans.property.ReadOnlyFloatWrapper;
 
 public class IOSBatteryService implements BatteryService {
 
+    private static final ReadOnlyBooleanWrapper PLUGGED_IN = new ReadOnlyBooleanWrapper();
+    private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper();
+
     static {
         System.loadLibrary("Battery");
         initBattery();
     }
-     
-    private static final ReadOnlyBooleanWrapper PLUGGED_IN = new ReadOnlyBooleanWrapper();
-    private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper();
 
     public IOSBatteryService() {
         LifecycleService.create().ifPresent(l -> {
