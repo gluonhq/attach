@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.storage.impl.AndroidStorageService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

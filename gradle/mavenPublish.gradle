@@ -57,6 +57,7 @@ publishing {
             def service = getServiceName(project.name)
             if (service != "Util") {
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "ios")
+                artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "android")
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
             }
             artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "")
