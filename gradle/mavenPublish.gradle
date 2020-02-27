@@ -28,15 +28,21 @@ def jarPackage(buildDir, projectDir, service, osname) {
             into ("") {
                 from "${buildDir}/resources/main"
                 from "${buildDir}/classes/java/main"
+                exclude '**/*/impl/Dummy**'
                 if (osname == 'desktop') {
-                    exclude '**/*/impl/Dummy**', "**/impl/IOS**", "**/**ios.json"
+                    exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json"
                 } else {
-                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
+                    exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
+                    if (osname == 'ios') {
+                        exclude '**/*/impl/Android**', "**/**android.json"
+                    } else if (osname == 'android') {
+                        exclude '**/*/impl/IOS**', "**/**ios.json"
+                    }
                 }
             }
         } else {
             from "${buildDir}/classes/java/main"
-            exclude "**/impl/Desktop**", "**/impl/IOS**"
+            exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json", "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json"
         }
     }
 }
