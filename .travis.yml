@@ -10,8 +10,7 @@ os: osx
 osx_image: xcode11.3
 
 before_script:
-  - echo $PATH
-  - sh ./gradlew --version
+  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home
 
 # run maven build
 script:
