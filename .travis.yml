@@ -9,6 +9,10 @@ sudo: false
 os: osx
 osx_image: xcode11.3
 
+before_script:
+  - echo $JAVA_HOME
+  - sh ./gradlew --version
+
 # run maven build
 script:
   - ./gradlew clean build
