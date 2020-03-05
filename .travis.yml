@@ -1,6 +1,5 @@
 # use java support
 language: java
-jdk: openjdk11
 
 # run in container
 sudo: false
@@ -8,6 +7,9 @@ sudo: false
 # use Mac OS X as operating system to build iOS native libraries
 os: osx
 osx_image: xcode11.3
+
+before_script:
+  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home
 
 # run maven build
 script:
