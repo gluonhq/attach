@@ -29,7 +29,7 @@
 #include <android/native_window_jni.h>
 #include <android/log.h>
 
-void androidJfx_setLifecycleEvent(jchar* event, jint length);
+void attach_setLifecycleEvent(jchar* event, jint length);
 
 #define ATTACH_LOG_INFO(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"ATTACH", __VA_ARGS__))
 #define ATTACH_LOG_FINE(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"ATTACH", __VA_ARGS__))

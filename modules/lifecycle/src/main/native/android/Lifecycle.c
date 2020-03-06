@@ -76,7 +76,7 @@ void initializeLifecycleFromNative() {
     }
 }
 
-void androidJfx_setLifecycleEvent(jchar* chars, jint length) {
+void attach_setLifecycleEvent(jchar* chars, jint length) {
     initializeLifecycleFromNative();
     if (javaEnvLifecycle == NULL) {
         ATTACH_LOG_FINE("javaEnvLifecycle still null, not ready to process lifecycle events");
