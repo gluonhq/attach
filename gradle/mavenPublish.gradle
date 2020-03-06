@@ -62,7 +62,9 @@ publishing {
         maven(MavenPublication) {
             def service = getServiceName(project.name)
             if (service != "Util") {
-                artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "ios")
+                if (System.getProperty('os.name').toLowerCase().contains("mac")) {
+                    artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "ios")
+                }
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "android")
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
             }
