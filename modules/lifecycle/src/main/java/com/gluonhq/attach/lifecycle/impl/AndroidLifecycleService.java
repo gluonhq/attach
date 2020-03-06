@@ -44,10 +44,9 @@ public class AndroidLifecycleService extends LifecycleServiceBase {
     private static native void initLifecycle(); // init IDs for java callbacks from native
 
     // callback
-    public static void setEvent(char[] chars) {
-        if (chars != null && chars.length > 0) {
-            String v = String.valueOf(chars);
-            switch (v) {
+    private static void setEvent(String event) {
+        if (event != null && !event.isEmpty()) {
+            switch (event) {
                 case "pause":
                     doCheck(LifecycleEvent.PAUSE);
                     break;

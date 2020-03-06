@@ -1,6 +1,6 @@
 [
   {
     "name" : "com.gluonhq.attach.lifecycle.impl.AndroidLifecycleService",
-    "methods":[{"name":"setEvent","parameterTypes":["char[]"] }]
+    "methods":[{"name":"setEvent","parameterTypes":["java.lang.String"] }]
   }
 ]

@@ -115,7 +115,7 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         def host = System.getProperty('os.name').toLowerCase().contains("mac") ?
                 "darwin" : "linux"
 
-        def arch = "arm64-v8"
+        def arch = "arm64-v8a"
         def compileOutput = "$buildDir/native/$os/$arch"
         def linkerObj = "$buildDir/native/$os/$arch/${name}.o"
         def linkerOutput = "$buildDir/native/$os/lib${name}.a"

@@ -57,7 +57,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_lifecycle_impl_AndroidLifecycleSe
     (*env)->GetJavaVM(env, &jVMLifecycle);
     ATTACH_LOG_FINE("Initializing native Lifecycle from Java code");
     jAttachLifecycleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/lifecycle/impl/AndroidLifecycleService"));
-    attach_setEvent = (*env)->GetStaticMethodID(env, jAttachLifecycleClass, "setEvent", "([C)V");
+    attach_setEvent = (*env)->GetStaticMethodID(env, jAttachLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
     ATTACH_LOG_FINE("Initializing native Lifecycle done");
 }
 
@@ -76,15 +76,15 @@ void initializeLifecycleFromNative() {
     }
 }
 
-void attach_setLifecycleEvent(jchar* chars, jint length) {
+void attach_setLifecycleEvent(const char* event) {
     initializeLifecycleFromNative();
     if (javaEnvLifecycle == NULL) {
         ATTACH_LOG_FINE("javaEnvLifecycle still null, not ready to process lifecycle events");
         return;
     }
-    ATTACH_LOG_FINE("call Attach method from native Lifecycle");
-    jcharArray jchars = (*javaEnvLifecycle)->NewCharArray(javaEnvLifecycle, length);
-    (*javaEnvLifecycle)->SetCharArrayRegion(javaEnvLifecycle, jchars, 0, length, chars);
+    ATTACH_LOG_FINE("call Attach method from native Lifecycle: %s", event);
+    jstring jchars = (*javaEnvLifecycle)->NewStringUTF(javaEnvLifecycle, event);
     (*javaEnvLifecycle)->CallStaticVoidMethod(javaEnvLifecycle, jAttachLifecycleClass, attach_setEvent, jchars);
+    (*javaEnvLifecycle)->DeleteLocalRef(javaEnvLifecycle, jchars);
     ATTACH_LOG_FINE("called Attach method from native Lifecycle done");
 }
