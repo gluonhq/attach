@@ -112,6 +112,9 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         }
     } else if (os == "android") {
         def ndk = System.getenv("ANDROID_NDK")
+        def host = osIncludeFlags = System.getProperty('os.name').toLowerCase().contains("mac") ?
+                "darwin" : "linux"
+
         def arch = "arm64-v8"
         def compileOutput = "$buildDir/native/$os/$arch"
         def linkerObj = "$buildDir/native/$os/$arch/${name}.o"
@@ -120,12 +123,11 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
 
         def platform="aarch64-linux-android21"
         def toolchainHome = "$ndk/toolchains/llvm"
-        def compilerHome = "$toolchainHome/prebuilt/darwin-x86_64"
+        def compilerHome = "$toolchainHome/prebuilt/${host}-x86_64"
         def compiler = file("$compilerHome/bin/clang").getAbsolutePath()
         def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
 
-        osIncludeFlags = System.getProperty('os.name').toLowerCase().contains("mac") ?
-                "-I$JAVAHOME/include/darwin" : "-I$JAVAHOME/include/linux"
+        osIncludeFlags = "-I$JAVAHOME/include/$host"
 
         osSources = "$projectDir/src/main/native/$os/${name}.c"
 
