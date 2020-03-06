@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.lifecycle.impl.AndroidLifecycleService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
