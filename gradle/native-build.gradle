@@ -127,7 +127,8 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         def compiler = file("$compilerHome/bin/clang").getAbsolutePath()
         def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
 
-        osIncludeFlags = "-I$JAVAHOME/include/$host"
+        osIncludeFlags = ["-I$JAVAHOME/include/$host",
+                          "-I$projectDir/../../gradle/include/android"].flatten()
 
         osSources = "$projectDir/src/main/native/$os/${name}.c"
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <android/native_window_jni.h>
-#include "AttachMacrosAndroid.h"
+#include <android/log.h>
 
-void attach_setLifecycleEvent(const char* event);
-
+#define ATTACH_LOG_INFO(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"GluonAttach", __VA_ARGS__))
+#define ATTACH_LOG_FINE(...)  ((void)__android_log_print(ANDROID_LOG_DEBUG,"GluonAttach", __VA_ARGS__))
+#define ATTACH_LOG_FINEST(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE,"GluonAttach", __VA_ARGS__))
+#define ATTACH_LOG_WARNING(...)  ((void)__android_log_print(ANDROID_LOG_WARN,"GluonAttach", __VA_ARGS__))
+#define ATTACH_LOG_SEVERE(...)  ((void)__android_log_print(ANDROID_LOG_ERROR,"GluonAttach", __VA_ARGS__))
