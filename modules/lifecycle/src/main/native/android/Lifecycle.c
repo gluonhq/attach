@@ -27,38 +27,29 @@
  */
 #include "Lifecycle.h"
 
-JNIEnv *env;
-
+static JNIEnv *env;
+JNIEnv* javaEnvLifecycle = NULL;
+JavaVM *jVMLifecycle = NULL;
+static jclass jAttachLifecycleClass;
+static jmethodID attach_setEvent;
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     //min. returned JNI_VERSION required by JDK8 for builtin libraries
     if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
-        return JNI_VERSION_1_4;
-    }
-    return JNI_VERSION_1_8;
-#else
-    return JNI_VERSION_1_4;
-#endif
-}
-
-JNIEnv* javaEnvLifecycle = NULL;
-JavaVM *jVMLifecycle = NULL;
-
-static jclass jAttachLifecycleClass;
-static jmethodID attach_setEvent;
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_lifecycle_impl_AndroidLifecycleService_initLifecycle
-(JNIEnv *env, jclass clazz) {
-    if (jVMLifecycle != NULL) {
-        return; // already have a jVMLifecycle
+        ATTACH_LOG_WARNING("Error initializing native Lifecycle from OnLoad");
+        return JNI_FALSE;
     }
     (*env)->GetJavaVM(env, &jVMLifecycle);
-    ATTACH_LOG_FINE("Initializing native Lifecycle from Java code");
+    ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad");
     jAttachLifecycleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/lifecycle/impl/AndroidLifecycleService"));
     attach_setEvent = (*env)->GetStaticMethodID(env, jAttachLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
     ATTACH_LOG_FINE("Initializing native Lifecycle done");
+    return JNI_VERSION_1_8;
+#else
+    #error Error: Java 8+ SDK is required to compile Attach
+#endif
 }
 
 void initializeLifecycleFromNative() {

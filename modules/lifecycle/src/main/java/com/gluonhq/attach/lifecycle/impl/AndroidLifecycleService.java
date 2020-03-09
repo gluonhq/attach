@@ -28,12 +28,16 @@
 package com.gluonhq.attach.lifecycle.impl;
 
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
+import javafx.application.Platform;
 
 public class AndroidLifecycleService extends LifecycleServiceBase {
 
     static {
-        System.loadLibrary("Lifecycle");
-        initLifecycle();
+        if (Platform.isFxApplicationThread()) {
+            System.loadLibrary("Lifecycle");
+        } else {
+            Platform.runLater(() -> System.loadLibrary("Lifecycle"));
+        }
     }
 
     @Override public void shutdown() {
@@ -41,8 +45,6 @@ public class AndroidLifecycleService extends LifecycleServiceBase {
     }
 
     // native
-    private static native void initLifecycle(); // init IDs for java callbacks from native
-
     // callback
     private static void setEvent(String event) {
         if (event != null && !event.isEmpty()) {
