@@ -32,14 +32,18 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface Ble : UIViewController <CLLocationManagerDelegate, CBCentralManagerDelegate, CBPeripheralDelegate>
+@interface Ble : UIViewController <CLLocationManagerDelegate, CBCentralManagerDelegate, CBPeripheralManagerDelegate, CBPeripheralDelegate>
 {
 }
     @property(nonatomic, strong) CLLocationManager *locationManager;
     @property(nonatomic, strong) CBCentralManager *bluetoothManager;
     @property(nonatomic, strong) CBPeripheral *peripheral;
+    @property(nonatomic, strong) CBPeripheralManager *peripheralManager;
+    @property(nonatomic, strong) CLBeaconRegion *localBeacon;
     - (void) startObserver;
     - (void) stopObserver;
+    - (void) startBroadcast:(NSString *)uuidString major:(NSInteger)major minor:(NSInteger)minor id:(NSString *)idString;
+    - (void) stopBroadcast;
 
     - (void) startScanningPeripherals;
     - (void) stopScanningPeripherals;

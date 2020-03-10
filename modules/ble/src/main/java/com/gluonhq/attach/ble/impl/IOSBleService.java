@@ -124,13 +124,24 @@ public class IOSBleService implements BleService {
     public void stopScanning() {
         stopObserver();
     }
-    
-    
+
+    @Override
+    public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
+        startBroadcast(beaconUUID.toString(), major, minor, identifier);
+    }
+
+    @Override
+    public void stopBroadcasting() {
+        stopBroadcast();
+    }
+
     // native
     private static native void initBle(); // init IDs for java callbacks from native
     private static native void startObserver(String[] uuids);
     private static native void stopObserver();
-    
+    private static native void startBroadcast(String uuid, int major, int minor, String id);
+    private static native void stopBroadcast();
+
     // callback
     private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
         ScanDetection detection = new ScanDetection();

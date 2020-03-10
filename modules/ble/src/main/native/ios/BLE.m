@@ -111,6 +111,32 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_stopObserv
     return;   
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_startBroadcast
+(JNIEnv *env, jclass jClass, jstring jUuid, jint major, jint minor, jstring jId)
+{
+    const jchar *uuidchars = (*env)->GetStringChars(env, jUuid, NULL);
+    NSString *uuid = [NSString stringWithCharacters:(UniChar *)uuidchars length:(*env)->GetStringLength(env, jUuid)];
+    (*env)->ReleaseStringChars(env, jUuid, uuidchars);
+
+    const jchar *idchars = (*env)->GetStringChars(env, jId, NULL);
+    NSString *id = [NSString stringWithCharacters:(UniChar *)idchars length:(*env)->GetStringLength(env, jId)];
+    (*env)->ReleaseStringChars(env, jId, idchars);
+
+    NSLog(@"Start Broadcasting %@ - %@", uuid, id);
+    [_Ble startBroadcast:uuid major:major minor:minor id:id];
+    return;
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_stopBroadcast
+(JNIEnv *env, jclass jClass)
+{
+    NSLog(@"Stop Broadcasting");
+    [_Ble stopBroadcast];
+    return;
+}
+
+// DEVICES
+
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_startScanningPeripherals
 (JNIEnv *env, jclass jClass)
 {
@@ -519,6 +545,65 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
 {
     AttachLog(@"Region monitoring failed with error: %@", [error localizedDescription]);
 }
+
+- (void) startBroadcast:(NSString *)uuidString major:(NSInteger)major minor:(NSInteger)minor id:(NSString *)idString
+{
+    [self logMessage:@"startBroadcast %@ %d - %d - %@", uuidString, major, minor, idString];
+
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+    _localBeacon = [[CLBeaconRegion alloc] initWithProximityUUID:uuid
+            major:(CLBeaconMajorValue)major
+            minor:(CLBeaconMinorValue)minor
+            identifier:[NSString stringWithFormat:@"com.gluonhq.beacon.%@", idString]];
+    [self logMessage:@"localBeacon: %@", _localBeacon];
+    if (_peripheralManager) {
+        [_peripheralManager stopAdvertising];
+    }
+    _peripheralManager = [[CBPeripheralManager alloc] initWithDelegate:(id<CBPeripheralManagerDelegate>)self queue:nil options:nil];
+}
+
+- (void) stopBroadcast
+{
+    [self logMessage:@"stopBroadcast"];
+    if (_peripheralManager) {
+        [_peripheralManager stopAdvertising];
+        _peripheralManager = nil;
+        _localBeacon = nil;
+    }
+}
+
+- (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral
+{
+    int state = peripheral.state;
+    [self logMessage:@"Peripheral manager state =  %d for beacon %@", state, _localBeacon];
+
+    switch (state) {
+    case CBManagerStatePoweredOn:
+        if (_localBeacon) {
+            NSDictionary *peripheralData = [self.localBeacon peripheralDataWithMeasuredPower:nil];
+            [self logMessage:@"Starting to advertise... %@", peripheralData];
+            [peripheral startAdvertising:peripheralData];
+        }
+        break;
+    case CBManagerStatePoweredOff:
+        [self logMessage:@"Stopping advertising..."];
+        [peripheral stopAdvertising];
+        break;
+    }
+}
+
+- (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral error:(NSError *)error
+{
+    if (error)
+    {
+        NSLog(@"Error advertising: %@", [error localizedDescription]);
+    }
+    else
+    {
+       [self logMessage:@"BLE started advertising successfully"];
+    }
+}
+
 
 // BLEDEVICES
 
