@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_initBle
         return;
     }
     BleInited = 1;
-    
+
     mat_jBleServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ble/impl/IOSBleService"));
     mat_jBleService_setDetection = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "setDetection", "(Ljava/lang/String;IIII)V");
     mat_jBleService_gotPeripheral = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;)V");
@@ -101,14 +101,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_startObser
     arrayOfUuids = [NSArray arrayWithArray:uuids];
 
     [_Ble startObserver];
-    return;   
+    return;
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_stopObserver
 (JNIEnv *env, jclass jClass)
 {
     [_Ble stopObserver];
-    return;   
+    return;
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_startBroadcast
@@ -271,7 +271,7 @@ void setDetection(CLBeacon *foundBeacon) {
         int minor = [foundBeacon.minor intValue];
         int rssi = foundBeacon.rssi;
         int proximity = 0;
-        switch (foundBeacon.proximity) 
+        switch (foundBeacon.proximity)
         {
             case CLProximityUnknown:  { proximity = 0; } break;
             case CLProximityImmediate:  { proximity = 1; } break;
@@ -480,12 +480,12 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
 
 @implementation Ble
 
-- (void)startObserver 
+- (void)startObserver
 {
     if (!self.locationManager) {
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
-        
+
         _bluetoothManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     }
 
@@ -499,17 +499,17 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
     for (NSString* uuidString in arrayOfUuids)
     {
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
-        CLBeaconRegion *beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid 
+        CLBeaconRegion *beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid
                 identifier:[NSString stringWithFormat:@"com.gluonhq.beacon.%@", uuidString]];
         [self.locationManager startMonitoringForRegion:beaconRegion];
         [self.locationManager startRangingBeaconsInRegion:beaconRegion];
     }
 }
 
-- (void)stopObserver 
+- (void)stopObserver
 {
     AttachLog(@"Stop monitoring for regions");
-    if (self.locationManager) 
+    if (self.locationManager)
     {
         NSSet *setOfRegions = [self.locationManager monitoredRegions];
         for (CLRegion *region in setOfRegions) {
@@ -519,12 +519,12 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
     }
 }
 
-- (void)locationManager:(CLLocationManager*)manager didEnterRegion:(CLRegion*)region 
+- (void)locationManager:(CLLocationManager*)manager didEnterRegion:(CLRegion*)region
 {
     [self.locationManager startRangingBeaconsInRegion:(CLBeaconRegion *) region];
 }
- 
--(void)locationManager:(CLLocationManager*)manager didExitRegion:(CLRegion*)region 
+
+-(void)locationManager:(CLLocationManager*)manager didExitRegion:(CLRegion*)region
 {
     [self.locationManager stopRangingBeaconsInRegion:(CLBeaconRegion *) region];
 }
@@ -537,8 +537,9 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
 -(void)locationManager:(CLLocationManager*)manager didRangeBeacons:(NSArray*)beacons inRegion:(CLBeaconRegion*)region
 {
     // sorted by proximity
-    CLBeacon *foundBeacon = [beacons firstObject];
-    setDetection(foundBeacon);
+    for (CLBeacon* beacon in beacons) {
+      setDetection(beacon);
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
