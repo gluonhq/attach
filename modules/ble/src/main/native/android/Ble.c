@@ -27,6 +27,7 @@
  */
 #include "Ble.h"
 #include <jni.h>
+#include "grandroid.h"
 
 static JNIEnv *env;
 JNIEnv* javaEnvBle = NULL;
@@ -42,7 +43,7 @@ JNI_OnLoad_Ble(JavaVM *vm, void *reserved)
         return JNI_FALSE;
     }
     (*env)->GetJavaVM(env, &jVMBle);
-    ATTACH_LOG_FINE("Initializing native Ble from OnLoad");
+    ATTACH_LOG_FINE("[BLESERVICE] Initializing native BLE from OnLoad");
     jBleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ble/impl/AndroidBleService"));
     ATTACH_LOG_FINE("Initializing native Ble done");
     return JNI_VERSION_1_8;
@@ -56,7 +57,20 @@ JNI_OnLoad_Ble(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startScanningPeripherals
 (JNIEnv *env, jclass jClass)
 {
-    module_ble_startScanning();
+    JavaVM* androidVM = substrateGetAndroidVM();
+    jclass activityClass = substrateGetActivityClass();
+    fprintf(stderr, "[DRAC] Android VM found at %p\n", androidVM);
+    ATTACH_LOG_FINE("attach thread to android vm...");
+    JNIEnv* androidEnv;
+    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+    ATTACH_LOG_FINE("search method found 1....");
+    jmethodID ble_startScannerMethod = (*androidEnv)->GetStaticMethodID(androidEnv, activityClass, "attach_ble_startScanner", "()V");
+    ATTACH_LOG_FINE("invoke method found 2....");
+    (*androidEnv)->CallStaticVoidMethod(androidEnv, activityClass, ble_startScannerMethod);
+    ATTACH_LOG_FINE("detach thread found 3....");
+    (*androidVM)->DetachCurrentThread(androidVM);
+
+    // module_ble_startScanning();
 }
 // from Android to Java
 
