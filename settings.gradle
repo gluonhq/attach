@@ -24,6 +24,7 @@ include 'device'
 include 'dialer'
 include 'display'
 include 'in-app-billing'
+include 'keyboard'
 include 'lifecycle'
 include 'local-notifications'
 include 'magnetometer'
@@ -54,6 +55,7 @@ project(':device').projectDir                  = file('modules/device')
 project(':dialer').projectDir                  = file('modules/dialer')
 project(':display').projectDir                 = file('modules/display')
 project(':in-app-billing').projectDir          = file('modules/in-app-billing')
+project(':keyboard').projectDir                = file('modules/keyboard')
 project(':lifecycle').projectDir               = file('modules/lifecycle')
 project(':local-notifications').projectDir     = file('modules/local-notifications')
 project(':magnetometer').projectDir            = file('modules/magnetometer')
