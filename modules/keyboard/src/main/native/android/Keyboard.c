@@ -32,7 +32,7 @@ JNIEnv* javaEnvKeyboard = NULL;
 JavaVM *jVMKeyboard = NULL;
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
-BOOL debugKeyboard;
+int debugKeyboard = 0;
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
@@ -57,7 +57,7 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_enableDebug
 (JNIEnv *env, jclass jClass)
 {
-    debugKeyboard = YES;
+    debugKeyboard = 1;
 }
 
 void initializeKeyboardFromNative() {
@@ -68,7 +68,7 @@ void initializeKeyboardFromNative() {
         ATTACH_LOG_FINE("initialize Keyboard from native can't be done without JVM");
         return; // can't initialize from native before we have a jVMKeyboard
     }
-    if (debugKeyboard) {
+    if (debugKeyboard == 1) {
         ATTACH_LOG_FINE("Initializing native Keyboard from Android/native code");
     }
     jint error = (*jVMKeyboard)->AttachCurrentThread(jVMKeyboard, (void **)&javaEnvKeyboard, NULL);
@@ -83,11 +83,11 @@ void attach_sendVisibleHeight(jfloat jheight) {
         ATTACH_LOG_FINE("javaEnvKeyboard still null, not ready to process keyboard events");
         return;
     }
-    if (debugKeyboard) {
+    if (debugKeyboard == 1) {
         ATTACH_LOG_FINE("call Attach method from native Keyboard: %.3f", jheight);
     }
     (*javaEnvKeyboard)->CallStaticVoidMethod(javaEnvKeyboard, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight);
-    if (debugKeyboard) {
+    if (debugKeyboard == 1) {
         ATTACH_LOG_FINE("called Attach method from native Keyboard done");
     }
 }
