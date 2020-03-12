@@ -70,8 +70,11 @@ extern jfloat density;
 extern char *appDataDir;
 
 JavaVM* substrateGetAndroidVM();
+JNIEnv* substrateGetAndroidEnv();
 jclass substrateGetActivityClass();
 jobject substrateGetActivity();
+
+jclass substrateGetBleServiceClass();
 
 void __attribute__((weak)) androidJfx_requestGlassToRedraw() {}
 void __attribute__((weak)) androidJfx_setNativeWindow(ANativeWindow *nativeWindow) {}

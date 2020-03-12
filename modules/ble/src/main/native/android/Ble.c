@@ -58,15 +58,39 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startS
 (JNIEnv *env, jclass jClass)
 {
     JavaVM* androidVM = substrateGetAndroidVM();
+    // JNIEnv* androidEnv = substrateGetAndroidEnv();
     jclass activityClass = substrateGetActivityClass();
-    fprintf(stderr, "[DRAC] Android VM found at %p\n", androidVM);
+    jobject jActivity = substrateGetActivity();
+
+
+
+
+    fprintf(stderr, "[DRACC] Android VM found at %p\n", androidVM);
     ATTACH_LOG_FINE("attach thread to android vm...");
+    ATTACH_LOG_FINE("find class...");
+
+    // jclass js = (*androidEnv)->FindClass(androidEnv, "java/lang/String");
+    // fprintf(stderr, "[DRAC] fc22 results in %p\n", js);
+
+    // jclass jBleServiceClass = (*androidEnv)->FindClass(androidEnv, "com/gluonhq/helloandroid/BleService");
+    jclass jBleServiceClass = substrateGetBleServiceClass();
+    fprintf(stderr, "[DRAC] fcble results in %p\n", jBleServiceClass);
     JNIEnv* androidEnv;
     (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
-    ATTACH_LOG_FINE("search method found 1....");
+
+    ATTACH_LOG_FINE("find method...");
+
+    jmethodID jBleServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "<init>", "(Lcom/gluonhq/helloandroid/MainActivity;)V");
+
+    ATTACH_LOG_FINE("invoke method...");
+    jobject bleservice = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
+
+
+/*
     jmethodID ble_startScannerMethod = (*androidEnv)->GetStaticMethodID(androidEnv, activityClass, "attach_ble_startScanner", "()V");
     ATTACH_LOG_FINE("invoke method found 2....");
     (*androidEnv)->CallStaticVoidMethod(androidEnv, activityClass, ble_startScannerMethod);
+*/
     ATTACH_LOG_FINE("detach thread found 3....");
     (*androidVM)->DetachCurrentThread(androidVM);
 
