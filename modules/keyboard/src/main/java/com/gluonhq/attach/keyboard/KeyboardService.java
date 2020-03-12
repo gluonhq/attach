@@ -28,8 +28,8 @@
 package com.gluonhq.attach.keyboard;
 
 import com.gluonhq.attach.util.Services;
-import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 
 import java.util.Optional;
 
@@ -60,16 +60,20 @@ public interface KeyboardService {
     }
 
     /**
-     * Returns a property with the visible height of the software keyboard.
-     * @return A property containing the visible height of the software keyboard.
+     * Node is adjusted vertically when software keyboard shows up, so it
+     * is visible and not covered by it. For that, the root parent will
+     * be moved accordingly.
+     *
+     * @param node the Node to adjust, so it is always visible
      */
-    ReadOnlyFloatProperty visibleHeightProperty();
+    void keepVisibilityForNode(Node node);
 
     /**
      * Node is adjusted vertically when software keyboard shows up, so it
      * is visible and not covered by it
      *
-     * @param node the Node to adjust
+     * @param node the Node to adjust, so it is always visible
+     * @param parent the Parent of the node that will be moved
      */
-    void keepVisibilityForNode(Node node);
+    void keepVisibilityForNode(Node node, Parent parent);
 }

@@ -28,7 +28,9 @@
 
 #include "Keyboard.h"
 
-JNIEnv *env;
+static JNIEnv *env;
+static jclass jAttachKeyboardClass;
+static jmethodID jAttachKeyboardMethod_notifyVisibleHeight = 0;
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
@@ -36,41 +38,30 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 #ifdef JNI_VERSION_1_8
     //min. returned JNI_VERSION required by JDK8 for builtin libraries
     if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
-        return JNI_VERSION_1_4;
+        AttachLog(@"Error initializing native Keyboard from OnLoad");
+        return JNI_FALSE;
     }
+    AttachLog(@"Initializing native Keyboard from OnLoad");
+    jAttachKeyboardClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/IOSKeyboardService"));
+    jAttachKeyboardMethod_notifyVisibleHeight = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyVisibleHeight", "(F)V");
     return JNI_VERSION_1_8;
 #else
-    return JNI_VERSION_1_4;
+    #error Error: Java 8+ SDK is required to compile Attach
 #endif
 }
 
-static int KeyboardInited = 0;
-
 // Keyboard
-jclass mat_jKeyboardServiceClass;
-jmethodID mat_jKeyboardService_notifyVisibleHeight = 0;
 Keyboard *_keyboard;
 CGFloat currentKeyboardHeight = 0.0f;
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_initKeyboard
-(JNIEnv *env, jclass jClass)
-{
-    if (KeyboardInited)
-    {
-        return;
-    }
-    KeyboardInited = 1;
-    
-    mat_jKeyboardServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/IOSKeyboardService"));
-    mat_jKeyboardService_notifyVisibleHeight = (*env)->GetStaticMethodID(env, mat_jKeyboardServiceClass, "notifyVisibleHeight", "(F)V");
-
-    _keyboard = [[Keyboard alloc] init];
-    
-}
+BOOL debugKeyboard;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_startObserver
 (JNIEnv *env, jclass jClass)
 {
+    if (!_keyboard) {
+        _keyboard = [[Keyboard alloc] init];
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [_keyboard startObserver];
     });
@@ -80,12 +71,22 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_stopObserver
 (JNIEnv *env, jclass jClass)
 {
+    if (!_keyboard) {
+        _keyboard = [[Keyboard alloc] init];
+    }
+
     [_keyboard stopObserver];
     return;   
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    debugKeyboard = YES;
+}
+
 void sendVisibleHeight() {
-    (*env)->CallStaticVoidMethod(env, mat_jKeyboardServiceClass, mat_jKeyboardService_notifyVisibleHeight, currentKeyboardHeight);
+    (*env)->CallStaticVoidMethod(env, jAttachKeyboardClass, jAttachKeyboardMethod_notifyVisibleHeight, currentKeyboardHeight);
 }
 
 @implementation Keyboard 
@@ -108,12 +109,25 @@ void sendVisibleHeight() {
     NSDictionary *info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     currentKeyboardHeight = kbSize.height;
+    [self logMessage:@"Keyboard will show: %f",kbSize];
     sendVisibleHeight();
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
     currentKeyboardHeight = 0.0f;
+    [self logMessage:@"Keyboard will hide"];
     sendVisibleHeight();
+}
+
+- (void) logMessage:(NSString *)format, ...;
+{
+    if (debugKeyboard)
+    {
+        va_list args;
+        va_start(args, format);
+        NSLogv([@"[Attach Debug] " stringByAppendingString:format], args);
+        va_end(args);
+    }
 }
 
 @end

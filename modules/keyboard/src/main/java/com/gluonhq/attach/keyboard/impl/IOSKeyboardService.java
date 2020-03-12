@@ -30,56 +30,72 @@ package com.gluonhq.attach.keyboard.impl;
 import com.gluonhq.attach.keyboard.KeyboardService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
+import com.gluonhq.attach.util.Constants;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.util.Duration;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class IOSKeyboardService implements KeyboardService {
 
+    private static final Logger LOG = Logger.getLogger(IOSKeyboardService.class.getName());
     private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
+    private static boolean debug;
 
     static {
-        System.loadLibrary("Keyboard");
-        initKeyboard();
+        if (Platform.isFxApplicationThread()) {
+            System.loadLibrary("Keyboard");
+        } else {
+            Platform.runLater(() -> System.loadLibrary("Keyboard"));
+        }
     }
 
     public IOSKeyboardService() {
+        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
+        if (debug) {
+            enableDebug();
+        }
+
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSKeyboardService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, IOSKeyboardService::startObserver);
         });
         startObserver();
     }
-    
-    @Override
-    public ReadOnlyFloatProperty visibleHeightProperty() {
-        return VISIBLE_HEIGHT.getReadOnlyProperty();
-    }
 
     @Override
     public void keepVisibilityForNode(Node node) {
-        visibleHeightProperty().addListener((obs, ov, nv) -> adjustPosition(node, nv.doubleValue()));
+        keepVisibilityForNode(node, null);
     }
 
-    private static void adjustPosition(Node node, double kh) {
+    @Override
+    public void keepVisibilityForNode(Node node, Parent parent) {
+        VISIBLE_HEIGHT.addListener((obs, ov, nv) -> adjustPosition(node, parent, nv.doubleValue()));
+    }
+
+    private static void adjustPosition(Node node, Parent parent, double kh) {
         if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {
             return;
         }
         double tTot = node.getScene().getHeight();
         double ty = node.getLocalToSceneTransform().getTy() + node.getBoundsInParent().getHeight() + 2;
         double y = 1;
-        Parent root = node.getScene().getRoot();
+        Parent root = parent == null ? node.getScene().getRoot() : parent;
         if (ty > tTot - kh) {
             y = tTot - ty - kh;
         } else if (kh == 0 && root.getTranslateY() != 0) {
             y = 0;
         }
         if (y <= 0) {
+            if (debug) {
+                LOG.log(Level.INFO, String.format("Moving %s %.2f pixels", root, y));
+            }
             final TranslateTransition transition = new TranslateTransition(Duration.millis(100), root);
             transition.setFromY(root.getTranslateY());
             transition.setToY(y);
@@ -89,10 +105,10 @@ public class IOSKeyboardService implements KeyboardService {
     }
 
     // native
-    private static native void initKeyboard();
     private static native void startObserver();
     private static native void stopObserver();
-    
+    private static native void enableDebug();
+
     // callback
     private static void notifyVisibleHeight(float height) {
         if (VISIBLE_HEIGHT.get() != height) {
