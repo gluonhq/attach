@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.keyboard.impl.AndroidKeyboardService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
