@@ -111,7 +111,16 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             n
         }
     } else if (os == "android") {
+        def sdk = System.getenv("ANDROID_SDK")
+        if (sdk == null) {
+            throw new GradleException("Error: ANDROID_SDK can't be null")
+        }
+        def androidJar = sdk + "/platforms/android-27/android.jar"
+
         def ndk = System.getenv("ANDROID_NDK")
+        if (ndk == null) {
+            throw new GradleException("Error: ANDROID_NDK can't be null")
+        }
         def host = System.getProperty('os.name').toLowerCase().contains("mac") ?
                 "darwin" : "linux"
 
@@ -130,7 +139,23 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         osIncludeFlags = ["-I$JAVAHOME/include/$host",
                           "-I$projectDir/../../gradle/include/android"].flatten()
 
-        osSources = "$projectDir/src/main/native/$os/${name}.c"
+        def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/precompiled/classes"
+        File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")
+        if (sourcesDir.exists()) {
+            osSources = sourcesDir.listFiles()
+        }
+        def javacArgs = ["-d", dalvikOutput,
+                        "-source", "1.7", "-target", "1.7",
+                        "-cp", "$projectDir/src/main/native/$os/dalvik/",
+                        "-bootclasspath", androidJar,
+                         osSources].flatten()
+        exec {
+            executable "javac"
+            args javacArgs
+            workingDir sourcesDir
+        }
+
+        osSources = "$projectDir/src/main/native/$os/c/${name}.c"
 
         def compilerArgs = ["-target", platform, "-c", includeFlags, osIncludeFlags, osSources].flatten()
 
