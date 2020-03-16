@@ -1,0 +1,8 @@
+[
+  {
+    "name" : "com.gluonhq.attach.keyboard.impl.AndroidKeyboardService",
+    "methods":[
+      {"name":"notifyVisibleHeight","parameterTypes":["float"]}
+      ]
+  }
+]
