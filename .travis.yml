@@ -9,10 +9,22 @@ os: osx
 osx_image: xcode11.3
 
 before_script:
-  - mkdir -p $HOME/ndk && cd $HOME/ndk
-  - wget https://dl.google.com/android/repository/android-ndk-r21-darwin-x86_64.zip
-  - unzip -q android-ndk-r21-darwin-x86_64.zip && cd $TRAVIS_BUILD_DIR
-  - export ANDROID_NDK=$HOME/ndk/android-ndk-r21
+  - mkdir -p $HOME/android-sdk && cd $HOME/android-sdk
+  - wget https://dl.google.com/android/repository/sdk-tools-darwin-4333796.zip
+  - unzip -q sdk-tools-darwin-4333796.zip
+  - cd tools/lib/ & mkdir java11 && cd java11
+  - wget https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar
+  - wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-xjc/2.3.2/jaxb-xjc-2.3.2.jar
+  - wget https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-impl/2.3.0.1/jaxb-impl-2.3.0.1.jar
+  - wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-core/2.3.0.1/jaxb-core-2.3.0.1.jar
+  - wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-jxc/2.3.2/jaxb-jxc-2.3.2.jar
+  - wget https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar
+  - wget https://repo1.maven.org/maven2/com/sun/istack/istack-commons-runtime/3.0.10/istack-commons-runtime-3.0.10.jar
+  - cd ../../..
+  - java -Dcom.android.sdklib.toolsdir=tools -classpath "tools/lib/*:tools/lib/java11/*" com.android.sdklib.tool.sdkmanager.SdkManagerCli "platforms;android-27" "build-tools;27.0.3" "platform-tools" "extras;android;m2repository" "extras;google;m2repository" "ndk-bundle"
+  - cd $TRAVIS_BUILD_DIR
+  - export ANDROID_SDK=$HOME/android-sdk
+  - export ANDROID_NDK=$HOME/android-sdk/ndk-bundle
   - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home
 
 # run maven build
