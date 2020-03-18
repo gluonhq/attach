@@ -33,6 +33,7 @@ JavaVM *jVMKeyboard = NULL;
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
 int debugKeyboard = 0;
+void initKeyboard();
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
@@ -56,8 +57,7 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 
 static int KeyboardInited = 0;
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_initKeyboard
-(JNIEnv *env, jclass jClass)
+void initKeyboard()
 {
     if (KeyboardInited)
     {

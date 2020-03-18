@@ -49,12 +49,8 @@ public class AndroidKeyboardService implements KeyboardService {
     static {
         if (Platform.isFxApplicationThread()) {
             System.loadLibrary("Keyboard");
-            initKeyboard();
         } else {
-            Platform.runLater(() -> {
-                System.loadLibrary("Keyboard");
-                initKeyboard();
-            });
+            Platform.runLater(() -> System.loadLibrary("Keyboard"));
         }
     }
 
@@ -101,7 +97,6 @@ public class AndroidKeyboardService implements KeyboardService {
     }
 
     // native
-    private static native void initKeyboard();
     private static native void enableDebug();
 
     // callback
