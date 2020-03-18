@@ -54,6 +54,36 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 #endif
 }
 
+static int KeyboardInited = 0;
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_initKeyboard
+(JNIEnv *env, jclass jClass)
+{
+    if (KeyboardInited)
+    {
+        return;
+    }
+    KeyboardInited = 1;
+
+    ATTACH_LOG_FINE("Init AndroidKeyboardService");
+    JavaVM* androidVM = substrateGetAndroidVM();
+    jclass activityClass = substrateGetActivityClass();
+    jobject jActivity = substrateGetActivity();
+    jclass jKeyboardServiceClass = substrateGetKeyboardServiceClass();
+
+    JNIEnv* androidEnv;
+    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+    jmethodID jKeyboardServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jKeyboardServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jobject keyboardservice = (*androidEnv)->NewObject(androidEnv, jKeyboardServiceClass, jKeyboardServiceInitMethod, jActivity);
+    (*androidVM)->DetachCurrentThread(androidVM);
+
+    density = android_getDensity(env);
+    if (density == 0.0f) {
+         density = 1.0f;
+    }
+    ATTACH_LOG_FINE("Dalvik KeyboardService init was called");
+}
+
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_enableDebug
 (JNIEnv *env, jclass jClass)
 {
@@ -77,18 +107,18 @@ void initializeKeyboardFromNative() {
     }
 }
 
-void attach_sendVisibleHeight(jfloat jheight) {
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_KeyboardService_nativeDispatchKeyboardHeight(JNIEnv *env, jobject activity, jfloat jheight)
+{
+    if (debugKeyboard == 1) {
+        ATTACH_LOG_FINE("Dispatching keyboard height from native Dalvik layer: %.3f", jheight / density);
+    }
     initializeKeyboardFromNative();
     if (javaEnvKeyboard == NULL) {
         ATTACH_LOG_FINE("javaEnvKeyboard still null, not ready to process keyboard events");
         return;
     }
-    if (debugKeyboard == 1) {
-        ATTACH_LOG_FINE("call Attach method from native Keyboard: %.3f", jheight);
-    }
-    (*javaEnvKeyboard)->CallStaticVoidMethod(javaEnvKeyboard, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight);
+    (*javaEnvKeyboard)->CallStaticVoidMethod(javaEnvKeyboard, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight / density);
     if (debugKeyboard == 1) {
         ATTACH_LOG_FINE("called Attach method from native Keyboard done");
     }
 }
-

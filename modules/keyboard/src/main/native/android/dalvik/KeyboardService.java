@@ -25,10 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.helloandroid;
 
-#include <android/native_window_jni.h>
-#include "AttachMacrosAndroid.h"
+import android.app.Activity;
+import android.util.Log;
 
-extern jfloat density;
-jfloat android_getDensity(JNIEnv *env);
-jclass substrateGetKeyboardServiceClass();
+class KeyboardService {
+
+    private static final String TAG = "GluonAttach";
+
+    public KeyboardService(Activity activity) {
+
+        Log.v(TAG, "KeyboardService <init> for activity: " + activity);
+        new KeyboardView(activity, new KeyboardHeightListener() {
+            @Override
+            public void onHeightChanged(float keyboardHeight) {
+                Log.v(TAG, "Keyboard service: height = " + keyboardHeight);
+                nativeDispatchKeyboardHeight(keyboardHeight);
+            }
+        });
+    }
+
+    private native void nativeDispatchKeyboardHeight(float height);
+
+}
