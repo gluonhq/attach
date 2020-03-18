@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ble.impl.AndroidBleService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
