@@ -33,3 +33,14 @@
 #define ATTACH_LOG_FINEST(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE,"GluonAttach", __VA_ARGS__))
 #define ATTACH_LOG_WARNING(...)  ((void)__android_log_print(ANDROID_LOG_WARN,"GluonAttach", __VA_ARGS__))
 #define ATTACH_LOG_SEVERE(...)  ((void)__android_log_print(ANDROID_LOG_ERROR,"GluonAttach", __VA_ARGS__))
+
+extern jclass activityClass;
+extern jobject activity;
+
+extern JavaVM *androidVM;
+extern JNIEnv *androidEnv;
+
+JavaVM* substrateGetAndroidVM();
+JNIEnv* substrateGetAndroidEnv();
+jclass substrateGetActivityClass();
+jobject substrateGetActivity();
