@@ -48,6 +48,7 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
     ATTACH_LOG_FINE("Initializing native Keyboard from OnLoad");
     jAttachKeyboardClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/AndroidKeyboardService"));
     jAttach_notifyHeightMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyVisibleHeight", "(F)V");
+    initKeyboard();
     ATTACH_LOG_FINE("Initializing native Keyboard done");
     return JNI_VERSION_1_8;
 #else
