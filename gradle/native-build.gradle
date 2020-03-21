@@ -141,8 +141,10 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
 
         def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/precompiled/classes"
         File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")
+        File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
         if (sourcesDir.exists()) {
-            def javaSources = sourcesDir.listFiles()
+            def javaSources = [sourcesDir.listFiles(),
+                               sourcesUtilDir.listFiles()].flatten()
 
             def javacArgs = ["-d", dalvikOutput,
                              "-source", "1.7", "-target", "1.7",
