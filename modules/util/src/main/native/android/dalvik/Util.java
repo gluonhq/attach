@@ -40,7 +40,7 @@ public class Util {
         Log.v(TAG, "Util <init>");
     }
 
-    public void setOnActivityResultHandler(IntentHandler handler) {
+    public static void setOnActivityResultHandler(IntentHandler handler) {
         intentHandler = handler;
     }
 
