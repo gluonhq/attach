@@ -41,13 +41,13 @@ public class Util {
     }
 
     public static void setOnActivityResultHandler(IntentHandler handler) {
-        intentHandler = handler;
+        Util.intentHandler = handler;
     }
 
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
-        if (intentHandler != null) {
-            intentHandler.gotActivityResult(requestCode, resultCode, intent);
+        if (Util.intentHandler != null) {
+            Util.intentHandler.gotActivityResult(requestCode, resultCode, intent);
         }
     }
 }
