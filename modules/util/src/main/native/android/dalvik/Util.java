@@ -25,23 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.helloandroid;
 
-#include <android/log.h>
+import android.content.Intent;
+import android.util.Log;
 
-#define ATTACH_LOG_INFO(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINE(...)  ((void)__android_log_print(ANDROID_LOG_DEBUG,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINEST(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_WARNING(...)  ((void)__android_log_print(ANDROID_LOG_WARN,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_SEVERE(...)  ((void)__android_log_print(ANDROID_LOG_ERROR,"GluonAttach", __VA_ARGS__))
+public class Util {
 
-extern jclass activityClass;
-extern jobject activity;
+    private static final String TAG = "GluonAttach";
 
-extern JavaVM *androidVM;
-extern JNIEnv *androidEnv;
+    private static IntentHandler intentHandler;
 
-JavaVM* substrateGetAndroidVM();
-JNIEnv* substrateGetAndroidEnv();
-jclass substrateGetActivityClass();
-jclass substrateGetUtilClass();
-jobject substrateGetActivity();
+    public Util() {
+        Log.v(TAG, "Util <init>");
+    }
+
+    public void setOnActivityResultHandler(IntentHandler handler) {
+        intentHandler = handler;
+    }
+
+    private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
+        if (intentHandler != null) {
+            intentHandler.gotActivityResult(requestCode, resultCode, intent);
+        }
+    }
+}

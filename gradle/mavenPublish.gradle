@@ -67,6 +67,8 @@ publishing {
                 }
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "android")
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
+            } else {
+                artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "android")
             }
             artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "")
             artifact sourcesJar

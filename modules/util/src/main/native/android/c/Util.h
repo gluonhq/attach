@@ -26,22 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <android/log.h>
+#include <android/native_window_jni.h>
+#include "AttachMacrosAndroid.h"
 
-#define ATTACH_LOG_INFO(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINE(...)  ((void)__android_log_print(ANDROID_LOG_DEBUG,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINEST(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_WARNING(...)  ((void)__android_log_print(ANDROID_LOG_WARN,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_SEVERE(...)  ((void)__android_log_print(ANDROID_LOG_ERROR,"GluonAttach", __VA_ARGS__))
-
-extern jclass activityClass;
-extern jobject activity;
-
-extern JavaVM *androidVM;
-extern JNIEnv *androidEnv;
-
-JavaVM* substrateGetAndroidVM();
-JNIEnv* substrateGetAndroidEnv();
-jclass substrateGetActivityClass();
-jclass substrateGetUtilClass();
-jobject substrateGetActivity();
+void attach_setActivityResult(JNIEnv *env, jint requestCode, jint resultCode, jobject intent);

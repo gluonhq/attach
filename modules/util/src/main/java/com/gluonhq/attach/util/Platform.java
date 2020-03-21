@@ -74,6 +74,14 @@ public enum Platform {
         String name = platform.toUpperCase(Locale.ROOT);
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
+
+        if (isAndroid()) {
+            if (javafx.application.Platform.isFxApplicationThread()) {
+                System.loadLibrary("Util");
+            } else {
+                javafx.application.Platform.runLater(() -> System.loadLibrary("Util"));
+            }
+        }
     }
 
     /**
