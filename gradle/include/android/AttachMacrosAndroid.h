@@ -44,4 +44,5 @@ JavaVM* substrateGetAndroidVM();
 JNIEnv* substrateGetAndroidEnv();
 jclass substrateGetActivityClass();
 jclass substrateGetUtilClass();
+jclass substrateGetPermissionActivityClass();
 jobject substrateGetActivity();
