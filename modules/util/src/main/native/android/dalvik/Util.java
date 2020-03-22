@@ -44,10 +44,17 @@ public class Util {
         Util.intentHandler = handler;
     }
 
+    public static void verifyPermissions(String... permissions) {
+        Log.v(TAG, "Util::verifyPermissions for permissions: " + permissions);
+        Util.nativeVerifyPermissions(permissions);
+    }
+
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
         if (Util.intentHandler != null) {
             Util.intentHandler.gotActivityResult(requestCode, resultCode, intent);
         }
     }
+
+    private native static void nativeVerifyPermissions(String[] permissions);
 }

@@ -28,5 +28,7 @@
 
 #include <android/native_window_jni.h>
 #include "AttachMacrosAndroid.h"
+#include <stdlib.h>
+#include <string.h>
 
 void attach_setActivityResult(JNIEnv *env, jint requestCode, jint resultCode, jobject intent);
