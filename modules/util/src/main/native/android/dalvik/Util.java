@@ -46,7 +46,8 @@ public class Util {
 
     public static void verifyPermissions(String... permissions) {
         Log.v(TAG, "Util::verifyPermissions for permissions: " + permissions);
-        Util.nativeVerifyPermissions(permissions);
+        Util util = new Util();
+        util.nativeVerifyPermissions(permissions);
     }
 
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -56,5 +57,5 @@ public class Util {
         }
     }
 
-    private native static void nativeVerifyPermissions(String[] permissions);
+    private native void nativeVerifyPermissions(String[] permissions);
 }

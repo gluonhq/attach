@@ -70,7 +70,7 @@ void initUtil() {
     (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     jmethodID jUtilInitMethod = (*androidEnv)->GetMethodID(androidEnv, jUtilClass, "<init>", "()V");
     jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
-    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[java/lang/String;)V");
+    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)V");
     jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
     (*androidVM)->DetachCurrentThread(androidVM);
     ATTACH_LOG_FINE("Dalvik Util init was called");
@@ -78,24 +78,8 @@ void initUtil() {
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermissions(JNIEnv *env, jobject activity, jobjectArray jpermissionsArray)
 {
-    int listCount = (*env)->GetArrayLength(env, jpermissionsArray);
-    ATTACH_LOG_FINE("Calling Verify Permissions (%d) from Attach::Util", listCount);
-
-    char **result = (char **) malloc(listCount * sizeof(char *));
-    for (int i = 0; i < listCount; i++) {
-        jstring jitem = (jstring) ((*env)->GetObjectArrayElement(env, jpermissionsArray, i));
-        const char *itemString = (*env)->GetStringUTFChars(env, jitem, NULL);
-
-        int tmpArgSize = strnlen(itemString, 512);
-        char *tmpArgs = calloc(sizeof(char), tmpArgSize);
-        strcpy(tmpArgs, "");
-        strcat(tmpArgs, itemString);
-        result[i] = tmpArgs;
-        ATTACH_LOG_FINE("- Permission: %s (%s)", itemString, result[i]);
-        (*env)->ReleaseStringUTFChars(env, jitem, itemString);
-    }
-
-    (*env)->CallStaticVoidMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, activity, result);
+    ATTACH_LOG_FINE("Calling Verify Permissions from Attach::Util");
+    (*env)->CallStaticVoidMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, substrateGetActivity(), jpermissionsArray);
     ATTACH_LOG_FINE("Verify Permissions from native Attach::Util done");
 }
 
