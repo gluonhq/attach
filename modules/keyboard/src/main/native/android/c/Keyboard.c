@@ -29,7 +29,7 @@
 
 static JNIEnv *env;
 JNIEnv* javaEnvKeyboard = NULL;
-JavaVM *jVMKeyboard = NULL;
+static JavaVM *graalVM = NULL;
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
 int debugKeyboard = 0;
@@ -44,7 +44,7 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
         ATTACH_LOG_WARNING("Error initializing native Keyboard from OnLoad");
         return JNI_FALSE;
     }
-    (*env)->GetJavaVM(env, &jVMKeyboard);
+    graalVM = getGraalVM();
     ATTACH_LOG_FINE("Initializing native Keyboard from OnLoad");
     jAttachKeyboardClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/AndroidKeyboardService"));
     jAttach_notifyHeightMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyVisibleHeight", "(F)V");
@@ -95,14 +95,14 @@ void initializeKeyboardFromNative() {
     if (javaEnvKeyboard != NULL) {
         return; // already have a JNIEnv
     }
-    if (jVMKeyboard == NULL) {
+    if (graalVM == NULL) {
         ATTACH_LOG_FINE("initialize Keyboard from native can't be done without JVM");
-        return; // can't initialize from native before we have a jVMKeyboard
+        return; // can't initialize from native before we have a graalVM
     }
     if (debugKeyboard == 1) {
         ATTACH_LOG_FINE("Initializing native Keyboard from Android/native code");
     }
-    jint error = (*jVMKeyboard)->AttachCurrentThread(jVMKeyboard, (void **)&javaEnvKeyboard, NULL);
+    jint error = (*graalVM)->AttachCurrentThread(graalVM, (void **)&javaEnvKeyboard, NULL);
     if (error != 0) {
         ATTACH_LOG_FINE("initializeKeyboardFromNative failed with error %d", error);
     }

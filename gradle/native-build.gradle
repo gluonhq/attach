@@ -137,7 +137,8 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
 
         osIncludeFlags = ["-I$JAVAHOME/include/$host",
-                          "-I$projectDir/../../gradle/include/android"].flatten()
+                          "-I$projectDir/../../gradle/include/android",
+                          "-I$projectDir/../util/src/main/native/$os/c"].flatten()
 
         def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/precompiled/classes"
         File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")

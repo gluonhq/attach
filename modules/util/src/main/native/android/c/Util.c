@@ -28,7 +28,7 @@
 #include "Util.h"
 
 static JNIEnv *env;
-JavaVM *jVMUtil = NULL;
+static JavaVM *graalVM = NULL;
 static jclass jUtilClass;
 static jclass jPermissionActivityClass;
 static jmethodID jUtilOnActivityResultMethod;
@@ -44,7 +44,7 @@ JNI_OnLoad_Util(JavaVM *vm, void *reserved)
         ATTACH_LOG_WARNING("Error initializing native Util from OnLoad");
         return JNI_FALSE;
     }
-    (*env)->GetJavaVM(env, &jVMUtil);
+    (*env)->GetJavaVM(env, &graalVM);
     ATTACH_LOG_FINE("Initializing native Util from OnLoad");
     initUtil();
     return JNI_VERSION_1_8;
@@ -74,6 +74,10 @@ void initUtil() {
     jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
     (*androidVM)->DetachCurrentThread(androidVM);
     ATTACH_LOG_FINE("Dalvik Util init was called");
+}
+
+JavaVM* getGraalVM() {
+    return graalVM;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermissions(JNIEnv *env, jobject activity, jobjectArray jpermissionsArray)

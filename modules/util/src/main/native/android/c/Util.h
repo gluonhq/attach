@@ -29,4 +29,6 @@
 #include <android/native_window_jni.h>
 #include "AttachMacrosAndroid.h"
 
+JavaVM* getGraalVM();
+
 void attach_setActivityResult(JNIEnv *env, jint requestCode, jint resultCode, jobject intent);
