@@ -44,10 +44,10 @@ public class Util {
         Util.intentHandler = handler;
     }
 
-    public static void verifyPermissions(String... permissions) {
+    public static boolean verifyPermissions(String... permissions) {
         Log.v(TAG, "Util::verifyPermissions for permissions: " + permissions);
         Util util = new Util();
-        util.nativeVerifyPermissions(permissions);
+        return util.nativeVerifyPermissions(permissions);
     }
 
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -57,5 +57,5 @@ public class Util {
         }
     }
 
-    private native void nativeVerifyPermissions(String[] permissions);
+    private native boolean nativeVerifyPermissions(String[] permissions);
 }

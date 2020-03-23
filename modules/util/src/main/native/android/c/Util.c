@@ -69,18 +69,19 @@ void initUtil() {
     JNIEnv* androidEnv;
     (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     jmethodID jUtilInitMethod = (*androidEnv)->GetMethodID(androidEnv, jUtilClass, "<init>", "()V");
-    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
+    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)Z");
     jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)V");
     jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
     (*androidVM)->DetachCurrentThread(androidVM);
     ATTACH_LOG_FINE("Dalvik Util init was called");
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermissions(JNIEnv *env, jobject activity, jobjectArray jpermissionsArray)
+JNIEXPORT jboolean JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermissions(JNIEnv *env, jobject activity, jobjectArray jpermissionsArray)
 {
     ATTACH_LOG_FINE("Calling Verify Permissions from Attach::Util");
-    (*env)->CallStaticVoidMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, substrateGetActivity(), jpermissionsArray);
+    jboolean jresult = (*env)->CallStaticBooleanMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, substrateGetActivity(), jpermissionsArray);
     ATTACH_LOG_FINE("Verify Permissions from native Attach::Util done");
+    return jresult;
 }
 
 void attach_setActivityResult(JNIEnv *env, jint requestCode, jint resultCode, jobject intent)
