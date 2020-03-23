@@ -69,8 +69,8 @@ void initUtil() {
     JNIEnv* androidEnv;
     (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     jmethodID jUtilInitMethod = (*androidEnv)->GetMethodID(androidEnv, jUtilClass, "<init>", "()V");
-    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)Z");
-    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)V");
+    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
+    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)Z");
     jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
     (*androidVM)->DetachCurrentThread(androidVM);
     ATTACH_LOG_FINE("Dalvik Util init was called");
