@@ -26,8 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <android/native_window_jni.h>
-#include "AttachMacrosAndroid.h"
+#include "Util.h"
 
 void attach_setLifecycleEvent(const char* event);
 

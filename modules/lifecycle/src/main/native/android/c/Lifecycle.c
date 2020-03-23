@@ -29,7 +29,7 @@
 
 static JNIEnv *env;
 JNIEnv* javaEnvLifecycle = NULL;
-JavaVM *jVMLifecycle = NULL;
+static JavaVM *graalVM = NULL;
 static jclass jAttachLifecycleClass;
 static jmethodID attach_setEvent;
 JNIEXPORT jint JNICALL
@@ -41,7 +41,7 @@ JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
         ATTACH_LOG_WARNING("Error initializing native Lifecycle from OnLoad");
         return JNI_FALSE;
     }
-    (*env)->GetJavaVM(env, &jVMLifecycle);
+    graalVM = getGraalVM();
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad");
     jAttachLifecycleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/lifecycle/impl/AndroidLifecycleService"));
     attach_setEvent = (*env)->GetStaticMethodID(env, jAttachLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
@@ -56,12 +56,12 @@ void initializeLifecycleFromNative() {
     if (javaEnvLifecycle != NULL) {
         return; // already have a JNIEnv
     }
-    if (jVMLifecycle == NULL) {
+    if (graalVM == NULL) {
         ATTACH_LOG_FINE("initialize Lifecycle from native can't be done without JVM");
-        return; // can't initialize from native before we have a jVMLifecycle
+        return; // can't initialize from native before we have a graalVM
     }
     ATTACH_LOG_FINE("Initializing native Lifecycle from Android/native code");
-    jint error = (*jVMLifecycle)->AttachCurrentThread(jVMLifecycle, (void **)&javaEnvLifecycle, NULL);
+    jint error = (*graalVM)->AttachCurrentThread(graalVM, (void **)&javaEnvLifecycle, NULL);
     if (error != 0) {
         ATTACH_LOG_FINE("initializeLifecycleFromNative failed with error %d", error);
     }
