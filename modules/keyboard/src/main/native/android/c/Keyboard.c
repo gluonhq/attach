@@ -76,6 +76,7 @@ void initKeyboard()
     (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     jmethodID jKeyboardServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jKeyboardServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jobject keyboardservice = (*androidEnv)->NewObject(androidEnv, jKeyboardServiceClass, jKeyboardServiceInitMethod, jActivity);
+    ATTACH_LOG_INFO("ks at %p\n", keyboardservice);
     (*androidVM)->DetachCurrentThread(androidVM);
 
     density = android_getDensity(env);
