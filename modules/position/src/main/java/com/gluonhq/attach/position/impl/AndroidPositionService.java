@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,18 +47,13 @@ public class AndroidPositionService implements PositionService {
 
     static {
         System.loadLibrary("Position");
-        // initPosition();
     }
 
     private static ReadOnlyObjectWrapper<Position> position;
     private static boolean running;
-    private Parameters parameters;
+    private Parameters parameters = DEFAULT_PARAMETERS;
     
     public AndroidPositionService() {
-System.err.println("[JVDBG] CREATE ANDROID POSITIONSERVICE ");
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
         position = new ReadOnlyObjectWrapper<>();
 
         LifecycleService.create().ifPresent(l -> {
@@ -87,7 +82,6 @@ System.err.println("[JVDBG] CREATE ANDROID POSITIONSERVICE ");
             stop();
         }
         this.parameters = parameters;
-System.err.println("START POSITIONOBSERVER");
         startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(),
                  parameters.getDistanceFilter(), parameters.isBackgroundModeEnabled());
         running  = true;
@@ -95,7 +89,6 @@ System.err.println("START POSITIONOBSERVER");
 
     @Override
     public void stop() {
-System.err.println("STOP POSITIONOBSERVER");
         stopObserver();
         running = false;
     }
@@ -110,17 +103,9 @@ System.err.println("STOP POSITIONOBSERVER");
         return positionProperty().get();
     }
     
-    // native
-    // private static native void initPosition(); // init IDs for java callbacks from native
     private static native void startObserver(String accuracy, long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
+    private static native void stopObserver();
 
-    private static void stopObserver() {
-System.err.println("POSITIONSERVICE stop observer");
-    }
-    private static void enableDebug() {
-System.err.println("POSITIONSERVICE enableDebug");
-    }
-    
     // callback
     private static void setLocation(double lat, double lon, double alt) {
         Position p = new Position(lat, lon, alt);

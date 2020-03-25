@@ -78,7 +78,7 @@ public static final Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Ac
     private boolean debug = true;
 
     public DalvikPositionService(Activity activity) {
-        Log.v(TAG, "DALVIKPOSITIONSERVICE");
+        Log.v(TAG, "Construct DalvikPositionService");
         this.activityContext = activity;
         boolean gpsEnabled = Util.verifyPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) || 
                 Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -99,7 +99,7 @@ e.printStackTrace();
     }
 
     public void start(Parameters parameters) {
-        Log.v(TAG, "DalvikPositionService, START called");
+        Log.v(TAG, "DalvikPositionService, start called");
         if (running) {
             stop();
         }
@@ -112,6 +112,7 @@ e.printStackTrace();
     }
 
     public void stop() {
+        Log.v(TAG, "DalvikPositionService, stop called");
         running = false;
         
         quitLooperTask();
@@ -272,9 +273,12 @@ e.printStackTrace();
             LOG.log(Level.SEVERE, "Error getting altitude mean sea level", ex);
         }
 System.err.println("[DALVIKPOSITION] update to "+latitude+", " + longitude+", "+altitude);
+        updatePositionNative(latitude, longitude, altitude);
         // Position newPosition = new Position(latitude, longitude, altitudeMeanSeaLevel);
         // Platform.runLater(() -> positionProperty.set(newPosition));
     }
+
+    private native void updatePositionNative(double lat, double lon, double alt);
 
     private Criteria getLocationProvider() {
         final Parameters.Accuracy accuracy = parameters.getAccuracy();
