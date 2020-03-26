@@ -38,7 +38,6 @@ extern jclass activityClass;
 extern jobject activity;
 
 extern JavaVM *androidVM;
-extern JNIEnv *androidEnv;
 
 JavaVM* substrateGetAndroidVM();
 JNIEnv* substrateGetAndroidEnv();
