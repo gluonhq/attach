@@ -149,7 +149,6 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
 
             def javacArgs = ["-d", dalvikOutput,
                              "-source", "1.7", "-target", "1.7",
-                             "-cp", "$projectDir/src/main/native/$os/dalvik/",
                              "-bootclasspath", androidJar,
                              javaSources].flatten()
             exec {
@@ -158,7 +157,8 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
                 workingDir sourcesDir
             }
         }
-        osSources = "$projectDir/src/main/native/$os/c/${name}.c"
+        File nativeSourcesDir = file("$projectDir/src/main/native/$os/c/")
+        osSources = [nativeSourcesDir.listFiles().findAll {it.name.endsWith(".c")}].flatten()
 
         def compilerArgs = ["-target", platform, "-c", includeFlags, osIncludeFlags, osSources].flatten()
 
