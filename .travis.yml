@@ -12,7 +12,7 @@ before_script:
   - bash ci/android.sh
   - export ANDROID_SDK=$HOME/android-sdk
   - export ANDROID_NDK=$HOME/android-sdk/ndk-bundle
-  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home
+  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home
 
 # run maven build
 script:
