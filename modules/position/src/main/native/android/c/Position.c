@@ -45,7 +45,7 @@ void initializeGraalHandles(JNIEnv* env) {
 }
 
 void initializeDalvikHandles() {
-    JavaVM* androidVM = substrateGetAndroidVM();
+    androidVM = substrateGetAndroidVM();
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
     jclass jPositionServiceClass = substrateGetPositionServiceClass();
@@ -76,11 +76,15 @@ void initializeDalvikHandles() {
 ///////////////////////////
 
 void startDalvikObserving() {
+    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     (*androidEnv)->CallVoidMethod(androidEnv, jPositionService, jPositionServiceStartMethod);
+    (*androidVM)->DetachCurrentThread(androidVM);
 }
 
 void stopDalvikObserving() {
+    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
     (*androidEnv)->CallVoidMethod(androidEnv, jPositionService, jPositionServiceStopMethod);
+    (*androidVM)->DetachCurrentThread(androidVM);
 }
 
 //////////////////////////
@@ -117,6 +121,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_position_impl_AndroidPositionServ
 (JNIEnv *env, jclass jClass) {
     ATTACH_LOG_FINE("Stop listening for location changes");
     stopDalvikObserving();
+    ATTACH_LOG_FINE("Stopped listening for location changes");
 }
 
 ///////////////////////////

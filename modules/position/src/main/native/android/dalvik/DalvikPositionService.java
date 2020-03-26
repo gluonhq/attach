@@ -44,7 +44,6 @@ import java.util.*;
 import java.util.logging.*;
 import android.util.Log;
 
-
 /**
  * An implementation of the
  * {@link PositionService PositionService} for the
@@ -112,10 +111,11 @@ e.printStackTrace();
     }
 
     public void stop() {
-        Log.v(TAG, "DalvikPositionService, stop called");
+        Log.v(TAG, "DalvikPositionService, stop called, quit looper");
         running = false;
         
         quitLooperTask();
+        Log.v(TAG, "DalvikPositionService, stop called, looper quit");
     }
     
     @Override
@@ -175,7 +175,7 @@ e.printStackTrace();
         boolean locationProviderEnabled = locationManager.isProviderEnabled(locationProvider);
         if (!locationProviderEnabled) {
             if (debug) {
-                LOG.log(Level.INFO, String.format("Location provider %s is not enabled, starting intent to ask user to activate the location provider.", locationProvider));
+                Log.v(TAG, String.format("Location provider %s is not enabled, starting intent to ask user to activate the location provider.", locationProvider));
             }
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             activityContext.startActivity(intent);
@@ -223,13 +223,13 @@ e.printStackTrace();
     private void createLooperTask() {
         if (locationManager == null) {
             if (debug) {
-                LOG.log(Level.INFO, "There is no LocationManager. Can't start LooperTask");
+                Log.v(TAG, "There is no LocationManager. Can't start LooperTask");
             }
             return;
         }
         
         if (debug) {
-            LOG.log(Level.INFO, String.format("Creating LooperTask to request location updates every %d milliseconds or %f meters.", parameters.getTimeInterval(), parameters.getDistanceFilter()));
+            Log.v(TAG, String.format("Creating LooperTask to request location updates every %d milliseconds or %f meters.", parameters.getTimeInterval(), parameters.getDistanceFilter()));
         }
         
         looperTask = new AndroidLooperTask() {
