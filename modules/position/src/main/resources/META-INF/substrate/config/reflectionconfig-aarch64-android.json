@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.position.impl.AndroidPositionService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
