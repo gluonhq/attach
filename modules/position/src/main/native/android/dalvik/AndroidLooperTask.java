@@ -25,23 +25,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.helloandroid;
 
-#include <android/log.h>
+import android.os.Looper;
 
-#define ATTACH_LOG_INFO(...)  ((void)__android_log_print(ANDROID_LOG_INFO,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINE(...)  ((void)__android_log_print(ANDROID_LOG_DEBUG,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_FINEST(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_WARNING(...)  ((void)__android_log_print(ANDROID_LOG_WARN,"GluonAttach", __VA_ARGS__))
-#define ATTACH_LOG_SEVERE(...)  ((void)__android_log_print(ANDROID_LOG_ERROR,"GluonAttach", __VA_ARGS__))
+/**
+ *
+ */
+public abstract class AndroidLooperTask implements Runnable {
 
-extern jclass activityClass;
-extern jobject activity;
+    public abstract void execute();
 
-extern JavaVM *androidVM;
+    @Override
+    public void run() {
+        Looper.prepare();
 
-JavaVM* substrateGetAndroidVM();
-JNIEnv* substrateGetAndroidEnv();
-jclass substrateGetActivityClass();
-jclass substrateGetUtilClass();
-jclass substrateGetPermissionActivityClass();
-jobject substrateGetActivity();
+        execute();
+
+        Looper.loop();
+    }
+
+    public Looper getLooper() {
+        return Looper.myLooper();
+    }
+
+    public void quit() {
+        if (Looper.myLooper() != null) {
+            Looper.myLooper().quit();
+        }
+    }
+}
