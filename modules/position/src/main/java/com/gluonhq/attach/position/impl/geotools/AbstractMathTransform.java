@@ -19,7 +19,7 @@
  *    OpenGIS consortium's work is fully acknowledged here.
  */
 
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.position.impl.geotools;
 
 import java.io.Serializable;
 
