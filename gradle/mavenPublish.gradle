@@ -27,6 +27,7 @@ def jarPackage(buildDir, projectDir, service, osname) {
             archiveClassifier = osname
             into ("") {
                 from "${buildDir}/resources/main"
+                from "$projectDir/src/$osname/resources/"
                 from "${buildDir}/classes/java/main"
                 exclude '**/*/impl/Dummy**'
                 if (osname == 'desktop') {

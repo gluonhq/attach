@@ -32,9 +32,14 @@ import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.position.Parameters;
 import com.gluonhq.attach.position.Position;
 import com.gluonhq.attach.position.PositionService;
+import com.gluonhq.attach.position.impl.geotools.EarthGravitationalModel;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of the
@@ -44,6 +49,8 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  */
 public class AndroidPositionService implements PositionService {
 
+    private static Logger LOG = Logger.getLogger(AndroidPositionService.class.getName());
+
     static {
         System.loadLibrary("Position");
     }
@@ -51,7 +58,8 @@ public class AndroidPositionService implements PositionService {
     private static ReadOnlyObjectWrapper<Position> position;
     private static boolean running;
     private Parameters parameters = DEFAULT_PARAMETERS;
-    
+    private static EarthGravitationalModel gh;
+
     public AndroidPositionService() {
         position = new ReadOnlyObjectWrapper<>();
 
@@ -68,6 +76,14 @@ public class AndroidPositionService implements PositionService {
                 }
             });
         });
+
+        gh = new EarthGravitationalModel();
+        try {
+            gh.load("/egm180.nor");
+        } catch (IOException e) {
+            LOG.log(Level.WARNING, "Failed to load nor file", e);
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -107,7 +123,16 @@ public class AndroidPositionService implements PositionService {
 
     // callback
     private static void setLocation(double lat, double lon, double alt) {
-        Position p = new Position(lat, lon, alt);
+        double altitudeMeanSeaLevel = alt;
+        if (alt != 0.0) {
+            try {
+                double offset = gh.heightOffset(lon, lat, alt);
+                altitudeMeanSeaLevel = alt - offset;
+            } catch (Exception ex) {
+                LOG.log(Level.WARNING, "Error getting altitude mean sea level", ex);
+            }
+        }
+        Position p = new Position(lat, lon, altitudeMeanSeaLevel);
         Platform.runLater(() -> position.set(p));
     }
 

@@ -39,10 +39,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
 import android.util.Log;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of the
@@ -58,16 +59,14 @@ import android.util.Log;
 public class DalvikPositionService implements LocationListener {
 
     private static final String TAG = "GluonAttach";
-    private Activity activityContext;
-public static final Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Accuracy.MEDIUM, false);
-
+    private static final Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Accuracy.MEDIUM, false);
     private static final Logger LOG = Logger.getLogger(DalvikPositionService.class.getName());
-    
+
     public static final String LONGITUDE = "longitude";
     public static final String LATITUDE = "latitude";
     public static final String ALTITUDE = "altitude";
 
-    private EarthGravitationalModel gh;
+    private Activity activityContext;
     private LocationManager locationManager;
     private String locationProvider;
 
@@ -83,13 +82,6 @@ public static final Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Ac
                 Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
         if (!gpsEnabled) {
             Log.v(TAG, "GPS disabled. ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permissions are required");
-        }
-        gh = new EarthGravitationalModel();
-        try {
-            gh.load("egm180.nor");
-        } catch (IOException e) {
-            Log.v(TAG, "Failed to load nor file", e);
-e.printStackTrace();
         }
     }    
 
@@ -265,17 +257,7 @@ e.printStackTrace();
 
     private void updatePosition(double latitude, double longitude, double altitude) {
         Log.v(TAG, "[DALVIKPOSITION] update to "+latitude+", " + longitude+", "+altitude);
-        double altitudeMeanSeaLevel = altitude;
-        try {
-            double offset = gh.heightOffset(longitude, latitude, altitude);
-            altitudeMeanSeaLevel = altitude - offset;
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error getting altitude mean sea level", ex);
-        }
-System.err.println("[DALVIKPOSITION] update to "+latitude+", " + longitude+", "+altitude);
         updatePositionNative(latitude, longitude, altitude);
-        // Position newPosition = new Position(latitude, longitude, altitudeMeanSeaLevel);
-        // Platform.runLater(() -> positionProperty.set(newPosition));
     }
 
     private native void updatePositionNative(double lat, double lon, double alt);

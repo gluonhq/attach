@@ -18,7 +18,7 @@
  *    This file is derived from NGA/NASA software available for unlimited distribution.
  *    See http://earth-info.nima.mil/GandG/wgs84/gravitymod/.
  */
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.position.impl.geotools;
 
 import java.io.*;
 import java.util.StringTokenizer;

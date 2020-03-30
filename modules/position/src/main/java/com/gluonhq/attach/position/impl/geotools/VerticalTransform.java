@@ -15,7 +15,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.position.impl.geotools;
 
 /**
  * Base class for transformations from a <cite>height above the ellipsoid</cite> to a
