@@ -87,9 +87,7 @@ public class DalvikPositionService implements LocationListener {
     }
     
     public void start(long timeInterval, float distanceFilter, boolean backgroundModeEnabled) {
-        if (debug) {
-            Log.v(TAG, "DalvikPositionService, start called");
-        }
+        Log.v(TAG, "DalvikPositionService, start called");
         if (running) {
             stop();
         }
@@ -104,9 +102,7 @@ public class DalvikPositionService implements LocationListener {
     }
 
     public void stop() {
-        if (debug) {
-            Log.v(TAG, "DalvikPositionService, stop called, quit looper");
-        }
+        Log.v(TAG, "DalvikPositionService, stop called, quit looper");
         running = false;
         
         quitLooperTask();
