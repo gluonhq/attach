@@ -32,7 +32,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -42,8 +41,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An implementation of the
@@ -59,8 +56,6 @@ import java.util.logging.Logger;
 public class DalvikPositionService implements LocationListener {
 
     private static final String TAG = "GluonAttach";
-    private static final Parameters DEFAULT_PARAMETERS = new Parameters(Parameters.Accuracy.MEDIUM, false);
-    private static final Logger LOG = Logger.getLogger(DalvikPositionService.class.getName());
 
     public static final String LONGITUDE = "longitude";
     public static final String LATITUDE = "latitude";
@@ -71,9 +66,11 @@ public class DalvikPositionService implements LocationListener {
     private String locationProvider;
 
     private AndroidLooperTask looperTask = null;
-    private Parameters parameters;
+    private long timeInterval = 90000;
+    private float distanceFilter = 1000.0f;
+    private boolean backgroundModeEnabled = false;
     private boolean running;
-    private boolean debug = true;
+    private boolean debug = false;
 
     public DalvikPositionService(Activity activity) {
         Log.v(TAG, "Construct DalvikPositionService");
@@ -85,17 +82,19 @@ public class DalvikPositionService implements LocationListener {
         }
     }    
 
-    public void start() {
-        start(DEFAULT_PARAMETERS);
+    public void enableDebug() {
+        debug = true;
     }
-
-    public void start(Parameters parameters) {
+    
+    public void start(long timeInterval, float distanceFilter, boolean backgroundModeEnabled) {
         Log.v(TAG, "DalvikPositionService, start called");
         if (running) {
             stop();
         }
         
-        this.parameters = parameters;
+        this.timeInterval = timeInterval;
+        this.distanceFilter = distanceFilter;
+        this.backgroundModeEnabled = backgroundModeEnabled;
         
         initialize();
         
@@ -107,14 +106,16 @@ public class DalvikPositionService implements LocationListener {
         running = false;
         
         quitLooperTask();
-        Log.v(TAG, "DalvikPositionService, stop called, looper quit");
+        if (debug) {
+            Log.v(TAG, "DalvikPositionService, stop called, looper quit");
+        }
     }
     
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
             if (debug) {
-                LOG.log(Level.INFO, String.format("Android location changed: %f / %f / %f",
+                Log.v(TAG, String.format("Android location changed: %f / %f / %f",
                         location.getLatitude(), location.getLongitude(), location.getAltitude()));
             }
             updatePosition(location);
@@ -124,14 +125,14 @@ public class DalvikPositionService implements LocationListener {
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         if (debug) {
-            LOG.log(Level.INFO, String.format("Status for LocationProvider %s changed to %d.", provider, status));
+            Log.v(TAG, String.format("Status for LocationProvider %s changed to %d.", provider, status));
         }
     }
 
     @Override
     public void onProviderEnabled(String provider) {
         if (debug) {
-            LOG.log(Level.INFO, String.format("LocationProvider %s was enabled by the user.", provider));
+            Log.v(TAG, String.format("LocationProvider %s was enabled by the user.", provider));
         }
         if (provider.equals(locationProvider) && looperTask == null) {
             createLooperTask();
@@ -141,7 +142,7 @@ public class DalvikPositionService implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
         if (debug) {
-            LOG.log(Level.INFO, String.format("LocationProvider %s was disabled by the user, quitting looper task.", provider));
+            Log.v(TAG, String.format("LocationProvider %s was disabled by the user, quitting looper task.", provider));
         }
         
         if (provider.equals(locationProvider)) {
@@ -156,7 +157,7 @@ public class DalvikPositionService implements LocationListener {
 
         List<String> locationProviders = locationManager.getAllProviders();
         if (debug) {
-            LOG.log(Level.INFO, String.format("Available location providers on this device: %s.", locationProviders.toString()));
+            Log.v(TAG, String.format("Available location providers on this device: %s.", locationProviders.toString()));
         }
         
         locationProvider = locationManager.getBestProvider(getLocationProvider(), false);
@@ -176,7 +177,7 @@ public class DalvikPositionService implements LocationListener {
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
         if (lastKnownLocation != null) {
             if (debug) {
-                LOG.log(Level.INFO, String.format("Last known location for provider %s: %f / %f / %f",
+                Log.v(TAG, String.format("Last known location for provider %s: %f / %f / %f",
                         locationProvider, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), lastKnownLocation.getAltitude()));
             }
             updatePosition(lastKnownLocation);
@@ -221,14 +222,13 @@ public class DalvikPositionService implements LocationListener {
         }
         
         if (debug) {
-            Log.v(TAG, String.format("Creating LooperTask to request location updates every %d milliseconds or %f meters.", parameters.getTimeInterval(), parameters.getDistanceFilter()));
+            Log.v(TAG, String.format("Creating LooperTask to request location updates every %d milliseconds or %f meters.", timeInterval, distanceFilter));
         }
         
         looperTask = new AndroidLooperTask() {
-
             @Override
             public void execute() {
-                locationManager.requestLocationUpdates(parameters.getTimeInterval(), parameters.getDistanceFilter(), 
+                locationManager.requestLocationUpdates(timeInterval, distanceFilter,
                         getLocationProvider(), DalvikPositionService.this, this.getLooper());
             }
         };
@@ -240,7 +240,7 @@ public class DalvikPositionService implements LocationListener {
     
     private void quitLooperTask() {
         if (debug) {
-            LOG.log(Level.INFO, "Cancelling LooperTask");
+            Log.v(TAG, "Cancelling LooperTask");
         }
         if (looperTask != null) {
             looperTask.quit();
@@ -256,42 +256,40 @@ public class DalvikPositionService implements LocationListener {
     }
 
     private void updatePosition(double latitude, double longitude, double altitude) {
-        Log.v(TAG, "[DALVIKPOSITION] update to "+latitude+", " + longitude+", "+altitude);
+        if (debug) {
+            Log.v(TAG, "[DALVIKPOSITION] update to "+latitude+", " + longitude+", "+altitude);
+        }
         updatePositionNative(latitude, longitude, altitude);
     }
 
     private native void updatePositionNative(double lat, double lon, double alt);
 
     private Criteria getLocationProvider() {
-        final Parameters.Accuracy accuracy = parameters.getAccuracy();
         final Criteria criteria = new Criteria();
-        switch (accuracy) {
-            case HIGHEST:
-            case HIGH:
-                criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
-                criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
-                criteria.setBearingAccuracy(Criteria.ACCURACY_HIGH);
-                criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
-                criteria.setPowerRequirement(Criteria.POWER_HIGH);
-                break;
-            case MEDIUM:
-                criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-                criteria.setHorizontalAccuracy(Criteria.ACCURACY_MEDIUM);
-                criteria.setVerticalAccuracy(Criteria.ACCURACY_MEDIUM);
-                criteria.setBearingAccuracy(Criteria.ACCURACY_MEDIUM);
-                criteria.setSpeedAccuracy(Criteria.ACCURACY_MEDIUM);
-                criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
-                break;
-            case LOW:
-            case LOWEST:
-            default:
-                criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-                criteria.setHorizontalAccuracy(Criteria.ACCURACY_LOW);
-                criteria.setVerticalAccuracy(Criteria.ACCURACY_LOW);
-                criteria.setBearingAccuracy(Criteria.ACCURACY_LOW);
-                criteria.setSpeedAccuracy(Criteria.ACCURACY_LOW);
-                criteria.setPowerRequirement(Criteria.POWER_LOW);
+        if (timeInterval <= 1000 && distanceFilter <= 1.0f) {
+            // Parameters HIGH/HIGHEST
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+            criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
+            criteria.setBearingAccuracy(Criteria.ACCURACY_HIGH);
+            criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
+            criteria.setPowerRequirement(Criteria.POWER_HIGH);
+        } else if (timeInterval >= 30000 && distanceFilter >= 100.0f) {
+            // Parameters LOW/LOWEST
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setHorizontalAccuracy(Criteria.ACCURACY_LOW);
+            criteria.setVerticalAccuracy(Criteria.ACCURACY_LOW);
+            criteria.setBearingAccuracy(Criteria.ACCURACY_LOW);
+            criteria.setSpeedAccuracy(Criteria.ACCURACY_LOW);
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+        } else {
+            // Parameter MEDIUM
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setHorizontalAccuracy(Criteria.ACCURACY_MEDIUM);
+            criteria.setVerticalAccuracy(Criteria.ACCURACY_MEDIUM);
+            criteria.setBearingAccuracy(Criteria.ACCURACY_MEDIUM);
+            criteria.setSpeedAccuracy(Criteria.ACCURACY_MEDIUM);
+            criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
         }
         return criteria;
     }

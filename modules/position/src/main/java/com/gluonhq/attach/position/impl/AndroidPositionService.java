@@ -33,6 +33,7 @@ import com.gluonhq.attach.position.Parameters;
 import com.gluonhq.attach.position.Position;
 import com.gluonhq.attach.position.PositionService;
 import com.gluonhq.attach.position.impl.geotools.EarthGravitationalModel;
+import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -61,6 +62,9 @@ public class AndroidPositionService implements PositionService {
     private static EarthGravitationalModel gh;
 
     public AndroidPositionService() {
+        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
+            enableDebug();
+        }
         position = new ReadOnlyObjectWrapper<>();
 
         LifecycleService.create().ifPresent(l -> {
@@ -71,7 +75,7 @@ public class AndroidPositionService implements PositionService {
             });
             l.addListener(LifecycleEvent.RESUME, () -> {
                 if (! parameters.isBackgroundModeEnabled()) {
-                    startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(), 
+                    startObserver(parameters.getTimeInterval(),
                             parameters.getDistanceFilter(), parameters.isBackgroundModeEnabled());
                 }
             });
@@ -97,8 +101,8 @@ public class AndroidPositionService implements PositionService {
             stop();
         }
         this.parameters = parameters;
-        startObserver(parameters.getAccuracy().name(), parameters.getTimeInterval(),
-                 parameters.getDistanceFilter(), parameters.isBackgroundModeEnabled());
+        startObserver(parameters.getTimeInterval(), parameters.getDistanceFilter(),
+                parameters.isBackgroundModeEnabled());
         running  = true;
     }
 
@@ -117,8 +121,9 @@ public class AndroidPositionService implements PositionService {
     public Position getPosition() {
         return positionProperty().get();
     }
-    
-    private static native void startObserver(String accuracy, long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
+
+    private static native void enableDebug();
+    private static native void startObserver(long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
     private static native void stopObserver();
 
     // callback
