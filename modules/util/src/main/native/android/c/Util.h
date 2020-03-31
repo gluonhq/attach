@@ -30,3 +30,5 @@
 #include "AttachMacrosAndroid.h"
 
 JavaVM* getGraalVM();
+
+jclass substrateGetUtilClass();

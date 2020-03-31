@@ -25,29 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.helloandroid;
 
-#include <jni.h>
+public interface LifecycleEventHandler {
 
-extern jclass activityClass;
-extern jobject activity;
+    void lifecycleEvent(String event);
 
-extern JavaVM *androidVM;
-extern JNIEnv *androidEnv;
-
-// expose AndroidVM, Env, MainActivity and its class
-JavaVM* substrateGetAndroidVM();
-JNIEnv* substrateGetAndroidEnv();
-jclass substrateGetActivityClass();
-jclass substrateGetPermissionActivityClass();
-jobject substrateGetActivity();
-
-// Attach
-void registerAttachMethodHandles(JNIEnv* env);
-
-#ifdef SUBSTRATE
-void __attribute__((weak)) attach_setActivityResult(jint requestCode, jint resultCode, jobject intent) {}
-void __attribute__((weak)) attach_setLifecycleEvent(const char *event) {}
-#else
-void attach_setActivityResult(jint requestCode, jint resultCode, jobject intent);
-void attach_setLifecycleEvent(const char *event);
-#endif
+}
