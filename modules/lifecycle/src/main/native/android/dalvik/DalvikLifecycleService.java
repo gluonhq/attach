@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.helloandroid;
 
-#include "Util.h"
+import android.util.Log;
 
-jclass substrateGetLifecycleServiceClass();
+public class DalvikLifecycleService {
 
+    private static final String TAG = "GluonAttach";
+
+    public DalvikLifecycleService() {
+
+        Util.setLifecycleEventHandler(new LifecycleEventHandler() {
+            @Override
+            public void lifecycleEvent(String event) {
+                Log.v(TAG, "DalvikLifecycleService::lifecycleEvent " + event);
+                setLifecycleEventNative(event);
+            }
+        });
+
+    }
+
+    private native void setLifecycleEventNative(String event);
+}
