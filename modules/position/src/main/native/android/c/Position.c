@@ -30,8 +30,6 @@
 static JavaVM* graalVM;
 static JNIEnv *graalEnv;
 
-static JNIEnv *androidEnv;
-
 // Graal handles
 static jclass jGraalPositionClass;
 jmethodID jGraalSetLocationMethod;
