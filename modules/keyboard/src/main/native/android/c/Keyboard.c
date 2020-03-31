@@ -73,7 +73,7 @@ void initKeyboard()
     jclass jKeyboardServiceClass = substrateGetKeyboardServiceClass();
 
     JNIEnv* androidEnv;
-    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+    (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
     jmethodID jKeyboardServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jKeyboardServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jobject keyboardservice = (*androidEnv)->NewObject(androidEnv, jKeyboardServiceClass, jKeyboardServiceInitMethod, jActivity);
     (*androidVM)->DetachCurrentThread(androidVM);
