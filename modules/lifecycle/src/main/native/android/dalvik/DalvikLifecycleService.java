@@ -27,47 +27,23 @@
  */
 package com.gluonhq.helloandroid;
 
-import android.content.Intent;
 import android.util.Log;
 
-public class Util {
+public class DalvikLifecycleService {
 
     private static final String TAG = "GluonAttach";
 
-    private static IntentHandler intentHandler;
-    private static LifecycleEventHandler lifecycleEventHandler;
+    public DalvikLifecycleService() {
 
-    public Util() {
-        Log.v(TAG, "Util <init>");
+        Util.setLifecycleEventHandler(new LifecycleEventHandler() {
+            @Override
+            public void lifecycleEvent(String event) {
+                Log.v(TAG, "DalvikLifecycleService::lifecycleEvent " + event);
+                setLifecycleEventNative(event);
+            }
+        });
+
     }
 
-    public static void setOnActivityResultHandler(IntentHandler handler) {
-        Util.intentHandler = handler;
-    }
-
-    public static void setLifecycleEventHandler(LifecycleEventHandler lifecycleEventHandler) {
-        Util.lifecycleEventHandler = lifecycleEventHandler;
-    }
-
-    public static boolean verifyPermissions(String... permissions) {
-        Log.v(TAG, "Util::verifyPermissions for permissions: " + permissions);
-        Util util = new Util();
-        return util.nativeVerifyPermissions(permissions);
-    }
-
-    private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
-        if (Util.intentHandler != null) {
-            Util.intentHandler.gotActivityResult(requestCode, resultCode, intent);
-        }
-    }
-
-    private static void lifecycleEvent(String event) {
-        if (Util.lifecycleEventHandler != null) {
-            Log.v(TAG, "Util::lifecycleEvent with event: " + event);
-            Util.lifecycleEventHandler.lifecycleEvent(event);
-        }
-    }
-
-    private native boolean nativeVerifyPermissions(String[] permissions);
+    private native void setLifecycleEventNative(String event);
 }

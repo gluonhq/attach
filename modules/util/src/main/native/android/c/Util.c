@@ -27,58 +27,96 @@
  */
 #include "Util.h"
 
-static JNIEnv *env;
-static JavaVM *graalVM = NULL;
+static JavaVM* graalVM;
+static JNIEnv *graalEnv;
+
+// Dalvik handles
 static jclass jUtilClass;
 static jclass jPermissionActivityClass;
 static jmethodID jUtilOnActivityResultMethod;
+static jmethodID jUtilOnLifecycleEventMethod;
 static jmethodID jUtilRequestPermissionsMethod;
-void initUtil();
+
+static void initializeDalvikHandles() {
+    ATTACH_LOG_FINE("Init Util");
+    androidVM = substrateGetAndroidVM();
+    jUtilClass = substrateGetUtilClass();
+    jPermissionActivityClass = substrateGetPermissionActivityClass();
+
+    if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
+        ATTACH_LOG_FINE("initializeDalvikHandles, thread is not linked to JNIEnv, doing that now.\n");
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
+    }
+    jmethodID jUtilInitMethod = (*androidEnv)->GetMethodID(androidEnv, jUtilClass, "<init>", "()V");
+    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
+    jUtilOnLifecycleEventMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "lifecycleEvent", "(Ljava/lang/String;)V");
+    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)Z");
+    jthrowable t = (*androidEnv)->ExceptionOccurred(androidEnv);
+    if (t) {
+        ATTACH_LOG_INFO("EXCEPTION occurred when dealing with dalvik handles\n");
+        (*androidEnv)->ExceptionClear(androidEnv);
+    }
+
+    jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
+    ATTACH_LOG_FINE("Dalvik Util init was called");
+}
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Util(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
+    graalVM = vm;
     //min. returned JNI_VERSION required by JDK8 for builtin libraries
-    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+    if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Util from OnLoad");
         return JNI_FALSE;
     }
-    (*env)->GetJavaVM(env, &graalVM);
     ATTACH_LOG_FINE("Initializing native Util from OnLoad");
-    initUtil();
+    initializeDalvikHandles();
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
 #endif
 }
 
-static int UtilInited = 0;
-
-void initUtil() {
-    if (UtilInited) {
-        return;
-    }
-    UtilInited = 1;
-
-    ATTACH_LOG_FINE("Init Util");
-    JavaVM* androidVM = substrateGetAndroidVM();
-    jUtilClass = substrateGetUtilClass();
-    jPermissionActivityClass = substrateGetPermissionActivityClass();
-
-    JNIEnv* androidEnv;
-    (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
-    jmethodID jUtilInitMethod = (*androidEnv)->GetMethodID(androidEnv, jUtilClass, "<init>", "()V");
-    jUtilOnActivityResultMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
-    jUtilRequestPermissionsMethod = (*androidEnv)->GetStaticMethodID(androidEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)Z");
-    jobject util = (*androidEnv)->NewObject(androidEnv, jUtilClass, jUtilInitMethod);
-    (*androidVM)->DetachCurrentThread(androidVM);
-    ATTACH_LOG_FINE("Dalvik Util init was called");
-}
-
 JavaVM* getGraalVM() {
     return graalVM;
 }
+
+///////////////////////////////////////////
+// native (Substrate) to native (Attach) //
+///////////////////////////////////////////
+
+void attach_setActivityResult(jint requestCode, jint resultCode, jobject intent)
+{
+    if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
+        ATTACH_LOG_WARNING("attach_setActivityResult called from not-attached thread\n");
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
+    }  else {
+        ATTACH_LOG_WARNING("attach_setActivityResult called from attached thread %p\n", androidEnv);
+    }
+    ATTACH_LOG_FINE("call Attach::nativeDispatchActivityResult method from native: %d %d", requestCode, resultCode);
+    (*androidEnv)->CallStaticVoidMethod(androidEnv, jUtilClass, jUtilOnActivityResultMethod, requestCode, resultCode, intent);
+    ATTACH_LOG_FINE("call Attach::nativeDispatchActivityResult method from native done");
+}
+
+void attach_setLifecycleEvent(const char* event) {
+    if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
+        ATTACH_LOG_WARNING("attach_setLifecycleEvent called from not-attached thread\n");
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
+    }  else {
+        ATTACH_LOG_WARNING("attach_setLifecycleEvent called from attached thread %p\n", androidEnv);
+    }
+    ATTACH_LOG_FINE("call Attach method from native Lifecycle: %s", event);
+    jstring jchars = (*androidEnv)->NewStringUTF(androidEnv, event);
+    (*androidEnv)->CallStaticVoidMethod(androidEnv, jUtilClass, jUtilOnLifecycleEventMethod, jchars);
+    (*androidEnv)->DeleteLocalRef(androidEnv, jchars);
+    ATTACH_LOG_FINE("called Attach method from native Lifecycle done");
+}
+
+///////////////////////////////////////
+// From native to Dalvik (Substrate) //
+///////////////////////////////////////
 
 JNIEXPORT jboolean JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermissions(JNIEnv *env, jobject activity, jobjectArray jpermissionsArray)
 {
@@ -86,11 +124,4 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermis
     jboolean jresult = (*env)->CallStaticBooleanMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, substrateGetActivity(), jpermissionsArray);
     ATTACH_LOG_FINE("Verify Permissions from native Attach::Util done");
     return jresult;
-}
-
-void attach_setActivityResult(JNIEnv *env, jint requestCode, jint resultCode, jobject intent)
-{
-    ATTACH_LOG_FINE("call Attach::nativeDispatchActivityResult method from native: %d %d", requestCode, resultCode);
-    (*env)->CallStaticVoidMethod(env, jUtilClass, jUtilOnActivityResultMethod, requestCode, resultCode, intent);
-    ATTACH_LOG_FINE("call Attach::nativeDispatchActivityResult method from native done");
 }

@@ -40,12 +40,12 @@ jmethodID jDalvikPositionServiceEnableDebug;
 jmethodID jDalvikPositionServiceStartMethod;
 jmethodID jDalvikPositionServiceStopMethod;
 
-void initializeGraalHandles(JNIEnv* env) {
+static void initializeGraalHandles(JNIEnv* env) {
     jGraalPositionClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/position/impl/AndroidPositionService"));
     jGraalSetLocationMethod = (*env)->GetStaticMethodID(env, jGraalPositionClass, "setLocation", "(DDD)V");
 }
 
-void initializeDalvikHandles() {
+static void initializeDalvikHandles() {
     androidVM = substrateGetAndroidVM();
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
@@ -53,7 +53,7 @@ void initializeDalvikHandles() {
     
     if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_FINE("initializeDalvikHandles, thread is not linked to JNIEnv, doing that now.\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
     }
     jmethodID jPositionServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jPositionServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDalvikPositionServiceEnableDebug = (*androidEnv)->GetMethodID(androidEnv, jPositionServiceClass, "enableDebug", "()V");
@@ -76,7 +76,7 @@ void initializeDalvikHandles() {
 void enableDalvikDebug() {
     if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_WARNING("enableDalvikDebug called from not-attached thread\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
     }  else {
         ATTACH_LOG_FINE("enableDalvikDebug called from attached thread %p\n", androidEnv);
     }
@@ -86,7 +86,7 @@ void enableDalvikDebug() {
 void startDalvikObserving(jlong jInterval, jfloat jDistance, jboolean jBackground) {
     if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_WARNING("startDalvikObserving called from not-attached thread\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
     }  else {
         ATTACH_LOG_FINE("startDalvikObserving called from attached thread %p\n", androidEnv);
     }
@@ -96,7 +96,7 @@ void startDalvikObserving(jlong jInterval, jfloat jDistance, jboolean jBackgroun
 void stopDalvikObserving() {
     if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_WARNING("stopDalvikObserving called from not-attached thread\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (JNIEnv **)&androidEnv, NULL);
+        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
     }  else {
         ATTACH_LOG_WARNING("stopDalvikObserving called from attached thread %p\n", androidEnv);
     }
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_position_impl_AndroidPositionServ
 // the JNIEnv passed here is the Dalvik JNIEnv, do not use it to call into GraalVM!
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPositionService_updatePositionNative(JNIEnv *env, jobject service, jdouble jlat, jdouble jlon, jdouble jalt) {
     ATTACH_LOG_FINE("Native layer got new position: %lf, %lf, %lf\n", jlat, jlon, jalt);
-    (*graalVM)->AttachCurrentThread(graalVM, (JNIEnv **)&graalEnv, NULL);
+    (*graalVM)->AttachCurrentThread(graalVM, (void **)&graalEnv, NULL);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPositionClass, jGraalSetLocationMethod, jlat, jlon, jalt);
 }
 

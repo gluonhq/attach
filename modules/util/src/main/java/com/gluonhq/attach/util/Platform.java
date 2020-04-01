@@ -76,11 +76,7 @@ public enum Platform {
         LOGGER.fine("Current platform: "  + current);
 
         if (isAndroid()) {
-            if (javafx.application.Platform.isFxApplicationThread()) {
-                System.loadLibrary("Util");
-            } else {
-                javafx.application.Platform.runLater(() -> System.loadLibrary("Util"));
-            }
+            System.loadLibrary("Util");
         }
     }
 

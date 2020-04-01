@@ -28,5 +28,5 @@
 
 #include "Util.h"
 
-void attach_setLifecycleEvent(const char* event);
+jclass substrateGetLifecycleServiceClass();
 
