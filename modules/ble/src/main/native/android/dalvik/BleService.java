@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 public class BleService  {
 
-    private final MainActivity activity;
+    private final Activity activity;
     private static final Logger LOG = Logger.getLogger(BleService.class.getName());
     private BluetoothLeScanner scanner;
 
@@ -54,14 +54,13 @@ public class BleService  {
     private final List<String> uuids = new LinkedList<>();
 
 
-    public BleService(MainActivity a) {
+    public BleService(Activity a) {
         this.activity = a;
         init();
-        startScanning();
     }
 
     private void init() {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (!adapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             IntentHandler intentHandler = new IntentHandler() {
@@ -78,7 +77,7 @@ public class BleService  {
                         + "running in background mode or from wearable");
                 return;
             }
-            activity.setOnActivityResultHandler(intentHandler);
+            Util.setOnActivityResultHandler(intentHandler);
 
             // A dialog will appear requesting user permission to enable Bluetooth
             activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -92,14 +91,13 @@ public class BleService  {
     private ScanCallback scanCallback;
 
     private void startScanning() {
+System.err.println("[BLE] startScanning\n");
         if (scanner == null) {
             System.err.println("Scanner still null");
             return;
         }
-            this.scanCallback = createCallback();
-
-            scanner.startScan(scanCallback);
-
+        this.scanCallback = createCallback();
+        scanner.startScan(scanCallback);
     }
 
     private ScanCallback createCallback() {

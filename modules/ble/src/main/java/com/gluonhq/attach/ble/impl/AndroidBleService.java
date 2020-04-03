@@ -61,6 +61,8 @@ public class AndroidBleService implements BleService {
     private static final List<String> deviceNames = new LinkedList<>();
     private static boolean debug;
 
+    private static Consumer<ScanDetection> callback;
+
     static {
 System.err.println("[ABLE] clinit");
         debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
@@ -69,15 +71,19 @@ System.err.println("[ABLE] clinit done");
     }
     
     public AndroidBleService() {
-System.err.println("[ABLE] init");
+System.err.println("[ABLE] init ableservice");
     }
 
-    public void startScanning(Configuration configuration, Consumer<ScanDetection> callback) {
-System.err.println("[ABLE]");
+    public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
+System.err.println("[ABLE], startScanning with config");
+        AndroidBleService.callback = callback;
+        String[] uuids = new String[region.getUuids().size()];
+        uuids = region.getUuids().toArray(uuids);
+        startObserver(uuids);
     }
 
     public void stopScanning() {
-System.err.println("[ABLE]");
+System.err.println("[ABLE], stopScanning");
     }
 
     public ObservableList<BleDevice> startScanningDevices() {
@@ -110,6 +116,21 @@ System.err.println("[ABLE]");
     public void unsubscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
 System.err.println("[ABLE]");
     }
+    
+
+    public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
+System.err.println("[ABLE] StartBroadcasting");
+    }
+
+    /**
+     * Stop advertising the current iOS device as a Bluetooth beacon
+     *
+     * @since 4.0.7
+     */
+    public void stopBroadcasting() {
+System.err.println("[ABLE] StopBroadcasting");
+    }
+
 
     private static void gotPeripheral(String name, String uuid) {
         if ((name != null && deviceNames.contains(name)) ||
@@ -133,5 +154,7 @@ System.err.println("[ABLE]");
     }
 
     private static native void startScanningPeripherals();
+    private static native void startObserver(String[] uuids);
+
 
 }
