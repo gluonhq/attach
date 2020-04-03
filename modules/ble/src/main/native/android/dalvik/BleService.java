@@ -27,6 +27,7 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.Manifest;
 import android.app.Activity;
 import static android.app.Activity.RESULT_OK;
 import android.bluetooth.BluetoothAdapter;
@@ -37,6 +38,8 @@ import android.bluetooth.le.ScanResult;
 
 import android.content.Intent;
 
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.LinkedList;
@@ -46,6 +49,7 @@ import java.util.logging.Logger;
 
 public class BleService  {
 
+    private static final String TAG = "GluonAttach";
     private final Activity activity;
     private static final Logger LOG = Logger.getLogger(BleService.class.getName());
     private BluetoothLeScanner scanner;
@@ -77,6 +81,10 @@ public class BleService  {
                         + "running in background mode or from wearable");
                 return;
             }
+            boolean fineloc = Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+            if (!fineloc) {
+Log.v(TAG, "No permission to get fine location");
+            }
             Util.setOnActivityResultHandler(intentHandler);
 
             // A dialog will appear requesting user permission to enable Bluetooth
@@ -91,6 +99,7 @@ public class BleService  {
     private ScanCallback scanCallback;
 
     private void startScanning() {
+Log.v(TAG, "BleService startScanning\n");
 System.err.println("[BLE] startScanning\n");
         if (scanner == null) {
             System.err.println("Scanner still null");
