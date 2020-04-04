@@ -131,6 +131,17 @@ System.err.println("[ABLE] StartBroadcasting");
 System.err.println("[ABLE] StopBroadcasting");
     }
 
+// callback 
+    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
+System.err.println("In AndroidBleService (attach), got detection! uuid = "+uuid+" and major = "+major);
+        ScanDetection detection = new ScanDetection();
+        detection.setUuid(uuid);
+        detection.setMajor(major);
+        detection.setMinor(minor);
+        detection.setRssi(rssi);
+        detection.setProximity(proximity);
+        Platform.runLater(() -> callback.accept(detection));
+    }
 
     private static void gotPeripheral(String name, String uuid) {
         if ((name != null && deviceNames.contains(name)) ||

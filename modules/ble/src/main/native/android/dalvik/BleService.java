@@ -64,8 +64,15 @@ public class BleService  {
     }
 
     private void init() {
+Log.v(TAG, "DalvikBle, init");
+        boolean fineloc = Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (!fineloc) {
+Log.v(TAG, "No permission to get fine location");
+        }
+Log.v(TAG, "Permission to get fine location? "+ fineloc);
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (!adapter.isEnabled()) {
+Log.v(TAG, "DalvikBle, init, adapter not enabled");
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             IntentHandler intentHandler = new IntentHandler() {
                 @Override
@@ -80,10 +87,6 @@ public class BleService  {
                 LOG.log(Level.WARNING, "Activity not found. This service is not allowed when "
                         + "running in background mode or from wearable");
                 return;
-            }
-            boolean fineloc = Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
-            if (!fineloc) {
-Log.v(TAG, "No permission to get fine location");
             }
             Util.setOnActivityResultHandler(intentHandler);
 
@@ -169,11 +172,11 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
             // power in dB
             int power = (scanRecord[startByte] & 0xff);
             power -= 256;
-            double acc = calculateAccuracy(power, mRssi);
+            int proximity = calculateProximity(power, mRssi);
 
             System.out.println("Scan: mID: "+mID+", beaconID: "+beaconID+", uuid: "+scannedUuid+
-                    ", major: "+major+", minor: "+minor+", power: "+power+", distance: "+acc);
-
+                    ", major: "+major+", minor: "+minor+", power: "+power+", distance: "+proximity);
+            scanDetected (scannedUuid, major, minor, power, 0);
         }
     }
 
@@ -184,6 +187,21 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
         }
         return hex.toString().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
                 "$1-$2-$3-$4-$5" );
+    }
+
+    private static int calculateProximity (int txPower, double rssi) {
+        double accuracy = calculateAccuracy(txPower, rssi);
+System.err.println("accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        if (accuracy < 0) {
+            return 0;
+        }
+        if (accuracy < 0.5) {
+            return 1;
+        }
+        if (accuracy < 4) {
+            return 2;
+        }
+        return 3;
     }
 
     private static double calculateAccuracy(int txPower, double rssi) {
@@ -200,6 +218,7 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
         }
     }
 
+    private native void scanDetected(String uuid, int major, int minor, int rsi, int proxy);
 
 
 
