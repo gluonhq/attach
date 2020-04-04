@@ -32,8 +32,13 @@ JNIEnv* javaEnvBle = NULL;
 JavaVM *jVMBle = NULL;
 static jclass jGraalBleClass;
 static jmethodID jGraalSetDetectionMethod;
+
+static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBleService;
 static jmethodID jBleServiceStartScanningMethod;
+static jmethodID jBleServiceStopScanningMethod;
+static jmethodID jBleServiceStartBroadcastMethod;
+static jmethodID jBleServiceStopBroadcastMethod;
 static jmethodID attach_setEvent;
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
@@ -42,17 +47,20 @@ void initializeGraalHandles(JNIEnv *graalEnv) {
 }
 
 void initializeDalvikHandles() {
-    JavaVM* androidVM = substrateGetAndroidVM();
+    myAndroidVM = substrateGetAndroidVM();
     jclass jBleServiceClass = substrateGetBleServiceClass();
     JNIEnv* androidEnv;
-    (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
+    (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
     jmethodID jBleServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBleServiceStartScanningMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startScanning", "()V");
+    jBleServiceStopScanningMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopScanning", "()V");
+    jBleServiceStartBroadcastMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startBroadcast", "(Ljava/lang/String;IILjava/lang/String;)V");
+    jBleServiceStopBroadcastMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopBroadcast", "()V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
     jDalvikBleService = (*androidEnv)->NewGlobalRef(androidEnv, jtmpobj);
-    (*androidVM)->DetachCurrentThread(androidVM);
+    (*myAndroidVM)->DetachCurrentThread(myAndroidVM);
 }
 
 //////////////////////////
@@ -83,21 +91,27 @@ fprintf(stderr, "JNI_OnLoad_BLE called\n");
 
 // from Java to Android
 
+JNIEnv* getSafeAndroidEnv() {
+    JNIEnv* androidEnv;
+    if ((*myAndroidVM)->GetEnv(myAndroidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
+        ATTACH_LOG_WARNING("enableDalvikDebug called from not-attached thread\n");
+        (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
+    }  else {
+        ATTACH_LOG_FINE("enableDalvikDebug called from attached thread %p\n", androidEnv);
+    }
+    return androidEnv;
+}
+
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startScanningPeripherals
 (JNIEnv *env, jclass jClass)
 {
-    JavaVM* androidVM = substrateGetAndroidVM();
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
     jclass jBleServiceClass = substrateGetBleServiceClass();
 
-
-    JNIEnv* androidEnv;
-    (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
+    JNIEnv* androidEnv = getSafeAndroidEnv();
     jmethodID jBleServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDalvikBleService = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
-    (*androidVM)->DetachCurrentThread(androidVM);
-
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startObserver
@@ -105,15 +119,35 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startO
 {
     int uuidCount = (*env)->GetArrayLength(env, jUuidsArray);
     fprintf(stderr, "ble.c startObserver\n");
-    JavaVM* androidVM = substrateGetAndroidVM();
-    JNIEnv* androidEnv;
-    if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
-        ATTACH_LOG_WARNING("enableDalvikDebug called from not-attached thread\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
-    }  else {
-        ATTACH_LOG_FINE("enableDalvikDebug called from attached thread %p\n", androidEnv);
-    }
+    JNIEnv* androidEnv = getSafeAndroidEnv();
     (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartScanningMethod);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopObserver
+(JNIEnv *env, jclass jClass)
+{
+    fprintf(stderr, "ble.c stopObserver\n");
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStopScanningMethod);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startBroadcast
+(JNIEnv *env, jclass jClass, jstring jUuid, jint major, jint minor, jstring jId) {
+    const char *uuidChars = (*env)->GetStringUTFChars(env, jUuid, NULL);
+    const char *idChars = (*env)->GetStringUTFChars(env, jId, NULL);
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    jstring duuid = (*androidEnv)->NewStringUTF(androidEnv, uuidChars);
+    jstring did = (*androidEnv)->NewStringUTF(androidEnv, idChars);
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartBroadcastMethod,
+                   duuid, major, minor, did);
+    (*androidEnv)->DeleteLocalRef(androidEnv, duuid);
+    (*androidEnv)->DeleteLocalRef(androidEnv, did);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_stopBroadcast
+(JNIEnv *env, jclass jClass) {
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartBroadcastMethod);
 }
 
 ///////////////////////////

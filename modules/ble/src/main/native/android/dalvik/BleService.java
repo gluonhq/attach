@@ -102,7 +102,7 @@ Log.v(TAG, "DalvikBle, init, adapter not enabled");
     private ScanCallback scanCallback;
 
     private void startScanning() {
-Log.v(TAG, "BleService startScanning\n");
+        Log.v(TAG, "BleService startScanning\n");
 System.err.println("[BLE] startScanning\n");
         if (scanner == null) {
             System.err.println("Scanner still null");
@@ -111,6 +111,22 @@ System.err.println("[BLE] startScanning\n");
         this.scanCallback = createCallback();
         scanner.startScan(scanCallback);
     }
+
+    private void stopScanning() {
+        Log.v(TAG, "BleService stopScanning\n");
+        if (scanner != null && scanCallback != null) {
+            scanner.stopScan(scanCallback);
+        }
+    }
+
+    private void startBroadcast(String uuid, int major, int minor, String id) {
+        Log.v(TAG, "TODO: start broadcasting for uuid = "+uuid+", major = "+major+", minor = "+minor+", id = "+id);
+    }
+
+    private void stopBroadcast() {
+        Log.v(TAG, "TODO: stop broadcasting");
+    }
+
 
     private ScanCallback createCallback() {
         ScanCallback answer = new ScanCallback() {

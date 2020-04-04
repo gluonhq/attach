@@ -64,18 +64,18 @@ public class AndroidBleService implements BleService {
     private static Consumer<ScanDetection> callback;
 
     static {
-System.err.println("[ABLE] clinit");
+        LOG.fine("Loading AndroidBleService");
         debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Ble");
-System.err.println("[ABLE] clinit done");
+        LOG.fine("Loaded AndroidBleService");
     }
     
     public AndroidBleService() {
-System.err.println("[ABLE] init ableservice");
+        LOG.fine("Created AndroidBleService instance");
     }
 
     public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
-System.err.println("[ABLE], startScanning with config");
+        LOG.fine("AndroidBleService will start scanning");
         AndroidBleService.callback = callback;
         String[] uuids = new String[region.getUuids().size()];
         uuids = region.getUuids().toArray(uuids);
@@ -84,6 +84,7 @@ System.err.println("[ABLE], startScanning with config");
 
     public void stopScanning() {
 System.err.println("[ABLE], stopScanning");
+        stopObserver();
     }
 
     public ObservableList<BleDevice> startScanningDevices() {
@@ -119,7 +120,7 @@ System.err.println("[ABLE]");
     
 
     public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
-System.err.println("[ABLE] StartBroadcasting");
+        startBroadcast(beaconUUID.toString(), major, minor, identifier);
     }
 
     /**
@@ -128,7 +129,7 @@ System.err.println("[ABLE] StartBroadcasting");
      * @since 4.0.7
      */
     public void stopBroadcasting() {
-System.err.println("[ABLE] StopBroadcasting");
+        stopBroadcast();
     }
 
 // callback 
@@ -166,6 +167,9 @@ System.err.println("In AndroidBleService (attach), got detection! uuid = "+uuid+
 
     private static native void startScanningPeripherals();
     private static native void startObserver(String[] uuids);
+    private static native void stopObserver();
+    private static native void startBroadcast(String uuid, int major, int minor, String id);
+    private static native void stopBroadcast();
 
 
 }
