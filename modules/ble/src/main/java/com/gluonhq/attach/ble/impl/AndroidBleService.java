@@ -83,12 +83,12 @@ public class AndroidBleService implements BleService {
     }
 
     public void stopScanning() {
-System.err.println("[ABLE], stopScanning");
+        LOG.fine("AndroidBleService will stop scanning");
         stopObserver();
     }
 
     public ObservableList<BleDevice> startScanningDevices() {
-System.err.println("[ABLE], startScanningDevices");
+        LOG.fine("AndroidBleService will start scanning devices");
         devices.clear();
         startScanningPeripherals();
         return devices;
@@ -134,7 +134,6 @@ System.err.println("[ABLE]");
 
 // callback 
     private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
-System.err.println("In AndroidBleService (attach), got detection! uuid = "+uuid+" and major = "+major);
         ScanDetection detection = new ScanDetection();
         detection.setUuid(uuid);
         detection.setMajor(major);

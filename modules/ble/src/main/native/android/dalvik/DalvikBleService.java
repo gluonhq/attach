@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BleService  {
+public class DalvikBleService  {
 
     private static final String TAG = "GluonAttach";
     private final Activity activity;
@@ -103,7 +103,6 @@ Log.v(TAG, "DalvikBle, init, adapter not enabled");
 
     private void startScanning() {
         Log.v(TAG, "BleService startScanning\n");
-System.err.println("[BLE] startScanning\n");
         if (scanner == null) {
             System.err.println("Scanner still null");
             return;

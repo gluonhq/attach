@@ -78,7 +78,6 @@ fprintf(stderr, "JNI_OnLoad_BLE called\n");
         ATTACH_LOG_WARNING("Error initializing native Ble from OnLoad");
         return JNI_FALSE;
     }
-    // (*env)->GetJavaVM(env, &jVMBle);
     ATTACH_LOG_FINE("[BLESERVICE] Initializing native BLE from OnLoad");
     initializeGraalHandles(graalEnv);
     initializeDalvikHandles();
@@ -144,10 +143,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startB
     (*androidEnv)->DeleteLocalRef(androidEnv, did);
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_stopBroadcast
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopBroadcast
 (JNIEnv *env, jclass jClass) {
     JNIEnv* androidEnv = getSafeAndroidEnv();
-    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartBroadcastMethod);
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStopBroadcastMethod);
 }
 
 ///////////////////////////
