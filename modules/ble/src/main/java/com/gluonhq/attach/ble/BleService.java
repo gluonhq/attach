@@ -216,7 +216,7 @@ public interface BleService {
     void stopScanning();
 
     /**
-     * Configure the current iOS device as a Bluetooth beacon, and start
+     * Configure the current device as a Bluetooth beacon, and start
      * advertising with a given UUID
      *
      * @param beaconUUID the UUID of the beacon that will be advertised

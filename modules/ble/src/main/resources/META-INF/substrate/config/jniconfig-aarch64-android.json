@@ -1,0 +1,10 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ble.impl.AndroidBleService",
+    "methods":[
+      {"name":"gotPeripheral","parameterTypes":["java.lang.String","java.lang.String"] },
+      {"name":"setDetection","parameterTypes":["java.lang.String","int","int","int","int"] }
+    ]
+  }
+]
+
