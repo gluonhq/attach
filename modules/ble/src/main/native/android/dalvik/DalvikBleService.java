@@ -35,44 +35,48 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseCallback;
 
 import android.content.Intent;
-
 import android.util.Log;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.UUID;
 
 public class DalvikBleService  {
 
     private static final String TAG = "GluonAttach";
     private final Activity activity;
-    private static final Logger LOG = Logger.getLogger(BleService.class.getName());
+    private static final Logger LOG = Logger.getLogger(DalvikBleService.class.getName());
     private BluetoothLeScanner scanner;
 
     private final static int REQUEST_ENABLE_BT = 1001;
     private final List<String> uuids = new LinkedList<>();
+    private AdvertiseCallback callback;
 
-
-    public BleService(Activity a) {
+    public DalvikBleService(Activity a) {
         this.activity = a;
         init();
     }
 
     private void init() {
-Log.v(TAG, "DalvikBle, init");
+        Log.v(TAG, "DalvikBle, init");
         boolean fineloc = Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
         if (!fineloc) {
-Log.v(TAG, "No permission to get fine location");
+            Log.v(TAG, "No permission to get fine location");
         }
-Log.v(TAG, "Permission to get fine location? "+ fineloc);
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (!adapter.isEnabled()) {
-Log.v(TAG, "DalvikBle, init, adapter not enabled");
+            Log.v(TAG, "DalvikBle, init, adapter not enabled");
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             IntentHandler intentHandler = new IntentHandler() {
                 @Override
@@ -104,7 +108,7 @@ Log.v(TAG, "DalvikBle, init, adapter not enabled");
     private void startScanning() {
         Log.v(TAG, "BleService startScanning\n");
         if (scanner == null) {
-            System.err.println("Scanner still null");
+            Log.e(TAG, "Scanner still null");
             return;
         }
         this.scanCallback = createCallback();
@@ -119,19 +123,50 @@ Log.v(TAG, "DalvikBle, init, adapter not enabled");
     }
 
     private void startBroadcast(String uuid, int major, int minor, String id) {
-        Log.v(TAG, "TODO: start broadcasting for uuid = "+uuid+", major = "+major+", minor = "+minor+", id = "+id);
+        Log.v(TAG, "Start broadcasting for uuid = "+uuid+", major = "+major+", minor = "+minor+", id = "+id);
+        BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        AdvertiseSettings parameters = new AdvertiseSettings.Builder()
+                .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+                .setConnectable(false)
+                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                .build();
+
+        byte[] payload = getPayload(uuid, major, minor);
+        AdvertiseData data = new AdvertiseData.Builder()
+                .addManufacturerData(0x004C, payload)
+                .build();
+        callback = new AdvertiseCallback() {
+            @Override
+            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                super.onStartSuccess(settingsInEffect);
+                Log.v(TAG, "onStartSuccess");
+            }
+
+            @Override
+            public void onStartFailure(int errorCode) {
+                Log.e(TAG, "Advertising onStartFailure: " + errorCode);
+                super.onStartFailure(errorCode);
+            }
+        };
+
+        Log.v(TAG, "Advertise with payload = " + Arrays.toString(payload));
+        advertiser.startAdvertising(parameters, data, callback);
     }
 
     private void stopBroadcast() {
-        Log.v(TAG, "TODO: stop broadcasting");
+        Log.v(TAG, "Stop broadcasting");
+        if (callback != null) {
+            BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+            advertiser.stopAdvertising(callback);
+            callback = null;
+        }
     }
-
 
     private ScanCallback createCallback() {
         ScanCallback answer = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
+                Log.v(TAG, "BLESERVICE: onScanResult, callbacktype = " + callbackType);
                 ScanRecord mScanRecord = result.getScanRecord();
                 byte[] scanRecord = mScanRecord.getBytes();
 
@@ -148,10 +183,6 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
                     // process data
                     if (type == 0xff) {
                         processAD(scanRecord, index + 1, result.getRssi());
-                        // ScanDetection detection = processAD(scanRecord, index + 1, result.getRssi());
-                        // if (detection != null) {
-                            // Platform.runLater(() -> callback.accept(detection));
-                        // }
                     }
 
                     index += length;
@@ -189,7 +220,7 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
             power -= 256;
             int proximity = calculateProximity(power, mRssi);
 
-            System.out.println("Scan: mID: "+mID+", beaconID: "+beaconID+", uuid: "+scannedUuid+
+            Log.v(TAG, "Scan: mID: "+mID+", beaconID: "+beaconID+", uuid: "+scannedUuid+
                     ", major: "+major+", minor: "+minor+", power: "+power+", distance: "+proximity);
             scanDetected (scannedUuid, major, minor, power, 0);
         }
@@ -206,7 +237,7 @@ System.err.println("BLESERVICE: ONSCANRESULT, callbacktype = "+callbackType);
 
     private static int calculateProximity (int txPower, double rssi) {
         double accuracy = calculateAccuracy(txPower, rssi);
-System.err.println("accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
         if (accuracy < 0) {
             return 0;
         }
@@ -231,6 +262,39 @@ System.err.println("accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi)
             double accuracy = 0.89976 * Math.pow(ratio, 7.7095) + 0.111;
             return accuracy;
         }
+    }
+
+    private static byte[] getPayload(String uuid, int major, int minor) {
+        byte[] prefixArray = getBytesFromShort((short) 533);
+        byte[] uuidArray = getBytesFromUUID(uuid);
+        byte[] majorArray = getBytesFromShort((short) major);
+        byte[] minorArray = getBytesFromShort((short) minor);
+        byte[] powerArray = {(byte) -69};
+
+        byte[] allByteArray = new byte[prefixArray.length + uuidArray.length + majorArray.length + minorArray.length + powerArray.length];
+
+        ByteBuffer buff = ByteBuffer.wrap(allByteArray);
+        buff.put(prefixArray);
+        buff.put(uuidArray);
+        buff.put(majorArray);
+        buff.put(minorArray);
+        buff.put(powerArray);
+
+        return buff.array();
+    }
+
+    private static byte[] getBytesFromUUID(String uuidString) {
+        final UUID uuid = UUID.fromString(uuidString);
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
+        return buffer.array();
+    }
+
+    private static byte[] getBytesFromShort(short value) {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[2]);
+        buffer.putShort(value);
+        return buffer.array();
     }
 
     private native void scanDetected(String uuid, int major, int minor, int rsi, int proxy);
