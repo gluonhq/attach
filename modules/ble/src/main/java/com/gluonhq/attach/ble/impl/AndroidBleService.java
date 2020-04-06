@@ -133,6 +133,11 @@ public class AndroidBleService implements BleService {
         return devices;
     }
 
+    @Override
+    public void stopScanningDevices() {
+        stopScanningPeripherals();
+    }
+
     public void connect(BleDevice device) {
 System.err.println("[ABLE]");
     }
@@ -159,6 +164,7 @@ System.err.println("[ABLE]");
 
     // native
     private static native void startScanningPeripherals();
+    private static native void stopScanningPeripherals();
 
     // callback
     private static void gotPeripheral(String name, String address) {

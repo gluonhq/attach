@@ -329,6 +329,13 @@ public class DalvikBleService  {
         }
     }
 
+    private void stopScanningPeripherals() {
+        Log.v(TAG, "BleService stopScanningPeripherals");
+        if (scanner != null && deviceCallback != null) {
+            scanner.stopScan(deviceCallback);
+        }
+    }
+
     private ScanCallback createDeviceCallback() {
         return new ScanCallback() {
 

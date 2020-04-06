@@ -165,6 +165,11 @@ public class IOSBleService implements BleService {
     }
 
     @Override
+    public void stopScanningDevices() {
+        stopScanningPeripherals();
+    }
+
+    @Override
     public void connect(BleDevice device) {
         if (!checkDevice(device)) {
             return;
@@ -235,6 +240,7 @@ public class IOSBleService implements BleService {
     // native
 
     private static native void startScanningPeripherals();
+    private static native void stopScanningPeripherals();
     private static native void doConnect(String name, String uuid);
     private static native void doDisconnect(String name, String uuid);
     private static native void doRead(String name, String uuidService, String uuidChar);

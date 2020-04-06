@@ -43,6 +43,7 @@ static jmethodID jBleServiceStopBroadcastMethod;
 static jmethodID jBleServiceEnableDebug;
 
 static jmethodID jBleServiceStartScanningPeripheralsMethod;
+static jmethodID jBleServiceStopScanningPeripheralsMethod;
 
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
@@ -64,6 +65,7 @@ void initializeDalvikHandles() {
     jBleServiceEnableDebug = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "enableDebug", "()V");
 
     jBleServiceStartScanningPeripheralsMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startScanningPeripherals", "()V");
+    jBleServiceStopScanningPeripheralsMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopScanningPeripherals", "()V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
@@ -160,6 +162,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startS
 {
     JNIEnv* androidEnv = getSafeAndroidEnv();
     (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartScanningPeripheralsMethod);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopScanningPeripherals
+(JNIEnv *env, jclass jClass)
+{
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStopScanningPeripheralsMethod);
 }
 
 ///////////////////////////
