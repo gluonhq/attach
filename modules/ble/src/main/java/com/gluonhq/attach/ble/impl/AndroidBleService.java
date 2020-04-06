@@ -139,12 +139,21 @@ public class AndroidBleService implements BleService {
         stopScanningPeripherals();
     }
 
+    @Override
     public void connect(BleDevice device) {
-System.err.println("[ABLE]");
+        if (!checkDevice(device)) {
+            return;
+        }
+        profileNames.clear();
+        device.getProfiles().clear();
+        doConnect(device.getName(), device.getAddress());
     }
 
     public void disconnect(BleDevice device) {
-System.err.println("[ABLE]");
+        if (!checkDevice(device)) {
+            return;
+        }
+        doDisconnect(device.getName(), device.getAddress());
     }
 
     public void readCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
@@ -163,9 +172,28 @@ System.err.println("[ABLE]");
 System.err.println("[ABLE]");
     }
 
+    private static boolean checkDevice(BleDevice device) {
+        if (device == null) {
+            return false;
+        }
+        if (device.getName() == null) {
+            if (debug) {
+                LOG.log(Level.INFO, "IOSBleService: Device with null name not allowed");
+            }
+            return false;
+        }
+        final boolean check = deviceNames.contains(device.getName());
+        if (debug) {
+            LOG.log(Level.INFO, "IOSBleService: Device with name " + device.getName() + " in device list: " + check);
+        }
+        return check;
+    }
+
     // native
     private static native void startScanningPeripherals();
     private static native void stopScanningPeripherals();
+    private static native void doConnect(String name, String address);
+    private static native void doDisconnect(String name, String address);
 
     // callback
     private static void gotPeripheral(String name, String address) {

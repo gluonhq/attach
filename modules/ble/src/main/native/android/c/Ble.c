@@ -44,6 +44,8 @@ static jmethodID jBleServiceEnableDebug;
 
 static jmethodID jBleServiceStartScanningPeripheralsMethod;
 static jmethodID jBleServiceStopScanningPeripheralsMethod;
+static jmethodID jBleServiceConnectMethod;
+static jmethodID jBleServiceDisconnectMethod;
 
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
@@ -66,6 +68,8 @@ void initializeDalvikHandles() {
 
     jBleServiceStartScanningPeripheralsMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startScanningPeripherals", "()V");
     jBleServiceStopScanningPeripheralsMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopScanningPeripherals", "()V");
+    jBleServiceConnectMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "connect", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jBleServiceDisconnectMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "disconnect", "(Ljava/lang/String;Ljava/lang/String;)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
@@ -169,6 +173,34 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopSc
 {
     JNIEnv* androidEnv = getSafeAndroidEnv();
     (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStopScanningPeripheralsMethod);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doConnect
+(JNIEnv *env, jclass jClass, jstring jName, jstring jAddress)
+{
+    const char *nameChars = (*env)->GetStringUTFChars(env, jName, NULL);
+    const char *addressChars = (*env)->GetStringUTFChars(env, jAddress, NULL);
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    jstring dname = (*androidEnv)->NewStringUTF(androidEnv, nameChars);
+    jstring daddress = (*androidEnv)->NewStringUTF(androidEnv, addressChars);
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceConnectMethod,
+                   dname, daddress);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dname);
+    (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doDisconnect
+(JNIEnv *env, jclass jClass, jstring jName, jstring jAddress)
+{
+    const char *nameChars = (*env)->GetStringUTFChars(env, jName, NULL);
+    const char *addressChars = (*env)->GetStringUTFChars(env, jAddress, NULL);
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    jstring dname = (*androidEnv)->NewStringUTF(androidEnv, nameChars);
+    jstring daddress = (*androidEnv)->NewStringUTF(androidEnv, addressChars);
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceDisconnectMethod,
+                   dname, daddress);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dname);
+    (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
 }
 
 ///////////////////////////

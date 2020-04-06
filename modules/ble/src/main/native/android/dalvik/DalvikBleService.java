@@ -76,6 +76,7 @@ public class DalvikBleService  {
 
     private ScanCallback deviceCallback;
     private final Map<String, BluetoothDevice> devices = new HashMap<>();
+    private final Map<String, BleGattCallback> gatts = new HashMap<>();
 
     public DalvikBleService(Activity a) {
         this.activity = a;
@@ -334,6 +335,26 @@ public class DalvikBleService  {
         if (scanner != null && deviceCallback != null) {
             scanner.stopScan(deviceCallback);
             deviceCallback = null;
+        }
+    }
+
+    private void connect(String name, String address) {
+        Log.v(TAG, "Connecting to device " + name + " and address " + address);
+        BleGattCallback bleGattCallback;
+        if (!gatts.containsKey(address)) {
+            bleGattCallback = new BleGattCallback(activity, devices.get(address));
+            gatts.put(address, bleGattCallback);
+        } else {
+            bleGattCallback = gatts.get(address);
+        }
+        bleGattCallback.connect();
+    }
+
+    private void disconnect(String name, String address) {
+        Log.v(TAG, "Disconnecting device " + name + " and address " + address);
+        if (gatts.containsKey(address)) {
+            BleGattCallback bleGattCallback = gatts.get(address);
+            bleGattCallback.disconnect();
         }
     }
 
