@@ -33,6 +33,7 @@ JavaVM *jVMBle = NULL;
 static jclass jGraalBleClass;
 static jmethodID jGraalSetDetectionMethod;
 static jmethodID jGraalSetDeviceDetectionMethod;
+static jmethodID jGraalSetDeviceStateMethod;
 
 static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBleService;
@@ -52,6 +53,7 @@ void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalBleClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/ble/impl/AndroidBleService"));
     jGraalSetDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "setDetection", "(Ljava/lang/String;IIII)V");
     jGraalSetDeviceDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jGraalSetDeviceStateMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotState", "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 void initializeDalvikHandles() {
@@ -232,4 +234,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDevice
                  jname, jaddress);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jaddress);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JNIEnv *env, jobject service, jstring name, jstring state) {
+    const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    const char *stateChars = (*env)->GetStringUTFChars(env, state, NULL);
+    jstring jstate = (*graalEnv)->NewStringUTF(graalEnv, stateChars);
+    ATTACH_LOG_FINE("Device state, name = %s, state = %s\n", nameChars, stateChars);
+    (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceStateMethod,
+                 jname, jstate);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jname);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jstate);
 }

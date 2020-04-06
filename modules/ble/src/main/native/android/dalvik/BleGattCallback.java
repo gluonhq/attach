@@ -33,7 +33,9 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 import android.util.Log;
@@ -58,25 +60,25 @@ class BleGattCallback extends BluetoothGattCallback {
         Log.v(TAG, "BLE gatt changed from status: " + status + " to status:" + newState);
         switch (newState) {
             case BluetoothProfile.STATE_CONNECTED:
-//                Platform.runLater(() -> device.setState(State.STATE_CONNECTED));
                 Log.v(TAG, "STATE_CONNECTED");
+                setState(bluetoothDevice.getName(), "STATE_CONNECTED");
                 gatt.discoverServices();
                 break;
             case BluetoothProfile.STATE_DISCONNECTED:
-//                Platform.runLater(() -> device.setState(State.STATE_DISCONNECTED));
                 Log.v(TAG, "STATE_DISCONNECTED");
+                setState(bluetoothDevice.getName(), "STATE_DISCONNECTED");
                 break;
             case BluetoothProfile.STATE_CONNECTING:
-//                Platform.runLater(() -> device.setState(State.STATE_CONNECTING));
                 Log.v(TAG, "STATE_CONNECTING");
+                setState(bluetoothDevice.getName(), "STATE_CONNECTING");
                 break;
             case BluetoothProfile.STATE_DISCONNECTING:
-//                Platform.runLater(() -> device.setState(State.STATE_DISCONNECTING));
                 Log.v(TAG, "STATE_DISCONNECTING");
+                setState(bluetoothDevice.getName(), "STATE_DISCONNECTING");
                 break;
             default:
-//                Platform.runLater(() -> device.setState(State.STATE_UNKWONN));
                 Log.v(TAG, "STATE_OTHER");
+                setState(bluetoothDevice.getName(), "STATE_OTHER");
         }
     }
 
@@ -104,8 +106,16 @@ class BleGattCallback extends BluetoothGattCallback {
     void connect() {
         if (bluetoothDevice != null) {
 //            Platform.runLater(() -> device.profilesProperties().clear());
-            connectedGatt = bluetoothDevice.connectGatt(activity, true, this);
-            connected = connectedGatt != null;
+            connectedGatt = bluetoothDevice.connectGatt(activity, false, this);
+            if (connectedGatt != null) {
+                setState(bluetoothDevice.getName(), "STATE_CONNECTING");
+                connected = connectedGatt.connect();
+                final BluetoothManager bluetoothManager =
+                        (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+                int state = bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
+                Log.v(TAG, "Connected: " + connected + ", state: " + state);
+                // setState(bluetoothDevice.getName(), state);
+            }
         }
     }
 
@@ -119,5 +129,8 @@ class BleGattCallback extends BluetoothGattCallback {
     boolean isConnected() {
         return connected;
     }
+
+    // native
+    private native void setState(String name, String state);
 
 }

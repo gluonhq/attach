@@ -178,13 +178,13 @@ System.err.println("[ABLE]");
         }
         if (device.getName() == null) {
             if (debug) {
-                LOG.log(Level.INFO, "IOSBleService: Device with null name not allowed");
+                LOG.log(Level.INFO, "AndroidBleService: Device with null name not allowed");
             }
             return false;
         }
         final boolean check = deviceNames.contains(device.getName());
         if (debug) {
-            LOG.log(Level.INFO, "IOSBleService: Device with name " + device.getName() + " in device list: " + check);
+            LOG.log(Level.INFO, "AndroidBleService: Device with name " + device.getName() + " in device list: " + check);
         }
         return check;
     }
@@ -195,7 +195,7 @@ System.err.println("[ABLE]");
     private static native void doConnect(String name, String address);
     private static native void doDisconnect(String name, String address);
 
-    // callback
+    // callbacks
     private static void gotPeripheral(String name, String address) {
         if ((name != null && deviceNames.contains(name)) ||
                 (name == null && address != null && deviceNames.contains(address))) {
@@ -216,4 +216,25 @@ System.err.println("[ABLE]");
         deviceNames.add(name != null ? name : address);
     }
 
+    private static void gotState(String name, String state) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE device %s changed state to %s", name, state));
+        }
+
+        getDeviceByName(name).ifPresent(device ->
+                Platform.runLater(() -> device.setState(BleDevice.State.fromName(state))));
+    }
+
+    private static Optional<BleDevice> getDeviceByName(String name) {
+        if (name == null || !deviceNames.contains(name)) {
+            return Optional.empty();
+        }
+
+        for (BleDevice device : devices) {
+            if (name.equals(device.getName())) {
+                return Optional.of(device);
+            }
+        }
+        return Optional.empty();
+    }
 }
