@@ -31,6 +31,13 @@ import android.Manifest;
 import android.app.Activity;
 import static android.app.Activity.RESULT_OK;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
@@ -46,8 +53,10 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.UUID;
@@ -58,14 +67,23 @@ public class DalvikBleService  {
     private final Activity activity;
     private static final Logger LOG = Logger.getLogger(DalvikBleService.class.getName());
     private BluetoothLeScanner scanner;
+    private boolean debug = false;
 
     private final static int REQUEST_ENABLE_BT = 1001;
     private final List<String> uuids = new LinkedList<>();
+    private ScanCallback scanCallback;
     private AdvertiseCallback callback;
+
+    private ScanCallback deviceCallback;
+    private final Map<String, BluetoothDevice> devices = new HashMap<>();
 
     public DalvikBleService(Activity a) {
         this.activity = a;
         init();
+    }
+
+    public void enableDebug() {
+        debug = true;
     }
 
     private void init() {
@@ -103,7 +121,7 @@ public class DalvikBleService  {
 
     }
 
-    private ScanCallback scanCallback;
+    // BLE BEACONS
 
     private void startScanning() {
         Log.v(TAG, "BleService startScanning\n");
@@ -297,8 +315,41 @@ public class DalvikBleService  {
         return buffer.array();
     }
 
+    // native
     private native void scanDetected(String uuid, int major, int minor, int rsi, int proxy);
 
+    // BLE DEVICES
+
+    private void startScanningPeripherals() {
+        Log.v(TAG, "BLE startScanningPeripherals");
+        devices.clear();
+        this.deviceCallback = createDeviceCallback();
+        if (scanner != null) {
+            scanner.startScan(deviceCallback);
+        }
+    }
+
+    private ScanCallback createDeviceCallback() {
+        return new ScanCallback() {
+
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                BluetoothDevice device = result.getDevice();
+                if (devices.values().contains(device)) {
+                    Log.v(TAG, "BLE already contains this device " + device);
+                    return;
+                }
+                String address = device.getAddress();
+                String name = device.getName();
+                devices.put(address, device);
+                Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address);
+                scanDeviceDetected(name, address);
+            }
+        };
+    }
+
+    // native
+    private native void scanDeviceDetected(String name, String address);
 
 
 }

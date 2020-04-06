@@ -32,6 +32,7 @@ JNIEnv* javaEnvBle = NULL;
 JavaVM *jVMBle = NULL;
 static jclass jGraalBleClass;
 static jmethodID jGraalSetDetectionMethod;
+static jmethodID jGraalSetDeviceDetectionMethod;
 
 static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBleService;
@@ -39,11 +40,15 @@ static jmethodID jBleServiceStartScanningMethod;
 static jmethodID jBleServiceStopScanningMethod;
 static jmethodID jBleServiceStartBroadcastMethod;
 static jmethodID jBleServiceStopBroadcastMethod;
-static jmethodID attach_setEvent;
+static jmethodID jBleServiceEnableDebug;
+
+static jmethodID jBleServiceStartScanningPeripheralsMethod;
+
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalBleClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/ble/impl/AndroidBleService"));
     jGraalSetDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "setDetection", "(Ljava/lang/String;IIII)V");
+    jGraalSetDeviceDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 void initializeDalvikHandles() {
@@ -56,6 +61,9 @@ void initializeDalvikHandles() {
     jBleServiceStopScanningMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopScanning", "()V");
     jBleServiceStartBroadcastMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startBroadcast", "(Ljava/lang/String;IILjava/lang/String;)V");
     jBleServiceStopBroadcastMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "stopBroadcast", "()V");
+    jBleServiceEnableDebug = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "enableDebug", "()V");
+
+    jBleServiceStartScanningPeripheralsMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "startScanningPeripherals", "()V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
@@ -101,17 +109,13 @@ JNIEnv* getSafeAndroidEnv() {
     return androidEnv;
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startScanningPeripherals
-(JNIEnv *env, jclass jClass)
-{
-    jclass activityClass = substrateGetActivityClass();
-    jobject jActivity = substrateGetActivity();
-    jclass jBleServiceClass = substrateGetBleServiceClass();
-
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_enableDebug
+(JNIEnv *env, jclass jClass) {
     JNIEnv* androidEnv = getSafeAndroidEnv();
-    jmethodID jBleServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jDalvikBleService = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceEnableDebug);
 }
+
+// BLE BEACONS
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startObserver
 (JNIEnv *env, jclass jClass, jobjectArray jUuidsArray)
@@ -149,11 +153,22 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopBr
     (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStopBroadcastMethod);
 }
 
+// BLE DEVICES
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startScanningPeripherals
+(JNIEnv *env, jclass jClass)
+{
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceStartScanningPeripheralsMethod);
+}
+
 ///////////////////////////
 // From Dalvik to native //
 ///////////////////////////
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleService_scanDetected(JNIEnv *env, jobject service, jstring uuid, jint major, jint minor, jint ris, jint proxy) {
+// BLE BEACONS
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDetected(JNIEnv *env, jobject service, jstring uuid, jint major, jint minor, jint ris, jint proxy) {
     ATTACH_LOG_FINE("Scan Detection is now in native layer, major = %d\n", major);
     const char *uuidChars = (*env)->GetStringUTFChars(env, uuid, NULL);
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
@@ -163,29 +178,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleService_scanDetected(JNI
     (*graalEnv)->DeleteLocalRef(graalEnv, juuid);
 }
 
-// from Android to Java
+// BLE DEVICES
 
-void initializeBleFromNative() {
-    if (javaEnvBle != NULL) {
-        return; // already have a JNIEnv
-    }
-    if (jVMBle == NULL) {
-        ATTACH_LOG_FINE("initialize Ble from native can't be done without JVM");
-        return; // can't initialize from native before we have a jVMBle
-    }
-    ATTACH_LOG_FINE("Initializing native Ble from Android/native code");
-    jint error = (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&javaEnvBle, NULL);
-    if (error != 0) {
-        ATTACH_LOG_FINE("initializeBleFromNative failed with error %d", error);
-    }
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDeviceDetected(JNIEnv *env, jobject service, jstring name, jstring address) {
+    const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    const char *addressChars = (*env)->GetStringUTFChars(env, address, NULL);
+    jstring jaddress = (*graalEnv)->NewStringUTF(graalEnv, addressChars);
+    ATTACH_LOG_FINE("Scan Device Detection, name = %s, address = %s\n", nameChars, addressChars);
+    (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceDetectionMethod,
+                 jname, jaddress);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jname);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jaddress);
 }
-
-void attach_setBleEvent(const char* event) {
-    initializeBleFromNative();
-    if (javaEnvBle == NULL) {
-        ATTACH_LOG_FINE("javaEnvBle still null, not ready to process Ble events");
-        return;
-    }
-    ATTACH_LOG_FINE("call Attach method from native Ble: %s", event);
-}
-

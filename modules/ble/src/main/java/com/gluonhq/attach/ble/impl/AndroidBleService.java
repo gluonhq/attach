@@ -59,6 +59,7 @@ public class AndroidBleService implements BleService {
     private static final Logger LOG = Logger.getLogger(AndroidBleService.class.getName());
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
     private static final List<String> deviceNames = new LinkedList<>();
+    private static final List<String> profileNames = new LinkedList<>();
     private static boolean debug;
 
     private static Consumer<ScanDetection> callback;
@@ -72,8 +73,14 @@ public class AndroidBleService implements BleService {
     
     public AndroidBleService() {
         LOG.fine("Created AndroidBleService instance");
+        if (debug) {
+            enableDebug();
+        }
     }
 
+    // BLE BEACONS
+
+    @Override
     public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
         LOG.fine("AndroidBleService will start scanning");
         AndroidBleService.callback = callback;
@@ -82,11 +89,43 @@ public class AndroidBleService implements BleService {
         startObserver(uuids);
     }
 
+    @Override
     public void stopScanning() {
         LOG.fine("AndroidBleService will stop scanning");
         stopObserver();
     }
 
+    @Override
+    public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
+        startBroadcast(beaconUUID.toString(), major, minor, identifier);
+    }
+
+    @Override
+    public void stopBroadcasting() {
+        stopBroadcast();
+    }
+
+    // native
+    private static native void startObserver(String[] uuids);
+    private static native void stopObserver();
+    private static native void startBroadcast(String uuid, int major, int minor, String id);
+    private static native void stopBroadcast();
+    private static native void enableDebug();
+
+    // callback
+    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
+        ScanDetection detection = new ScanDetection();
+        detection.setUuid(uuid);
+        detection.setMajor(major);
+        detection.setMinor(minor);
+        detection.setRssi(rssi);
+        detection.setProximity(proximity);
+        Platform.runLater(() -> callback.accept(detection));
+    }
+
+    // BLE DEVICES
+
+    @Override
     public ObservableList<BleDevice> startScanningDevices() {
         LOG.fine("AndroidBleService will start scanning devices");
         devices.clear();
@@ -117,32 +156,11 @@ System.err.println("[ABLE]");
     public void unsubscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
 System.err.println("[ABLE]");
     }
-    
 
-    public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
-        startBroadcast(beaconUUID.toString(), major, minor, identifier);
-    }
+    // native
+    private static native void startScanningPeripherals();
 
-    /**
-     * Stop advertising the current iOS device as a Bluetooth beacon
-     *
-     * @since 4.0.7
-     */
-    public void stopBroadcasting() {
-        stopBroadcast();
-    }
-
-// callback 
-    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
-        ScanDetection detection = new ScanDetection();
-        detection.setUuid(uuid);
-        detection.setMajor(major);
-        detection.setMinor(minor);
-        detection.setRssi(rssi);
-        detection.setProximity(proximity);
-        Platform.runLater(() -> callback.accept(detection));
-    }
-
+    // callback
     private static void gotPeripheral(String name, String uuid) {
         if ((name != null && deviceNames.contains(name)) ||
                 (name == null && uuid != null && deviceNames.contains(uuid))) {
@@ -163,12 +181,5 @@ System.err.println("[ABLE]");
         deviceNames.add(name != null ? name : uuid);
 
     }
-
-    private static native void startScanningPeripherals();
-    private static native void startObserver(String[] uuids);
-    private static native void stopObserver();
-    private static native void startBroadcast(String uuid, int major, int minor, String id);
-    private static native void stopBroadcast();
-
 
 }
