@@ -339,14 +339,16 @@ public class DalvikBleService  {
     }
 
     private void connect(String name, String address) {
-        Log.v(TAG, "Connecting to device " + name + " and address " + address);
+        Log.v(TAG, "Connect to device " + name + " and address " + address);
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
             bleGattCallback = new BleGattCallback(activity, devices.get(address));
+            Log.v(TAG, "Create new BleGattCallback: " + bleGattCallback);
             gatts.put(address, bleGattCallback);
         } else {
             bleGattCallback = gatts.get(address);
         }
+        Log.v(TAG, "Connecting");
         bleGattCallback.connect();
     }
 
