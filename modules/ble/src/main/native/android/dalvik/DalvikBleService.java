@@ -336,7 +336,6 @@ public class DalvikBleService  {
             public void onScanResult(int callbackType, ScanResult result) {
                 BluetoothDevice device = result.getDevice();
                 if (devices.values().contains(device)) {
-                    Log.v(TAG, "BLE already contains this device " + device);
                     return;
                 }
                 String address = device.getAddress();

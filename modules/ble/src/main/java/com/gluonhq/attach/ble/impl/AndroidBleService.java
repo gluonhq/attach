@@ -161,25 +161,24 @@ System.err.println("[ABLE]");
     private static native void startScanningPeripherals();
 
     // callback
-    private static void gotPeripheral(String name, String uuid) {
+    private static void gotPeripheral(String name, String address) {
         if ((name != null && deviceNames.contains(name)) ||
-                (name == null && uuid != null && deviceNames.contains(uuid))) {
+                (name == null && address != null && deviceNames.contains(address))) {
             return;
         }
-        if (name != null && uuid != null && deviceNames.contains(uuid)) {
-            deviceNames.remove(uuid);
-            devices.removeIf(d -> uuid.equals(d.getAddress()));
+        if (name != null && address != null && deviceNames.contains(address)) {
+            deviceNames.remove(address);
+            devices.removeIf(d -> address.equals(d.getAddress()));
         }
 
         if (debug) {
-            LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s and uuid: %s", name, uuid));
+            LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s and address: %s", name, address));
         }
         BleDevice dev = new BleDevice();
         dev.setName(name);
-        dev.setAddress(uuid);
+        dev.setAddress(address);
         Platform.runLater(() -> devices.add(dev));
-        deviceNames.add(name != null ? name : uuid);
-
+        deviceNames.add(name != null ? name : address);
     }
 
 }
