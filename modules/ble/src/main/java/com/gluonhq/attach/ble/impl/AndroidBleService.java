@@ -129,6 +129,7 @@ public class AndroidBleService implements BleService {
     public ObservableList<BleDevice> startScanningDevices() {
         LOG.fine("AndroidBleService will start scanning devices");
         devices.clear();
+        deviceNames.clear();
         startScanningPeripherals();
         return devices;
     }

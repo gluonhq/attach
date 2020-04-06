@@ -333,6 +333,7 @@ public class DalvikBleService  {
         Log.v(TAG, "BleService stopScanningPeripherals");
         if (scanner != null && deviceCallback != null) {
             scanner.stopScan(deviceCallback);
+            deviceCallback = null;
         }
     }
 
