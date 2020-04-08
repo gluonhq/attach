@@ -97,9 +97,10 @@ class BleGattCallback extends BluetoothGattCallback {
                 addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
                 for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                    Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + descriptor.getValue());
+                    byte[] value = descriptor.getValue() != null ? descriptor.getValue() : new byte[]{};
+                    Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + Arrays.toString(value));
                     addDescriptor(bluetoothDevice.getName(), service.getUuid().toString(),
-                            characteristic.getUuid().toString(), descriptor.getUuid().toString(), descriptor.getValue());
+                            characteristic.getUuid().toString(), descriptor.getUuid().toString(), value);
                 }
             }
         }
@@ -127,6 +128,7 @@ class BleGattCallback extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
+        byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
         setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
     }
 
@@ -211,7 +213,7 @@ class BleGattCallback extends BluetoothGattCallback {
             properties += "write no response, ";
         }
 
-        return properties.substring(0, properties.length() - 2);
+        return properties.isEmpty() ? "" : properties.substring(0, properties.length() - 2);
     }
 
     // native
