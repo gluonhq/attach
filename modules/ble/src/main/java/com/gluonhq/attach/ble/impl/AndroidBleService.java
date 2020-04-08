@@ -237,6 +237,20 @@ System.err.println("[ABLE]");
                 Platform.runLater(() -> device.getProfiles().add(bleProfile)));
     }
 
+    private static void gotCharacteristic(String name, String profileUuid, String charUuid, String properties) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with properties: %s", profileUuid, charUuid, properties));
+        }
+
+        BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
+        bleCharacteristic.setProperties(properties);
+
+        getDeviceByName(name).ifPresent(device ->
+                Platform.runLater(() -> device.getProfiles().stream()
+                        .filter(p -> p.getUuid().toString().equals(profileUuid))
+                        .findAny().ifPresent(p -> p.getCharacteristics().add(bleCharacteristic))));
+    }
+
     private static Optional<BleDevice> getDeviceByName(String name) {
         if (name == null || !deviceNames.contains(name)) {
             return Optional.empty();

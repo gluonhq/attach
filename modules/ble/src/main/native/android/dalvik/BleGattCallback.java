@@ -86,8 +86,14 @@ class BleGattCallback extends BluetoothGattCallback {
         List<BluetoothGattService> services = gatt.getServices();
         Log.v(TAG, "onServicesDiscovered: " + services.size() + " services");
         for (BluetoothGattService service : services) {
-            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
+            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString() + ", characteristics: " + characteristics.size());
             addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
+            for (BluetoothGattCharacteristic characteristic : characteristics) {
+                Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid());
+                addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
+                        characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
+            }
         }
     }
 
@@ -128,8 +134,40 @@ class BleGattCallback extends BluetoothGattCallback {
         return connected;
     }
 
+    private String getProperties(int bitmask) {
+        String properties = "";
+
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_BROADCAST) != 0) {
+            properties += "broadcast, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS) != 0) {
+            properties += "extended props, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
+            properties += "indicate, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+            properties += "notify, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_READ) != 0) {
+            properties += "read, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE) != 0) {
+            properties += "signed write, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0) {
+            properties += "write, ";
+        }
+        if ((bitmask & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0) {
+            properties += "write no response, ";
+        }
+
+        return properties.substring(0, properties.length() - 2);
+    }
+
     // native
     private native void setState(String name, String state);
     private native void addProfile(String name, String uuid, String type);
+    private native void addCharacteristic(String name, String profileUuid, String charUuid, String properties);
 
 }
