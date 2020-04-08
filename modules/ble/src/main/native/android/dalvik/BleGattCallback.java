@@ -32,6 +32,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -93,6 +94,10 @@ class BleGattCallback extends BluetoothGattCallback {
                 Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid());
                 addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
+                for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                    addDescriptor(bluetoothDevice.getName(), service.getUuid().toString(),
+                            characteristic.getUuid().toString(), descriptor.getUuid().toString(), descriptor.getValue());
+                }
             }
         }
     }
@@ -169,5 +174,6 @@ class BleGattCallback extends BluetoothGattCallback {
     private native void setState(String name, String state);
     private native void addProfile(String name, String uuid, String type);
     private native void addCharacteristic(String name, String profileUuid, String charUuid, String properties);
+    private native void addDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value);
 
 }

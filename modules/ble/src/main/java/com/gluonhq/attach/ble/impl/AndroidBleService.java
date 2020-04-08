@@ -230,11 +230,20 @@ System.err.println("[ABLE]");
             LOG.log(Level.INFO, String.format("BLE device has profile: %s with type: %s", uuid, type));
         }
 
-        BleProfile bleProfile = new BleProfile();
-        bleProfile.setUuid(UUID.fromString(uuid));
-        bleProfile.setType(type);
-        getDeviceByName(name).ifPresent(device ->
-                Platform.runLater(() -> device.getProfiles().add(bleProfile)));
+        getDeviceByName(name).ifPresent(device -> {
+            if (!profileNames.contains(uuid)) {
+                profileNames.add(uuid);
+
+                // if profile is not included yet:
+                BleProfile bleProfile = new BleProfile();
+                bleProfile.setUuid(UUID.fromString(uuid));
+                bleProfile.setType(type);
+                if (debug) {
+                    LOG.log(Level.INFO, String.format("AndroidBleService creating profile %s", uuid));
+                }
+                Platform.runLater(() -> device.getProfiles().add(bleProfile));
+            }
+        });
     }
 
     private static void gotCharacteristic(String name, String profileUuid, String charUuid, String properties) {
@@ -242,13 +251,57 @@ System.err.println("[ABLE]");
             LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with properties: %s", profileUuid, charUuid, properties));
         }
 
-        BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
-        bleCharacteristic.setProperties(properties);
+        getDeviceByName(name).ifPresent(device ->
+            device.getProfiles().stream()
+                .filter(p -> p.getUuid().toString().equals(profileUuid))
+                .findAny()
+                .ifPresent(p -> {
+                    if (debug) {
+                        LOG.log(Level.INFO, String.format("AndroidBleService updating profile with characteristic %s", charUuid));
+                    }
+                    boolean exists = false;
+                    for (BleCharacteristic c : p.getCharacteristics()) {
+                        if (c.getUuid().toString().equals(charUuid)) {
+                            c.setProperties(properties);
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
+                        bleCharacteristic.setProperties(properties);
+                        Platform.runLater(() -> p.getCharacteristics().add(bleCharacteristic));
+                    }
+            }));
+    }
+
+    private static void gotDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with descriptor: %s and value %s", profileUuid, charUuid, descUuid, value));
+        }
 
         getDeviceByName(name).ifPresent(device ->
-                Platform.runLater(() -> device.getProfiles().stream()
-                        .filter(p -> p.getUuid().toString().equals(profileUuid))
-                        .findAny().ifPresent(p -> p.getCharacteristics().add(bleCharacteristic))));
+            device.getProfiles().stream()
+                .filter(p -> p.getUuid().toString().equals(profileUuid))
+                .findAny()
+                .ifPresent(p -> {
+                    if (debug) {
+                        LOG.log(Level.INFO, String.format("AndroidBleService updating profile with descriptor %s and value %s", descUuid, value));
+                    }
+                    p.getCharacteristics().stream()
+                        .filter(c -> c.getUuid().toString().equals(charUuid))
+                        .findAny()
+                        .ifPresent(c -> c.getDescriptors().stream()
+                            .filter(d -> d.getUuid().toString().equals(descUuid))
+                            .findAny()
+                            .ifPresentOrElse(d -> d.setValue(value),
+                                    () -> {
+                                        BleDescriptor d = new BleDescriptor();
+                                        d.setUuid(UUID.fromString(descUuid));
+                                        d.setValue(value);
+                                        c.getDescriptors().add(d);
+                                    }));
+                }));
     }
 
     private static Optional<BleDevice> getDeviceByName(String name) {
