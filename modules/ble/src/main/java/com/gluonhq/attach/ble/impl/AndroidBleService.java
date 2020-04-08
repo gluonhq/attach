@@ -249,6 +249,14 @@ System.err.println("[ABLE]");
                     LOG.log(Level.INFO, String.format("AndroidBleService creating profile %s", uuid));
                 }
                 Platform.runLater(() -> device.getProfiles().add(bleProfile));
+            } else {
+                if (debug) {
+                    LOG.log(Level.INFO, String.format("AndroidBleService updating profile %s", uuid));
+                }
+                device.getProfiles().stream()
+                        .filter(p -> p.getUuid().toString().equalsIgnoreCase(uuid))
+                        .findFirst()
+                        .ifPresent(p -> p.setType(type));
             }
         });
     }
@@ -280,19 +288,20 @@ System.err.println("[ABLE]");
                         Platform.runLater(() -> p.getCharacteristics().add(bleCharacteristic));
                     }
             }, () -> {
-                    if (debug) {
-                        LOG.log(Level.INFO, String.format("AndroidBleService adding new profile %s with characteristic %s", profileUuid, charUuid));
+                    if (!profileNames.contains(profileUuid)) {
+                        profileNames.add(profileUuid);
+                        if (debug) {
+                            LOG.log(Level.INFO, String.format("AndroidBleService adding new profile %s with characteristic %s", profileUuid, charUuid));
+                        }
+                        BleProfile bleProfile = new BleProfile();
+                        bleProfile.setUuid(UUID.fromString(profileUuid));
+                        BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
+                        bleCharacteristic.setProperties(properties);
+                        Platform.runLater(() -> {
+                            device.getProfiles().add(bleProfile);
+                            bleProfile.getCharacteristics().add(bleCharacteristic);
+                        });
                     }
-                    BleProfile bleProfile = new BleProfile();
-                    bleProfile.setUuid(UUID.fromString(profileUuid));
-                    BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
-                    bleCharacteristic.setProperties(properties);
-                    profileNames.add(profileUuid);
-                    Platform.runLater(() -> {
-                        device.getProfiles().add(bleProfile);
-                        bleProfile.getCharacteristics().add(bleCharacteristic);
-                    });
-
                 }));
     }
 
