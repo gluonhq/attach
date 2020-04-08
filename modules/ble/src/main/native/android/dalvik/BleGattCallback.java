@@ -36,9 +36,11 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.List;
-import android.util.Log;
+import java.util.UUID;
 
 class BleGattCallback extends BluetoothGattCallback {
 
@@ -101,6 +103,25 @@ class BleGattCallback extends BluetoothGattCallback {
                 }
             }
         }
+    }
+
+    void read(String profile, String characteristic) {
+        if (connectedGatt != null) {
+            Log.e(TAG, "BLE READ failed: connectedGatt was null");
+            return;
+        }
+        final BluetoothGattService service1 = connectedGatt.getService(UUID.fromString(profile));
+        if (service1 == null) {
+            Log.e(TAG, "BLE READ failed: no service with " + profile);
+            return;
+        }
+        BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(UUID.fromString(characteristic));
+        if (characteristic1 == null) {
+            Log.e(TAG, "BLE READ failed: no characteristic found with " + characteristic);
+            return;
+        }
+        Log.v(TAG, "Reading characteristic " + characteristic1.getUuid().toString());
+        connectedGatt.readCharacteristic(characteristic1);
     }
 
     @Override

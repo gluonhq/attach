@@ -360,6 +360,21 @@ public class DalvikBleService  {
         }
     }
 
+    private void read(String address, String profile, String characteristic) {
+        Log.v(TAG, "Read device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        BleGattCallback bleGattCallback;
+        if (!gatts.containsKey(address)) {
+            Log.e(TAG, "BLE READ failed: no bleGattCallback available");
+            return;
+        }
+        bleGattCallback = gatts.get(address);
+        if (!bleGattCallback.isConnected()) {
+            Log.e(TAG, "BLE READ failed: device not connected");
+            bleGattCallback.connect();
+        }
+        bleGattCallback.read(profile, characteristic);
+    }
+
     private ScanCallback createDeviceCallback() {
         return new ScanCallback() {
 

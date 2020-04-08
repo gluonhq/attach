@@ -149,6 +149,7 @@ public class AndroidBleService implements BleService {
         doConnect(device.getName(), device.getAddress());
     }
 
+    @Override
     public void disconnect(BleDevice device) {
         if (!checkDevice(device)) {
             return;
@@ -156,18 +157,22 @@ public class AndroidBleService implements BleService {
         doDisconnect(device.getName(), device.getAddress());
     }
 
+    @Override
     public void readCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
-System.err.println("[ABLE]");
+        doRead(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString());
     }
 
+    @Override
     public void writeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic, byte[] value) {
 System.err.println("[ABLE]");
     }
 
+    @Override
     public void subscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
 System.err.println("[ABLE]");
     }
 
+    @Override
     public void unsubscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
 System.err.println("[ABLE]");
     }
@@ -194,6 +199,7 @@ System.err.println("[ABLE]");
     private static native void stopScanningPeripherals();
     private static native void doConnect(String name, String address);
     private static native void doDisconnect(String name, String address);
+    private static native void doRead(String address, String profile, String characteristic);
 
     // callbacks
     private static void gotPeripheral(String name, String address) {
