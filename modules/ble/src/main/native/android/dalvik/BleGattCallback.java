@@ -33,7 +33,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import java.util.Arrays;
@@ -110,11 +109,6 @@ class BleGattCallback extends BluetoothGattCallback {
             if (connectedGatt != null) {
                 setState(bluetoothDevice.getName(), "STATE_CONNECTING");
                 connected = connectedGatt.connect();
-                final BluetoothManager bluetoothManager =
-                        (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-                int state = bluetoothManager.getConnectionState(bluetoothDevice, BluetoothProfile.GATT);
-                Log.v(TAG, "Connected: " + connected + ", state: " + state);
-                // setState(bluetoothDevice.getName(), state);
             }
         }
     }
@@ -122,6 +116,7 @@ class BleGattCallback extends BluetoothGattCallback {
     void disconnect() {
         if (connectedGatt != null) {
             connectedGatt.disconnect();
+            connectedGatt = null;
             connected = false;
         }
     }
