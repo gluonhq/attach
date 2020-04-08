@@ -37,6 +37,7 @@ static jmethodID jGraalSetDeviceStateMethod;
 static jmethodID jGraalSetDeviceProfileMethod;
 static jmethodID jGraalSetDeviceCharMethod;
 static jmethodID jGraalSetDeviceDescMethod;
+static jmethodID jGraalSetDeviceValueMethod;
 
 static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBleService;
@@ -61,6 +62,7 @@ void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalSetDeviceProfileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotProfile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     jGraalSetDeviceCharMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotCharacteristic", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     jGraalSetDeviceDescMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotDescriptor", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B)V");
+    jGraalSetDeviceValueMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotValue", "(Ljava/lang/String;Ljava/lang/String;[B)V");
 }
 
 void initializeDalvikHandles() {
@@ -325,5 +327,18 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescript
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceDescMethod, jname, jprofileUuid, jcharUuid, jdescUuid, value);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jprofileUuid);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jdescUuid);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setValue(JNIEnv *env, jobject service,
+        jstring name, jstring charUuid, jbyteArray value) {
+    const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
+    const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
+    (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    jstring jcharUuid = (*graalEnv)->NewStringUTF(graalEnv, charUuidChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceValueMethod, jname, jcharUuid, value);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
 }

@@ -7,7 +7,8 @@
       {"name":"gotState","parameterTypes":["java.lang.String","java.lang.String"] },
       {"name":"gotProfile","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] },
       {"name":"gotCharacteristic","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] },
-      {"name":"gotDescriptor","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","byte[]"] }
+      {"name":"gotDescriptor","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","byte[]"] },
+      {"name":"gotValue","parameterTypes":["java.lang.String","java.lang.String","byte[]"] }
     ]
   }
 ]

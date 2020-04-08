@@ -106,7 +106,7 @@ class BleGattCallback extends BluetoothGattCallback {
     }
 
     void read(String profile, String characteristic) {
-        if (connectedGatt != null) {
+        if (connectedGatt == null) {
             Log.e(TAG, "BLE READ failed: connectedGatt was null");
             return;
         }
@@ -127,6 +127,7 @@ class BleGattCallback extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
+        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
     }
 
     @Override
@@ -197,5 +198,6 @@ class BleGattCallback extends BluetoothGattCallback {
     private native void addProfile(String name, String uuid, String type);
     private native void addCharacteristic(String name, String profileUuid, String charUuid, String properties);
     private native void addDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value);
+    private native void setValue(String name, String charUuid, byte[] value);
 
 }

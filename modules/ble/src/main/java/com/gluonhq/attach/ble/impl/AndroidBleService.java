@@ -283,7 +283,7 @@ System.err.println("[ABLE]");
 
     private static void gotDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value) {
         if (debug) {
-            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with descriptor: %s and value %s", profileUuid, charUuid, descUuid, value));
+            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with descriptor: %s and value %s", profileUuid, charUuid, descUuid, Arrays.toString(value)));
         }
 
         getDeviceByName(name).ifPresent(device ->
@@ -308,6 +308,24 @@ System.err.println("[ABLE]");
                                         c.getDescriptors().add(d);
                                     }));
                 }));
+    }
+
+    private static void gotValue(String name, String charUuid, byte[] value) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE with characteristic: %s has value %s", charUuid, Arrays.toString(value)));
+        }
+
+        getDeviceByName(name).ifPresent(device ->
+                device.getProfiles().stream()
+                        .flatMap(d -> d.getCharacteristics().stream())
+                        .filter(c -> c.getUuid().toString().equalsIgnoreCase(charUuid))
+                        .findFirst()
+                        .ifPresent(c -> {
+                            if (debug) {
+                                LOG.log(Level.INFO, String.format("AndroidBleService DONE updating value for characteristic %s", charUuid));
+                            }
+                            c.setValue(value);
+                        }));
     }
 
     private static Optional<BleDevice> getDeviceByName(String name) {
