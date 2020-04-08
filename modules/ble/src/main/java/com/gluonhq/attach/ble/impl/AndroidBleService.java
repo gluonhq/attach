@@ -262,7 +262,7 @@ System.err.println("[ABLE]");
             device.getProfiles().stream()
                 .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
                 .findAny()
-                .ifPresent(p -> {
+                .ifPresentOrElse(p -> {
                     if (debug) {
                         LOG.log(Level.INFO, String.format("AndroidBleService updating profile with characteristic %s", charUuid));
                     }
@@ -279,7 +279,21 @@ System.err.println("[ABLE]");
                         bleCharacteristic.setProperties(properties);
                         Platform.runLater(() -> p.getCharacteristics().add(bleCharacteristic));
                     }
-            }));
+            }, () -> {
+                    if (debug) {
+                        LOG.log(Level.INFO, String.format("AndroidBleService adding new profile %s with characteristic %s", profileUuid, charUuid));
+                    }
+                    BleProfile bleProfile = new BleProfile();
+                    bleProfile.setUuid(UUID.fromString(profileUuid));
+                    BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
+                    bleCharacteristic.setProperties(properties);
+                    profileNames.add(profileUuid);
+                    Platform.runLater(() -> {
+                        device.getProfiles().add(bleProfile);
+                        bleProfile.getCharacteristics().add(bleCharacteristic);
+                    });
+
+                }));
     }
 
     private static void gotDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value) {
