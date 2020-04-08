@@ -52,6 +52,7 @@ static jmethodID jBleServiceStopScanningPeripheralsMethod;
 static jmethodID jBleServiceConnectMethod;
 static jmethodID jBleServiceDisconnectMethod;
 static jmethodID jBleServiceReadMethod;
+static jmethodID jBleServiceWriteMethod;
 
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
@@ -82,6 +83,7 @@ void initializeDalvikHandles() {
     jBleServiceConnectMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "connect", "(Ljava/lang/String;Ljava/lang/String;)V");
     jBleServiceDisconnectMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "disconnect", "(Ljava/lang/String;Ljava/lang/String;)V");
     jBleServiceReadMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "read", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    jBleServiceWriteMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "write", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
@@ -230,6 +232,30 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doRead
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doWrite
+(JNIEnv *env, jclass jClass, jstring jAddress, jstring jProfile, jstring jCharacteristic, jbyteArray value)
+{
+    const char *addressChars = (*env)->GetStringUTFChars(env, jAddress, NULL);
+    const char *profileChars = (*env)->GetStringUTFChars(env, jProfile, NULL);
+    const char *characteristicChars = (*env)->GetStringUTFChars(env, jCharacteristic, NULL);
+    jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
+    int size = (*env)->GetArrayLength(env, value);
+
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    jstring daddress = (*androidEnv)->NewStringUTF(androidEnv, addressChars);
+    jstring dprofile = (*androidEnv)->NewStringUTF(androidEnv, profileChars);
+    jstring dcharacteristic = (*androidEnv)->NewStringUTF(androidEnv, characteristicChars);
+    jbyteArray jvalue = (*androidEnv)->NewByteArray(androidEnv, size);
+    (*androidEnv)->SetByteArrayRegion(androidEnv, jvalue, 0, size, valueBytes);
+
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceWriteMethod,
+                   daddress, dprofile, dcharacteristic, jvalue);
+    (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
+    (*androidEnv)->ReleaseByteArrayElements(androidEnv, value, valueBytes, JNI_ABORT);
 }
 
 ///////////////////////////

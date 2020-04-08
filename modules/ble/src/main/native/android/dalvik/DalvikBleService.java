@@ -375,6 +375,21 @@ public class DalvikBleService  {
         bleGattCallback.read(profile, characteristic);
     }
 
+    private void write(String address, String profile, String characteristic, byte[] value) {
+        Log.v(TAG, "Write device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        BleGattCallback bleGattCallback;
+        if (!gatts.containsKey(address)) {
+            Log.e(TAG, "BLE WRITE failed: no bleGattCallback available");
+            return;
+        }
+        bleGattCallback = gatts.get(address);
+        if (!bleGattCallback.isConnected()) {
+            Log.e(TAG, "BLE WRITE failed: device not connected");
+            bleGattCallback.connect();
+        }
+        bleGattCallback.write(profile, characteristic, value);
+    }
+
     private ScanCallback createDeviceCallback() {
         return new ScanCallback() {
 

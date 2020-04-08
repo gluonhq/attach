@@ -164,7 +164,7 @@ public class AndroidBleService implements BleService {
 
     @Override
     public void writeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic, byte[] value) {
-System.err.println("[ABLE]");
+        doWrite(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString(), value);
     }
 
     @Override
@@ -200,6 +200,7 @@ System.err.println("[ABLE]");
     private static native void doConnect(String name, String address);
     private static native void doDisconnect(String name, String address);
     private static native void doRead(String address, String profile, String characteristic);
+    private static native void doWrite(String address, String profile, String characteristic, byte[] value);
 
     // callbacks
     private static void gotPeripheral(String name, String address) {

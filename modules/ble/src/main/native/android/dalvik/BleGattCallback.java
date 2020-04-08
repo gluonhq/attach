@@ -130,9 +130,30 @@ class BleGattCallback extends BluetoothGattCallback {
         setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
     }
 
+    void write(String profile, String characteristic, byte[] value) {
+        if (connectedGatt == null) {
+            Log.e(TAG, "BLE WRITE failed: connectedGatt was null");
+            return;
+        }
+        final BluetoothGattService service1 = connectedGatt.getService(UUID.fromString(profile));
+        if (service1 == null) {
+            Log.e(TAG, "BLE WRITE failed: no service with " + profile);
+            return;
+        }
+        BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(UUID.fromString(characteristic));
+        if (characteristic1 == null) {
+            Log.e(TAG, "BLE WRITE failed: no characteristic found with " + characteristic);
+            return;
+        }
+        Log.v(TAG, "Writing characteristic " + characteristic1.getUuid().toString());
+        characteristic1.setValue(value);
+        connectedGatt.writeCharacteristic(characteristic1);
+    }
+
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         Log.v(TAG, "onCharacteristicWrite write characteristic " + characteristic + ", with status: " + status);
+        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
     }
 
     @Override
