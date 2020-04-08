@@ -238,11 +238,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDevice
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JNIEnv *env, jobject service, jstring name, jstring state) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
-    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     const char *stateChars = (*env)->GetStringUTFChars(env, state, NULL);
-    jstring jstate = (*graalEnv)->NewStringUTF(graalEnv, stateChars);
     ATTACH_LOG_FINE("Device state, name = %s, state = %s\n", nameChars, stateChars);
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    jstring jstate = (*graalEnv)->NewStringUTF(graalEnv, stateChars);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceStateMethod,
                  jname, jstate);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
