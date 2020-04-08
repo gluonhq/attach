@@ -34,6 +34,7 @@ static jclass jGraalBleClass;
 static jmethodID jGraalSetDetectionMethod;
 static jmethodID jGraalSetDeviceDetectionMethod;
 static jmethodID jGraalSetDeviceStateMethod;
+static jmethodID jGraalSetDeviceProfileMethod;
 
 static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBleService;
@@ -54,6 +55,7 @@ void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalSetDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "setDetection", "(Ljava/lang/String;IIII)V");
     jGraalSetDeviceDetectionMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;)V");
     jGraalSetDeviceStateMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotState", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jGraalSetDeviceProfileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalBleClass, "gotProfile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 void initializeDalvikHandles() {
@@ -243,8 +245,22 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JN
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jstate = (*graalEnv)->NewStringUTF(graalEnv, stateChars);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceStateMethod,
-                 jname, jstate);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceStateMethod, jname, jstate);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jstate);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addProfile(JNIEnv *env, jobject service, jstring name, jstring uuid, jstring type) {
+    const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
+    const char *uuidChars = (*env)->GetStringUTFChars(env, uuid, NULL);
+    const char *typeChars = (*env)->GetStringUTFChars(env, type, NULL);
+    ATTACH_LOG_FINE("Device type, name = %s, service: uuid = %s, type = %s\n", nameChars, uuidChars, typeChars);
+    (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    jstring juuid = (*graalEnv)->NewStringUTF(graalEnv, uuidChars);
+    jstring jtype = (*graalEnv)->NewStringUTF(graalEnv, typeChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceProfileMethod, jname, juuid, jtype);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jname);
+    (*graalEnv)->DeleteLocalRef(graalEnv, juuid);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jtype);
 }

@@ -225,6 +225,18 @@ System.err.println("[ABLE]");
                 Platform.runLater(() -> device.setState(BleDevice.State.fromName(state))));
     }
 
+    private static void gotProfile(String name, String uuid, String type) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE device has profile: %s with type: %s", uuid, type));
+        }
+
+        BleProfile bleProfile = new BleProfile();
+        bleProfile.setUuid(UUID.fromString(uuid));
+        bleProfile.setType(type);
+        getDeviceByName(name).ifPresent(device ->
+                Platform.runLater(() -> device.getProfiles().add(bleProfile)));
+    }
+
     private static Optional<BleDevice> getDeviceByName(String name) {
         if (name == null || !deviceNames.contains(name)) {
             return Optional.empty();

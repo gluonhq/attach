@@ -85,6 +85,10 @@ class BleGattCallback extends BluetoothGattCallback {
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
         List<BluetoothGattService> services = gatt.getServices();
         Log.v(TAG, "onServicesDiscovered: " + services.size() + " services");
+        for (BluetoothGattService service : services) {
+            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
+            addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
+        }
     }
 
     @Override
@@ -104,7 +108,6 @@ class BleGattCallback extends BluetoothGattCallback {
 
     void connect() {
         if (bluetoothDevice != null) {
-//            Platform.runLater(() -> device.profilesProperties().clear());
             connectedGatt = bluetoothDevice.connectGatt(activity, false, this);
             if (connectedGatt != null) {
                 setState(bluetoothDevice.getName(), "STATE_CONNECTING");
@@ -127,5 +130,6 @@ class BleGattCallback extends BluetoothGattCallback {
 
     // native
     private native void setState(String name, String state);
+    private native void addProfile(String name, String uuid, String type);
 
 }
