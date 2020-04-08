@@ -91,10 +91,11 @@ class BleGattCallback extends BluetoothGattCallback {
             Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString() + ", characteristics: " + characteristics.size());
             addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
             for (BluetoothGattCharacteristic characteristic : characteristics) {
-                Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid());
+                Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid().toString());
                 addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
                 for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
+                    Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + descriptor.getValue());
                     addDescriptor(bluetoothDevice.getName(), service.getUuid().toString(),
                             characteristic.getUuid().toString(), descriptor.getUuid().toString(), descriptor.getValue());
                 }

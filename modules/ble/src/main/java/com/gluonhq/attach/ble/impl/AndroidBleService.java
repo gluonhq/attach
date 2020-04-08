@@ -253,7 +253,7 @@ System.err.println("[ABLE]");
 
         getDeviceByName(name).ifPresent(device ->
             device.getProfiles().stream()
-                .filter(p -> p.getUuid().toString().equals(profileUuid))
+                .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
                 .findAny()
                 .ifPresent(p -> {
                     if (debug) {
@@ -261,7 +261,7 @@ System.err.println("[ABLE]");
                     }
                     boolean exists = false;
                     for (BleCharacteristic c : p.getCharacteristics()) {
-                        if (c.getUuid().toString().equals(charUuid)) {
+                        if (c.getUuid().toString().equalsIgnoreCase(charUuid)) {
                             c.setProperties(properties);
                             exists = true;
                             break;
@@ -282,17 +282,17 @@ System.err.println("[ABLE]");
 
         getDeviceByName(name).ifPresent(device ->
             device.getProfiles().stream()
-                .filter(p -> p.getUuid().toString().equals(profileUuid))
+                .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
                 .findAny()
                 .ifPresent(p -> {
                     if (debug) {
-                        LOG.log(Level.INFO, String.format("AndroidBleService updating profile with descriptor %s and value %s", descUuid, value));
+                        LOG.log(Level.INFO, String.format("AndroidBleService updating profile with descriptor %s and value %s", descUuid, Arrays.toString(value)));
                     }
                     p.getCharacteristics().stream()
-                        .filter(c -> c.getUuid().toString().equals(charUuid))
+                        .filter(c -> c.getUuid().toString().equalsIgnoreCase(charUuid))
                         .findAny()
                         .ifPresent(c -> c.getDescriptors().stream()
-                            .filter(d -> d.getUuid().toString().equals(descUuid))
+                            .filter(d -> d.getUuid().toString().equalsIgnoreCase(descUuid))
                             .findAny()
                             .ifPresentOrElse(d -> d.setValue(value),
                                     () -> {
