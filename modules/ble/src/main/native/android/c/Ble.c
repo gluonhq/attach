@@ -318,27 +318,41 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescript
     const char *profileUuidChars = (*env)->GetStringUTFChars(env, profileUuid, NULL);
     const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
     const char *descUuidChars = (*env)->GetStringUTFChars(env, descUuid, NULL);
+    jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
+    int size = (*env)->GetArrayLength(env, value);
+
     ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, descUuid = %s\n", nameChars, profileUuidChars, charUuidChars, descUuidChars);
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jprofileUuid = (*graalEnv)->NewStringUTF(graalEnv, profileUuidChars);
     jstring jcharUuid = (*graalEnv)->NewStringUTF(graalEnv, charUuidChars);
     jstring jdescUuid = (*graalEnv)->NewStringUTF(graalEnv, descUuidChars);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceDescMethod, jname, jprofileUuid, jcharUuid, jdescUuid, value);
+    jbyteArray jvalue = (*graalEnv)->NewByteArray(graalEnv, size);
+    (*graalEnv)->SetByteArrayRegion(graalEnv, jvalue, 0, size, valueBytes);
+
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceDescMethod, jname, jprofileUuid, jcharUuid, jdescUuid, jvalue);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jprofileUuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jdescUuid);
+    (*graalEnv)->ReleaseByteArrayElements(graalEnv, value, valueBytes, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setValue(JNIEnv *env, jobject service,
         jstring name, jstring charUuid, jbyteArray value) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
+    jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
+    int size = (*env)->GetArrayLength(env, value);
+
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jcharUuid = (*graalEnv)->NewStringUTF(graalEnv, charUuidChars);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceValueMethod, jname, jcharUuid, value);
+    jbyteArray jvalue = (*graalEnv)->NewByteArray(graalEnv, size);
+    (*graalEnv)->SetByteArrayRegion(graalEnv, jvalue, 0, size, valueBytes);
+
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceValueMethod, jname, jcharUuid, jvalue);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
+    (*graalEnv)->ReleaseByteArrayElements(graalEnv, value, valueBytes, JNI_ABORT);
 }

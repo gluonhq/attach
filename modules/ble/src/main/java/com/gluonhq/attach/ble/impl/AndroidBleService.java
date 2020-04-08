@@ -324,7 +324,7 @@ System.err.println("[ABLE]");
                             if (debug) {
                                 LOG.log(Level.INFO, String.format("AndroidBleService DONE updating value for characteristic %s", charUuid));
                             }
-                            c.setValue(value);
+                            Platform.runLater(() -> c.setValue(value));
                         }));
     }
 
