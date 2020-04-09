@@ -390,6 +390,21 @@ public class DalvikBleService  {
         bleGattCallback.write(profile, characteristic, value);
     }
 
+    private void subscribe(String address, String profile, String characteristic, boolean value) {
+        Log.v(TAG, "" + (value ? "Subscribe" : "Unsubscribe") + " device + " + address + ", profile " + profile + " and characteristic " + characteristic);
+        BleGattCallback bleGattCallback;
+        if (!gatts.containsKey(address)) {
+            Log.e(TAG, "BLE SUBSCRIBE failed: no bleGattCallback available");
+            return;
+        }
+        bleGattCallback = gatts.get(address);
+        if (!bleGattCallback.isConnected()) {
+            Log.e(TAG, "BLE SUBSCRIBE failed: device not connected");
+            bleGattCallback.connect();
+        }
+        bleGattCallback.subscribe(profile, characteristic, value);
+    }
+
     private ScanCallback createDeviceCallback() {
         return new ScanCallback() {
 

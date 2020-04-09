@@ -53,6 +53,7 @@ static jmethodID jBleServiceConnectMethod;
 static jmethodID jBleServiceDisconnectMethod;
 static jmethodID jBleServiceReadMethod;
 static jmethodID jBleServiceWriteMethod;
+static jmethodID jBleServiceSubscribeMethod;
 
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
@@ -84,6 +85,7 @@ void initializeDalvikHandles() {
     jBleServiceDisconnectMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "disconnect", "(Ljava/lang/String;Ljava/lang/String;)V");
     jBleServiceReadMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "read", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     jBleServiceWriteMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "write", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[B)V");
+    jBleServiceSubscribeMethod = (*androidEnv)->GetMethodID(androidEnv, jBleServiceClass, "subscribe", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBleServiceClass, jBleServiceInitMethod, jActivity);
@@ -256,6 +258,25 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doWrit
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
     (*androidEnv)->ReleaseByteArrayElements(androidEnv, value, valueBytes, JNI_ABORT);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doSubscribe
+(JNIEnv *env, jclass jClass, jstring jAddress, jstring jProfile, jstring jCharacteristic, jboolean value)
+{
+    const char *addressChars = (*env)->GetStringUTFChars(env, jAddress, NULL);
+    const char *profileChars = (*env)->GetStringUTFChars(env, jProfile, NULL);
+    const char *characteristicChars = (*env)->GetStringUTFChars(env, jCharacteristic, NULL);
+
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    jstring daddress = (*androidEnv)->NewStringUTF(androidEnv, addressChars);
+    jstring dprofile = (*androidEnv)->NewStringUTF(androidEnv, profileChars);
+    jstring dcharacteristic = (*androidEnv)->NewStringUTF(androidEnv, characteristicChars);
+
+    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceSubscribeMethod,
+                   daddress, dprofile, dcharacteristic, value);
+    (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
+    (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
 }
 
 ///////////////////////////

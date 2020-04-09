@@ -89,13 +89,28 @@ class BleGattCallback extends BluetoothGattCallback {
         List<BluetoothGattService> services = gatt.getServices();
         Log.v(TAG, "onServicesDiscovered: " + services.size() + " services");
         for (BluetoothGattService service : services) {
-            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString() + ", characteristics: " + characteristics.size());
+            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
             addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ie) {}
+
+        for (BluetoothGattService service : services) {
+            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic : characteristics) {
                 Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid().toString());
                 addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
+            }
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ie) {}
+
+        for (BluetoothGattService service : services) {
+            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+            for (BluetoothGattCharacteristic characteristic : characteristics) {
                 for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
                     byte[] value = descriptor.getValue() != null ? descriptor.getValue() : new byte[]{};
                     Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + Arrays.toString(value));
@@ -155,12 +170,48 @@ class BleGattCallback extends BluetoothGattCallback {
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         Log.v(TAG, "onCharacteristicWrite write characteristic " + characteristic + ", with status: " + status);
-        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
+        byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
+        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
+    }
+
+    void subscribe(String profile, String characteristic, boolean subscribe) {
+        if (connectedGatt == null) {
+            Log.e(TAG, "BLE SUBSCRIBE failed: connectedGatt was null");
+            return;
+        }
+        final BluetoothGattService service1 = connectedGatt.getService(UUID.fromString(profile));
+        if (service1 == null) {
+            Log.e(TAG, "BLE SUBSCRIBE failed: no service with " + profile);
+            return;
+        }
+        BluetoothGattCharacteristic characteristic1 = service1.getCharacteristic(UUID.fromString(characteristic));
+        if (characteristic1 == null) {
+            Log.e(TAG, "BLE SUBSCRIBE failed: no characteristic found with " + characteristic);
+            return;
+        }
+        if (!connectedGatt.setCharacteristicNotification(characteristic1, true)) {
+            Log.e(TAG, "BLE SUBSCRIBE failed for characteristic " + characteristic1.getUuid().toString());
+        }
+
+        // Enable notification descriptor
+        for (BluetoothGattDescriptor descriptor : characteristic1.getDescriptors()) {
+            if (descriptor != null) {
+                byte[] value = subscribe ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
+                        BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
+                Log.v(TAG, "subscribe characteristic " + characteristic1 + ", with value: " + Arrays.toString(value));
+                descriptor.setValue(value);
+                connectedGatt.writeDescriptor(descriptor);
+                addDescriptor(bluetoothDevice.getName(), service1.getUuid().toString(),
+                        characteristic1.getUuid().toString(), descriptor.getUuid().toString(), value);
+            }
+        }
     }
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        Log.v(TAG, "onCharacteristicChanged characteristic " + characteristic + " changed with value: " + Arrays.toString(characteristic.getValue()));
+        byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
+        Log.v(TAG, "onCharacteristicChanged characteristic " + characteristic + " changed with value: " + Arrays.toString(value));
+        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
     }
 
     void connect() {
