@@ -300,11 +300,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDetect
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDeviceDetected(JNIEnv *env, jobject service,
         jstring name, jstring address) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
-    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     const char *addressChars = (*env)->GetStringUTFChars(env, address, NULL);
-    jstring jaddress = (*graalEnv)->NewStringUTF(graalEnv, addressChars);
     ATTACH_LOG_FINE("Scan Device Detection, name = %s, address = %s\n", nameChars, addressChars);
+
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
+    jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
+    jstring jaddress = (*graalEnv)->NewStringUTF(graalEnv, addressChars);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceDetectionMethod,
                  jname, jaddress);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
@@ -316,6 +317,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JN
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *stateChars = (*env)->GetStringUTFChars(env, state, NULL);
     ATTACH_LOG_FINE("Device state, name = %s, state = %s\n", nameChars, stateChars);
+
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jstate = (*graalEnv)->NewStringUTF(graalEnv, stateChars);
@@ -330,6 +332,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addProfile(
     const char *uuidChars = (*env)->GetStringUTFChars(env, uuid, NULL);
     const char *typeChars = (*env)->GetStringUTFChars(env, type, NULL);
     ATTACH_LOG_FINE("Device type, name = %s, service: uuid = %s, type = %s\n", nameChars, uuidChars, typeChars);
+
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring juuid = (*graalEnv)->NewStringUTF(graalEnv, uuidChars);
@@ -346,7 +349,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addCharacte
     const char *profileUuidChars = (*env)->GetStringUTFChars(env, profileUuid, NULL);
     const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
     const char *propertiesChars = (*env)->GetStringUTFChars(env, properties, NULL);
-    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, properties = %s\n", nameChars, profileUuidChars, charUuidChars, propertiesChars);
+    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, properties = %s\n",
+        nameChars, profileUuidChars, charUuidChars, propertiesChars);
+
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jprofileUuid = (*graalEnv)->NewStringUTF(graalEnv, profileUuidChars);
@@ -367,8 +372,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescript
     const char *descUuidChars = (*env)->GetStringUTFChars(env, descUuid, NULL);
     jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
     int size = (*env)->GetArrayLength(env, value);
+    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, descUuid = %s\n",
+        nameChars, profileUuidChars, charUuidChars, descUuidChars);
 
-    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, descUuid = %s\n", nameChars, profileUuidChars, charUuidChars, descUuidChars);
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
     jstring jprofileUuid = (*graalEnv)->NewStringUTF(graalEnv, profileUuidChars);
@@ -389,6 +395,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setValue(JN
         jstring name, jstring charUuid, jbyteArray value) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
+
     jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
     int size = (*env)->GetArrayLength(env, value);
 

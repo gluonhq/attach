@@ -144,7 +144,7 @@ class BleGattCallback extends BluetoothGattCallback {
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
-        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), characteristic.getValue());
+        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
     }
 
     void write(String profile, String characteristic, byte[] value) {
