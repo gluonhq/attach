@@ -39,13 +39,16 @@ public class HeartRateMeasurementBleParser implements BleParser {
         }
         
         int offset = 0;
-        int flag = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT8, offset);
+        Integer flag = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT8, offset);
+        if (flag == null) {
+            return null;
+        }
         offset += 1;
 
         // bit1: Heart Rate Value Format bit
         int bit1 = flag & 0x1;
         
-        int intValue;
+        Integer intValue;
         if (bit1 == 0) { // Heart Rate Value Format is set to UINT8, units bpm
             // 1 byte
             intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT8, offset);
@@ -55,7 +58,10 @@ public class HeartRateMeasurementBleParser implements BleParser {
             intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
             offset += 2;
         }
-         
+        if (intValue == null) {
+            return null;
+        }
+
         StringBuilder result = new StringBuilder("Heart Rate Measurement: ")
                 .append(intValue)
                 .append(" bpm");
@@ -90,6 +96,9 @@ public class HeartRateMeasurementBleParser implements BleParser {
             while (offset < value.length - 2) {
                 // 2 bytes
                 intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+                if (intValue == null) {
+                    return null;
+                }
                 offset += 2;
                 result.append(String.format("%.02f ms", (intValue * 1000f / 1024f)));
                 if (offset < value.length - 2) {

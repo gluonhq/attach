@@ -41,8 +41,10 @@ public class AppearanceBleParser implements BleParser {
         if (value.length != 2) {
             return "Incorrect data length (2 bytes expected)";
         }
-        final int intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_SINT16, 0);
-        
+        final Integer intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_SINT16, 0);
+        if (intValue == null) {
+            return null;
+        }
         
         switch (intValue) {
             case 0:    return "[" + intValue + "] Unknown";

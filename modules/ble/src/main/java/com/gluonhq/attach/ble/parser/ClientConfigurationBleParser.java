@@ -40,15 +40,19 @@ public class ClientConfigurationBleParser implements BleParser {
             return "Notifications and Indications disabled";
         }
 
-        int intValue;
+        Integer intValue;
         if (value.length == 1) {
-            intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT8, 0) & 0x3;
+            intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT8, 0);
         } else {
             if (value.length != 2) {
                 return Arrays.toString(value) + ": Incorrect data length (2 bytes expected)";
             }
-            intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, 0) & 0x3;
+            intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, 0);
         }
+        if (intValue == null) {
+            return null;
+        }
+        intValue = intValue & 0x3;
         switch (intValue) {
             case 0: return "Notifications and Indications disabled";
             case 1: return "Notifications enabled";

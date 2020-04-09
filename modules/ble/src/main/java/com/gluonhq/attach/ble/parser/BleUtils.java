@@ -80,7 +80,7 @@ public class BleUtils {
      * @return Cached value of the characteristic or null of offset exceeds
      *         value size.
      */
-    public static Integer getIntValue(byte[] value, int formatType, int offset) {
+    static Integer getIntValue(byte[] value, int formatType, int offset) {
         if ((offset + getTypeLen(formatType)) > value.length) {
             return null;
         }
