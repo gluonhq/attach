@@ -28,6 +28,7 @@
 package com.gluonhq.attach.keyboard;
 
 import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -76,4 +77,12 @@ public interface KeyboardService {
      * @param parent the Parent of the node that will be moved
      */
     void keepVisibilityForNode(Node node, Parent parent);
+
+    /**
+     * Gets the visible height of the Keyboard, so scene or views can adjusted
+     * to prevent some of their content from being covered by the keyboard.
+     *
+     * @return A ReadOnlyFloatProperty with the height of the soft keyboard
+     */
+    ReadOnlyFloatProperty visibleHeightProperty();
 }

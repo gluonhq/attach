@@ -32,6 +32,7 @@ import com.gluonhq.attach.util.Constants;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -69,6 +70,11 @@ public class AndroidKeyboardService implements KeyboardService {
     @Override
     public void keepVisibilityForNode(Node node, Parent parent) {
         VISIBLE_HEIGHT.addListener((obs, ov, nv) -> adjustPosition(node, parent, nv.doubleValue()));
+    }
+
+    @Override
+    public ReadOnlyFloatProperty visibleHeightProperty() {
+        return VISIBLE_HEIGHT.getReadOnlyProperty();
     }
 
     private static void adjustPosition(Node node, Parent parent, double kh) {
