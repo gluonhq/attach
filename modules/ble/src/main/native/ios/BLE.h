@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,13 +32,35 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface Ble : UIViewController <CLLocationManagerDelegate, CBCentralManagerDelegate> 
+@interface Ble : UIViewController <CLLocationManagerDelegate, CBCentralManagerDelegate, CBPeripheralManagerDelegate, CBPeripheralDelegate>
 {
 }
     @property(nonatomic, strong) CLLocationManager *locationManager;
     @property(nonatomic, strong) CBCentralManager *bluetoothManager;
+    @property(nonatomic, strong) CBPeripheral *peripheral;
+    @property(nonatomic, strong) CBPeripheralManager *peripheralManager;
+    @property(nonatomic, strong) CLBeaconRegion *localBeacon;
     - (void) startObserver;
     - (void) stopObserver;
+    - (void) startBroadcast:(NSString *)uuidString major:(NSInteger)major minor:(NSInteger)minor id:(NSString *)idString;
+    - (void) stopBroadcast;
+
+    - (void) startScanningPeripherals;
+    - (void) stopScanningPeripherals;
+    - (void) connect:(NSString *)name uuid:(NSString *)uuid;
+    - (void) disconnect:(NSString *)name uuid:(NSString *)uuid;
+    - (void) read:(NSString *)name uuidService:(NSString *)uuidService uuidChar:(NSString *)uuidChar;
+    - (void) write:(NSString *)name uuidService:(NSString *)uuidService uuidChar:(NSString *)uuidChar data:(NSData *)data;
+    - (void) subscribe:(NSString *)name uuidService:(NSString *)uuidService uuidChar:(NSString *)uuidChar notify:(BOOL)notify;
+
 @end
 
 void setDetection(CLBeacon *foundBeacon);
+
+void discoveredPeripheral(CBPeripheral *peripheral);
+void stateChanged(CBPeripheral *peripheral);
+void discoveredProfile(CBPeripheral *peripheral, CBService *service);
+void removeProfile(CBPeripheral *peripheral, CBService *service);
+void discoveredCharacteristic(CBPeripheral *peripheral, CBService *service, CBCharacteristic *aChar);
+void setData(CBPeripheral *peripheral, CBCharacteristic *aChar);
+void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc);

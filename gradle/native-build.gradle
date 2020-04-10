@@ -110,6 +110,77 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             println "Adding $n to native jar"
             n
         }
+    } else if (os == "android") {
+        def sdk = System.getenv("ANDROID_SDK")
+        if (sdk == null) {
+            throw new GradleException("Error: ANDROID_SDK can't be null")
+        }
+        def androidJar = sdk + "/platforms/android-27/android.jar"
+
+        def ndk = System.getenv("ANDROID_NDK")
+        if (ndk == null) {
+            throw new GradleException("Error: ANDROID_NDK can't be null")
+        }
+        def host = System.getProperty('os.name').toLowerCase().contains("mac") ?
+                "darwin" : "linux"
+
+        def arch = "arm64-v8a"
+        def compileOutput = "$buildDir/native/$os/$arch"
+        def linkerObj = "$buildDir/native/$os/$arch/${name}.o"
+        def linkerOutput = "$buildDir/native/$os/lib${name}.a"
+        new File(compileOutput).mkdirs()
+
+        def platform="aarch64-linux-android21"
+        def toolchainHome = "$ndk/toolchains/llvm"
+        def compilerHome = "$toolchainHome/prebuilt/${host}-x86_64"
+        def compiler = file("$compilerHome/bin/clang").getAbsolutePath()
+        def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
+
+        osIncludeFlags = ["-I$JAVAHOME/include/$host",
+                          "-I$projectDir/../../gradle/include/android",
+                          "-I$projectDir/../util/src/main/native/$os/c"].flatten()
+
+        def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/precompiled/classes"
+        File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")
+        File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
+        if (sourcesDir.exists()) {
+            def javaSources = [sourcesDir.listFiles(),
+                               sourcesUtilDir.listFiles()].flatten()
+
+            def javacArgs = ["-d", dalvikOutput,
+                             "-source", "1.7", "-target", "1.7",
+                             "-bootclasspath", androidJar,
+                             javaSources].flatten()
+            exec {
+                executable "javac"
+                args javacArgs
+                workingDir sourcesDir
+            }
+        }
+        File nativeSourcesDir = file("$projectDir/src/main/native/$os/c/")
+        osSources = [nativeSourcesDir.listFiles().findAll {it.name.endsWith(".c")}].flatten()
+
+        def compilerArgs = ["-target", platform, "-c", includeFlags, osIncludeFlags, osSources].flatten()
+
+        exec {
+            executable compiler
+            args compilerArgs
+            workingDir compileOutput
+        }
+
+        def linkerArgs = ["rcs", linkerOutput, linkerObj].flatten()
+
+        exec {
+            executable linker
+            args linkerArgs
+        }
+
+        println("native build for $name finished")
+        File a = new File(linkerOutput)
+        if (a.exists()) {
+            println "Adding $a to native jar"
+            a
+        }
     } else {
         // TODO
         def compileOutput = "$buildDir/native/$os"

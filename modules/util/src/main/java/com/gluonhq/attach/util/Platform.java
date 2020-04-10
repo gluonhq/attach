@@ -74,6 +74,10 @@ public enum Platform {
         String name = platform.toUpperCase(Locale.ROOT);
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
+
+        if (isAndroid()) {
+            System.loadLibrary("Util");
+        }
     }
 
     /**

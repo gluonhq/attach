@@ -1,13 +1,18 @@
 # use java support
 language: java
-jdk: openjdk11
 
 # run in container
 sudo: false
 
-# use Mac OS X as operating system to build iOS native libraries
+# use Mac OS X as operating system to build Android and iOS native libraries
 os: osx
 osx_image: xcode11.3
+
+before_script:
+  - bash ci/android.sh
+  - export ANDROID_SDK=$HOME/android-sdk
+  - export ANDROID_NDK=$HOME/android-sdk/ndk-bundle
+  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-14.jdk/Contents/Home
 
 # run maven build
 script:
