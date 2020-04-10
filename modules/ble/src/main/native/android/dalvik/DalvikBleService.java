@@ -339,21 +339,29 @@ public class DalvikBleService  {
     }
 
     private void connect(String name, String address) {
-        Log.v(TAG, "Connect to device " + name + " and address " + address);
+        if (debug) {
+            Log.v(TAG, "Connect to device " + name + " and address " + address);
+        }
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
-            bleGattCallback = new BleGattCallback(activity, devices.get(address));
-            Log.v(TAG, "Create new BleGattCallback: " + bleGattCallback);
+            bleGattCallback = new BleGattCallback(activity, devices.get(address), debug);
+            if (debug) {
+                Log.v(TAG, "Create new BleGattCallback: " + bleGattCallback);
+            }
             gatts.put(address, bleGattCallback);
         } else {
             bleGattCallback = gatts.get(address);
         }
-        Log.v(TAG, "Connecting");
+        if (debug) {
+            Log.v(TAG, "Connecting");
+        }
         bleGattCallback.connect();
     }
 
     private void disconnect(String name, String address) {
-        Log.v(TAG, "Disconnecting device " + name + " and address " + address);
+        if (debug) {
+            Log.v(TAG, "Disconnecting device " + name + " and address " + address);
+        }
         if (gatts.containsKey(address)) {
             BleGattCallback bleGattCallback = gatts.get(address);
             bleGattCallback.disconnect();
@@ -361,7 +369,9 @@ public class DalvikBleService  {
     }
 
     private void read(String address, String profile, String characteristic) {
-        Log.v(TAG, "Read device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        if (debug) {
+            Log.v(TAG, "Read device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        }
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
             Log.e(TAG, "BLE READ failed: no bleGattCallback available");
@@ -376,7 +386,9 @@ public class DalvikBleService  {
     }
 
     private void write(String address, String profile, String characteristic, byte[] value) {
-        Log.v(TAG, "Write device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        if (debug) {
+            Log.v(TAG, "Write device " + address + ", profile " + profile + " and characteristic " + characteristic);
+        }
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
             Log.e(TAG, "BLE WRITE failed: no bleGattCallback available");
@@ -391,7 +403,9 @@ public class DalvikBleService  {
     }
 
     private void subscribe(String address, String profile, String characteristic, boolean value) {
-        Log.v(TAG, "" + (value ? "Subscribe" : "Unsubscribe") + " device + " + address + ", profile " + profile + " and characteristic " + characteristic);
+        if (debug) {
+            Log.v(TAG, "" + (value ? "Subscribe" : "Unsubscribe") + " device + " + address + ", profile " + profile + " and characteristic " + characteristic);
+        }
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
             Log.e(TAG, "BLE SUBSCRIBE failed: no bleGattCallback available");
@@ -417,7 +431,9 @@ public class DalvikBleService  {
                 String address = device.getAddress();
                 String name = device.getName();
                 devices.put(address, device);
-                Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address);
+                if (debug) {
+                    Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address);
+                }
                 scanDeviceDetected(name, address);
             }
         };
@@ -425,6 +441,5 @@ public class DalvikBleService  {
 
     // native
     private native void scanDeviceDetected(String name, String address);
-
 
 }

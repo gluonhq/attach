@@ -55,6 +55,7 @@ static jmethodID jBleServiceReadMethod;
 static jmethodID jBleServiceWriteMethod;
 static jmethodID jBleServiceSubscribeMethod;
 
+static jboolean debugBLE;
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalBleClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/ble/impl/AndroidBleService"));
@@ -134,6 +135,7 @@ JNIEnv* getSafeAndroidEnv() {
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_enableDebug
 (JNIEnv *env, jclass jClass) {
     JNIEnv* androidEnv = getSafeAndroidEnv();
+    debugBLE = JNI_TRUE;
     (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBleService, jBleServiceEnableDebug);
 }
 
@@ -286,7 +288,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doSubs
 // BLE BEACONS
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDetected(JNIEnv *env, jobject service, jstring uuid, jint major, jint minor, jint ris, jint proxy) {
-    ATTACH_LOG_FINE("Scan Detection is now in native layer, major = %d\n", major);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Scan Detection is now in native layer, major = %d\n", major);
+    }
     const char *uuidChars = (*env)->GetStringUTFChars(env, uuid, NULL);
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring juuid = (*graalEnv)->NewStringUTF(graalEnv, uuidChars);
@@ -301,7 +305,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDevice
         jstring name, jstring address) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *addressChars = (*env)->GetStringUTFChars(env, address, NULL);
-    ATTACH_LOG_FINE("Scan Device Detection, name = %s, address = %s\n", nameChars, addressChars);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Scan Device Detection, name = %s, address = %s\n", nameChars, addressChars);
+    }
 
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
@@ -316,7 +322,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JN
         jstring name, jstring state) {
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *stateChars = (*env)->GetStringUTFChars(env, state, NULL);
-    ATTACH_LOG_FINE("Device state, name = %s, state = %s\n", nameChars, stateChars);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Device state, name = %s, state = %s\n", nameChars, stateChars);
+    }
 
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
@@ -331,7 +339,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addProfile(
     const char *nameChars = (*env)->GetStringUTFChars(env, name, NULL);
     const char *uuidChars = (*env)->GetStringUTFChars(env, uuid, NULL);
     const char *typeChars = (*env)->GetStringUTFChars(env, type, NULL);
-    ATTACH_LOG_FINE("Device type, name = %s, service: uuid = %s, type = %s\n", nameChars, uuidChars, typeChars);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Device type, name = %s, service: uuid = %s, type = %s\n", nameChars, uuidChars, typeChars);
+    }
 
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
@@ -349,8 +359,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addCharacte
     const char *profileUuidChars = (*env)->GetStringUTFChars(env, profileUuid, NULL);
     const char *charUuidChars = (*env)->GetStringUTFChars(env, charUuid, NULL);
     const char *propertiesChars = (*env)->GetStringUTFChars(env, properties, NULL);
-    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, properties = %s\n",
-        nameChars, profileUuidChars, charUuidChars, propertiesChars);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, properties = %s\n",
+            nameChars, profileUuidChars, charUuidChars, propertiesChars);
+    }
 
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);
@@ -372,8 +384,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescript
     const char *descUuidChars = (*env)->GetStringUTFChars(env, descUuid, NULL);
     jbyte *valueBytes = (*env)->GetByteArrayElements(env, value, NULL);
     int size = (*env)->GetArrayLength(env, value);
-    ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, descUuid = %s\n",
-        nameChars, profileUuidChars, charUuidChars, descUuidChars);
+    if (debugBLE) {
+        ATTACH_LOG_FINE("Device name = %s, service: profileUuid = %s, charUuid = %s, descUuid = %s\n",
+            nameChars, profileUuidChars, charUuidChars, descUuidChars);
+    }
 
     (*jVMBle)->AttachCurrentThread(jVMBle, (void **)&graalEnv, NULL);
     jstring jname = (*graalEnv)->NewStringUTF(graalEnv, nameChars);

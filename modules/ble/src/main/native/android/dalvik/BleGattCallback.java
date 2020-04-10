@@ -48,38 +48,52 @@ class BleGattCallback extends BluetoothGattCallback {
 
     private final Activity activity;
     private final BluetoothDevice bluetoothDevice;
+    private final boolean debug;
     private BluetoothGatt connectedGatt;
 
     private boolean connected;
 
-    public BleGattCallback(Activity activity, BluetoothDevice bluetoothDevice) {
+    public BleGattCallback(Activity activity, BluetoothDevice bluetoothDevice, boolean debug) {
         this.activity = activity;
         this.bluetoothDevice = bluetoothDevice;
+        this.debug = debug;
     }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        Log.v(TAG, "BLE gatt changed from status: " + status + " to status:" + newState);
+        if (debug) {
+            Log.v(TAG, "BLE gatt changed from status: " + status + " to status:" + newState);
+        }
         switch (newState) {
             case BluetoothProfile.STATE_CONNECTED:
-                Log.v(TAG, "STATE_CONNECTED");
+                if (debug) {
+                    Log.v(TAG, "STATE_CONNECTED");
+                }
                 setState(bluetoothDevice.getName(), "STATE_CONNECTED");
                 gatt.discoverServices();
                 break;
             case BluetoothProfile.STATE_DISCONNECTED:
-                Log.v(TAG, "STATE_DISCONNECTED");
+                if (debug) {
+                    Log.v(TAG, "STATE_DISCONNECTED");
+                }
                 setState(bluetoothDevice.getName(), "STATE_DISCONNECTED");
                 break;
             case BluetoothProfile.STATE_CONNECTING:
-                Log.v(TAG, "STATE_CONNECTING");
+                if (debug) {
+                    Log.v(TAG, "STATE_CONNECTING");
+                }
                 setState(bluetoothDevice.getName(), "STATE_CONNECTING");
                 break;
             case BluetoothProfile.STATE_DISCONNECTING:
-                Log.v(TAG, "STATE_DISCONNECTING");
+                if (debug) {
+                    Log.v(TAG, "STATE_DISCONNECTING");
+                }
                 setState(bluetoothDevice.getName(), "STATE_DISCONNECTING");
                 break;
             default:
-                Log.v(TAG, "STATE_OTHER");
+                if (debug) {
+                    Log.v(TAG, "STATE_OTHER");
+                }
                 setState(bluetoothDevice.getName(), "STATE_OTHER");
         }
     }
@@ -87,9 +101,13 @@ class BleGattCallback extends BluetoothGattCallback {
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
         List<BluetoothGattService> services = gatt.getServices();
-        Log.v(TAG, "onServicesDiscovered: " + services.size() + " services");
+        if (debug) {
+            Log.v(TAG, "onServicesDiscovered: " + services.size() + " services");
+        }
         for (BluetoothGattService service : services) {
-            Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
+            if (debug) {
+                Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
+            }
             addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
         }
         try {
@@ -99,7 +117,9 @@ class BleGattCallback extends BluetoothGattCallback {
         for (BluetoothGattService service : services) {
             List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic : characteristics) {
-                Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid().toString());
+                if (debug) {
+                    Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid().toString());
+                }
                 addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
             }
@@ -113,7 +133,9 @@ class BleGattCallback extends BluetoothGattCallback {
             for (BluetoothGattCharacteristic characteristic : characteristics) {
                 for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
                     byte[] value = descriptor.getValue() != null ? descriptor.getValue() : new byte[]{};
-                    Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + Arrays.toString(value));
+                    if (debug) {
+                        Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + Arrays.toString(value));
+                    }
                     addDescriptor(bluetoothDevice.getName(), service.getUuid().toString(),
                             characteristic.getUuid().toString(), descriptor.getUuid().toString(), value);
                 }
@@ -136,13 +158,17 @@ class BleGattCallback extends BluetoothGattCallback {
             Log.e(TAG, "BLE READ failed: no characteristic found with " + characteristic);
             return;
         }
-        Log.v(TAG, "Reading characteristic " + characteristic1.getUuid().toString());
+        if (debug) {
+            Log.v(TAG, "Reading characteristic " + characteristic1.getUuid().toString());
+        }
         connectedGatt.readCharacteristic(characteristic1);
     }
 
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
+        if (debug) {
+            Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
+        }
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
         setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
     }
@@ -162,14 +188,18 @@ class BleGattCallback extends BluetoothGattCallback {
             Log.e(TAG, "BLE WRITE failed: no characteristic found with " + characteristic);
             return;
         }
-        Log.v(TAG, "Writing characteristic " + characteristic1.getUuid().toString());
+        if (debug) {
+            Log.v(TAG, "Writing characteristic " + characteristic1.getUuid().toString());
+        }
         characteristic1.setValue(value);
         connectedGatt.writeCharacteristic(characteristic1);
     }
 
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        Log.v(TAG, "onCharacteristicWrite write characteristic " + characteristic + ", with status: " + status);
+        if (debug) {
+            Log.v(TAG, "onCharacteristicWrite write characteristic " + characteristic + ", with status: " + status);
+        }
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
         setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
     }
@@ -198,7 +228,9 @@ class BleGattCallback extends BluetoothGattCallback {
             if (descriptor != null) {
                 byte[] value = subscribe ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
                         BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
-                Log.v(TAG, "subscribe characteristic " + characteristic1 + ", with value: " + Arrays.toString(value));
+                if (debug) {
+                    Log.v(TAG, "subscribe characteristic " + characteristic1 + ", with value: " + Arrays.toString(value));
+                }
                 descriptor.setValue(value);
                 connectedGatt.writeDescriptor(descriptor);
                 addDescriptor(bluetoothDevice.getName(), service1.getUuid().toString(),
@@ -210,7 +242,9 @@ class BleGattCallback extends BluetoothGattCallback {
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
-        Log.v(TAG, "onCharacteristicChanged characteristic " + characteristic + " changed with value: " + Arrays.toString(value));
+        if (debug) {
+            Log.v(TAG, "onCharacteristicChanged characteristic " + characteristic + " changed with value: " + Arrays.toString(value));
+        }
         setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
     }
 
