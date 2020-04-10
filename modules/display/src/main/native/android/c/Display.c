@@ -36,7 +36,7 @@ static jmethodID jDisplayServiceWidthMethod;
 static jmethodID jDisplayServiceHeightMethod;
 static jmethodID jDisplayServiceFactorMethod;
 
-void initializeDalvikHandles() {
+static void initializeDalvikHandles() {
     myAndroidVM = substrateGetAndroidVM();
     jclass jDisplayServiceClass = substrateGetDisplayServiceClass();
     JNIEnv* androidEnv;
@@ -77,7 +77,7 @@ fprintf(stderr, "JNI_OnLoad_Display called\n");
 
 // from Java to Android
 
-JNIEnv* getSafeAndroidEnv() {
+static JNIEnv* getSafeAndroidEnv() {
     JNIEnv* androidEnv;
     if ((*myAndroidVM)->GetEnv(myAndroidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_WARNING("AndroidEnv called from not-attached thread\n");

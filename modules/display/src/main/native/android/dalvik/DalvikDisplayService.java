@@ -62,6 +62,6 @@ public class DalvikDisplayService {
     }
 
     private double screenHeight() {
-        return metrics.widthPixels;
+        return metrics.heightPixels;
     }
 }
