@@ -167,6 +167,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_startB
                    duuid, major, minor, did);
     (*androidEnv)->DeleteLocalRef(androidEnv, duuid);
     (*androidEnv)->DeleteLocalRef(androidEnv, did);
+    (*env)->ReleaseStringUTFChars(env, jUuid, uuidChars);
+    (*env)->ReleaseStringUTFChars(env, jId, idChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_stopBroadcast
@@ -203,6 +205,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doConn
                    dname, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dname);
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
+    (*env)->ReleaseStringUTFChars(env, jName, nameChars);
+    (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doDisconnect
@@ -217,6 +221,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doDisc
                    dname, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dname);
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
+    (*env)->ReleaseStringUTFChars(env, jName, nameChars);
+    (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doRead
@@ -234,6 +240,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doRead
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
+    (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
+    (*env)->ReleaseStringUTFChars(env, jProfile, profileChars);
+    (*env)->ReleaseStringUTFChars(env, jCharacteristic, characteristicChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doWrite
@@ -258,6 +267,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doWrit
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
     (*androidEnv)->ReleaseByteArrayElements(androidEnv, value, valueBytes, JNI_ABORT);
+    (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
+    (*env)->ReleaseStringUTFChars(env, jProfile, profileChars);
+    (*env)->ReleaseStringUTFChars(env, jCharacteristic, characteristicChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doSubscribe
@@ -277,6 +289,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doSubs
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
+    (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
+    (*env)->ReleaseStringUTFChars(env, jProfile, profileChars);
+    (*env)->ReleaseStringUTFChars(env, jCharacteristic, characteristicChars);
 }
 
 ///////////////////////////
@@ -295,6 +310,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDetect
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDetectionMethod, 
                  juuid, major, minor, ris, proxy);
     (*graalEnv)->DeleteLocalRef(graalEnv, juuid);
+    (*env)->ReleaseStringUTFChars(env, uuid, uuidChars);
 }
 
 // BLE DEVICES
@@ -314,6 +330,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBleService_scanDevice
                  jname, jaddress);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jaddress);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, address, addressChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JNIEnv *env, jobject service,
@@ -330,6 +348,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setState(JN
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBleClass, jGraalSetDeviceStateMethod, jname, jstate);
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jstate);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, state, stateChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addProfile(JNIEnv *env, jobject service,
@@ -349,6 +369,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addProfile(
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, juuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jtype);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, uuid, uuidChars);
+    (*env)->ReleaseStringUTFChars(env, type, typeChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addCharacteristic(JNIEnv *env, jobject service,
@@ -372,6 +395,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addCharacte
     (*graalEnv)->DeleteLocalRef(graalEnv, jprofileUuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jproperties);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, profileUuid, profileUuidChars);
+    (*env)->ReleaseStringUTFChars(env, charUuid, charUuidChars);
+    (*env)->ReleaseStringUTFChars(env, properties, profileUuidChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescriptor(JNIEnv *env, jobject service,
@@ -401,6 +428,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_addDescript
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
     (*graalEnv)->DeleteLocalRef(graalEnv, jdescUuid);
     (*graalEnv)->ReleaseByteArrayElements(graalEnv, value, valueBytes, JNI_ABORT);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, profileUuid, profileUuidChars);
+    (*env)->ReleaseStringUTFChars(env, charUuid, charUuidChars);
+    (*env)->ReleaseStringUTFChars(env, descUuid, descUuidChars);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setValue(JNIEnv *env, jobject service,
@@ -421,4 +452,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_BleGattCallback_setValue(JN
     (*graalEnv)->DeleteLocalRef(graalEnv, jname);
     (*graalEnv)->DeleteLocalRef(graalEnv, jcharUuid);
     (*graalEnv)->ReleaseByteArrayElements(graalEnv, value, valueBytes, JNI_ABORT);
+    (*env)->ReleaseStringUTFChars(env, name, nameChars);
+    (*env)->ReleaseStringUTFChars(env, charUuid, charUuidChars);
 }
