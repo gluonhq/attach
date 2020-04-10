@@ -42,8 +42,11 @@ public class AndroidDisplayService implements DisplayService {
 
     private static final Logger LOG = Logger.getLogger(AndroidDisplayService.class.getName());
 
-//    private final static double MIN_TABLET_DIAGONAL = 6.5;
-    private final boolean debug;
+    private static boolean debug;
+
+    static {
+        System.loadLibrary("Display");
+    }
 
     public AndroidDisplayService() {
         debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
@@ -51,12 +54,12 @@ public class AndroidDisplayService implements DisplayService {
 
     @Override
     public boolean isPhone() {
-        return true;
+        return isPhoneFactor();
     }
 
     @Override
     public boolean isTablet() {
-        return false;
+        return !isPhone();
     }
 
     @Override
@@ -70,8 +73,8 @@ public class AndroidDisplayService implements DisplayService {
      */
     @Override
     public Dimension2D getScreenResolution() {
-        Rectangle2D bounds = Screen.getPrimary().getBounds();
-        Dimension2D dimension2D = new Dimension2D(bounds.getWidth(), bounds.getHeight());
+        double[] dim = screenSize();
+        Dimension2D dimension2D = new Dimension2D(dim[0], dim[1]);
         if (debug) {
             LOG.log(Level.INFO, "Screen resolution: " + dimension2D);
         }
@@ -116,4 +119,7 @@ public class AndroidDisplayService implements DisplayService {
         return new ReadOnlyObjectWrapper<>(Notch.UNKNOWN).getReadOnlyProperty();
     }
 
+    // native
+    private native static boolean isPhoneFactor();
+    private native static double[] screenSize();
 }
