@@ -126,8 +126,6 @@ JNIEnv* getSafeAndroidEnv() {
     if ((*myAndroidVM)->GetEnv(myAndroidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
         ATTACH_LOG_WARNING("enableDalvikDebug called from not-attached thread\n");
         (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
-    }  else {
-        ATTACH_LOG_FINE("enableDalvikDebug called from attached thread %p\n", androidEnv);
     }
     return androidEnv;
 }
