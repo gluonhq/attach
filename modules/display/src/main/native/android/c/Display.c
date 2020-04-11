@@ -35,6 +35,7 @@ static jobject jDalvikDisplayService;
 static jmethodID jDisplayServiceWidthMethod;
 static jmethodID jDisplayServiceHeightMethod;
 static jmethodID jDisplayServiceFactorMethod;
+static jmethodID jDisplayServiceRoundMethod;
 
 static void initializeDalvikHandles() {
     myAndroidVM = substrateGetAndroidVM();
@@ -45,6 +46,7 @@ static void initializeDalvikHandles() {
     jDisplayServiceWidthMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "screenWidth", "()D");
     jDisplayServiceHeightMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "screenHeight", "()D");
     jDisplayServiceFactorMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "isPhoneFactor", "()Z");
+    jDisplayServiceRoundMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "isScreenRound", "()Z");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jDisplayServiceClass, jDisplayServiceInitMethod, jActivity);
@@ -108,4 +110,11 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplaySe
 {
     JNIEnv* androidEnv = getSafeAndroidEnv();
     return (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikDisplayService, jDisplayServiceFactorMethod);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplayService_screenRound
+(JNIEnv *env, jclass jClass)
+{
+    JNIEnv* androidEnv = getSafeAndroidEnv();
+    return (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikDisplayService, jDisplayServiceRoundMethod);
 }

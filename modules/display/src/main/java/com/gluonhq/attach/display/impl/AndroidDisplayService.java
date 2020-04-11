@@ -106,7 +106,7 @@ public class AndroidDisplayService implements DisplayService {
 
     @Override
     public boolean isScreenRound() {
-        return false;
+        return screenRound();
     }
 
     @Override
@@ -122,4 +122,5 @@ public class AndroidDisplayService implements DisplayService {
     // native
     private native static boolean isPhoneFactor();
     private native static double[] screenSize();
+    private native static boolean screenRound();
 }

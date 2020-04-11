@@ -40,10 +40,12 @@ public class DalvikDisplayService {
     private static final String TAG = "GluonAttach";
     private static final double MIN_TABLET_DIAGONAL = 6.5;
 
+    private final Activity activity;
     private final double diagonalInches;
     private final DisplayMetrics metrics;
 
     public DalvikDisplayService(Activity activity) {
+        this.activity = activity;
         WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         metrics = new DisplayMetrics();
@@ -63,5 +65,12 @@ public class DalvikDisplayService {
 
     private double screenHeight() {
         return metrics.heightPixels;
+    }
+
+    private boolean isScreenRound() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false;
+        }
+        return activity.getResources().getConfiguration().isScreenRound();
     }
 }
