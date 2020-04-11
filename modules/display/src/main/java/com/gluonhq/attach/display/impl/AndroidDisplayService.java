@@ -45,11 +45,11 @@ public class AndroidDisplayService implements DisplayService {
     private static boolean debug;
 
     static {
+        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Display");
     }
 
     public AndroidDisplayService() {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
     }
 
     @Override
