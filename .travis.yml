@@ -9,7 +9,7 @@ os: osx
 osx_image: xcode11.3
 
 before_script:
-  - bash ci/android.sh
+  - bash .ci/android.sh
   - export ANDROID_SDK=$HOME/android-sdk
   - export ANDROID_NDK=$HOME/android-sdk/ndk-bundle
   - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-14.jdk/Contents/Home
@@ -26,13 +26,13 @@ cache:
 # Deploy releases on every tag push
 deploy:
   - provider: script
-    script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/public-snapshots/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
+    script: ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
     skip_cleanup: true
     on:
       branch: master
 
   - provider: script
-    script: ./gradlew publish -PrepositoryUrl=$mavenPublishURL/releases/ -PrepositoryUsername=$mavenPublishUsername -PrepositoryPassword=$mavenPublishPassword
+    script: bash .ci/release.sh
     skip_cleanup: true
     on:
       tags: true

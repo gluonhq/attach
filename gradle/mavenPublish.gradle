@@ -1,6 +1,9 @@
+import java.time.Duration
+
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-//apply plugin: 'signing'
+apply plugin: 'signing'
+apply plugin: 'de.marcphilipp.nexus-publish'
 
 def nativeLib(buildDir, projectDir, service, osname) {
     return tasks.create("nativeLib${service}${osname}") {
@@ -110,9 +113,9 @@ publishing {
                 }
 
                 scm {
-                    connection = 'scm:git:https://github.com/tiainen/attach.git'
-                    developerConnection = 'scm:git:ssh://git@github.com/tiainen/attach.git'
-                    url = 'https://github.com/tiainen/attach'
+                    connection = 'scm:git:https://github.com/gluonhq/attach.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/gluonhq/attach.git'
+                    url = 'https://github.com/gluonhq/attach'
                 }
             }
 
@@ -126,25 +129,12 @@ publishing {
             }
         }
     }
-
-    repositories {
-        maven {
-            // to upload release, use:
-            // ./gradlew -PrepositoryUrl=https://oss.sonatype.org/service/local/staging/deploy/maven2 publish
-//            url = getStringProperty('repositoryUrl', 'https://oss.sonatype.org/content/repositories/snapshots/')
-            url = getStringProperty('repositoryUrl', 'https://nexus.gluonhq.com/nexus/content/repositories/public-snapshots/')
-            credentials {
-                username = getStringPropertyDefaultAsProperty('repositoryUsername', 'gluonNexusUsername')
-                password = getStringPropertyDefaultAsProperty('repositoryPassword', 'gluonNexusPassword')
-            }
-        }
-    }
 }
 
-//signing {
-//    sign publishing.publications.maven
-//    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
-//}
+signing {
+    sign publishing.publications.maven
+    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
+}
 
 private String getServiceName(projectName) {
     if (projectName.contains("-")) { // in-app-billing -> InAppBilling
@@ -154,24 +144,11 @@ private String getServiceName(projectName) {
     return projectName.capitalize()
 }
 
-private String getStringProperty(String name, String defaultValue) {
-    if (!project.hasProperty(name)) {
-        return defaultValue
+nexusPublishing {
+    repositories {
+        sonatype()
     }
-
-    def propertyValue = project.property(name)
-    return propertyValue != null ? propertyValue.toString().trim() : defaultValue
-}
-
-private String getStringPropertyDefaultAsProperty(String name, String defaultProperty) {
-    if (!project.hasProperty(name)) {
-        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
-    }
-
-    def propertyValue = project.property(name)
-    if (propertyValue != null) {
-        return propertyValue.toString().trim()
-    } else {
-        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
-    }
+    // credentials are shared from staging plugin
+    clientTimeout = Duration.ofMinutes(5)
+    connectTimeout = Duration.ofMinutes(5)
 }
