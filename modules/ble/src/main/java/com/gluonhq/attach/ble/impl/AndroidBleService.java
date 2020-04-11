@@ -105,24 +105,6 @@ public class AndroidBleService implements BleService {
         stopBroadcast();
     }
 
-    // native
-    private static native void startObserver(String[] uuids);
-    private static native void stopObserver();
-    private static native void startBroadcast(String uuid, int major, int minor, String id);
-    private static native void stopBroadcast();
-    private static native void enableDebug();
-
-    // callback
-    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
-        ScanDetection detection = new ScanDetection();
-        detection.setUuid(uuid);
-        detection.setMajor(major);
-        detection.setMinor(minor);
-        detection.setRssi(rssi);
-        detection.setProximity(proximity);
-        Platform.runLater(() -> callback.accept(detection));
-    }
-
     // BLE DEVICES
 
     @Override
@@ -194,7 +176,14 @@ public class AndroidBleService implements BleService {
         return check;
     }
 
-    // native
+    // native BLE Beacons
+    private static native void startObserver(String[] uuids);
+    private static native void stopObserver();
+    private static native void startBroadcast(String uuid, int major, int minor, String id);
+    private static native void stopBroadcast();
+    private static native void enableDebug();
+
+    // native BLE Devices
     private static native void startScanningPeripherals();
     private static native void stopScanningPeripherals();
     private static native void doConnect(String name, String address);
@@ -203,7 +192,18 @@ public class AndroidBleService implements BleService {
     private static native void doWrite(String address, String profile, String characteristic, byte[] value);
     private static native void doSubscribe(String address, String profile, String characteristic, boolean value);
 
-    // callbacks
+    // callbacks BLE Beacons
+    private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
+        ScanDetection detection = new ScanDetection();
+        detection.setUuid(uuid);
+        detection.setMajor(major);
+        detection.setMinor(minor);
+        detection.setRssi(rssi);
+        detection.setProximity(proximity);
+        Platform.runLater(() -> callback.accept(detection));
+    }
+
+    // callbacks BLE Devices
     private static void gotPeripheral(String name, String address) {
         if ((name != null && deviceNames.contains(name)) ||
                 (name == null && address != null && deviceNames.contains(address))) {
