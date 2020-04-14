@@ -21,7 +21,7 @@ fi
 newVersion=${TRAVIS_TAG%.*}.$((${TRAVIS_TAG##*.} + 1))
 
 # Update project version to next snapshot version
-sed -i -z "0,/version = $TAG/s//version = $newVersion-SNAPSHOT/" gradle.properties
+sed -i -z "0,/version = $TRAVIS_TAG/s//version = $newVersion-SNAPSHOT/" gradle.properties
 
-git commit pom.xml -m "Prepare development of $newVersion"
+git commit gradle.properties -m "Prepare development of $newVersion"
 git push https://gluon-bot:$GITHUB_PASSWORD@github.com/$TRAVIS_REPO_SLUG HEAD:master
