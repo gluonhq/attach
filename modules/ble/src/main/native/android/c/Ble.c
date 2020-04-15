@@ -266,10 +266,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doWrit
     (*androidEnv)->DeleteLocalRef(androidEnv, daddress);
     (*androidEnv)->DeleteLocalRef(androidEnv, dprofile);
     (*androidEnv)->DeleteLocalRef(androidEnv, dcharacteristic);
-    (*androidEnv)->ReleaseByteArrayElements(androidEnv, value, valueBytes, JNI_ABORT);
+    (*androidEnv)->DeleteLocalRef(androidEnv, jvalue);
     (*env)->ReleaseStringUTFChars(env, jAddress, addressChars);
     (*env)->ReleaseStringUTFChars(env, jProfile, profileChars);
     (*env)->ReleaseStringUTFChars(env, jCharacteristic, characteristicChars);
+    (*env)->ReleaseByteArrayElements(env, value, valueBytes, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_AndroidBleService_doSubscribe
