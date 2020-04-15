@@ -49,6 +49,13 @@ public class AndroidBrowserService implements BrowserService {
 
     @Override
     public void launchExternalBrowser(String url) throws IOException {
+        if (debug) {
+            LOG.info("Launch URL: " + url);
+        }
+        if (url == null || url.isEmpty()) {
+            LOG.warning("Invalid URL");
+            return;
+        }
         if (!launchURL(url)) {
             throw new IOException("Error launching url " + url);
         }

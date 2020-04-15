@@ -40,7 +40,7 @@ static void initializeDalvikHandles() {
     JNIEnv* androidEnv;
     (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
     jmethodID jBrowserServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jBrowserServiceLaunchMethod = (*androidEnv)->GetMethodID(androidEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)V");
+    jBrowserServiceLaunchMethod = (*androidEnv)->GetMethodID(androidEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBrowserServiceClass, jBrowserServiceInitMethod, jActivity);
@@ -88,6 +88,7 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserSe
     const char *urlChars = (*env)->GetStringUTFChars(env, jurl, NULL);
     JNIEnv* androidEnv = getSafeAndroidEnv();
     jstring durl = (*androidEnv)->NewStringUTF(androidEnv, urlChars);
-    (*androidEnv)->CallVoidMethod(androidEnv, jDalvikBrowserService, jBrowserServiceLaunchMethod, durl);
+    jboolean result = (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikBrowserService, jBrowserServiceLaunchMethod, durl);
     (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
+    return result;
 }

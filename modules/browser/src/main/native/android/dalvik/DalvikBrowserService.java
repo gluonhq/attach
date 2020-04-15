@@ -42,12 +42,26 @@ public class DalvikBrowserService {
         this.activity = activity;
     }
 
-    private void launchURL(String url) {
-        if (url != null && !url.isEmpty()) {
-            Log.v(TAG, "Launching URL: " + url);
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.startActivity(browserIntent);
+    private boolean launchURL(String url) {
+        if (url == null || url.isEmpty()) {
+            Log.e(TAG, "Invalid URL: url was null or empty");
+            return false;
         }
+
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            Log.e(TAG, "Invalid URL: url should start with http:// or https://");
+            return false;
+        }
+
+        Log.v(TAG, "Launching URL: " + url);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        if (browserIntent.resolveActivity(activity.getPackageManager()) == null) {
+            Log.e(TAG, "There is no activity to handle the browser intent");
+            return false;
+        }
+        
+        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(browserIntent);
+        return true;
     }
 }
