@@ -59,7 +59,7 @@ public class DalvikBrowserService {
             Log.e(TAG, "There is no activity to handle the browser intent");
             return false;
         }
-        
+
         browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(browserIntent);
         return true;
