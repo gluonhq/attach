@@ -52,13 +52,14 @@ import java.util.logging.Logger;
 
 /**
  * Android implementation of BleService
- * 
-*/
+ *
+ */
 public class AndroidBleService implements BleService {
 
     private static final Logger LOG = Logger.getLogger(AndroidBleService.class.getName());
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
     private static final List<String> deviceNames = new LinkedList<>();
+    private static final List<String> profileNames = new LinkedList<>();
     private static boolean debug;
 
     private static Consumer<ScanDetection> callback;
@@ -69,11 +70,17 @@ public class AndroidBleService implements BleService {
         System.loadLibrary("Ble");
         LOG.fine("Loaded AndroidBleService");
     }
-    
+
     public AndroidBleService() {
         LOG.fine("Created AndroidBleService instance");
+        if (debug) {
+            enableDebug();
+        }
     }
 
+    // BLE BEACONS
+
+    @Override
     public void startScanning(Configuration region, Consumer<ScanDetection> callback) {
         LOG.fine("AndroidBleService will start scanning");
         AndroidBleService.callback = callback;
@@ -82,57 +89,110 @@ public class AndroidBleService implements BleService {
         startObserver(uuids);
     }
 
+    @Override
     public void stopScanning() {
         LOG.fine("AndroidBleService will stop scanning");
         stopObserver();
     }
 
-    public ObservableList<BleDevice> startScanningDevices() {
-        LOG.fine("AndroidBleService will start scanning devices");
-        devices.clear();
-        startScanningPeripherals();
-        return devices;
-    }
-
-    public void connect(BleDevice device) {
-System.err.println("[ABLE]");
-    }
-
-    public void disconnect(BleDevice device) {
-System.err.println("[ABLE]");
-    }
-
-    public void readCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
-System.err.println("[ABLE]");
-    }
-
-    public void writeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic, byte[] value) {
-System.err.println("[ABLE]");
-    }
-
-    public void subscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
-System.err.println("[ABLE]");
-    }
-
-    public void unsubscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
-System.err.println("[ABLE]");
-    }
-    
-
+    @Override
     public void startBroadcasting(UUID beaconUUID, int major, int minor, String identifier) {
         startBroadcast(beaconUUID.toString(), major, minor, identifier);
     }
 
-    /**
-     * Stop advertising the current iOS device as a Bluetooth beacon
-     *
-     * @since 4.0.7
-     */
+    @Override
     public void stopBroadcasting() {
         stopBroadcast();
     }
 
-// callback 
+    // BLE DEVICES
+
+    @Override
+    public ObservableList<BleDevice> startScanningDevices() {
+        LOG.fine("AndroidBleService will start scanning devices");
+        devices.clear();
+        deviceNames.clear();
+        startScanningPeripherals();
+        return devices;
+    }
+
+    @Override
+    public void stopScanningDevices() {
+        stopScanningPeripherals();
+    }
+
+    @Override
+    public void connect(BleDevice device) {
+        if (!checkDevice(device)) {
+            return;
+        }
+        profileNames.clear();
+        device.getProfiles().clear();
+        doConnect(device.getName(), device.getAddress());
+    }
+
+    @Override
+    public void disconnect(BleDevice device) {
+        if (!checkDevice(device)) {
+            return;
+        }
+        doDisconnect(device.getName(), device.getAddress());
+    }
+
+    @Override
+    public void readCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
+        doRead(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString());
+    }
+
+    @Override
+    public void writeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic, byte[] value) {
+        doWrite(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString(), value);
+    }
+
+    @Override
+    public void subscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
+        doSubscribe(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString(), true);
+    }
+
+    @Override
+    public void unsubscribeCharacteristic(BleDevice device, UUID uuidProfile, UUID uuidCharacteristic) {
+        doSubscribe(device.getAddress(), uuidProfile.toString(), uuidCharacteristic.toString(), false);
+    }
+
+    private static boolean checkDevice(BleDevice device) {
+        if (device == null) {
+            return false;
+        }
+        if (device.getName() == null) {
+            if (debug) {
+                LOG.log(Level.INFO, "AndroidBleService: Device with null name not allowed");
+            }
+            return false;
+        }
+        final boolean check = deviceNames.contains(device.getName());
+        if (debug) {
+            LOG.log(Level.INFO, "AndroidBleService: Device with name " + device.getName() + " in device list: " + check);
+        }
+        return check;
+    }
+
+    // native BLE Beacons
+    private static native void startObserver(String[] uuids);
+    private static native void stopObserver();
+    private static native void startBroadcast(String uuid, int major, int minor, String id);
+    private static native void stopBroadcast();
+    private static native void enableDebug();
+
+    // native BLE Devices
+    private static native void startScanningPeripherals();
+    private static native void stopScanningPeripherals();
+    private static native void doConnect(String name, String address);
+    private static native void doDisconnect(String name, String address);
+    private static native void doRead(String address, String profile, String characteristic);
+    private static native void doWrite(String address, String profile, String characteristic, byte[] value);
+    private static native void doSubscribe(String address, String profile, String characteristic, boolean value);
+
+    // callbacks BLE Beacons
     private static void setDetection(String uuid, int major, int minor, int rssi, int proximity) {
         ScanDetection detection = new ScanDetection();
         detection.setUuid(uuid);
@@ -143,32 +203,143 @@ System.err.println("[ABLE]");
         Platform.runLater(() -> callback.accept(detection));
     }
 
-    private static void gotPeripheral(String name, String uuid) {
+    // callbacks BLE Devices
+    private static void gotPeripheral(String name, String address) {
         if ((name != null && deviceNames.contains(name)) ||
-                (name == null && uuid != null && deviceNames.contains(uuid))) {
+                (name == null && address != null && deviceNames.contains(address))) {
             return;
         }
-        if (name != null && uuid != null && deviceNames.contains(uuid)) {
-            deviceNames.remove(uuid);
-            devices.removeIf(d -> uuid.equals(d.getAddress()));
+        if (name != null && address != null && deviceNames.contains(address)) {
+            deviceNames.remove(address);
+            devices.removeIf(d -> address.equals(d.getAddress()));
         }
 
         if (debug) {
-            LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s and uuid: %s", name, uuid));
+            LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s and address: %s", name, address));
         }
         BleDevice dev = new BleDevice();
         dev.setName(name);
-        dev.setAddress(uuid);
+        dev.setAddress(address);
         Platform.runLater(() -> devices.add(dev));
-        deviceNames.add(name != null ? name : uuid);
-
+        deviceNames.add(name != null ? name : address);
     }
 
-    private static native void startScanningPeripherals();
-    private static native void startObserver(String[] uuids);
-    private static native void stopObserver();
-    private static native void startBroadcast(String uuid, int major, int minor, String id);
-    private static native void stopBroadcast();
+    private static void gotState(String name, String state) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE device %s changed state to %s", name, state));
+        }
 
+        getDeviceByName(name).ifPresent(device ->
+                Platform.runLater(() -> device.setState(BleDevice.State.fromName(state))));
+    }
 
+    private static void gotProfile(String name, String uuid, String type) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE device has profile: %s with type: %s", uuid, type));
+        }
+
+        getDeviceByName(name).ifPresent(device -> {
+            if (!profileNames.contains(uuid)) {
+                profileNames.add(uuid);
+
+                // if profile is not included yet:
+                BleProfile bleProfile = new BleProfile();
+                bleProfile.setUuid(UUID.fromString(uuid));
+                bleProfile.setType(type);
+                if (debug) {
+                    LOG.log(Level.INFO, String.format("AndroidBleService creating profile %s", uuid));
+                }
+                Platform.runLater(() -> device.getProfiles().add(bleProfile));
+            }
+        });
+    }
+
+    private static void gotCharacteristic(String name, String profileUuid, String charUuid, String properties) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with properties: %s", profileUuid, charUuid, properties));
+        }
+
+        getDeviceByName(name).ifPresent(device ->
+                device.getProfiles().stream()
+                        .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
+                        .findAny()
+                        .ifPresent(p -> {
+                            if (debug) {
+                                LOG.log(Level.INFO, String.format("AndroidBleService updating profile with characteristic %s", charUuid));
+                            }
+                            boolean exists = false;
+                            for (BleCharacteristic c : p.getCharacteristics()) {
+                                if (c.getUuid().toString().equalsIgnoreCase(charUuid)) {
+                                    c.setProperties(properties);
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists) {
+                                BleCharacteristic bleCharacteristic = new BleCharacteristic(UUID.fromString(charUuid));
+                                bleCharacteristic.setProperties(properties);
+                                Platform.runLater(() -> p.getCharacteristics().add(bleCharacteristic));
+                            }
+                        }));
+    }
+
+    private static void gotDescriptor(String name, String profileUuid, String charUuid, String descUuid, byte[] value) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with descriptor: %s and value %s", profileUuid, charUuid, descUuid, Arrays.toString(value)));
+        }
+
+        getDeviceByName(name).ifPresent(device ->
+                device.getProfiles().stream()
+                        .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
+                        .findAny()
+                        .ifPresent(p -> {
+                            if (debug) {
+                                LOG.log(Level.INFO, String.format("AndroidBleService updating profile with descriptor %s and value %s", descUuid, Arrays.toString(value)));
+                            }
+                            p.getCharacteristics().stream()
+                                    .filter(c -> c.getUuid().toString().equalsIgnoreCase(charUuid))
+                                    .findAny()
+                                    .ifPresent(c -> c.getDescriptors().stream()
+                                            .filter(d -> d.getUuid().toString().equalsIgnoreCase(descUuid))
+                                            .findAny()
+                                            .ifPresentOrElse(d -> d.setValue(value),
+                                                    () -> {
+                                                        BleDescriptor d = new BleDescriptor();
+                                                        d.setUuid(UUID.fromString(descUuid));
+                                                        d.setValue(value);
+                                                        c.getDescriptors().add(d);
+                                                    }));
+                        }));
+    }
+
+    private static void gotValue(String name, String charUuid, byte[] value) {
+        if (debug) {
+            LOG.log(Level.INFO, String.format("BLE with characteristic: %s has value %s", charUuid, Arrays.toString(value)));
+        }
+
+        getDeviceByName(name).ifPresent(device ->
+                device.getProfiles().stream()
+                        .flatMap(d -> d.getCharacteristics().stream())
+                        .filter(c -> c.getUuid().toString().equalsIgnoreCase(charUuid))
+                        .findFirst()
+                        .ifPresent(c -> {
+                            if (debug) {
+                                LOG.log(Level.INFO, String.format("AndroidBleService DONE updating value for characteristic %s", charUuid));
+                            }
+                            Platform.runLater(() -> c.setValue(value));
+                        }));
+    }
+
+    private static Optional<BleDevice> getDeviceByName(String name) {
+        if (name == null || !deviceNames.contains(name)) {
+            return Optional.empty();
+        }
+
+        for (BleDevice device : devices) {
+            if (name.equals(device.getName())) {
+                return Optional.of(device);
+            }
+        }
+        return Optional.empty();
+    }
 }

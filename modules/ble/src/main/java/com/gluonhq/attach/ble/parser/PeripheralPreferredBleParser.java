@@ -43,22 +43,34 @@ public class PeripheralPreferredBleParser implements BleParser {
         }
         
         int offset = 0;
-        int intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+        Integer intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+        if (intValue == null) {
+            return null;
+        }
         StringBuilder result = new StringBuilder("Minimum Connection Interval: ")
                 .append(intValue == 65535 ? "No specific minimum" : String.format("%.02f ms", (intValue * 1.25f)));
         offset += 2;
         
         intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+        if (intValue == null) {
+            return null;
+        }
         result.append("\n\tMaximum Connection Interval: ")
                 .append(intValue == 65535 ? "No specific maximum" : String.format("%.02f ms", (intValue * 1.25f)));
         offset += 2;  
         
         intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+        if (intValue == null) {
+            return null;
+        }
         result.append("\n\tSlave Latency: ")
                 .append(intValue == 65535 ? "Undefined" : intValue);
         offset += 2;  
         
         intValue = BleUtils.getIntValue(value, BleUtils.FORMAT_UINT16, offset);
+        if (intValue == null) {
+            return null;
+        }
         result.append("\n\tConnection Supervision Timeout : ")
                 .append(intValue == 65535 ? "No specific value requested" : intValue);
         

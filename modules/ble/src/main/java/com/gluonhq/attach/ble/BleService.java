@@ -245,6 +245,11 @@ public interface BleService {
     ObservableList<BleDevice> startScanningDevices();
 
     /**
+     * Stops scanning for BLE devices
+     */
+    void stopScanningDevices();
+
+    /**
      * Connects to a given BLE device
      * @param device The BleDevice to connect to
      * @since 4.0.6
