@@ -27,25 +27,20 @@
  */
 #include "Browser.h"
 
-static JNIEnv *graalEnv;
-JavaVM *jVMBrowser = NULL;
 
-static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikBrowserService;
 static jmethodID jBrowserServiceLaunchMethod;
 
 static void initializeDalvikHandles() {
-    myAndroidVM = substrateGetAndroidVM();
     jclass jBrowserServiceClass = substrateGetBrowserServiceClass();
-    JNIEnv* androidEnv;
-    (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
-    jmethodID jBrowserServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jBrowserServiceLaunchMethod = (*androidEnv)->GetMethodID(androidEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");
+    ATTACH_DALVIK();
+    jmethodID jBrowserServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jBrowserServiceLaunchMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");
 
     jobject jActivity = substrateGetActivity();
-    jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jBrowserServiceClass, jBrowserServiceInitMethod, jActivity);
-    jDalvikBrowserService = (*androidEnv)->NewGlobalRef(androidEnv, jtmpobj);
-    (*myAndroidVM)->DetachCurrentThread(myAndroidVM);
+    jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jBrowserServiceClass, jBrowserServiceInitMethod, jActivity);
+    jDalvikBrowserService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
+    DETACH_DALVIK();
 }
 
 //////////////////////////
@@ -56,9 +51,9 @@ static void initializeDalvikHandles() {
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Browser(JavaVM *vm, void *reserved)
 {
-fprintf(stderr, "JNI_OnLoad_Browser called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_Browser called\n");
 #ifdef JNI_VERSION_1_8
-    jVMBrowser = vm;
+    JNIEnv* graalEnv;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Browser from OnLoad");
         return JNI_FALSE;
@@ -73,22 +68,14 @@ fprintf(stderr, "JNI_OnLoad_Browser called\n");
 
 // from Java to Android
 
-static JNIEnv* getSafeAndroidEnv() {
-    JNIEnv* androidEnv;
-    if ((*myAndroidVM)->GetEnv(myAndroidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
-        ATTACH_LOG_WARNING("AndroidEnv called from not-attached thread\n");
-        (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
-    }
-    return androidEnv;
-}
-
 JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserService_launchURL
 (JNIEnv *env, jclass jClass, jstring jurl)
 {
     const char *urlChars = (*env)->GetStringUTFChars(env, jurl, NULL);
-    JNIEnv* androidEnv = getSafeAndroidEnv();
-    jstring durl = (*androidEnv)->NewStringUTF(androidEnv, urlChars);
-    jboolean result = (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikBrowserService, jBrowserServiceLaunchMethod, durl);
-    (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
+    ATTACH_DALVIK();
+    jstring durl = (*dalvikEnv)->NewStringUTF(dalvikEnv, urlChars);
+    jboolean result = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikBrowserService, jBrowserServiceLaunchMethod, durl);
+    DETACH_DALVIK();
+    // (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
     return result;
 }

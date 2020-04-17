@@ -27,31 +27,25 @@
  */
 #include "Display.h"
 
-static JNIEnv *graalEnv;
-JavaVM *jVMDisplay = NULL;
-
-static JavaVM *myAndroidVM = NULL;
 static jobject jDalvikDisplayService;
 static jmethodID jDisplayServiceWidthMethod;
 static jmethodID jDisplayServiceHeightMethod;
 static jmethodID jDisplayServiceFactorMethod;
 static jmethodID jDisplayServiceRoundMethod;
 
-static void initializeDalvikHandles() {
-    myAndroidVM = substrateGetAndroidVM();
+static void initializeDisplayDalvikHandles() {
+    ATTACH_DALVIK();
     jclass jDisplayServiceClass = substrateGetDisplayServiceClass();
-    JNIEnv* androidEnv;
-    (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
-    jmethodID jDisplayServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jDisplayServiceWidthMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "screenWidth", "()D");
-    jDisplayServiceHeightMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "screenHeight", "()D");
-    jDisplayServiceFactorMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "isPhoneFactor", "()Z");
-    jDisplayServiceRoundMethod = (*androidEnv)->GetMethodID(androidEnv, jDisplayServiceClass, "isScreenRound", "()Z");
+    jmethodID jDisplayServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jDisplayServiceWidthMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "screenWidth", "()D");
+    jDisplayServiceHeightMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "screenHeight", "()D");
+    jDisplayServiceFactorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "isPhoneFactor", "()Z");
+    jDisplayServiceRoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "isScreenRound", "()Z");
 
     jobject jActivity = substrateGetActivity();
-    jobject jtmpobj = (*androidEnv)->NewObject(androidEnv, jDisplayServiceClass, jDisplayServiceInitMethod, jActivity);
-    jDalvikDisplayService = (*androidEnv)->NewGlobalRef(androidEnv, jtmpobj);
-    (*myAndroidVM)->DetachCurrentThread(myAndroidVM);
+    jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jDisplayServiceClass, jDisplayServiceInitMethod, jActivity);
+    jDalvikDisplayService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
+    DETACH_DALVIK();
 }
 
 //////////////////////////
@@ -62,15 +56,15 @@ static void initializeDalvikHandles() {
 JNIEXPORT jint JNICALL
 JNI_OnLoad_Display(JavaVM *vm, void *reserved)
 {
-fprintf(stderr, "JNI_OnLoad_Display called\n");
+    JNIEnv* graalEnv;
+    ATTACH_LOG_INFO("JNI_OnLoad_Display called\n");
 #ifdef JNI_VERSION_1_8
-    jVMDisplay = vm;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Display from OnLoad");
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("[Display Service] Initializing native Display from OnLoad");
-    initializeDalvikHandles();
+    initializeDisplayDalvikHandles();
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
@@ -79,21 +73,12 @@ fprintf(stderr, "JNI_OnLoad_Display called\n");
 
 // from Java to Android
 
-static JNIEnv* getSafeAndroidEnv() {
-    JNIEnv* androidEnv;
-    if ((*myAndroidVM)->GetEnv(myAndroidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
-        ATTACH_LOG_WARNING("AndroidEnv called from not-attached thread\n");
-        (*myAndroidVM)->AttachCurrentThread(myAndroidVM, (void **)&androidEnv, NULL);
-    }
-    return androidEnv;
-}
-
 JNIEXPORT jdoubleArray JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplayService_screenSize
 (JNIEnv *env, jclass jClass)
 {
-    JNIEnv* androidEnv = getSafeAndroidEnv();
-    jdouble w = (*androidEnv)->CallDoubleMethod(androidEnv, jDalvikDisplayService, jDisplayServiceWidthMethod);
-    jdouble h = (*androidEnv)->CallDoubleMethod(androidEnv, jDalvikDisplayService, jDisplayServiceHeightMethod);
+    ATTACH_DALVIK();
+    jdouble w = (*dalvikEnv)->CallDoubleMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceWidthMethod);
+    jdouble h = (*dalvikEnv)->CallDoubleMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceHeightMethod);
 
     jdoubleArray output = (*env)->NewDoubleArray(env, 2);
     if (output == NULL)
@@ -102,19 +87,24 @@ JNIEXPORT jdoubleArray JNICALL Java_com_gluonhq_attach_display_impl_AndroidDispl
     }
     jdouble res[] = {w, h};
     (*env)->SetDoubleArrayRegion(env, output, 0, 2, res);
+    DETACH_DALVIK();
     return output;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplayService_isPhoneFactor
 (JNIEnv *env, jclass jClass)
 {
-    JNIEnv* androidEnv = getSafeAndroidEnv();
-    return (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikDisplayService, jDisplayServiceFactorMethod);
+    ATTACH_DALVIK();
+    jboolean answer = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceFactorMethod);
+    DETACH_DALVIK();
+    return answer;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplayService_screenRound
 (JNIEnv *env, jclass jClass)
 {
-    JNIEnv* androidEnv = getSafeAndroidEnv();
-    return (*androidEnv)->CallBooleanMethod(androidEnv, jDalvikDisplayService, jDisplayServiceRoundMethod);
+    ATTACH_DALVIK();
+    jboolean answer = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceRoundMethod);
+    DETACH_DALVIK();
+    return answer;
 }
