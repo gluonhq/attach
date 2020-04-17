@@ -27,9 +27,6 @@
  */
 #include "Lifecycle.h"
 
-static JavaVM* graalVM;
-static JNIEnv *graalEnv;
-
 // Graal handles
 static jclass jGraalLifecycleClass;
 static jmethodID jGraalSetLifecycleEventMethod;
@@ -39,25 +36,22 @@ static void initializeGraalHandles(JNIEnv* env) {
     jGraalSetLifecycleEventMethod = (*env)->GetStaticMethodID(env, jGraalLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
 }
 
-static void initializeDalvikHandles() {
-    androidVM = substrateGetAndroidVM();
+static void initializeUtilDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
     jclass jLifecycleServiceClass = substrateGetLifecycleServiceClass();
 
-    if ((*androidVM)->GetEnv(androidVM, (void **)&androidEnv, JNI_VERSION_1_6) != JNI_OK) {
-        ATTACH_LOG_FINE("initializeDalvikHandles, thread is not linked to JNIEnv, doing that now.\n");
-        (*androidVM)->AttachCurrentThread(androidVM, (void **)&androidEnv, NULL);
-    }
-    jmethodID jLifecycleServiceInitMethod = (*androidEnv)->GetMethodID(androidEnv, jLifecycleServiceClass, "<init>", "()V");
-    jthrowable t = (*androidEnv)->ExceptionOccurred(androidEnv);
+    ATTACH_DALVIK();
+    jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "()V");
+    jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
     if (t) {
         ATTACH_LOG_INFO("EXCEPTION occurred when dealing with dalvik handles\n");
-        (*androidEnv)->ExceptionClear(androidEnv);
+        (*dalvikEnv)->ExceptionClear(dalvikEnv);
     }
 
-    jobject jObj = (*androidEnv)->NewObject(androidEnv, jLifecycleServiceClass, jLifecycleServiceInitMethod);
-    jobject jDalvikLifecycleService = (jobject)(*androidEnv)->NewGlobalRef(androidEnv, jObj);
+    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jLifecycleServiceClass, jLifecycleServiceInitMethod);
+    jobject jDalvikLifecycleService = (jobject)(*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
+    DETACH_DALVIK();
 }
 
 //////////////////////////
@@ -68,14 +62,14 @@ JNIEXPORT jint JNICALL
 JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
-    graalVM = vm;
+    JNIEnv* graalEnv;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Lifecycle from OnLoad");
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad");
     initializeGraalHandles(graalEnv);
-    initializeDalvikHandles();
+    initializeUtilDalvikHandles();
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad Done");
     return JNI_VERSION_1_8;
 #else
@@ -91,9 +85,10 @@ JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikLifecycleService_setLifecycleEventNative(JNIEnv *env, jobject service, jstring jevent) {
     const char *chars = (*env)->GetStringUTFChars(env, jevent, NULL);
     ATTACH_LOG_FINE("Native layer got new event: %s\n", chars);
-    (*graalVM)->AttachCurrentThread(graalVM, (void **)&graalEnv, NULL);
+    ATTACH_GRAAL();
     jstring jchars = (*graalEnv)->NewStringUTF(graalEnv, chars);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalLifecycleClass, jGraalSetLifecycleEventMethod, jchars);
-    (*env)->ReleaseStringUTFChars(env, jevent, chars);
     (*graalEnv)->DeleteLocalRef(graalEnv, jchars);
+    DETACH_GRAAL();
+    (*env)->ReleaseStringUTFChars(env, jevent, chars);
 }
