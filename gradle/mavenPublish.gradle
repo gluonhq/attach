@@ -81,7 +81,7 @@ publishing {
             pom {
                 name = "Gluon Attach (${project.name})"
                 description = "API for accessing ${project.name} features"
-                url = 'https://gluonhq.com/products/mobile/'
+                url = 'https://github.com/gluonhq/attach/'
 
                 developers {
                     developer {
