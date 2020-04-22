@@ -34,8 +34,9 @@ subprojects {
 }
 
 nexusStaging {
+    packageGroup = 'com.gluonhq'
     username = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : ''
     password = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''
     numberOfRetries = 30
-    delayBetweenRetriesInMillis = 3000
+    delayBetweenRetriesInMillis = 5000
 }
