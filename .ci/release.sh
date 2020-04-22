@@ -15,7 +15,7 @@ if [[ ! -s secring.gpg ]]
 fi
 
 # Release artifacts
-./gradlew publish closeAndReleaseRepository -i -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD -Psigning.keyId=$GPG_KEYNAME -Psigning.password=$GPG_PASSPHRASE -Psigning.secretKeyRingFile=secring.gpg
+./gradlew publish closeAndReleaseRepository -i -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD -Psigning.keyId=$GPG_KEYNAME -Psigning.password=$GPG_PASSPHRASE -Psigning.secretKeyRingFile=$TRAVIS_BUILD_DIR/secring.gpg
 
 # Update version by 1
 newVersion=${TRAVIS_TAG%.*}.$((${TRAVIS_TAG##*.} + 1))
