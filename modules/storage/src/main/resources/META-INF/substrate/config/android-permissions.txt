@@ -1,0 +1,2 @@
+<uses-permission a:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission a:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

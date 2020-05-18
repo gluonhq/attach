@@ -1,0 +1,2 @@
+<uses-permission a:name="android.permission.BLUETOOTH"/>
+<uses-permission a:name="android.permission.BLUETOOTH_ADMIN"/>

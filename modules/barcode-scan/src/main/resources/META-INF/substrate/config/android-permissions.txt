@@ -1,0 +1,1 @@
+<uses-permission a:name="android.permission.CAMERA"/>
