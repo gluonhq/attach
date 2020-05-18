@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.storage.impl.DesktopStorageService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
