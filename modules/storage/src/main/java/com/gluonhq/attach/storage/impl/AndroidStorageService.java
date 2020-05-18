@@ -31,11 +31,24 @@ import com.gluonhq.attach.storage.StorageService;
 import com.gluonhq.attach.util.Constants;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AndroidStorageService implements StorageService {
+
+    private static final Logger LOG = Logger.getLogger(AndroidStorageService.class.getName());
+    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
+
+    static {
+        System.loadLibrary("Storage");
+    }
+
+    public AndroidStorageService() {
+        if (debug) {
+            enableDebug();
+        }
+    }
 
     @Override
     public Optional<File> getPrivateStorage() {
@@ -47,35 +60,39 @@ public class AndroidStorageService implements StorageService {
             }
             return Optional.of(f);
         } catch (Exception e) {
+            LOG.log(Level.WARNING, "Error getting private storage: " + e.getMessage());
             return Optional.empty();
         }
     }
 
     @Override
     public Optional<File> getPublicStorage(String subdirectory) {
+        if (subdirectory == null) {
+            return Optional.empty();
+        }
         try {
-            String home = System.getProperty("user.home");
-            File f;
-            if (null == subdirectory) {
-                f = new File(home);
-            } else {
-                f = new File(home, subdirectory);
-            }
-            return Optional.of(f);
+            String storage = publicStorage(subdirectory);
+            return Optional.of(new File (storage));
         } catch (Exception e) {
+            LOG.log(Level.WARNING, "Error getting public storage: " + e.getMessage());
             return Optional.empty();
         }
     }
 
     @Override
     public boolean isExternalStorageWritable() {
-        return true;
+        return externalStorageWritable();
     }
 
     @Override
     public boolean isExternalStorageReadable() {
-        return true;
+        return externalStorageReadable();
     }
 
-}
+    // native
+    private static native void enableDebug();
+    private native static String publicStorage(String subdirectory);
+    private native static boolean externalStorageWritable();
+    private native static boolean externalStorageReadable();
 
+}
