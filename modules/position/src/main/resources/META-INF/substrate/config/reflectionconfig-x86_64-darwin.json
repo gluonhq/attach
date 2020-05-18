@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.position.impl.DesktopPositionService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

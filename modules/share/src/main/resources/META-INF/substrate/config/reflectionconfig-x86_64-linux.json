@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.share.impl.DesktopShareService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]
