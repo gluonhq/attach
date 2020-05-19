@@ -37,7 +37,7 @@ public class AndroidDeviceService implements DeviceService {
     static {
         System.loadLibrary("Device");
     }
-    private static final AndroidDeviceInfo deviceInfo = getDeviceInfo();
+    private static final DeviceInfo deviceInfo = getDeviceInfo();
 
     public AndroidDeviceService() {
         if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
@@ -76,5 +76,5 @@ public class AndroidDeviceService implements DeviceService {
     }
 
     private static native void enableDebug();
-    private static native AndroidDeviceInfo getDeviceInfo();
+    private static native DeviceInfo getDeviceInfo();
 }

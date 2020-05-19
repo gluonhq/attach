@@ -26,7 +26,7 @@
  */
 package com.gluonhq.attach.device.impl;
 
-public class AndroidDeviceInfo {
+public class DeviceInfo {
 
     private String model;
     private String uuid;
@@ -35,7 +35,7 @@ public class AndroidDeviceInfo {
     private String serial;
     private boolean wearable;
 
-    public AndroidDeviceInfo(String model, String uuid, String platform, String version, String serial, boolean wearable) {
+    public DeviceInfo(String model, String uuid, String platform, String version, String serial, boolean wearable) {
         this.model = model;
         this.uuid = uuid;
         this.platform = platform;

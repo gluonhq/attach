@@ -29,8 +29,8 @@
 static jboolean debugDevice;
 
 // Graal handles
-static jclass jGraalAndroidDeviceInfoClass;
-static jmethodID jGraalAndroidDeviceInfoInitMethod;
+static jclass jGraalDeviceInfoClass;
+static jmethodID jGraalDeviceInfoInitMethod;
 
 // Dalvik handles
 static jobject jDalvikDeviceService;
@@ -43,8 +43,8 @@ static jmethodID jDeviceServiceGetSerial;
 static jmethodID jDeviceServiceIsWearable;
 
 static void initializeGraalHandles(JNIEnv* env) {
-    jGraalAndroidDeviceInfoClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/device/impl/AndroidDeviceInfo"));
-    jGraalAndroidDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalAndroidDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
+    jGraalDeviceInfoClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/device/impl/DeviceInfo"));
+    jGraalDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
 }
 
 static void initializeDeviceDalvikHandles() {
@@ -103,7 +103,7 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
 (JNIEnv *env, jclass jClass)
 {
     if (debugDevice) {
-        ATTACH_LOG_FINE("Retrieving AndroidDeviceInfo\n");
+        ATTACH_LOG_FINE("Retrieving DeviceInfo\n");
     }
 
     ATTACH_DALVIK();
@@ -121,7 +121,7 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     DETACH_DALVIK();
 
     if (debugDevice) {
-        ATTACH_LOG_FINE("Retrieved AndroidDeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, serial=%s, wearable=%d\n",
+        ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, serial=%s, wearable=%d\n",
                 responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, responseSerialChars, wearable);
     }
 
@@ -130,7 +130,7 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     jstring responsePlatformString = (*env)->NewStringUTF(env, responsePlatformChars);
     jstring responseVersionString = (*env)->NewStringUTF(env, responseVersionChars);
     jstring responseSerialString = (*env)->NewStringUTF(env, responseSerialChars);
-    jobject jtmpobj = (*env)->NewObject(env, jGraalAndroidDeviceInfoClass, jGraalAndroidDeviceInfoInitMethod,
+    jobject jtmpobj = (*env)->NewObject(env, jGraalDeviceInfoClass, jGraalDeviceInfoInitMethod,
             responseModelString, responseUuidString, responsePlatformString, responseVersionString,
             responseSerialString, wearable);
     return (*env)->NewGlobalRef(env, jtmpobj);
