@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.cache.impl.DesktopCacheService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
