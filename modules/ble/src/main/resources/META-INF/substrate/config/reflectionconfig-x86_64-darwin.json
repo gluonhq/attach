@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.ble.impl.DesktopBleService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

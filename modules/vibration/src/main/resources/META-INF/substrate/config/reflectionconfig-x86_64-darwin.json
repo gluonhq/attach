@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.vibration.impl.DesktopVibrationService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

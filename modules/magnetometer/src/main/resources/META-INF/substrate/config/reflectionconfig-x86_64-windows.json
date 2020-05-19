@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.magnetometer.impl.DesktopMagnetometerService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

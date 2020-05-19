@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.browser.impl.DesktopBrowserService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

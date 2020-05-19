@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.video.impl.DesktopVideoService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]
