@@ -33,7 +33,6 @@ jmethodID jGraalSetLocationMethod;
 
 // Dalvik handles
 static jobject jDalvikPositionService;
-jmethodID jDalvikPositionServiceEnableDebug;
 jmethodID jDalvikPositionServiceStartMethod;
 jmethodID jDalvikPositionServiceStopMethod;
 
@@ -48,7 +47,6 @@ static void initializeDalvikHandles() {
     jclass jPositionServiceClass = substrateGetPositionServiceClass();
     ATTACH_DALVIK();
     jmethodID jPositionServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jDalvikPositionServiceEnableDebug = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "enableDebug", "()V");
     jDalvikPositionServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "start", "(JFZ)V");
     jDalvikPositionServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "stop", "()V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
@@ -65,12 +63,6 @@ static void initializeDalvikHandles() {
 ///////////////////////////
 // From native to dalvik //
 ///////////////////////////
-
-void enableDalvikDebug() {
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikPositionService, jDalvikPositionServiceEnableDebug);
-    DETACH_DALVIK();
-}
 
 void startDalvikObserving(jlong jInterval, jfloat jDistance, jboolean jBackground) {
     ATTACH_DALVIK();
@@ -105,11 +97,6 @@ JNI_OnLoad_Position(JavaVM *vm, void *reserved)
 #else
     #error Error: Java 8+ SDK is required to compile Attach
 #endif
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_position_impl_AndroidPositionService_enableDebug
-(JNIEnv *env, jclass jClass) {
-    enableDalvikDebug();
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_position_impl_AndroidPositionService_startObserver

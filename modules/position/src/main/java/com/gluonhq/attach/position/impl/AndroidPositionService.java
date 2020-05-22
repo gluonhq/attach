@@ -62,9 +62,6 @@ public class AndroidPositionService implements PositionService {
     private static EarthGravitationalModel gh;
 
     public AndroidPositionService() {
-        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
-            enableDebug();
-        }
         position = new ReadOnlyObjectWrapper<>();
 
         LifecycleService.create().ifPresent(l -> {
@@ -122,7 +119,6 @@ public class AndroidPositionService implements PositionService {
         return positionProperty().get();
     }
 
-    private static native void enableDebug();
     private static native void startObserver(long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
     private static native void stopObserver();
 
