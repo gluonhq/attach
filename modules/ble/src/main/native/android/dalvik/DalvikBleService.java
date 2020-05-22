@@ -63,11 +63,11 @@ import java.util.UUID;
 
 public class DalvikBleService  {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
     private final Activity activity;
     private static final Logger LOG = Logger.getLogger(DalvikBleService.class.getName());
     private BluetoothLeScanner scanner;
-    private boolean debug = false;
+    private final boolean debug;
 
     private final static int REQUEST_ENABLE_BT = 1001;
     private final List<String> uuids = new LinkedList<>();
@@ -80,11 +80,8 @@ public class DalvikBleService  {
 
     public DalvikBleService(Activity a) {
         this.activity = a;
+        this.debug = Util.isDebug();
         init();
-    }
-
-    public void enableDebug() {
-        debug = true;
     }
 
     private void init() {
@@ -344,7 +341,7 @@ public class DalvikBleService  {
         }
         BleGattCallback bleGattCallback;
         if (!gatts.containsKey(address)) {
-            bleGattCallback = new BleGattCallback(activity, devices.get(address), debug);
+            bleGattCallback = new BleGattCallback(activity, devices.get(address));
             if (debug) {
                 Log.v(TAG, "Create new BleGattCallback: " + bleGattCallback);
             }

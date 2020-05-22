@@ -60,22 +60,17 @@ public class AndroidBleService implements BleService {
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
     private static final List<String> deviceNames = new LinkedList<>();
     private static final List<String> profileNames = new LinkedList<>();
-    private static boolean debug;
+    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     private static Consumer<ScanDetection> callback;
 
     static {
         LOG.fine("Loading AndroidBleService");
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Ble");
-        LOG.fine("Loaded AndroidBleService");
     }
 
     public AndroidBleService() {
         LOG.fine("Created AndroidBleService instance");
-        if (debug) {
-            enableDebug();
-        }
     }
 
     // BLE BEACONS
@@ -181,7 +176,6 @@ public class AndroidBleService implements BleService {
     private static native void stopObserver();
     private static native void startBroadcast(String uuid, int major, int minor, String id);
     private static native void stopBroadcast();
-    private static native void enableDebug();
 
     // native BLE Devices
     private static native void startScanningPeripherals();
