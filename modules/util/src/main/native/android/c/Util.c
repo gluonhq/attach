@@ -86,7 +86,7 @@ JavaVM* getGraalVM() {
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_Debug_enableDebug
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_AndroidDebug_enableDebug
 (JNIEnv *env, jclass jClass)
 {
     ATTACH_LOG_FINE("Enabling debug for all Attach services");
