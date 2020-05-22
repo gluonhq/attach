@@ -31,14 +31,16 @@ import android.util.Log;
 
 public class DalvikLifecycleService {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     public DalvikLifecycleService() {
 
         Util.setLifecycleEventHandler(new LifecycleEventHandler() {
             @Override
             public void lifecycleEvent(String event) {
-                Log.v(TAG, "DalvikLifecycleService::lifecycleEvent " + event);
+                if (Util.isDebug()) {
+                    Log.v(TAG, "DalvikLifecycleService::lifecycleEvent " + event);
+                }
                 setLifecycleEventNative(event);
             }
         });
