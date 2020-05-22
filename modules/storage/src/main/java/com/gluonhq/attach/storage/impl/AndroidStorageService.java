@@ -38,15 +38,14 @@ import java.util.logging.Logger;
 public class AndroidStorageService implements StorageService {
 
     private static final Logger LOG = Logger.getLogger(AndroidStorageService.class.getName());
-    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     static {
         System.loadLibrary("Storage");
     }
 
     public AndroidStorageService() {
-        if (debug) {
-            enableDebug();
+        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
+            LOG.log(Level.INFO, "AndroidStorageService <init>");
         }
     }
 
@@ -90,7 +89,6 @@ public class AndroidStorageService implements StorageService {
     }
 
     // native
-    private static native void enableDebug();
     private native static String publicStorage(String subdirectory);
     private native static boolean externalStorageWritable();
     private native static boolean externalStorageReadable();

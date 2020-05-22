@@ -28,18 +28,14 @@
 #include "Storage.h"
 
 static jobject jDalvikStorageService;
-static jmethodID jStorageServiceEnableDebug;
 static jmethodID jStorageServicePublicStorage;
 static jmethodID jStorageServiceStorageWritable;
 static jmethodID jStorageServiceStorageReadable;
-
-static jboolean debugStorage;
 
 static void initializeStorageDalvikHandles() {
     ATTACH_DALVIK();
     jclass jStorageServiceClass = substrateGetStorageServiceClass();
     jmethodID jStorageServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jStorageServiceEnableDebug = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "enableDebug", "()V");
     jStorageServicePublicStorage = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "getPublicStorage", "(Ljava/lang/String;)Ljava/lang/String;");
     jStorageServiceStorageWritable = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "isExternalStorageWritable", "()Z");
     jStorageServiceStorageReadable = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "isExternalStorageReadable", "()Z");
@@ -75,27 +71,18 @@ JNI_OnLoad_Storage(JavaVM *vm, void *reserved)
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_storage_impl_AndroidStorageService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugStorage = JNI_TRUE;
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStorageService, jStorageServiceEnableDebug);
-    DETACH_DALVIK();
-}
-
 JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_AndroidStorageService_publicStorage
 (JNIEnv *env, jclass jClass, jstring jdirectory)
 {
     const char *directoryChars = (*env)->GetStringUTFChars(env, jdirectory, NULL);
     ATTACH_DALVIK();
     jstring ddirectory = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
-    if (debugStorage) {
+    if (debugUtil) {
         ATTACH_LOG_FINE("Retrieving external storage for = %s\n", directoryChars);
     }
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikStorageService, jStorageServicePublicStorage, ddirectory);
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
-    if (debugStorage) {
+    if (debugUtil) {
         ATTACH_LOG_FINE("Retrieved external storage at = %s\n", answerChars);
     }
     DETACH_DALVIK();
