@@ -29,11 +29,11 @@ package com.gluonhq.attach.util.impl;
 
 import static com.gluonhq.attach.util.Constants.ATTACH_DEBUG;
 
-class Debug {
+public class AndroidDebug {
 
     public static final boolean DEBUG = Boolean.getBoolean(ATTACH_DEBUG);
 
-    static  {
+    public static void init() {
         if (DEBUG) {
             enableDebug();
         }

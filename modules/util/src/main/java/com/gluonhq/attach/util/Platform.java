@@ -27,6 +27,8 @@
  */
 package com.gluonhq.attach.util;
 
+import com.gluonhq.attach.util.impl.AndroidDebug;
+
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -77,6 +79,7 @@ public enum Platform {
 
         if (isAndroid()) {
             System.loadLibrary("Util");
+            AndroidDebug.init();
         }
     }
 
