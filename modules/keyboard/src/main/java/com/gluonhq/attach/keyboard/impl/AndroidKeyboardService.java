@@ -45,21 +45,13 @@ public class AndroidKeyboardService implements KeyboardService {
 
     private static final Logger LOG = Logger.getLogger(AndroidKeyboardService.class.getName());
     private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
-    private static boolean debug;
+    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     static {
-        if (Platform.isFxApplicationThread()) {
-            System.loadLibrary("Keyboard");
-        } else {
-            Platform.runLater(() -> System.loadLibrary("Keyboard"));
-        }
+        System.loadLibrary("Keyboard");
     }
 
     public AndroidKeyboardService() {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
-        if (debug) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -101,9 +93,6 @@ public class AndroidKeyboardService implements KeyboardService {
             transition.playFromStart();
         }
     }
-
-    // native
-    private static native void enableDebug();
 
     // callback
     private static void notifyVisibleHeight(float height) {

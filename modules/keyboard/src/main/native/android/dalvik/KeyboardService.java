@@ -32,15 +32,22 @@ import android.util.Log;
 
 class KeyboardService {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
+
+    private final boolean debug;
 
     public KeyboardService(Activity activity) {
 
-        Log.v(TAG, "KeyboardService <init> for activity: " + activity);
+        debug = Util.isDebug();
+        if (debug) {
+            Log.v(TAG, "KeyboardService <init> for activity: " + activity);
+        }
         new KeyboardView(activity, new KeyboardHeightListener() {
             @Override
             public void onHeightChanged(float keyboardHeight) {
-                Log.v(TAG, "Keyboard service: height = " + keyboardHeight);
+                if (debug) {
+                    Log.v(TAG, "Keyboard service: height = " + keyboardHeight);
+                }
                 nativeDispatchKeyboardHeight(keyboardHeight);
             }
         });
