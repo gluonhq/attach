@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.util.impl;
 
-#include <android/native_window_jni.h>
-#include "AttachMacrosAndroid.h"
+import static com.gluonhq.attach.util.Constants.ATTACH_DEBUG;
 
-JavaVM* getGraalVM();
+class Debug {
 
-jclass substrateGetUtilClass();
+    public static final boolean DEBUG = Boolean.getBoolean(ATTACH_DEBUG);
 
-jboolean debugUtil;
+    static  {
+        if (DEBUG) {
+            enableDebug();
+        }
+    }
+
+    private static native void enableDebug();
+}

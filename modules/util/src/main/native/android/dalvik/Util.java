@@ -32,13 +32,22 @@ import android.util.Log;
 
 public class Util {
 
-    private static final String TAG = "GluonAttach";
+    public static final String TAG = "GluonAttach";
 
     private static IntentHandler intentHandler;
     private static LifecycleEventHandler lifecycleEventHandler;
+    private static boolean debug = false;
 
     public Util() {
         Log.v(TAG, "Util <init>");
+    }
+
+    private static void enableDebug() {
+        debug = true;
+    }
+
+    public static boolean isDebug() {
+        return debug;
     }
 
     public static void setOnActivityResultHandler(IntentHandler handler) {
