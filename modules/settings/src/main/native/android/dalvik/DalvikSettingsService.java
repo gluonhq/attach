@@ -34,17 +34,14 @@ import android.util.Log;
 
 public class DalvikSettingsService  {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     private final SharedPreferences settings;
-    private boolean debug = false;
+    private final boolean debug;
 
     public DalvikSettingsService(Activity activity) {
         settings = activity.getSharedPreferences("settings", Context.MODE_PRIVATE);
-    }
-
-    public void enableDebug() {
-        debug = true;
+        debug = Util.isDebug();
     }
 
     private void store(String key, String value) {
