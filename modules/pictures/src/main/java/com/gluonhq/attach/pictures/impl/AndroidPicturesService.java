@@ -28,7 +28,6 @@
 package com.gluonhq.attach.pictures.impl;
 
 import com.gluonhq.attach.pictures.PicturesService;
-import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -85,7 +84,6 @@ import java.util.logging.Logger;
 public class AndroidPicturesService implements PicturesService {
 
     private static final Logger LOG = Logger.getLogger(AndroidPicturesService.class.getName());
-    private static final boolean DEBUG = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     static {
         System.loadLibrary("Pictures");
@@ -95,9 +93,6 @@ public class AndroidPicturesService implements PicturesService {
     private static ObjectProperty<Image> result;
 
     public AndroidPicturesService() {
-        if (DEBUG) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -130,7 +125,6 @@ public class AndroidPicturesService implements PicturesService {
     }
 
     // native
-    private static native void enableDebug();
     public static native void takePicture(boolean savePhoto);
     public static native void selectPicture();
 
