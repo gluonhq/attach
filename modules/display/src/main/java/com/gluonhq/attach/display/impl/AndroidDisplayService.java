@@ -42,10 +42,9 @@ public class AndroidDisplayService implements DisplayService {
 
     private static final Logger LOG = Logger.getLogger(AndroidDisplayService.class.getName());
 
-    private static boolean debug;
+    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     static {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Display");
     }
 
