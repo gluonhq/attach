@@ -37,10 +37,9 @@ public class AndroidBrowserService implements BrowserService {
 
     private static final Logger LOG = Logger.getLogger(AndroidBrowserService.class.getName());
 
-    private static boolean debug;
+    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
     static {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Browser");
     }
 

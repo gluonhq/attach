@@ -34,12 +34,14 @@ import android.util.Log;
 
 public class DalvikBrowserService {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     private final Activity activity;
+    private final boolean debug;
 
     public DalvikBrowserService(Activity activity) {
         this.activity = activity;
+        this.debug = Util.isDebug();
     }
 
     private boolean launchURL(String url) {
@@ -53,7 +55,9 @@ public class DalvikBrowserService {
             return false;
         }
 
-        Log.v(TAG, "Launching URL: " + url);
+        if (debug) {
+            Log.v(TAG, "Launching URL: " + url);
+        }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         if (browserIntent.resolveActivity(activity.getPackageManager()) == null) {
             Log.e(TAG, "There is no activity to handle the browser intent");
