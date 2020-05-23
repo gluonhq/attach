@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_AndroidDebug_enableDebu
     ATTACH_LOG_FINE("Enabling debug for all Attach services");
     debugUtil = JNI_TRUE;
     ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jUtilClass, jUtilEnableDebugMethod);
+    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jUtilClass, jUtilEnableDebugMethod);
     DETACH_DALVIK();
 }
 
