@@ -77,12 +77,12 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_AndroidStorageSer
     const char *directoryChars = (*env)->GetStringUTFChars(env, jdirectory, NULL);
     ATTACH_DALVIK();
     jstring ddirectory = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
-    if (debugUtil) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieving external storage for = %s\n", directoryChars);
     }
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikStorageService, jStorageServicePublicStorage, ddirectory);
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
-    if (debugUtil) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieved external storage at = %s\n", answerChars);
     }
     DETACH_DALVIK();

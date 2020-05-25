@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesServ
 ///////////////////////////
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring path, jint rotate) {
-    if (debugUtil) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Send Photo File\n");
     }
     const char *pathChars = (*env)->GetStringUTFChars(env, path, NULL);
