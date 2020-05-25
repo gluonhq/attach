@@ -26,7 +26,6 @@
  */package com.gluonhq.attach.device.impl;
 
 import com.gluonhq.attach.device.DeviceService;
-import com.gluonhq.attach.util.Constants;
 
 /**
  * An implementation of the {@link DeviceService} for the Android
@@ -40,9 +39,6 @@ public class AndroidDeviceService implements DeviceService {
     private static final DeviceInfo deviceInfo = getDeviceInfo();
 
     public AndroidDeviceService() {
-        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -70,6 +66,5 @@ public class AndroidDeviceService implements DeviceService {
         return deviceInfo.isWearable(); 
     }
 
-    private static native void enableDebug();
     private static native DeviceInfo getDeviceInfo();
 }

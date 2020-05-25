@@ -27,14 +27,12 @@
  */
 package com.gluonhq.attach.util.impl;
 
-import static com.gluonhq.attach.util.Constants.ATTACH_DEBUG;
+import com.gluonhq.attach.util.Util;
 
 public class AndroidDebug {
 
-    public static final boolean DEBUG = Boolean.getBoolean(ATTACH_DEBUG);
-
     public static void init() {
-        if (DEBUG) {
+        if (Util.DEBUG) {
             enableDebug();
         }
     }

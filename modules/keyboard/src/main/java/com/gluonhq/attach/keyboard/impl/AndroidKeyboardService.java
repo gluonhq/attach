@@ -28,7 +28,7 @@
 package com.gluonhq.attach.keyboard.impl;
 
 import com.gluonhq.attach.keyboard.KeyboardService;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -45,7 +45,7 @@ public class AndroidKeyboardService implements KeyboardService {
 
     private static final Logger LOG = Logger.getLogger(AndroidKeyboardService.class.getName());
     private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
-    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
+    private static final boolean debug = Util.DEBUG;
 
     static {
         System.loadLibrary("Keyboard");

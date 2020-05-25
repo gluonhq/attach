@@ -28,7 +28,7 @@
 package com.gluonhq.attach.display.impl;
 
 import com.gluonhq.attach.display.DisplayService;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Dimension2D;
@@ -42,7 +42,7 @@ public class AndroidDisplayService implements DisplayService {
 
     private static final Logger LOG = Logger.getLogger(AndroidDisplayService.class.getName());
 
-    private static final boolean debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
+    private static final boolean debug = Util.DEBUG;
 
     static {
         System.loadLibrary("Display");

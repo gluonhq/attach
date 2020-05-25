@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,39 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.browser.impl;
+package com.gluonhq.attach.util;
 
-import com.gluonhq.attach.browser.BrowserService;
-import com.gluonhq.attach.util.Util;
+public class Util {
 
-import java.io.IOException;
-import java.util.logging.Logger;
+    public static final boolean DEBUG = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
-public class AndroidBrowserService implements BrowserService {
-
-    private static final Logger LOG = Logger.getLogger(AndroidBrowserService.class.getName());
-
-    static {
-        System.loadLibrary("Browser");
-    }
-
-    public AndroidBrowserService() {
-    }
-
-    @Override
-    public void launchExternalBrowser(String url) throws IOException {
-        if (Util.DEBUG) {
-            LOG.info("Launch URL: " + url);
-        }
-        if (url == null || url.isEmpty()) {
-            LOG.warning("Invalid URL");
-            return;
-        }
-        if (!launchURL(url)) {
-            throw new IOException("Error launching url " + url);
-        }
-    }
-
-    // native
-    private native boolean launchURL(String url);
 }

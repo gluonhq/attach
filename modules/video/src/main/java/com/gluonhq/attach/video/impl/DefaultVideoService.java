@@ -29,6 +29,7 @@ package com.gluonhq.attach.video.impl;
 
 import com.gluonhq.attach.util.Services;
 import com.gluonhq.attach.storage.StorageService;
+import com.gluonhq.attach.util.Util;
 import com.gluonhq.attach.video.VideoService;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +47,6 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.gluonhq.attach.util.Constants;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -54,7 +54,7 @@ import javafx.collections.ObservableList;
 public abstract class DefaultVideoService implements VideoService {
 
     private static final Logger LOG = Logger.getLogger(DefaultVideoService.class.getName());
-    protected boolean debug;
+    protected final boolean debug = Util.DEBUG;
 
     private final ExecutorService exec = Executors.newFixedThreadPool(3);
 
@@ -63,10 +63,6 @@ public abstract class DefaultVideoService implements VideoService {
     private final File assetsFolder;
 
     public DefaultVideoService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            debug = true;
-        }
-
         playlist = FXCollections.observableArrayList();
         playlistMap = new HashMap<>();
 

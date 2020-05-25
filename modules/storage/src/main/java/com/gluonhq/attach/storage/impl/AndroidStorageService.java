@@ -28,7 +28,7 @@
 package com.gluonhq.attach.storage.impl;
 
 import com.gluonhq.attach.storage.StorageService;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 
 import java.io.File;
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class AndroidStorageService implements StorageService {
     }
 
     public AndroidStorageService() {
-        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
+        if (Util.DEBUG) {
             LOG.log(Level.INFO, "AndroidStorageService <init>");
         }
     }
