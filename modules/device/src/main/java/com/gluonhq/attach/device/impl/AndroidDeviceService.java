@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,58 +23,53 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-package com.gluonhq.attach.device.impl;
+ */package com.gluonhq.attach.device.impl;
 
 import com.gluonhq.attach.device.DeviceService;
+import com.gluonhq.attach.util.Constants;
 
-public class IOSDeviceService implements DeviceService {
+/**
+ * An implementation of the {@link DeviceService} for the Android
+ * platform.
+ */
+public class AndroidDeviceService implements DeviceService {
 
     static {
         System.loadLibrary("Device");
-        initDevice();
     }
-    
-    private static String model;
-    private static String uuid;
-    private static String platform;
-    private static String version;
+    private static final DeviceInfo deviceInfo = getDeviceInfo();
+
+    public AndroidDeviceService() {
+        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
+            enableDebug();
+        }
+    }
 
     @Override
     public String getModel() {
-        return model;
+        return deviceInfo.getModel();
     }
 
     @Override
     public String getUuid() {
-        return uuid;
+        return deviceInfo.getUuid();
     }
 
     @Override
     public String getPlatform() {
-        return platform;
+        return deviceInfo.getPlatform();
     }
 
     @Override
     public String getVersion() {
-        return version;
+        return deviceInfo.getVersion();
     }
 
     @Override
     public boolean isWearable() {
-        // TODO: Find out if iOS device is wearable
-        return false; 
+        return deviceInfo.isWearable(); 
     }
-    
-    // native
-    private native static void initDevice();
-    
-    // callback
-    private static void sendDeviceData(String model, String uuid, String platform, String version) {
-        IOSDeviceService.model = model;
-        IOSDeviceService.uuid = uuid;
-        IOSDeviceService.platform = platform;
-        IOSDeviceService.version = version;
-    }
-    
+
+    private static native void enableDebug();
+    private static native DeviceInfo getDeviceInfo();
 }

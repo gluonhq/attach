@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.device.impl.AndroidDeviceService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

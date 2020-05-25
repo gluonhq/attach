@@ -9,6 +9,13 @@ build/
 # Netbeans
 /.nb-gradle/
 
+# VS Code
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
 # Compiled class file
 *.class
 
