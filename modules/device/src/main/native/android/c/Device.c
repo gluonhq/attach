@@ -39,12 +39,11 @@ static jmethodID jDeviceServiceGetModel;
 static jmethodID jDeviceServiceGetUuid;
 static jmethodID jDeviceServiceGetPlatform;
 static jmethodID jDeviceServiceGetVersion;
-static jmethodID jDeviceServiceGetSerial;
 static jmethodID jDeviceServiceIsWearable;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalDeviceInfoClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/device/impl/DeviceInfo"));
-    jGraalDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
+    jGraalDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
 }
 
 static void initializeDeviceDalvikHandles() {
@@ -56,7 +55,6 @@ static void initializeDeviceDalvikHandles() {
     jDeviceServiceGetUuid = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getUuid", "()Ljava/lang/String;");
     jDeviceServiceGetPlatform = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getPlatform", "()Ljava/lang/String;");
     jDeviceServiceGetVersion = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getVersion", "()Ljava/lang/String;");
-    jDeviceServiceGetSerial = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getSerial", "()Ljava/lang/String;");
     jDeviceServiceIsWearable = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "isWearable", "()Z");
 
     jobject jActivity = substrateGetActivity();
@@ -115,23 +113,20 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     const char *responsePlatformChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, platform, 0);
     jstring version = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceGetVersion);
     const char *responseVersionChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, version, 0);
-    jstring serial = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceGetSerial);
-    const char *responseSerialChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, serial, 0);
     jboolean wearable = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceIsWearable);
     DETACH_DALVIK();
 
     if (debugDevice) {
-        ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, serial=%s, wearable=%d\n",
-                responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, responseSerialChars, wearable);
+        ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, wearable=%d\n",
+                responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, wearable);
     }
 
     jstring responseModelString = (*env)->NewStringUTF(env, responseModelChars);
     jstring responseUuidString = (*env)->NewStringUTF(env, responseUuidChars);
     jstring responsePlatformString = (*env)->NewStringUTF(env, responsePlatformChars);
     jstring responseVersionString = (*env)->NewStringUTF(env, responseVersionChars);
-    jstring responseSerialString = (*env)->NewStringUTF(env, responseSerialChars);
     jobject jtmpobj = (*env)->NewObject(env, jGraalDeviceInfoClass, jGraalDeviceInfoInitMethod,
             responseModelString, responseUuidString, responsePlatformString, responseVersionString,
-            responseSerialString, wearable);
+            wearable);
     return (*env)->NewGlobalRef(env, jtmpobj);
 }

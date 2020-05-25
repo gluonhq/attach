@@ -66,11 +66,6 @@ public class AndroidDeviceService implements DeviceService {
     }
 
     @Override
-    public String getSerial() {
-        return deviceInfo.getSerial();
-    }
-
-    @Override
     public boolean isWearable() {
         return deviceInfo.isWearable(); 
     }

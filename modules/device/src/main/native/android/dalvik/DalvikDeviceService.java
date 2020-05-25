@@ -84,10 +84,6 @@ public class DalvikDeviceService {
         return Build.VERSION.RELEASE + " (" + Build.VERSION.SDK_INT + ")";
     }
 
-    public String getSerial() {
-        return Build.SERIAL;
-    }
-
     public boolean isWearable() {
         return activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
     }

@@ -32,15 +32,13 @@ public class DeviceInfo {
     private String uuid;
     private String platform;
     private String version;
-    private String serial;
     private boolean wearable;
 
-    public DeviceInfo(String model, String uuid, String platform, String version, String serial, boolean wearable) {
+    public DeviceInfo(String model, String uuid, String platform, String version, boolean wearable) {
         this.model = model;
         this.uuid = uuid;
         this.platform = platform;
         this.version = version;
-        this.serial = serial;
         this.wearable = wearable;
     }
 
@@ -58,10 +56,6 @@ public class DeviceInfo {
 
     public String getVersion() {
         return version;
-    }
-
-    public String getSerial() {
-        return serial;
     }
 
     public boolean isWearable() {

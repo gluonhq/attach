@@ -2,7 +2,7 @@
   {
     "name" : "com.gluonhq.attach.device.impl.DeviceInfo",
     "methods":[
-      {"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean"] }
+      {"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean"] }
     ]
   }
 ]
