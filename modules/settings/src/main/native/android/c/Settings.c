@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     if (debugSettings) {
         ATTACH_LOG_FINE("Storing settings for = %s, %s\n", keyChars, valueChars);
     }
-    (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceStore, dkey, dvalue);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceStore, dkey, dvalue);
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jkey, keyChars);
     // (*env)->ReleaseStringUTFChars(env, jvalue, valueChars);
@@ -110,7 +110,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     if (debugSettings) {
         ATTACH_LOG_FINE("Remove settings for = %s\n", keyChars);
     }
-    (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRemove, dkey);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRemove, dkey);
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jkey, keyChars);
 }
