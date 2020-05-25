@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
-
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -27,55 +26,39 @@
  */
 package com.gluonhq.attach.device.impl;
 
-import com.gluonhq.attach.device.DeviceService;
+public class DeviceInfo {
 
-public class IOSDeviceService implements DeviceService {
+    private String model;
+    private String uuid;
+    private String platform;
+    private String version;
+    private boolean wearable;
 
-    static {
-        System.loadLibrary("Device");
-        initDevice();
+    public DeviceInfo(String model, String uuid, String platform, String version, boolean wearable) {
+        this.model = model;
+        this.uuid = uuid;
+        this.platform = platform;
+        this.version = version;
+        this.wearable = wearable;
     }
-    
-    private static String model;
-    private static String uuid;
-    private static String platform;
-    private static String version;
 
-    @Override
     public String getModel() {
         return model;
     }
 
-    @Override
     public String getUuid() {
         return uuid;
     }
 
-    @Override
     public String getPlatform() {
         return platform;
     }
 
-    @Override
     public String getVersion() {
         return version;
     }
 
-    @Override
     public boolean isWearable() {
-        // TODO: Find out if iOS device is wearable
-        return false; 
+        return wearable;
     }
-    
-    // native
-    private native static void initDevice();
-    
-    // callback
-    private static void sendDeviceData(String model, String uuid, String platform, String version) {
-        IOSDeviceService.model = model;
-        IOSDeviceService.uuid = uuid;
-        IOSDeviceService.platform = platform;
-        IOSDeviceService.version = version;
-    }
-    
 }

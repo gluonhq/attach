@@ -147,12 +147,13 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             def javaSources = [sourcesDir.listFiles(),
                                sourcesUtilDir.listFiles()].flatten()
 
+            def javac = "${System.getProperty("java.home")}/bin/javac"
             def javacArgs = ["-d", dalvikOutput,
                              "-source", "1.7", "-target", "1.7",
                              "-bootclasspath", androidJar,
                              javaSources].flatten()
             exec {
-                executable "javac"
+                executable javac
                 args javacArgs
                 workingDir sourcesDir
             }

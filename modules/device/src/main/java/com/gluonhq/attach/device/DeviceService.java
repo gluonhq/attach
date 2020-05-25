@@ -85,13 +85,6 @@ public interface DeviceService {
     String getVersion();
 
     /**
-     * Returns the device hardware serial number.
-     *
-     * @return The device serial.
-     */
-    String getSerial();
-
-    /**
      * Returns true if the device is a wearable
      *
      * @return true if the device is a wearable
