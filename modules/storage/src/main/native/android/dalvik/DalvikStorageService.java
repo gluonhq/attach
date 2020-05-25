@@ -38,7 +38,6 @@ public class DalvikStorageService {
 
     private final Activity activity;
     private final boolean debug;
-    private boolean verified;
 
     public DalvikStorageService(Activity activity) {
         this.activity = activity;
@@ -100,10 +99,7 @@ public class DalvikStorageService {
     }
 
     private boolean verifyPermissions() {
-        if (!verified) {
-            verified = Util.verifyPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        return verified;
+        return Util.verifyPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 }
