@@ -34,7 +34,6 @@ import com.gluonhq.attach.inappbilling.InAppBillingService;
 import com.gluonhq.attach.inappbilling.Product;
 import com.gluonhq.attach.inappbilling.ProductDetails;
 import com.gluonhq.attach.inappbilling.ProductOrder;
-import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -92,9 +91,6 @@ public class IOSInAppBillingService implements InAppBillingService {
 
     @Override
     public void initialize(String androidPublicKey, List<Product> registeredProducts) {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
         this.registeredProducts = registeredProducts;
     }
 
@@ -225,8 +221,7 @@ public class IOSInAppBillingService implements InAppBillingService {
     private static native void initInAppBilling(); // init IDs for java callbacks from native
     private static native void fetchProducts(String[] ids);
     private static native void purchaseProduct(String key, String id);
-    private static native void enableDebug();
-    
+
     // callbacks
     private static void setInAppReady(boolean value) {
         supported = value;

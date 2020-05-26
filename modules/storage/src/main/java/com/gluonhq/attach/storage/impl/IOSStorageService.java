@@ -28,7 +28,6 @@
 package com.gluonhq.attach.storage.impl;
 
 import com.gluonhq.attach.storage.StorageService;
-import com.gluonhq.attach.util.Constants;
 
 import java.io.File;
 import java.util.HashMap;
@@ -42,9 +41,6 @@ public class IOSStorageService implements StorageService {
     }
 
     public IOSStorageService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -97,5 +93,4 @@ public class IOSStorageService implements StorageService {
     
     private native String privateStorageURL();
     private native String publicStorageURL(String dir);
-    private static native void enableDebug();
 }

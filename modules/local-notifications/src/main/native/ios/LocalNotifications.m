@@ -45,7 +45,6 @@ JNI_OnLoad_LocalNotifications(JavaVM *vm, void *reserved)
 }
 
 static int notificationsInited = 0;
-BOOL debugLocalNotifications;
 
 // Notifications
 
@@ -112,16 +111,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
     
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalNotificationsService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugLocalNotifications = YES;
-}
-
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalNotificationsService_registerNotification
 (JNIEnv *env, jobject obj, jstring jTitle, jstring jText, jstring jIdentifier, jdouble seconds)
 {
-    if (debugLocalNotifications) {
+    if (debugAttach) {
         AttachLog(@"Register notification");
     }
     const jchar *charsTitle = (*env)->GetStringChars(env, jTitle, NULL);
@@ -157,7 +150,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
              if (error != nil) {
                  AttachLog(@"Something went wrong scheduling local notification: %@",error);
-             } else if (debugLocalNotifications) {
+             } else if (debugAttach) {
                  AttachLog(@"done register notifications for %@ with identifier %@", name, identifier);
              }
         }];
@@ -181,7 +174,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         localNotification.timeZone = [NSTimeZone defaultTimeZone];
         localNotification.category = @"sessionReminderCategory";
         [[UIApplication sharedApplication] scheduleLocalNotification: localNotification];
-        if (debugLocalNotifications) {
+        if (debugAttach) {
             AttachLog(@"done register notifications for %@ with identifier %@", name, identifier);
         }
        #pragma clang diagnostic pop
@@ -201,7 +194,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         NSArray *array = [NSArray arrayWithObjects:identifier, nil];
         [center removePendingNotificationRequestsWithIdentifiers:array];
-        if (debugLocalNotifications) {
+        if (debugAttach) {
             AttachLog(@"We did remove the notification with id: %@", identifier);
         }
     } else {
@@ -215,7 +208,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
             NSString *myId = [myUserInfo objectForKey:@"userId"];
             if ([myId isEqualToString:identifier]) {
                 [[UIApplication sharedApplication] cancelLocalNotification:candidate];
-                if (debugLocalNotifications) {
+                if (debugAttach) {
                     AttachLog(@"We did remove the notification with id: %@", identifier);
                 }
             }
@@ -242,7 +235,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugLocalNotifications) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

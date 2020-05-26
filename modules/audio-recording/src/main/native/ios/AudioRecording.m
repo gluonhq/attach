@@ -59,7 +59,6 @@ NSDateFormatter *format;
 
 double timerInterval = 20.0f;
 int counter = 0;
-BOOL debugAudioRecording;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecordingService_initAudioRecording
 (JNIEnv *env, jclass jClass)
@@ -119,19 +118,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecor
     return;   
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_audiorecording_impl_IOSAudioRecordingService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugAudioRecording = YES;
-}
-
 void sendRecordingStatus(BOOL recording) {
     AttachLog(@"Recording Status is %s", recording ? "true" : "false");
     (*env)->CallStaticVoidMethod(env, mat_jAudioRecordingServiceClass, mat_jAudioRecordingService_notifyRecordingStatus, recording ? JNI_TRUE : JNI_FALSE);
 }
 
 void sendRecordingChunk(NSString *fileName) {
-    if (debugAudioRecording) {
+    if (debugAttach) {
         AttachLog(@"Send chunk file: %@", fileName);
     }
     const char *chunkChars = [fileName UTF8String];
@@ -269,7 +262,7 @@ void sendRecordingChunk(NSString *fileName) {
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugAudioRecording) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

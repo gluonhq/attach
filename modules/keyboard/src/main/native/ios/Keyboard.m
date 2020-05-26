@@ -53,7 +53,6 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 // Keyboard
 Keyboard *_keyboard;
 CGFloat currentKeyboardHeight = 0.0f;
-BOOL debugKeyboard;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_startObserver
 (JNIEnv *env, jclass jClass)
@@ -77,12 +76,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_
 
     [_keyboard stopObserver];
     return;   
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugKeyboard = YES;
 }
 
 void sendVisibleHeight() {
@@ -121,7 +114,7 @@ void sendVisibleHeight() {
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugKeyboard)
+    if (debugAttach)
     {
         va_list args;
         va_start(args, format);

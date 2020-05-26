@@ -52,10 +52,7 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     }
 
     public IOSAugmentedRealityService() {
-        if (debug) {
-            enableDebug();
-        }
-    }    
+    }
     
     @Override
     public Availability checkAR(Runnable afterInstall) {
@@ -96,7 +93,6 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     private native void showNativeAR();
     private native void setARModel(String objFileName, double scale);
     
-    private static native void enableDebug();
     private static native void enableDebugAR();
     
     private static void notifyCancel() {

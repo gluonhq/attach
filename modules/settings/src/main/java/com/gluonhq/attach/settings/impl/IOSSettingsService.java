@@ -27,9 +27,7 @@
  */
 package com.gluonhq.attach.settings.impl;
 
-
 import com.gluonhq.attach.settings.SettingsService;
-import com.gluonhq.attach.util.Constants;
 
 /**
  * An implementation of the
@@ -44,9 +42,6 @@ public class IOSSettingsService implements SettingsService {
     }
 
     public IOSSettingsService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -68,6 +63,5 @@ public class IOSSettingsService implements SettingsService {
     private static native void settingsStore(String key, String value);
     private static native void settingsRemove(String key);
     private static native String settingsRetrieve(String key);
-    private static native void enableDebug();
 
 }
