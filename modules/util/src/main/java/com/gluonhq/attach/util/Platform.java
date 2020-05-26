@@ -77,7 +77,7 @@ public enum Platform {
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
 
-        if (isAndroid()) {
+        if (isAndroid() || isIOS()) {
             System.loadLibrary("Util");
             Debug.init();
         }

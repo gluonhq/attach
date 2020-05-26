@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,15 +25,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.util;
 
-public class Util {
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
 
-    /**
-     * Returns {@code true} if the system property named
-     * {@link Constants#ATTACH_DEBUG} exists and is equal to
-     * the string {@code "true"}.
-     */
-    public static final boolean DEBUG = Boolean.getBoolean(Constants.ATTACH_DEBUG);
+JNIEnv *env;
 
+JNIEXPORT jint JNICALL
+JNI_OnLoad_Util(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
+    }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_Debug_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    AttachLog(@"Enabling debug for all Attach services");
+    debugAttach = YES;
 }
