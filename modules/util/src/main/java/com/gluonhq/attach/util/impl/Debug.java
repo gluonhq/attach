@@ -29,7 +29,7 @@ package com.gluonhq.attach.util.impl;
 
 import com.gluonhq.attach.util.Util;
 
-public class AndroidDebug {
+public class Debug {
 
     public static void init() {
         if (Util.DEBUG) {
