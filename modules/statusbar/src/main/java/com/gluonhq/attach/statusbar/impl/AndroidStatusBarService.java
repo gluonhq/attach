@@ -45,10 +45,12 @@ public class AndroidStatusBarService implements StatusBarService {
         if (color == null) {
             return 0xff000000; // Black
         }
-        return (int) Math.round(color.getBlue() * 0xFF) +
-                (int) Math.round(color.getGreen() * 0xFF) << 8 +
-                (int) Math.round(color.getRed() * 0xFF) << 16 +
-                (int) Math.round(color.getOpacity() * 0xFF) << 24;
+        int intColor = (int) Math.round(color.getBlue() * 0xFF);
+        intColor += (int) Math.round(color.getGreen() * 0xFF) << 8;
+        intColor += (int) Math.round(color.getRed() * 0xFF) << 16;
+        intColor += (int) Math.round(color.getOpacity() * 0xFF) << 24;
+
+        return intColor;
     }
 
     private native void setNativeColor(int color);
