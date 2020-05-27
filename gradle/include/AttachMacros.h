@@ -47,3 +47,5 @@ static __inline__ void AttachLog(const char *file, int lineNumber, const char *f
 }
 
 #define AttachLog(MSG, ...) AttachLog(__FILE__, __LINE__, __PRETTY_FUNCTION__, MSG, ## __VA_ARGS__ )
+
+BOOL debugAttach;

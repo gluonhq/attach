@@ -53,24 +53,21 @@ import static android.app.Activity.RESULT_OK;
 
 public class DalvikPicturesService  {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
     private static final int SELECT_PICTURE = 1;
     private static final int TAKE_PICTURE = 2;
 
     private final Activity activity;
-    private boolean debug = false;
+    private final boolean debug;
 
     private final String authority;
     private String photoPath;
 
     public DalvikPicturesService(Activity activity) {
         this.activity = activity;
+        this.debug = Util.isDebug();
         authority = activity.getPackageName() + ".fileprovider";
         clearCache();
-    }
-
-    public void enableDebug() {
-        debug = true;
     }
 
     private boolean verifyPermissions() {

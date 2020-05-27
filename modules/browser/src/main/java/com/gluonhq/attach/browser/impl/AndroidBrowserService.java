@@ -28,7 +28,7 @@
 package com.gluonhq.attach.browser.impl;
 
 import com.gluonhq.attach.browser.BrowserService;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -37,10 +37,7 @@ public class AndroidBrowserService implements BrowserService {
 
     private static final Logger LOG = Logger.getLogger(AndroidBrowserService.class.getName());
 
-    private static boolean debug;
-
     static {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Browser");
     }
 
@@ -49,7 +46,7 @@ public class AndroidBrowserService implements BrowserService {
 
     @Override
     public void launchExternalBrowser(String url) throws IOException {
-        if (debug) {
+        if (Util.DEBUG) {
             LOG.info("Launch URL: " + url);
         }
         if (url == null || url.isEmpty()) {

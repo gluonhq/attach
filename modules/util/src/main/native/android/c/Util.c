@@ -32,6 +32,7 @@ JavaVM* graalVM;
 // Dalvik handles
 static jclass jUtilClass;
 static jclass jPermissionActivityClass;
+static jmethodID jUtilEnableDebugMethod;
 static jmethodID jUtilOnActivityResultMethod;
 static jmethodID jUtilOnLifecycleEventMethod;
 static jmethodID jUtilRequestPermissionsMethod;
@@ -44,6 +45,7 @@ static void initializeUtilDalvikHandles() {
     jPermissionActivityClass = substrateGetPermissionActivityClass();
     ATTACH_DALVIK();
     jmethodID jUtilInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jUtilClass, "<init>", "()V");
+    jUtilEnableDebugMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "enableDebug", "()V");
     jUtilOnActivityResultMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
     jUtilOnLifecycleEventMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "lifecycleEvent", "(Ljava/lang/String;)V");
     jUtilRequestPermissionsMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jPermissionActivityClass, "verifyPermissions", "(Landroid/app/Activity;[Ljava/lang/String;)Z");
@@ -80,6 +82,18 @@ JNI_OnLoad_Util(JavaVM *vm, void *reserved)
 
 JavaVM* getGraalVM() {
     return graalVM;
+}
+
+// from Java to Android
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_Debug_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_LOG_FINE("Enabling debug for all Attach services");
+    debugAttach = JNI_TRUE;
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jUtilClass, jUtilEnableDebugMethod);
+    DETACH_DALVIK();
 }
 
 //////////////////////////////////

@@ -69,7 +69,6 @@ BOOL fullScreenMode;
 int alignH;
 int alignV;
 double topPadding, rightPadding, bottomPadding, leftPadding;
-BOOL debugVideo;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_initVideo
 (JNIEnv *env, jclass jClass)
@@ -102,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_setVid
         (*env)->ReleaseStringChars(env, jplayItem, playItemString);
         [playItems addObject:playItem];
     }
-    if (debugVideo) {
+    if (debugAttach) {
         AttachLog(@"Added video playlist with %lu items", (unsigned long)[playItems count]);
     }
     [_video initPlaylist:playItems];
@@ -203,7 +202,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_setPos
     const jchar *charsAlignV = (*env)->GetStringChars(env, jalignmentV, NULL);
     NSString *sAlignV = [NSString stringWithCharacters:(UniChar *)charsAlignV length:(*env)->GetStringLength(env, jalignmentV)];
     (*env)->ReleaseStringChars(env, jalignmentV, charsAlignV);
-    if (debugVideo) {
+    if (debugAttach) {
         AttachLog(@"Video Alignment H: %@, V: %@", sAlignH, sAlignV);
     }
 
@@ -230,15 +229,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_setPos
     return;
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_IOSVideoService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugVideo = YES;
-}
-
 void status(MediaPlayerStatus status) {
     videoStatus = status;
-    if (debugVideo) {
+    if (debugAttach) {
         AttachLog(@"Media Player Status: %ld", (long) status);
     }
     (*env)->CallStaticVoidMethod(env, mat_jVideoServiceClass, mat_jVideoService_updateStatus, status);
@@ -768,7 +761,7 @@ void runOnMainQueueWithoutDeadlocking(void (^block)(void))
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugVideo) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

@@ -28,18 +28,14 @@
 #include "Settings.h"
 
 static jobject jDalvikSettingsService;
-static jmethodID jSettingsServiceEnableDebug;
 static jmethodID jSettingsServiceStore;
 static jmethodID jSettingsServiceRemove;
 static jmethodID jSettingsServiceRetrieve;
-
-static jboolean debugSettings;
 
 static void initializeSettingsDalvikHandles() {
     ATTACH_DALVIK();
     jclass jSettingsServiceClass = substrateGetSettingsServiceClass();
     jmethodID jSettingsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jSettingsServiceEnableDebug = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "enableDebug", "()V");
     jSettingsServiceStore = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "store", "(Ljava/lang/String;Ljava/lang/String;)V");
     jSettingsServiceRemove = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "remove", "(Ljava/lang/String;)V");
     jSettingsServiceRetrieve = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "retrieve", "(Ljava/lang/String;)Ljava/lang/String;");
@@ -75,15 +71,6 @@ JNI_OnLoad_Settings(JavaVM *vm, void *reserved)
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugSettings = JNI_TRUE;
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceEnableDebug);
-    DETACH_DALVIK();
-}
-
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsService_settingsStore
 (JNIEnv *env, jclass jClass, jstring jkey, jstring jvalue)
 {
@@ -92,7 +79,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
     jstring dvalue = (*dalvikEnv)->NewStringUTF(dalvikEnv, valueChars);
-    if (debugSettings) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Storing settings for = %s, %s\n", keyChars, valueChars);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceStore, dkey, dvalue);
@@ -107,7 +94,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
-    if (debugSettings) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Remove settings for = %s\n", keyChars);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRemove, dkey);
@@ -121,12 +108,12 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsS
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
-    if (debugSettings) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieving settings for = %s\n", keyChars);
     }
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRetrieve, dkey);
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
-    if (debugSettings) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieved settings for = %s\n", answerChars);
     }
     DETACH_DALVIK();

@@ -28,7 +28,6 @@
 package com.gluonhq.attach.runtimeargs.impl;
 
 import com.gluonhq.attach.runtimeargs.RuntimeArgsService;
-import com.gluonhq.attach.util.Constants;
 
 /**
  * An implementation of the
@@ -45,16 +44,12 @@ public class IOSRuntimeArgsService extends DefaultRuntimeArgsService {
     private static IOSRuntimeArgsService instance;
 
     public IOSRuntimeArgsService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
         instance = this;
     }
 
     // Native
     
     private static native void initRuntimeArgs();
-    private static native void enableDebug();
 
     // callback
     private static void processRuntimeArgs(String key, String value) {

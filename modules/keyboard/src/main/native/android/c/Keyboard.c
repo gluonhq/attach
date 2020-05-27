@@ -29,7 +29,6 @@
 
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
-int debugKeyboard = 0;
 void initKeyboard();
 
 JNIEXPORT jint JNICALL
@@ -78,12 +77,6 @@ void initKeyboard()
          density = 1.0f;
     }
     ATTACH_LOG_FINE("Dalvik KeyboardService init was called");
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugKeyboard = 1;
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_KeyboardService_nativeDispatchKeyboardHeight(JNIEnv *env, jobject activity, jfloat jheight)

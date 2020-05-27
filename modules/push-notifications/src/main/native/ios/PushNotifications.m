@@ -51,7 +51,6 @@ static int notificationsInitied = 0;
 jclass mat_jPushNotificationsClass;
 jmethodID mat_failToRegisterForRemoteNotifications = 0;
 jmethodID mat_didRegisterForRemoteNotifications = 0;
-BOOL debugPushNotifications;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNotificationsService_initPushNotifications
 (JNIEnv *env, jclass jClass)
@@ -69,14 +68,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
 
     if (@available(iOS 10.0, *))
     {
-        if (debugPushNotifications) {
+        if (debugAttach) {
             AttachLog(@"Initialize UIUserNotificationSettings - Push >= 10");
         }
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
             if (!error) 
             {
-                if (debugPushNotifications) {
+                if (debugAttach) {
                     AttachLog(@"Registering notifications");
                 }
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -92,7 +91,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
         #pragma clang diagnostic push
         #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-        if (debugPushNotifications) {
+        if (debugAttach) {
             AttachLog(@"Initialize UIUserNotificationSettings - Push < 10");
         }
         UIUserNotificationSettings* settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil];
@@ -101,12 +100,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
 
         #pragma clang diagnostic pop
     }
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNotificationsService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugPushNotifications = YES;
 }
 
 @implementation GlassApplication (NotificationsAdditions)
@@ -164,7 +157,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugPushNotifications) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

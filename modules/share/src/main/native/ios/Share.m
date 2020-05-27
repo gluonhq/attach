@@ -47,8 +47,6 @@ static int ShareInited = 0;
 
 Share *_share;
 
-BOOL debugShare;
-
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_initShare
 (JNIEnv *env, jclass jClass)
 {
@@ -79,12 +77,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_native
 
     [_share shareText: subject message:message filePath:filePath];
     
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugShare = YES;
 }
 
 @implementation Share
@@ -174,7 +166,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_IOSShareService_enable
  
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugShare) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

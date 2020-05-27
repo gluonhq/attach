@@ -35,7 +35,7 @@ import com.gluonhq.attach.ble.BleService;
 import com.gluonhq.attach.ble.BleSpecs;
 import com.gluonhq.attach.ble.Configuration;
 import com.gluonhq.attach.ble.ScanDetection;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -89,10 +89,7 @@ public class IOSBleService implements BleService {
     private static boolean debug;
 
     public IOSBleService() {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
-        if (debug) {
-            enableDebug();
-        }
+        debug = Util.DEBUG;
     }
 
     // BLE BEACONS
@@ -246,7 +243,6 @@ public class IOSBleService implements BleService {
     private static native void doRead(String name, String uuidService, String uuidChar);
     private static native void doWrite(String name, String uuidService, String uuidChar, byte[] value);
     private static native void doSubscribe(String name, String uuidService, String uuidChar, boolean subscribe);
-    private static native void enableDebug();
 
     private static void gotPeripheral(String name, String uuid) {
         if ((name != null && deviceNames.contains(name)) ||

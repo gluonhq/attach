@@ -49,7 +49,6 @@ static int runtimeArgsInited = 0;
 jclass mat_jRuntimeArgsClass;
 jmethodID mat_jProcessRuntimeArgsMethod = 0;
 RasDelegate *_rasDelegate;
-BOOL debugRuntimeArgs;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsService_initRuntimeArgs
 (JNIEnv *env, jclass jClass)
@@ -65,12 +64,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsSe
 
     _rasDelegate = [[RasDelegate alloc] init];
     [_rasDelegate register];
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_runtimeargs_impl_IOSRuntimeArgsService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugRuntimeArgs = YES;
 }
 
 void processRuntimeArgs(NSString* key, NSString* value) {
@@ -93,7 +86,7 @@ void processRuntimeArgs(NSString* key, NSString* value) {
 
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     {
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"OpenURL called: %@", url.absoluteString);
         }
         processRuntimeArgs(@"Launch.URL", url.absoluteString);
@@ -108,7 +101,7 @@ void processRuntimeArgs(NSString* key, NSString* value) {
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     {
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"OpenURL called: %@", url.absoluteString);
         }
         processRuntimeArgs(@"Launch.URL", url.absoluteString);
@@ -128,7 +121,7 @@ void processRuntimeArgs(NSString* key, NSString* value) {
     {
         NSDictionary *myUserInfo = notification.userInfo;
         NSString *myId = [myUserInfo objectForKey:@"userId"];
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"Sending this notification with id %@", myId);
         }
         processRuntimeArgs(@"Launch.LocalNotification", myId);
@@ -146,33 +139,33 @@ void processRuntimeArgs(NSString* key, NSString* value) {
         NSError *err;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:userInfo options:0 error: &err];
         NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"Received remote notification, forward to RAS");
         }
         processRuntimeArgs(@"Launch.PushNotification", jsonString);
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"Processed remote notification");
         }
     }
     [pool drain];
 
     if(application.applicationState == UIApplicationStateInactive) {
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"App was Inactive");
         }
         //Show the view with the content of the push
     } else if (application.applicationState == UIApplicationStateBackground) {
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"App was in Background");
         }
         //Refresh the local model
     } else {
-        if (debugRuntimeArgs) {
+        if (debugAttach) {
             AttachLog(@"App is Active");
         }
         //Show an in-app banner
     }
-    if (debugRuntimeArgs) {
+    if (debugAttach) {
         AttachLog(@"call completionhandler after remote notification");
     }
     completionHandler(UIBackgroundFetchResultNewData);
@@ -199,7 +192,7 @@ void processRuntimeArgs(NSString* key, NSString* value) {
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
 
     //Called when a notification is delivered to foreground or background app.
-    if (debugRuntimeArgs) {
+    if (debugAttach) {
         AttachLog(@"Received remote notification: Userinfo %@",response.notification.request.content.userInfo);
     }
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -207,18 +200,18 @@ void processRuntimeArgs(NSString* key, NSString* value) {
         NSError *err;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:response.notification.request.content.userInfo options:0 error: &err];
         if ([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
-            if (debugRuntimeArgs) {
+            if (debugAttach) {
                 AttachLog(@"Handling Push notification");
             }
             NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
             processRuntimeArgs(@"Launch.PushNotification", jsonString);
         } else {
-            if (debugRuntimeArgs) {
+            if (debugAttach) {
                 AttachLog(@"Handling Local notification");
             }
             NSDictionary *myUserInfo = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
             NSString *myId = [myUserInfo objectForKey:@"userId"];
-            if (debugRuntimeArgs) {
+            if (debugAttach) {
                 AttachLog(@"Sending local notification with id %@", myId);
             }
             processRuntimeArgs(@"Launch.LocalNotification", myId);

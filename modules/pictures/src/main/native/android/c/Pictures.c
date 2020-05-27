@@ -34,9 +34,6 @@ static jmethodID jGraalSendPhotoFileMethod;
 static jobject jDalvikPicturesService;
 static jmethodID jPicturesServiceTakePhotoMethod;
 static jmethodID jPicturesServiceSelectPictureMethod;
-static jmethodID jPicturesServiceEnableDebug;
-
-static jboolean debugPictures;
 
 void initializePicturesGraalHandles(JNIEnv *graalEnv) {
     jGraalPicturesClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/pictures/impl/AndroidPicturesService"));
@@ -47,7 +44,6 @@ void initializePicturesDalvikHandles() {
     jclass jPicturesServiceClass = substrateGetPicturesServiceClass();
     ATTACH_DALVIK();
     jmethodID jPicturesServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jPicturesServiceEnableDebug = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "enableDebug", "()V");
     jPicturesServiceTakePhotoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "takePhoto", "(Z)V");
     jPicturesServiceSelectPictureMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "selectPicture", "()V");
 
@@ -84,14 +80,6 @@ fprintf(stderr, "JNI_OnLoad_Pictures called\n");
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesService_enableDebug
-(JNIEnv *env, jclass jClass) {
-    debugPictures = JNI_TRUE;
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikPicturesService, jPicturesServiceEnableDebug);
-    DETACH_DALVIK();
-}
-
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesService_takePicture
 (JNIEnv *env, jclass jClass, jboolean jSavePhoto)
 {
@@ -113,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesServ
 ///////////////////////////
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring path, jint rotate) {
-    if (debugPictures) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Send Photo File\n");
     }
     const char *pathChars = (*env)->GetStringUTFChars(env, path, NULL);

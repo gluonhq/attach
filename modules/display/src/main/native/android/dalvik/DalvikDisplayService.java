@@ -37,7 +37,7 @@ import android.view.WindowManager;
 
 public class DalvikDisplayService {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
     private static final double MIN_TABLET_DIAGONAL = 6.5;
 
     private final Activity activity;

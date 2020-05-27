@@ -56,10 +56,6 @@ public class IOSVideoService extends DefaultVideoService {
     public IOSVideoService() {
         super();
         
-        if (debug) {
-            enableDebug();
-        }
-        
         playlist.addListener((Observable o) -> {
             List<String> list = new ArrayList<>();
             for (String s : playlist) {
@@ -155,8 +151,7 @@ public class IOSVideoService extends DefaultVideoService {
     private native void currentIndex(int currentIndex);
     private native void setFullScreenMode(boolean fullScreen);
     private native void setPosition(String alignmentH, String alignmentV, double topPadding, double rightPadding, double bottomPadding, double leftPadding);
-    private static native void enableDebug();
-    
+
     // callbacks
     private static void updateStatus(int value) {
         Status s;

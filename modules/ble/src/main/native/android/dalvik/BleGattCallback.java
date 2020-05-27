@@ -44,7 +44,7 @@ import java.util.UUID;
 
 class BleGattCallback extends BluetoothGattCallback {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     private final Activity activity;
     private final BluetoothDevice bluetoothDevice;
@@ -53,10 +53,10 @@ class BleGattCallback extends BluetoothGattCallback {
 
     private boolean connected;
 
-    public BleGattCallback(Activity activity, BluetoothDevice bluetoothDevice, boolean debug) {
+    public BleGattCallback(Activity activity, BluetoothDevice bluetoothDevice) {
         this.activity = activity;
         this.bluetoothDevice = bluetoothDevice;
-        this.debug = debug;
+        this.debug = Util.isDebug();
     }
 
     @Override

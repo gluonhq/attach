@@ -30,12 +30,10 @@ package com.gluonhq.attach.keyboard.impl;
 import com.gluonhq.attach.keyboard.KeyboardService;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.scene.Node;
@@ -60,10 +58,7 @@ public class IOSKeyboardService implements KeyboardService {
     }
 
     public IOSKeyboardService() {
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
-        if (debug) {
-            enableDebug();
-        }
+        debug = Util.DEBUG;
 
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSKeyboardService::stopObserver);
@@ -115,7 +110,6 @@ public class IOSKeyboardService implements KeyboardService {
     // native
     private static native void startObserver();
     private static native void stopObserver();
-    private static native void enableDebug();
 
     // callback
     private static void notifyVisibleHeight(float height) {

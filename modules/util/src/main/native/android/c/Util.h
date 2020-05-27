@@ -32,3 +32,5 @@
 JavaVM* getGraalVM();
 
 jclass substrateGetUtilClass();
+
+jboolean debugAttach;

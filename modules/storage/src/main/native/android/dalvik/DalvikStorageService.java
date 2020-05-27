@@ -34,17 +34,14 @@ import android.util.Log;
 
 public class DalvikStorageService {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     private final Activity activity;
-    private boolean debug = false;
+    private final boolean debug;
 
     public DalvikStorageService(Activity activity) {
         this.activity = activity;
-    }
-
-    private void enableDebug() {
-        debug = true;
+        this.debug = Util.isDebug();
     }
 
     /**

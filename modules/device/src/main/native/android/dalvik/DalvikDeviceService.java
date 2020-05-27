@@ -43,14 +43,10 @@ public class DalvikDeviceService {
     private static final String PREFS_DEVICE_ID = "device_id";
 
     private final Activity activity;
-    private boolean debug = false;
+    private boolean debug = Util.isDebug();
 
     public DalvikDeviceService(Activity activity) {
         this.activity = activity;
-    }
-
-    public void enableDebug() {
-        debug = true;
     }
 
     public String getModel() {

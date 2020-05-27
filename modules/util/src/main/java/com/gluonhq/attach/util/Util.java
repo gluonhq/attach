@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,34 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.util;
 
-import android.app.Activity;
-import android.util.Log;
+public class Util {
 
-class KeyboardService {
-
-    private static final String TAG = Util.TAG;
-
-    private final boolean debug;
-
-    public KeyboardService(Activity activity) {
-
-        debug = Util.isDebug();
-        if (debug) {
-            Log.v(TAG, "KeyboardService <init> for activity: " + activity);
-        }
-        new KeyboardView(activity, new KeyboardHeightListener() {
-            @Override
-            public void onHeightChanged(float keyboardHeight) {
-                if (debug) {
-                    Log.v(TAG, "Keyboard service: height = " + keyboardHeight);
-                }
-                nativeDispatchKeyboardHeight(keyboardHeight);
-            }
-        });
-    }
-
-    private native void nativeDispatchKeyboardHeight(float height);
+    /**
+     * Returns {@code true} if the system property named
+     * {@link Constants#ATTACH_DEBUG} exists and is equal to
+     * the string {@code "true"}.
+     */
+    public static final boolean DEBUG = Boolean.getBoolean(Constants.ATTACH_DEBUG);
 
 }

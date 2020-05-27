@@ -28,7 +28,6 @@
 package com.gluonhq.attach.settings.impl;
 
 import com.gluonhq.attach.settings.SettingsService;
-import com.gluonhq.attach.util.Constants;
 
 /**
  * An implementation of the
@@ -43,9 +42,6 @@ public class AndroidSettingsService implements SettingsService {
     }
 
     public AndroidSettingsService() {
-        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -66,6 +62,5 @@ public class AndroidSettingsService implements SettingsService {
     private static native void settingsStore(String key, String value);
     private static native void settingsRemove(String key);
     private static native String settingsRetrieve(String key);
-    private static native void enableDebug();
 
 }

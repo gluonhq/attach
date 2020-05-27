@@ -60,7 +60,6 @@ jmethodID mat_jBleService_gotDescriptor = 0;
 
 Ble *_Ble;
 NSArray *arrayOfUuids;
-BOOL debugBLE;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_initBle
 (JNIEnv *env, jclass jClass)
@@ -200,7 +199,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_doRead
     NSString *uuidChar = [NSString stringWithCharacters:(UniChar *)uuidCharchars length:(*env)->GetStringLength(env, jUiidChar)];
     (*env)->ReleaseStringChars(env, jUiidChar, uuidCharchars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Read %@ - %@ - %@", name, uuidService, uuidChar);
     }
     [_Ble read:name uuidService:uuidService uuidChar:uuidChar];
@@ -227,7 +226,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_doWrite
     NSData *data = [NSData dataWithBytes:bytes length:lengthOfBytes];
     (*env)->ReleaseByteArrayElements(env, jArray, bytes, JNI_ABORT);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"write %@ - %@ - %@: %@", name, uuidService, uuidChar, data);
     }
     [_Ble write:name uuidService:uuidService uuidChar:uuidChar data:data];
@@ -250,17 +249,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_doSubscrib
     (*env)->ReleaseStringChars(env, jUiidChar, uuidCharchars);
 
     BOOL notify = subscribe ? YES : NO;
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Subscribe %@ - %@ - %@ - %d", name, uuidService, uuidChar, notify);
     }
     [_Ble subscribe:name uuidService:uuidService uuidChar:uuidChar notify:notify];
     return;
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugBLE = YES;
 }
 
 void setDetection(CLBeacon *foundBeacon) {
@@ -316,7 +309,7 @@ void stateChanged(CBPeripheral *peripheral) {
     const char *pstatechars = [stateString UTF8String];
     jstring jpstate = (*env)->NewStringUTF(env,pstatechars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Sending State of %@: %@", pname, stateString);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotState, jpname, jpstate);
@@ -335,7 +328,7 @@ void discoveredProfile(CBPeripheral *peripheral, CBService *service) {
 
     jboolean jprimary = service.isPrimary;
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Sending profile of %@: %@", pname, puuid);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotProfile, jpname, jpuuid, jprimary);
@@ -352,7 +345,7 @@ void removeProfile(CBPeripheral *peripheral, CBService *service) {
     const char *puuidchars = [puuid UTF8String];
     jstring jpuuid = (*env)->NewStringUTF(env,puuidchars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Removing profile of %@: %@", pname, puuid);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_removeProfile, jpname, jpuuid);
@@ -410,7 +403,7 @@ void discoveredCharacteristic(CBPeripheral *peripheral, CBService *service, CBCh
     const char *ppropschars = [pprops UTF8String];
     jstring jpprops = (*env)->NewStringUTF(env,ppropschars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Sending characteristic of %@: %@: %@ and properties %@", pname, puuid, puuid2, pprops);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotCharacteristic, jpname, jpuuid, jpuuid2, jpprops);
@@ -433,7 +426,7 @@ void setData(CBPeripheral *peripheral, CBCharacteristic *aChar) {
     const char *pdatachars = [pdata UTF8String];
     jstring jpdata = (*env)->NewStringUTF(env,pdatachars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Sending value of %@: %@ and properties %@", pname, puuid, pdata);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotValue, jpname, jpuuid, jpdata);
@@ -469,7 +462,7 @@ void discoveredDescriptor(CBPeripheral *peripheral, CBDescriptor *aDesc) {
     const char *pdatachars = [pdata UTF8String];
     jstring jpdata = (*env)->NewStringUTF(env,pdatachars);
 
-    if (debugBLE) {
+    if (debugAttach) {
         NSLog(@"Sending value of %@ and properties %@ %@", pname, puuidDesc, pdata);
     }
     (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotDescriptor, jpname, jpuuidDesc, jpdata);
@@ -909,7 +902,7 @@ NSMutableArray *discoveredDevices;
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugBLE)
+    if (debugAttach)
     {
         va_list args;
         va_start(args, format);

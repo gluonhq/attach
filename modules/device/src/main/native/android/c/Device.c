@@ -26,15 +26,12 @@
  */
 #include "Device.h"
 
-static jboolean debugDevice;
-
 // Graal handles
 static jclass jGraalDeviceInfoClass;
 static jmethodID jGraalDeviceInfoInitMethod;
 
 // Dalvik handles
 static jobject jDalvikDeviceService;
-static jmethodID jDeviceServiceEnableDebug;
 static jmethodID jDeviceServiceGetModel;
 static jmethodID jDeviceServiceGetUuid;
 static jmethodID jDeviceServiceGetPlatform;
@@ -50,7 +47,6 @@ static void initializeDeviceDalvikHandles() {
     ATTACH_DALVIK();
     jclass jDeviceServiceClass = substrateGetDeviceServiceClass();
     jmethodID jDeviceServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jDeviceServiceEnableDebug = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "enableDebug", "()V");
     jDeviceServiceGetModel = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getModel", "()Ljava/lang/String;");
     jDeviceServiceGetUuid = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getUuid", "()Ljava/lang/String;");
     jDeviceServiceGetPlatform = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getPlatform", "()Ljava/lang/String;");
@@ -88,19 +84,10 @@ JNI_OnLoad_Device(JavaVM *vm, void *reserved)
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugDevice = JNI_TRUE;
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceEnableDebug);
-    DETACH_DALVIK();
-}
-
 JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceService_getDeviceInfo
 (JNIEnv *env, jclass jClass)
 {
-    if (debugDevice) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieving DeviceInfo\n");
     }
 
@@ -116,7 +103,7 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     jboolean wearable = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceIsWearable);
     DETACH_DALVIK();
 
-    if (debugDevice) {
+    if (debugAttach) {
         ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, wearable=%d\n",
                 responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, wearable);
     }

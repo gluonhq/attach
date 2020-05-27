@@ -32,16 +32,14 @@ import com.gluonhq.attach.ble.BleDescriptor;
 import com.gluonhq.attach.ble.BleDevice;
 import com.gluonhq.attach.ble.BleProfile;
 import com.gluonhq.attach.ble.BleService;
-import com.gluonhq.attach.ble.BleSpecs;
 import com.gluonhq.attach.ble.Configuration;
 import com.gluonhq.attach.ble.ScanDetection;
-import com.gluonhq.attach.util.Constants;
+import com.gluonhq.attach.util.Util;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -60,22 +58,18 @@ public class AndroidBleService implements BleService {
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
     private static final List<String> deviceNames = new LinkedList<>();
     private static final List<String> profileNames = new LinkedList<>();
-    private static boolean debug;
+    private static final boolean debug = Util.DEBUG;
 
     private static Consumer<ScanDetection> callback;
 
     static {
         LOG.fine("Loading AndroidBleService");
-        debug = Boolean.getBoolean(Constants.ATTACH_DEBUG);
         System.loadLibrary("Ble");
         LOG.fine("Loaded AndroidBleService");
     }
 
     public AndroidBleService() {
         LOG.fine("Created AndroidBleService instance");
-        if (debug) {
-            enableDebug();
-        }
     }
 
     // BLE BEACONS
@@ -181,7 +175,6 @@ public class AndroidBleService implements BleService {
     private static native void stopObserver();
     private static native void startBroadcast(String uuid, int major, int minor, String id);
     private static native void stopBroadcast();
-    private static native void enableDebug();
 
     // native BLE Devices
     private static native void startScanningPeripherals();

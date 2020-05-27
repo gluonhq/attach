@@ -33,7 +33,6 @@ import com.gluonhq.attach.position.Parameters;
 import com.gluonhq.attach.position.Position;
 import com.gluonhq.attach.position.PositionService;
 import com.gluonhq.attach.position.impl.geotools.EarthGravitationalModel;
-import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -62,9 +61,6 @@ public class AndroidPositionService implements PositionService {
     private static EarthGravitationalModel gh;
 
     public AndroidPositionService() {
-        if (Boolean.getBoolean(Constants.ATTACH_DEBUG)) {
-            enableDebug();
-        }
         position = new ReadOnlyObjectWrapper<>();
 
         LifecycleService.create().ifPresent(l -> {
@@ -122,7 +118,6 @@ public class AndroidPositionService implements PositionService {
         return positionProperty().get();
     }
 
-    private static native void enableDebug();
     private static native void startObserver(long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
     private static native void stopObserver();
 

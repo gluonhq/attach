@@ -55,7 +55,7 @@ import java.util.List;
 
 public class DalvikPositionService implements LocationListener {
 
-    private static final String TAG = "GluonAttach";
+    private static final String TAG = Util.TAG;
 
     public static final String LONGITUDE = "longitude";
     public static final String LATITUDE = "latitude";
@@ -70,11 +70,15 @@ public class DalvikPositionService implements LocationListener {
     private float distanceFilter = 1000.0f;
     private boolean backgroundModeEnabled = false;
     private boolean running;
-    private boolean debug = false;
+    private final boolean debug;
 
     public DalvikPositionService(Activity activity) {
-        Log.v(TAG, "Construct DalvikPositionService");
+
         this.activityContext = activity;
+        debug = Util.isDebug();
+        if (debug) {
+            Log.v(TAG, "Construct DalvikPositionService");
+        }
         boolean gpsEnabled = Util.verifyPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) || 
                 Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
         if (!gpsEnabled) {
@@ -82,10 +86,6 @@ public class DalvikPositionService implements LocationListener {
         }
     }    
 
-    public void enableDebug() {
-        debug = true;
-    }
-    
     public void start(long timeInterval, float distanceFilter, boolean backgroundModeEnabled) {
         Log.v(TAG, "DalvikPositionService, start called");
         if (running) {

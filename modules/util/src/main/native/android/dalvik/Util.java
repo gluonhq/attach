@@ -29,16 +29,26 @@ package com.gluonhq.helloandroid;
 
 import android.content.Intent;
 import android.util.Log;
+import java.util.Arrays;
 
 public class Util {
 
-    private static final String TAG = "GluonAttach";
+    public static final String TAG = "GluonAttach";
 
     private static IntentHandler intentHandler;
     private static LifecycleEventHandler lifecycleEventHandler;
+    private static boolean debug = false;
 
     public Util() {
         Log.v(TAG, "Util <init>");
+    }
+
+    private static void enableDebug() {
+        debug = true;
+    }
+
+    public static boolean isDebug() {
+        return debug;
     }
 
     public static void setOnActivityResultHandler(IntentHandler handler) {
@@ -50,13 +60,17 @@ public class Util {
     }
 
     public static boolean verifyPermissions(String... permissions) {
-        Log.v(TAG, "Util::verifyPermissions for permissions: " + permissions);
+        if (debug) {
+            Log.v(TAG, "Util::verifyPermissions for permissions: " + Arrays.toString(permissions));
+        }
         Util util = new Util();
         return util.nativeVerifyPermissions(permissions);
     }
 
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
+        if (debug) {
+            Log.v(TAG, "Util::onActivityResult with requestCode: " + requestCode + ", resultCode: " + resultCode + ", intent: " + intent);
+        }
         if (Util.intentHandler != null) {
             Util.intentHandler.gotActivityResult(requestCode, resultCode, intent);
         }
@@ -64,7 +78,9 @@ public class Util {
 
     private static void lifecycleEvent(String event) {
         if (Util.lifecycleEventHandler != null) {
-            Log.v(TAG, "Util::lifecycleEvent with event: " + event);
+            if (debug) {
+                Log.v(TAG, "Util::lifecycleEvent with event: " + event);
+            }
             Util.lifecycleEventHandler.lifecycleEvent(event);
         }
     }

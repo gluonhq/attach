@@ -45,14 +45,6 @@ JNI_OnLoad_Storage(JavaVM *vm, void *reserved)
 #endif
 }
 
-BOOL debugStorage;
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugStorage = YES;
-}
-
 JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService_privateStorageURL
 (JNIEnv *env, jclass jClass)
 {
@@ -69,7 +61,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
     NSFileManager *manager = [NSFileManager defaultManager];
     [manager createDirectoryAtPath: folderPath withIntermediateDirectories: NO attributes: nil error: nil];
 
-    if (debugStorage) {
+    if (debugAttach) {
         AttachLog(@"Done creating private storage %@", folderPath);
     }
     const char *valueChars = [folderPath UTF8String];
@@ -95,7 +87,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_storage_impl_IOSStorageService
         AttachLog(@"Error creating public storage path");
         return NULL;
     }   
-    if (debugStorage) {
+    if (debugAttach) {
         AttachLog(@"Done creating public storage %@", folderPath);
     }
     const char *valueChars = [folderPath UTF8String];

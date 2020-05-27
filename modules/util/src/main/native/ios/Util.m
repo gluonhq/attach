@@ -25,34 +25,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.helloandroid;
 
-import android.app.Activity;
-import android.util.Log;
+#import <UIKit/UIKit.h>
+#include "jni.h"
+#include "AttachMacros.h"
 
-class KeyboardService {
+JNIEnv *env;
 
-    private static final String TAG = Util.TAG;
-
-    private final boolean debug;
-
-    public KeyboardService(Activity activity) {
-
-        debug = Util.isDebug();
-        if (debug) {
-            Log.v(TAG, "KeyboardService <init> for activity: " + activity);
-        }
-        new KeyboardView(activity, new KeyboardHeightListener() {
-            @Override
-            public void onHeightChanged(float keyboardHeight) {
-                if (debug) {
-                    Log.v(TAG, "Keyboard service: height = " + keyboardHeight);
-                }
-                nativeDispatchKeyboardHeight(keyboardHeight);
-            }
-        });
+JNIEXPORT jint JNICALL
+JNI_OnLoad_Util(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
     }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
+}
 
-    private native void nativeDispatchKeyboardHeight(float height);
-
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_util_impl_Debug_enableDebug
+(JNIEnv *env, jclass jClass)
+{
+    AttachLog(@"Enabling debug for all Attach services");
+    debugAttach = YES;
 }
