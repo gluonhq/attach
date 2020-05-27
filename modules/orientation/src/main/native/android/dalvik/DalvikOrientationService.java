@@ -73,9 +73,9 @@ public class DalvikOrientationService {
     private void sendCurrentOrientation() {
         String orientation;
         switch (activity.getResources().getConfiguration().orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE: orientation = "landscape";
-            case Configuration.ORIENTATION_PORTRAIT: orientation = "portrait";
-            default: orientation = "";
+            case Configuration.ORIENTATION_LANDSCAPE: orientation = "Landscape"; break;
+            case Configuration.ORIENTATION_PORTRAIT: orientation = "Portrait"; break;
+            default: orientation = "Unknown";
         }
         if (Util.isDebug()) {
             Log.v(TAG, "Current orientation: " + orientation);

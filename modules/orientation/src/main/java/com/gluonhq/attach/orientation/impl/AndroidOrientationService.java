@@ -70,10 +70,8 @@ public class AndroidOrientationService implements OrientationService {
         orientationText = text;
         switch (orientationText) {
             case "Portrait":
-            case "PortraitUpsideDown":
                 return Optional.of(Orientation.VERTICAL);
-            case "LandscapeLeft":
-            case "LandscapeRight":
+            case "Landscape":
                 return Optional.of(Orientation.HORIZONTAL);
             case "Unknown":
             default:
