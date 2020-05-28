@@ -90,9 +90,9 @@ void initializeBleDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Ble(JavaVM *vm, void *reserved)
+JNI_OnLoad_ble(JavaVM *vm, void *reserved)
 {
-fprintf(stderr, "JNI_OnLoad_BLE called\n");
+ATTACH_LOG_INFO("JNI_OnLoad_ble called");
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {

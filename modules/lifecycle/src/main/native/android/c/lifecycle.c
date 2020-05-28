@@ -59,7 +59,7 @@ static void initializeUtilDalvikHandles() {
 //////////////////////////
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
+JNI_OnLoad_lifecycle(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;
