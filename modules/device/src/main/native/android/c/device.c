@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Device.h"
+#include "device.h"
 
 // Graal handles
 static jclass jGraalDeviceInfoClass;
@@ -64,10 +64,10 @@ static void initializeDeviceDalvikHandles() {
 //////////////////////////
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Device(JavaVM *vm, void *reserved)
+JNI_OnLoad_device(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_Device called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_device called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Device from OnLoad");

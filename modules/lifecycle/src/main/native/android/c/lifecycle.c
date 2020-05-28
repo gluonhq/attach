@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Lifecycle.h"
+#include "lifecycle.h"
 
 // Graal handles
 static jclass jGraalLifecycleClass;
@@ -59,7 +59,7 @@ static void initializeUtilDalvikHandles() {
 //////////////////////////
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Lifecycle(JavaVM *vm, void *reserved)
+JNI_OnLoad_lifecycle(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;

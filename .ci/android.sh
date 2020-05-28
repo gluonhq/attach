@@ -18,5 +18,5 @@ cd $HOME/android-sdk
 mkdir licenses
 echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$HOME/android-sdk/licenses/android-sdk-license"
 echo "Install Android SDK"
-java -Dcom.android.sdklib.toolsdir=$HOME/android-sdk/tools -classpath "$HOME/android-sdk/tools/lib/*:$HOME/android-sdk/tools/lib/java11/*" com.android.sdklib.tool.sdkmanager.SdkManagerCli "platforms;android-27" "build-tools;27.0.3" "platform-tools" "extras;android;m2repository" "extras;google;m2repository" "ndk-bundle" &> log.txt
+java -Dcom.android.sdklib.toolsdir=$HOME/android-sdk/tools -classpath "$HOME/android-sdk/tools/lib/*:$HOME/android-sdk/tools/lib/java11/*" com.android.sdklib.tool.sdkmanager.SdkManagerCli "platforms;android-28" "build-tools;29.0.2" "platform-tools" "extras;android;m2repository" "extras;google;m2repository" "ndk-bundle" &> log.txt
 cd $TRAVIS_BUILD_DIR

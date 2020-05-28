@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Browser.h"
+#include "browser.h"
 
 
 static jobject jDalvikBrowserService;
@@ -49,9 +49,9 @@ static void initializeDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Browser(JavaVM *vm, void *reserved)
+JNI_OnLoad_browser(JavaVM *vm, void *reserved)
 {
-    ATTACH_LOG_INFO("JNI_OnLoad_Browser called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_browser called");
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {

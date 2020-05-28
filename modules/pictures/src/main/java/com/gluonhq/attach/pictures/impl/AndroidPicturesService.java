@@ -86,7 +86,7 @@ public class AndroidPicturesService implements PicturesService {
     private static final Logger LOG = Logger.getLogger(AndroidPicturesService.class.getName());
 
     static {
-        System.loadLibrary("Pictures");
+        System.loadLibrary("pictures");
     }
 
     private static final ObjectProperty<File> imageFile = new SimpleObjectProperty<>();

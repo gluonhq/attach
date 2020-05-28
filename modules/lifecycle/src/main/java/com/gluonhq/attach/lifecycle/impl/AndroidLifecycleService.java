@@ -32,7 +32,7 @@ import com.gluonhq.attach.lifecycle.LifecycleEvent;
 public class AndroidLifecycleService extends LifecycleServiceBase {
 
     static {
-        System.loadLibrary("Lifecycle");
+        System.loadLibrary("lifecycle");
     }
 
     @Override public void shutdown() {

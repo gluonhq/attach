@@ -48,7 +48,7 @@ public class AndroidKeyboardService implements KeyboardService {
     private static final boolean debug = Util.DEBUG;
 
     static {
-        System.loadLibrary("Keyboard");
+        System.loadLibrary("keyboard");
     }
 
     public AndroidKeyboardService() {

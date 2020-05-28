@@ -52,7 +52,7 @@ public class AndroidPositionService implements PositionService {
     private static Logger LOG = Logger.getLogger(AndroidPositionService.class.getName());
 
     static {
-        System.loadLibrary("Position");
+        System.loadLibrary("position");
     }
 
     private static ReadOnlyObjectWrapper<Position> position;

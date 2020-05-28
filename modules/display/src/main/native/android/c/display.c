@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Display.h"
+#include "display.h"
 
 static jobject jDalvikDisplayService;
 static jmethodID jDisplayServiceWidthMethod;
@@ -54,10 +54,10 @@ static void initializeDisplayDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Display(JavaVM *vm, void *reserved)
+JNI_OnLoad_display(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_Display called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_display called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Display from OnLoad");

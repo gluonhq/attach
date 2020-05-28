@@ -34,7 +34,7 @@ import com.gluonhq.attach.device.DeviceService;
 public class AndroidDeviceService implements DeviceService {
 
     static {
-        System.loadLibrary("Device");
+        System.loadLibrary("device");
     }
     private static final DeviceInfo deviceInfo = getDeviceInfo();
 

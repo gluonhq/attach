@@ -26,5 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Util.h"
-extern jclass substrateGetBleServiceClass();
+#include "util.h"
+
+jclass substrateGetDisplayServiceClass();

@@ -45,7 +45,7 @@ public class AndroidDisplayService implements DisplayService {
     private static final boolean debug = Util.DEBUG;
 
     static {
-        System.loadLibrary("Display");
+        System.loadLibrary("display");
     }
 
     public AndroidDisplayService() {
