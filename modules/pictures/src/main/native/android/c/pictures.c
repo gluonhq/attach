@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Pictures.h"
+#include "pictures.h"
 
 static jclass jGraalPicturesClass;
 static jmethodID jGraalSendPhotoFileMethod;

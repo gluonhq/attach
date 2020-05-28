@@ -38,7 +38,7 @@ public class AndroidBrowserService implements BrowserService {
     private static final Logger LOG = Logger.getLogger(AndroidBrowserService.class.getName());
 
     static {
-        System.loadLibrary("Browser");
+        System.loadLibrary("browser");
     }
 
     public AndroidBrowserService() {

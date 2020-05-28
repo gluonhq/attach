@@ -64,7 +64,7 @@ public class AndroidBleService implements BleService {
 
     static {
         LOG.fine("Loading AndroidBleService");
-        System.loadLibrary("Ble");
+        System.loadLibrary("ble");
         LOG.fine("Loaded AndroidBleService");
     }
 
