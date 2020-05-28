@@ -48,10 +48,10 @@ static void initializeStatusBarDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_StatusBar(JavaVM *vm, void *reserved)
+JNI_OnLoad_statusbar(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_StatusBar called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_statusbar called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native StatusBar from OnLoad");
