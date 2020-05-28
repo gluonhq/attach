@@ -33,7 +33,7 @@ import javafx.scene.paint.Color;
 public class AndroidStatusBarService implements StatusBarService {
 
     static {
-        System.loadLibrary("StatusBar");
+        System.loadLibrary("statusbar");
     }
 
     @Override
