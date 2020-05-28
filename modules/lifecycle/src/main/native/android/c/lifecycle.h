@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2018, 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <android/native_window_jni.h>
-#include "AttachMacrosAndroid.h"
+#include "util.h"
 
-JavaVM* getGraalVM();
+jclass substrateGetLifecycleServiceClass();
 
-jclass substrateGetUtilClass();
-
-jboolean debugAttach;

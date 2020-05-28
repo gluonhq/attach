@@ -38,7 +38,7 @@ import com.gluonhq.attach.settings.SettingsService;
 public class AndroidSettingsService implements SettingsService {
 
     static {
-        System.loadLibrary("Settings");
+        System.loadLibrary("settings");
     }
 
     public AndroidSettingsService() {

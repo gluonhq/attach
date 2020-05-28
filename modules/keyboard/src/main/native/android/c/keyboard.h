@@ -26,5 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Util.h"
-extern jclass substrateGetSettingsServiceClass();
+#include "util.h"
+
+extern jfloat density;
+jfloat android_getDensity(JNIEnv *env);
+jclass substrateGetKeyboardServiceClass();

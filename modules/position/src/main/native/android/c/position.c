@@ -81,7 +81,7 @@ void stopDalvikObserving() {
 //////////////////////////
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Position(JavaVM *vm, void *reserved)
+JNI_OnLoad_position(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;

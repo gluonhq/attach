@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Util.h"
+#include "util.h"
 
 JavaVM* graalVM;
 
@@ -62,7 +62,7 @@ static void initializeUtilDalvikHandles() {
 }
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Util(JavaVM *vm, void *reserved)
+JNI_OnLoad_util(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     graalVM = vm;
