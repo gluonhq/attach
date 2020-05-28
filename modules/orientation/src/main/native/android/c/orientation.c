@@ -52,10 +52,10 @@ static void initializeOrientationDalvikHandles() {
 //////////////////////////
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Orientation(JavaVM *vm, void *reserved)
+JNI_OnLoad_orientation(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_Orientation called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_orientation called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Orientation from OnLoad");
