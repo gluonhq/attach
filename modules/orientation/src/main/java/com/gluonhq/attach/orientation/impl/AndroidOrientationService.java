@@ -37,7 +37,7 @@ import javafx.geometry.Orientation;
 public class AndroidOrientationService implements OrientationService {
 
     static {
-        System.loadLibrary("Orientation");
+        System.loadLibrary("orientation");
     }
 
     private static ReadOnlyObjectWrapper<Orientation> orientation;
