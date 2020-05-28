@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Pictures.h"
+#include "pictures.h"
 
 static jclass jGraalPicturesClass;
 static jmethodID jGraalSendPhotoFileMethod;
@@ -59,9 +59,9 @@ void initializePicturesDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Pictures(JavaVM *vm, void *reserved)
+JNI_OnLoad_pictures(JavaVM *vm, void *reserved)
 {
-fprintf(stderr, "JNI_OnLoad_Pictures called\n");
+ATTACH_LOG_INFO("JNI_OnLoad_pictures called");
 #ifdef JNI_VERSION_1_8
     JNIEnv* graalEnv;
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {

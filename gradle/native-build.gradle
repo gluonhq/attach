@@ -4,7 +4,7 @@ def sdkPath(String platform) {
 
 ext.nativeBuild = { buildDir, projectDir, name, os ->
 
-    println("native build for $name  started")
+    println("native build for $name started")
     File shareDir = file("$projectDir/src/main/native/share")
     if (!shareDir.exists()) {
         // TODO
@@ -129,9 +129,8 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
 
         def arch = "arm64-v8a"
         def compileOutput = "$buildDir/native/$os/$arch"
-        def linkerObj = "$buildDir/native/$os/$arch/${name}.o"
-        def linkerOutput = "$buildDir/native/$os/lib${name}.a"
-        new File(compileOutput).mkdirs()
+        File outputDir = file(compileOutput)
+        outputDir.mkdirs()
 
         def platform="aarch64-linux-android21"
         def toolchainHome = "$ndk/toolchains/llvm"
@@ -172,6 +171,8 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
             workingDir compileOutput
         }
 
+        def linkerObj = [outputDir.listFiles().findAll {it.name.endsWith(".o")}].flatten()
+        def linkerOutput = "$buildDir/native/$os/lib${name.toLowerCase()}.a"
         def linkerArgs = ["rcs", linkerOutput, linkerObj].flatten()
 
         exec {

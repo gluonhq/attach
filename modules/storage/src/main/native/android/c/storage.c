@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Storage.h"
+#include "storage.h"
 
 static jobject jDalvikStorageService;
 static jmethodID jStorageServicePublicStorage;
@@ -52,10 +52,10 @@ static void initializeStorageDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Storage(JavaVM *vm, void *reserved)
+JNI_OnLoad_storage(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_Storage called\n");
+    ATTACH_LOG_INFO("JNI_OnLoad_storage called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native Storage from OnLoad");

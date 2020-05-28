@@ -25,14 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Keyboard.h"
+#include "keyboard.h"
 
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
 void initKeyboard();
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
+JNI_OnLoad_keyboard(JavaVM *vm, void *reserved)
 {
 #ifdef JNI_VERSION_1_8
     //min. returned JNI_VERSION required by JDK8 for builtin libraries

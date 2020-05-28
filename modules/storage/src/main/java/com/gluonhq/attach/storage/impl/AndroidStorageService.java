@@ -40,7 +40,7 @@ public class AndroidStorageService implements StorageService {
     private static final Logger LOG = Logger.getLogger(AndroidStorageService.class.getName());
 
     static {
-        System.loadLibrary("Storage");
+        System.loadLibrary("storage");
     }
 
     public AndroidStorageService() {
