@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.share.impl.AndroidShareService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
