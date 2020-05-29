@@ -9,6 +9,11 @@ used to deliver the functionality.
 Attach is open source, and it is freely licensed under the GPL license.
 [Gluon](http://gluonhq.com) can provide [custom consultancy](http://gluonhq.com/services/consulting/) and [training](http://gluonhq.com/services/training/), commercial licenses, and open source [commercial support](http://gluonhq.com/services/commercial-support/), including daily and monthly releases.
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.gluonhq.attach/util)](https://search.maven.org/search?q=g:com.gluonhq.attach%20AND%20a:util)
+[![Travis CI](https://api.travis-ci.com/gluonhq/attach.svg?branch=master)](https://travis-ci.com/gluonhq/attach)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+
 ## Getting started ##
 
 The best way to get started with Gluon Attach is using the [Gluon Client Maven archetype from your IDE](https://github.com/gluonhq/client-maven-archetypes)
