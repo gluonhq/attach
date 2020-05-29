@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.orientation.impl.AndroidOrientationService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
