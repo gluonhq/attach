@@ -82,7 +82,7 @@ public class AndroidShareService implements ShareService {
     
     @Override
     public void share(String contentText) {
-        share("null", contentText);
+        share(null, contentText);
     }
 
     @Override
