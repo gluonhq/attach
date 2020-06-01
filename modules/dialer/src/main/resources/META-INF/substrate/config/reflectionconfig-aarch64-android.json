@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.dialer.impl.AndroidDialerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
