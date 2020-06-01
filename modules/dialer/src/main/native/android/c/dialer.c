@@ -35,7 +35,7 @@ static void initializeDalvikHandles() {
     jclass jDialerServiceClass = substrateGetDialerServiceClass();
     ATTACH_DALVIK();
     jmethodID jDialerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDialerServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jDialerServiceCallMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDialerServiceClass, "call", "(Ljava/lang/String;)Z");
+    jDialerServiceCallMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDialerServiceClass, "call", "(Ljava/lang/String;)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jDialerServiceClass, jDialerServiceInitMethod, jActivity);
