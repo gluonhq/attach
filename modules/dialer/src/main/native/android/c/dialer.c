@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_dialer_impl_AndroidDialerService_
     const char *numberChars = (*env)->GetStringUTFChars(env, jnumber, NULL);
     ATTACH_DALVIK();
     jstring dnumber = (*dalvikEnv)->NewStringUTF(dalvikEnv, numberChars);
-    jboolean result = (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikDialerService, jDialerServiceCallMethod, dnumber);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikDialerService, jDialerServiceCallMethod, dnumber);
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jnumber, numberChars);
 }
