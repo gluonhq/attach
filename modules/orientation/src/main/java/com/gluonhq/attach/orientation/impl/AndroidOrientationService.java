@@ -36,15 +36,14 @@ import javafx.geometry.Orientation;
 
 public class AndroidOrientationService implements OrientationService {
 
+    private static final ReadOnlyObjectWrapper<Orientation> orientation = new ReadOnlyObjectWrapper<>();
+    private static String orientationText = "Unknown";
+
     static {
         System.loadLibrary("orientation");
     }
 
-    private static ReadOnlyObjectWrapper<Orientation> orientation;
-    private static String orientationText = "Unknown";
-
     public AndroidOrientationService() {
-        orientation = new ReadOnlyObjectWrapper<>();
     }
 
     @Override
