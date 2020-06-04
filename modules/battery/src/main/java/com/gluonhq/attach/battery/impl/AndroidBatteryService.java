@@ -42,7 +42,7 @@ public class AndroidBatteryService implements BatteryService {
     private static final ReadOnlyFloatWrapper BATTERY_LEVEL = new ReadOnlyFloatWrapper(-1f);
 
     static {
-        System.loadLibrary("Battery");
+        System.loadLibrary("battery");
     }
 
     public AndroidBatteryService() {
