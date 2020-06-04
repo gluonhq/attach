@@ -48,9 +48,38 @@ JNI_OnLoad_StatusBar(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_IOSStatusBarService_setNativeColor
 (JNIEnv *env, jclass jClass, jdouble red, jdouble green, jdouble blue, jdouble opacity)
 {
-    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+    if (@available(iOS 13.0, *))
+    {
+        UIWindow* window = [UIApplication sharedApplication].keyWindow;
+        if(!window)
+        {
+            AttachLog(@"key window was nil");
+            return;
+        }
+        CGRect statusBarFrame = window.windowScene.statusBarManager.statusBarFrame;
+        UIView *statusBarView = [window viewWithTag:123456];
+        if (!statusBarView) {
+            if (debugAttach) {
+                AttachLog(@"Creating new statusBarView");
+            }
+            statusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
+            statusBarView.tag = 123456;
+            [window addSubview:statusBarView];
 
-    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-        statusBar.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:opacity];
+            statusBarView.translatesAutoresizingMaskIntoConstraints = NO;
+            [statusBarView.heightAnchor constraintEqualToConstant:statusBarFrame.size.height].active = YES;
+            [statusBarView.widthAnchor constraintEqualToAnchor:window.widthAnchor multiplier:1.0].active = YES;
+            [statusBarView.topAnchor constraintEqualToAnchor:window.topAnchor].active = YES;
+            [statusBarView.centerXAnchor constraintEqualToAnchor:window.centerXAnchor].active = YES;
+        }
+        statusBarView.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:opacity];
+    }
+    else
+    {
+        UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+
+        if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+            statusBar.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:opacity];
+        }
     }
 }
