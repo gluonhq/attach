@@ -1,6 +1,6 @@
 [
   {
     "name" : "com.gluonhq.attach.connectivity.impl.AndroidConnectivityService",
-    "methods":[{"name":"notifyConnectivity","parameterTypes":["boolean"] }]
+    "methods":[{"name":"notifyConnection","parameterTypes":["boolean"] }]
   }
 ]
