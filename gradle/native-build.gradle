@@ -1,8 +1,10 @@
+import groovy.io.FileType
+
 def sdkPath(String platform) {
     return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
 }
 
-ext.nativeBuild = { buildDir, projectDir, name, os ->
+ext.nativeBuild = { buildDir, projectDir, name, os, classpath ->
 
     println("native build for $name started")
     File shareDir = file("$projectDir/src/main/native/share")
@@ -144,15 +146,19 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
 
         def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/precompiled/classes"
         File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")
+        def sources = []
+        sourcesDir.eachFileRecurse(FileType.FILES) { file -> sources << file }
         File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
         if (sourcesDir.exists()) {
-            def javaSources = [sourcesDir.listFiles(),
-                               sourcesUtilDir.listFiles()].flatten()
-
+            def javaSources = [sources, sourcesUtilDir.listFiles()].flatten()
+            def bootcp = androidJar
+            if (classpath != null) {
+                bootcp = androidJar.concat(":$classpath")
+            }
             def javac = "${System.getProperty("java.home")}/bin/javac"
             def javacArgs = ["-d", dalvikOutput,
                              "-source", "1.7", "-target", "1.7",
-                             "-bootclasspath", androidJar,
+                             "-bootclasspath", bootcp,
                              javaSources].flatten()
             exec {
                 executable javac

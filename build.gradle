@@ -28,6 +28,10 @@ subprojects {
     sourceCompatibility = 11
     targetCompatibility = 11
 
+    configurations {
+        androidImplementation
+    }
+
     repositories {
         mavenCentral()
     }
