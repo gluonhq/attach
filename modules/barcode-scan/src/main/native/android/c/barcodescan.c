@@ -48,7 +48,7 @@ static void initializeBarcodeScanDalvikHandles() {
         
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jBarcodeScanServiceClass, jBarcodeScanServiceInitMethod, jActivity);
-    jobject jDalvikBarcodeScanService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
+    jDalvikBarcodeScanService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
     DETACH_DALVIK();
 }
 
