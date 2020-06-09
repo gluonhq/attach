@@ -41,11 +41,11 @@ def jarPackage(buildDir, projectDir, service, osname) {
             from "${buildDir}/classes/java/main"
             exclude '**/*/impl/Dummy**'
             if (osname == 'desktop') {
-                exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json"
+                exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json", "**/dalvik"
             } else {
                 exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
                 if (osname == 'ios') {
-                    exclude '**/*/impl/Android**', "**/**android.json"
+                    exclude '**/*/impl/Android**', "**/**android.json", "**/dalvik"
                 } else if (osname == 'android') {
                     exclude '**/*/impl/IOS**', "**/**ios.json"
                 }
