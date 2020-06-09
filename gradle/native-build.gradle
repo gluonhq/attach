@@ -151,15 +151,16 @@ ext.nativeBuild = { buildDir, projectDir, name, os, classpath ->
         File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
         if (sourcesDir.exists()) {
             def javaSources = [sources, sourcesUtilDir.listFiles()].flatten()
-            def bootcp = androidJar
-            if (classpath != null) {
-                bootcp = androidJar.concat(":$classpath")
-            }
             def javac = "${System.getProperty("java.home")}/bin/javac"
-            def javacArgs = ["-d", dalvikOutput,
+            def javacArgsList = ["-d", dalvikOutput,
                              "-source", "1.7", "-target", "1.7",
-                             "-bootclasspath", bootcp,
-                             javaSources].flatten()
+                             "-bootclasspath", androidJar]
+            if (classpath != null) {
+                javacArgsList << "-cp"
+                javacArgsList << "$classpath"
+            }
+            javacArgsList << javaSources
+            def javacArgs = javacArgsList.flatten()
             exec {
                 executable javac
                 args javacArgs
