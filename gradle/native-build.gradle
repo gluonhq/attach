@@ -36,25 +36,34 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
         into file("$tempDir/library/src/main/java/com/gluonhq/helloandroid")
     }
     if (name != "Util") {
-        // compile utils
-        File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
-        def javaSources = [sourcesUtilDir.listFiles()].flatten()
-        def javac = "$JAVAHOME/bin/javac"
-        def javacArgs = ["-d", file("$tempDir/classes").getAbsolutePath(),
-                         "-source", "1.7", "-target", "1.7",
-                         "-bootclasspath", androidJar,
-                         javaSources].flatten()
-        exec {
-            executable javac
-            args javacArgs
+        def util = file("$projectDir/../util/build/tmp/util_classes.jar")
+        if (!util.exists()) {
+            // compile util
+            File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
+            def javaSources = [sourcesUtilDir.listFiles()].flatten()
+            def javac = "$JAVAHOME/bin/javac"
+            def javacArgs = ["-d", file("$tempDir/classes").getAbsolutePath(),
+                             "-source", "1.7", "-target", "1.7",
+                             "-bootclasspath", androidJar,
+                             javaSources].flatten()
+            exec {
+                executable javac
+                args javacArgs
+            }
+            // create jar
+            def jar = "$JAVAHOME/bin/jar"
+            file(util.getParent()).mkdirs()
+            def jarArgs = ["cf", util.getAbsolutePath(), "-C",
+                           file("$tempDir/classes").getAbsolutePath(), "."].flatten()
+            exec {
+                executable jar
+                args jarArgs
+            }
         }
-        // create jar
-        def jar = "$JAVAHOME/bin/jar"
-        def jarArgs = ["cf", "$tempDir/libs/util_classes.jar", "-C",
-                       file("$tempDir/classes").getAbsolutePath(), "."].flatten()
-        exec {
-            executable jar
-            args jarArgs
+        // copy util jar
+        project.copy {
+            from util
+            into file("$tempDir/libs")
         }
     }
     // use build
