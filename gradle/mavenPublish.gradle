@@ -8,11 +8,13 @@ apply plugin: 'de.marcphilipp.nexus-publish'
 def nativeLib(buildDir, projectDir, service, osname) {
     return tasks.create("nativeLib${service}${osname}") {
         doLast {
-            def cp = null
-            if ("android" == osname) {
-                cp = project.configurations.getByName("androidImplementation").asPath
+            if (osname == "android") {
+                File aar = aarBuild("$buildDir", "$projectDir", "$service", "$osname")
+                if (aar == null) {
+                    println "Error creating $aar"
+                }
             }
-            File lib = nativeBuild("$buildDir", "$projectDir", "$service", "$osname", "$cp")
+            File lib = nativeBuild("$buildDir", "$projectDir", "$service", "$osname")
             if (lib != null) {
                 tasks["jar${service}${osname}"].configure {
                     into("native") {
