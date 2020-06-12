@@ -8,6 +8,12 @@ apply plugin: 'de.marcphilipp.nexus-publish'
 def nativeLib(buildDir, projectDir, service, osname) {
     return tasks.create("nativeLib${service}${osname}") {
         doLast {
+            if (osname == "android") {
+                File aar = aarBuild("$buildDir", "$projectDir", "$service", "$osname")
+                if (aar == null) {
+                    println "Error creating $aar"
+                }
+            }
             File lib = nativeBuild("$buildDir", "$projectDir", "$service", "$osname")
             if (lib != null) {
                 tasks["jar${service}${osname}"].configure {
@@ -21,34 +27,35 @@ def nativeLib(buildDir, projectDir, service, osname) {
 }
 
 def jarPackage(buildDir, projectDir, service, osname) {
+    if (osname == '') throw new GradleException("jarPackage: osname is required!")
+
     return tasks.create("jar${service}${osname}", Jar) {
         dependsOn(build)
-        if (osname != "") {
-            def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
-            dependsOn(nativeTask)
-            archiveBaseName = "${service}".toLowerCase()
-            archiveClassifier = osname
-            into ("") {
-                from "${buildDir}/resources/main"
-                from "$projectDir/src/$osname/resources/"
-                from "${buildDir}/classes/java/main"
-                exclude '**/*/impl/Dummy**'
-                if (osname == 'desktop') {
-                    exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json"
-                } else {
-                    exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
-                    if (osname == 'ios') {
-                        exclude '**/*/impl/Android**', "**/**android.json"
-                    } else if (osname == 'android') {
-                        exclude '**/*/impl/IOS**', "**/**ios.json"
-                    }
+        def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
+        dependsOn(nativeTask)
+        archiveBaseName = "${service}".toLowerCase()
+        archiveClassifier = osname
+        into ("") {
+            from "${buildDir}/resources/main"
+            from "$projectDir/src/$osname/resources/"
+            from "${buildDir}/classes/java/main"
+            exclude '**/*/impl/Dummy**'
+            if (osname == 'desktop') {
+                exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json", "**/dalvik"
+            } else {
+                exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
+                if (osname == 'ios') {
+                    exclude '**/*/impl/Android**', "**/**android.json", "**/dalvik"
+                } else if (osname == 'android') {
+                    exclude '**/*/impl/IOS**', "**/**ios.json"
                 }
             }
-        } else {
-            from "${buildDir}/classes/java/main"
-            exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json", "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json"
         }
     }
+}
+
+jar {
+    exclude "**/impl/Desktop**", "**/impl/IOS**", "**/impl/Android**", "META-INF/substrate"
 }
 
 task sourcesJar(type: Jar) {
@@ -72,7 +79,8 @@ publishing {
             if (service != "Util") {
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
             }
-            artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "")
+
+            from components.java
             artifact sourcesJar
             artifact javadocJar
 
@@ -122,7 +130,7 @@ publishing {
                 pomNode.dependencies.'*'.findAll() {
                     it.groupId.text() == 'org.openjfx'
                 }.each {
-                    it.remove(it.classifier)
+                    it.parent().remove(it)
                 }
             }
         }

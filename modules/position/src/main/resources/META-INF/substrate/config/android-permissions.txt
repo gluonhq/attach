@@ -1,1 +1,0 @@
-android.permission.ACCESS_FINE_LOCATION
