@@ -39,6 +39,50 @@ static jmethodID jUtilRequestPermissionsMethod;
 
 static jboolean initialized;
 
+// Attach classes
+static jclass jBatteryServiceClass;
+static jclass jBleServiceClass;
+static jclass jBrowserServiceClass;
+static jclass jConnectivityServiceClass;
+static jclass jDeviceServiceClass;
+static jclass jDialerServiceClass;
+static jclass jDisplayServiceClass;
+static jclass jKeyboardServiceClass;
+static jclass jLifecycleServiceClass;
+static jclass jOrientationServiceClass;
+static jclass jPicturesServiceClass;
+static jclass jPositionServiceClass;
+static jclass jSettingsServiceClass;
+static jclass jShareServiceClass;
+static jclass jStatusBarServiceClass;
+static jclass jStorageServiceClass;
+
+static jmethodID loadClassMethod;
+static jobject classLoaderObject;
+
+static jclass registerClass(const char* className) {
+    ATTACH_DALVIK();
+    if (loadClassMethod == NULL || classLoaderObject == NULL) {
+        jmethodID getClassLoaderMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
+        classLoaderObject = (*dalvikEnv)->CallObjectMethod(dalvikEnv, activity, getClassLoaderMethod);
+        jclass classLoader = (*dalvikEnv)->FindClass(dalvikEnv, "java/lang/ClassLoader");
+        loadClassMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, classLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+    }
+
+    ATTACH_LOG_FINE("Util :: Load className %s", className);
+    jstring strClassName = (*dalvikEnv)->NewStringUTF(dalvikEnv, className);
+    jclass classRetrieved = (jclass) (*dalvikEnv)->CallObjectMethod(dalvikEnv, classLoaderObject, loadClassMethod, strClassName);
+    jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
+    if (t) {
+        (*dalvikEnv)->ExceptionClear(dalvikEnv);
+    }
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, strClassName);
+    if ((t == NULL) && (classRetrieved != NULL)) {
+        return (jclass)(*dalvikEnv)->NewGlobalRef(dalvikEnv, classRetrieved);
+    }
+    return NULL;
+}
+
 static void initializeUtilDalvikHandles() {
     ATTACH_LOG_FINE("Init Util");
     jUtilClass = substrateGetUtilClass();
@@ -59,6 +103,125 @@ static void initializeUtilDalvikHandles() {
     DETACH_DALVIK();
     ATTACH_LOG_FINE("Dalvik Util init was called");
     initialized = JNI_TRUE;
+}
+
+jclass substrateGetUtilClass() {
+    if (jUtilClass == NULL) {
+        jUtilClass = registerClass("com/gluonhq/helloandroid/Util");
+    }
+    return jUtilClass;
+}
+
+jclass substrateGetBatteryServiceClass() {
+    if (jBatteryServiceClass == NULL) {
+        jBatteryServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBatteryService");
+    }
+    return jBatteryServiceClass;
+}
+
+jclass substrateGetBleServiceClass() {
+    if (jBleServiceClass == NULL) {
+        jBleServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBleService");
+    }
+    return jBleServiceClass;
+}
+
+jclass substrateGetBrowserServiceClass() {
+    if (jBrowserServiceClass == NULL) {
+        jBrowserServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBrowserService");
+    }
+    return jBrowserServiceClass;
+}
+
+jclass substrateGetConnectivityServiceClass() {
+    if (jConnectivityServiceClass == NULL) {
+        jConnectivityServiceClass = registerClass("com/gluonhq/helloandroid/DalvikConnectivityService");
+    }
+    return jConnectivityServiceClass;
+}
+
+jclass substrateGetDeviceServiceClass() {
+    if (jDeviceServiceClass == NULL) {
+        jDeviceServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDeviceService");
+    }
+    return jDeviceServiceClass;
+}
+
+jclass substrateGetDialerServiceClass() {
+    if (jDialerServiceClass == NULL) {
+        jDialerServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDialerService");
+    }
+    return jDialerServiceClass;
+}
+
+jclass substrateGetDisplayServiceClass() {
+    if (jDisplayServiceClass == NULL) {
+        jDisplayServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDisplayService");
+    }
+    return jDisplayServiceClass;
+}
+
+jclass substrateGetKeyboardServiceClass() {
+    if (jKeyboardServiceClass == NULL) {
+        jKeyboardServiceClass = registerClass("com/gluonhq/helloandroid/KeyboardService");
+    }
+    return jKeyboardServiceClass;
+}
+
+jclass substrateGetLifecycleServiceClass() {
+    if (jLifecycleServiceClass == NULL) {
+        jLifecycleServiceClass = registerClass("com/gluonhq/helloandroid/DalvikLifecycleService");
+    }
+    return jLifecycleServiceClass;
+}
+
+jclass substrateGetOrientationServiceClass() {
+    if (jOrientationServiceClass == NULL) {
+    jOrientationServiceClass = registerClass("com/gluonhq/helloandroid/DalvikOrientationService");
+    }
+    return jOrientationServiceClass;
+}
+
+jclass substrateGetPicturesServiceClass() {
+    if (jPicturesServiceClass == NULL) {
+        jPicturesServiceClass = registerClass("com/gluonhq/helloandroid/DalvikPicturesService");
+    }
+    return jPicturesServiceClass;
+}
+
+jclass substrateGetPositionServiceClass() {
+    if (jPositionServiceClass == NULL) {
+        jPositionServiceClass = registerClass("com/gluonhq/helloandroid/DalvikPositionService");
+    }
+    return jPositionServiceClass;
+}
+
+jclass substrateGetSettingsServiceClass() {
+    if (jSettingsServiceClass == NULL) {
+        jSettingsServiceClass = registerClass("com/gluonhq/helloandroid/DalvikSettingsService");
+    }
+    return jSettingsServiceClass;
+}
+
+jclass substrateGetShareServiceClass() {
+    if (jShareServiceClass == NULL) {
+        jShareServiceClass = registerClass("com/gluonhq/helloandroid/DalvikShareService");
+    }
+    return jShareServiceClass;
+}
+
+jclass substrateGetStatusBarServiceClass() {
+    if (jStatusBarServiceClass == NULL) {
+        jStatusBarServiceClass = registerClass("com/gluonhq/helloandroid/DalvikStatusBarService");
+    }
+    return jStatusBarServiceClass;
+}
+
+jclass substrateGetStorageServiceClass() {
+    if (jStorageServiceClass == NULL) {
+        jStorageServiceClass = registerClass("com/gluonhq/helloandroid/DalvikStorageService");
+    }
+    return jStorageServiceClass;
 }
 
 JNIEXPORT jint JNICALL
