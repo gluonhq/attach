@@ -1,0 +1,18 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+    }
+
+    dependencies {
+        provided fileTree(dir: '../libs', include: '*.jar')
+    }
+
+    afterEvaluate {
+        generateDebugBuildConfig.enabled = false
+    }
+}
