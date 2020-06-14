@@ -106,122 +106,71 @@ static void initializeUtilDalvikHandles() {
 }
 
 jclass substrateGetUtilClass() {
-    if (jUtilClass == NULL) {
-        jUtilClass = registerClass("com/gluonhq/helloandroid/Util");
-    }
-    return jUtilClass;
+    return GETREGISTERCLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
 }
 
 jclass substrateGetBatteryServiceClass() {
-    if (jBatteryServiceClass == NULL) {
-        jBatteryServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBatteryService");
-    }
-    return jBatteryServiceClass;
+    return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
 }
 
 jclass substrateGetBleServiceClass() {
-    if (jBleServiceClass == NULL) {
-        jBleServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBleService");
-    }
-    return jBleServiceClass;
+    return GETREGISTERCLASS(jBleServiceClass, "com/gluonhq/helloandroid/DalvikBleService");
 }
 
 jclass substrateGetBrowserServiceClass() {
-    if (jBrowserServiceClass == NULL) {
-        jBrowserServiceClass = registerClass("com/gluonhq/helloandroid/DalvikBrowserService");
-    }
-    return jBrowserServiceClass;
+    return GETREGISTERCLASS(jBrowserServiceClass, "com/gluonhq/helloandroid/DalvikBrowserService");
 }
 
 jclass substrateGetConnectivityServiceClass() {
-    if (jConnectivityServiceClass == NULL) {
-        jConnectivityServiceClass = registerClass("com/gluonhq/helloandroid/DalvikConnectivityService");
-    }
-    return jConnectivityServiceClass;
+    return GETREGISTERCLASS(jConnectivityServiceClass, "com/gluonhq/helloandroid/DalvikConnectivityService");
 }
 
 jclass substrateGetDeviceServiceClass() {
-    if (jDeviceServiceClass == NULL) {
-        jDeviceServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDeviceService");
-    }
-    return jDeviceServiceClass;
+    return GETREGISTERCLASS(jDeviceServiceClass, "com/gluonhq/helloandroid/DalvikDeviceService");
 }
 
 jclass substrateGetDialerServiceClass() {
-    if (jDialerServiceClass == NULL) {
-        jDialerServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDialerService");
-    }
-    return jDialerServiceClass;
+    return GETREGISTERCLASS(jDialerServiceClass, "com/gluonhq/helloandroid/DalvikDialerService");
 }
 
 jclass substrateGetDisplayServiceClass() {
-    if (jDisplayServiceClass == NULL) {
-        jDisplayServiceClass = registerClass("com/gluonhq/helloandroid/DalvikDisplayService");
-    }
-    return jDisplayServiceClass;
+    return GETREGISTERCLASS(jDisplayServiceClass, "com/gluonhq/helloandroid/DalvikDisplayService");
 }
 
 jclass substrateGetKeyboardServiceClass() {
-    if (jKeyboardServiceClass == NULL) {
-        jKeyboardServiceClass = registerClass("com/gluonhq/helloandroid/KeyboardService");
-    }
-    return jKeyboardServiceClass;
+    return GETREGISTERCLASS(jKeyboardServiceClass, "com/gluonhq/helloandroid/KeyboardService");
 }
 
 jclass substrateGetLifecycleServiceClass() {
-    if (jLifecycleServiceClass == NULL) {
-        jLifecycleServiceClass = registerClass("com/gluonhq/helloandroid/DalvikLifecycleService");
-    }
-    return jLifecycleServiceClass;
+    return GETREGISTERCLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
 }
 
 jclass substrateGetOrientationServiceClass() {
-    if (jOrientationServiceClass == NULL) {
-    jOrientationServiceClass = registerClass("com/gluonhq/helloandroid/DalvikOrientationService");
-    }
-    return jOrientationServiceClass;
+    return GETREGISTERCLASS(jOrientationServiceClass, "com/gluonhq/helloandroid/DalvikOrientationService");
 }
 
 jclass substrateGetPicturesServiceClass() {
-    if (jPicturesServiceClass == NULL) {
-        jPicturesServiceClass = registerClass("com/gluonhq/helloandroid/DalvikPicturesService");
-    }
-    return jPicturesServiceClass;
+    return GETREGISTERCLASS(jPicturesServiceClass, "com/gluonhq/helloandroid/DalvikPicturesService");
 }
 
 jclass substrateGetPositionServiceClass() {
-    if (jPositionServiceClass == NULL) {
-        jPositionServiceClass = registerClass("com/gluonhq/helloandroid/DalvikPositionService");
-    }
-    return jPositionServiceClass;
+    return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
 }
 
 jclass substrateGetSettingsServiceClass() {
-    if (jSettingsServiceClass == NULL) {
-        jSettingsServiceClass = registerClass("com/gluonhq/helloandroid/DalvikSettingsService");
-    }
-    return jSettingsServiceClass;
+    return GETREGISTERCLASS(jSettingsServiceClass, "com/gluonhq/helloandroid/DalvikSettingsService");
 }
 
 jclass substrateGetShareServiceClass() {
-    if (jShareServiceClass == NULL) {
-        jShareServiceClass = registerClass("com/gluonhq/helloandroid/DalvikShareService");
-    }
-    return jShareServiceClass;
+    return GETREGISTERCLASS(jShareServiceClass, "com/gluonhq/helloandroid/DalvikShareService");
 }
 
 jclass substrateGetStatusBarServiceClass() {
-    if (jStatusBarServiceClass == NULL) {
-        jStatusBarServiceClass = registerClass("com/gluonhq/helloandroid/DalvikStatusBarService");
-    }
-    return jStatusBarServiceClass;
+    return GETREGISTERCLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
 }
 
 jclass substrateGetStorageServiceClass() {
-    if (jStorageServiceClass == NULL) {
-        jStorageServiceClass = registerClass("com/gluonhq/helloandroid/DalvikStorageService");
-    }
-    return jStorageServiceClass;
+    return GETREGISTERCLASS(jStorageServiceClass, "com/gluonhq/helloandroid/DalvikStorageService");
 }
 
 JNIEXPORT jint JNICALL
