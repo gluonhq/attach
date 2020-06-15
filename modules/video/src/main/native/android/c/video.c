@@ -62,7 +62,7 @@ static void initializeVideoDalvikHandles() {
     jVideoStopVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "stop", "()V");
     jVideoPauseVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "pause", "()V");
     jVideoHideVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "hide", "()V");
-    jVideoLoopingVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "looping", "(Z)V");
+    jVideoLoopingVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "setLooping", "(Z)V");
     jVideoControlsVisibleMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "setControlsVisible", "(Z)V");
     jVideoCurrentIndexMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "setCurrentIndex", "(I)V");
     jVideoFullScreenModeMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "setFullScreen", "(Z)V");
