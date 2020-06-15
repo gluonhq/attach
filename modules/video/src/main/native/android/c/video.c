@@ -45,7 +45,7 @@ static jmethodID jVideoCurrentIndexMethod;
 static jmethodID jVideoFullScreenModeMethod;
 static jmethodID jVideoPositionMethod;
 
-void initializeGraalHandles(JNIEnv *graalEnv) {
+static void initializeGraalHandles(JNIEnv *graalEnv) {
     jGraalVideoClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/video/impl/AndroidVideoService"));
     jGraalStatusMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalVideoClass, "updateStatus", "(I)V");
     jGraalFullScreenMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalVideoClass, "updateFullScreen", "(Z)V");
@@ -80,7 +80,7 @@ static void initializeVideoDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_statusbar(JavaVM *vm, void *reserved)
+JNI_OnLoad_video(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
     ATTACH_LOG_INFO("JNI_OnLoad_statusbar called");
