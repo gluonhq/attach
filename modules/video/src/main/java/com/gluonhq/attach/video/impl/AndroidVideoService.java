@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Gluon
+ * Copyright (c) 2017, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,20 +42,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IOSVideoService extends DefaultVideoService {
-	
-    static {
-        System.loadLibrary("Video");
-        initVideo();
-    }
+public class AndroidVideoService extends DefaultVideoService {
 
     private static final ReadOnlyObjectWrapper<Status> STATUS = new ReadOnlyObjectWrapper<>();
     private static final BooleanProperty FULL_SCREEN = new SimpleBooleanProperty();
     private static final IntegerProperty CURRENT_INDEX = new SimpleIntegerProperty();
+    static {
+        System.loadLibrary("video");
+    }
 
-    public IOSVideoService() {
+    public AndroidVideoService() {
         super();
-        
+
         playlist.addListener((Observable o) -> {
             List<String> list = new ArrayList<>();
             for (String s : playlist) {
@@ -68,7 +66,7 @@ public class IOSVideoService extends DefaultVideoService {
             }
             setVideoPlaylist(list.toArray(new String[0]));
         });
-        
+
         FULL_SCREEN.addListener((obs, ov, nv) -> setFullScreenMode(nv));
         CURRENT_INDEX.addListener((obs, ov, nv) -> currentIndex(nv.intValue()));
     }
@@ -77,7 +75,7 @@ public class IOSVideoService extends DefaultVideoService {
     public void show() {
         showVideo();
     }
-    
+
     @Override
     public void play() {
         playVideo();
@@ -97,7 +95,7 @@ public class IOSVideoService extends DefaultVideoService {
     public void hide() {
         hideVideo();
     }
-    
+
     @Override
     public void setPosition(Pos alignment, double topPadding, double rightPadding, double bottomPadding, double leftPadding) {
         setPosition(alignment.getHpos().name(), alignment.getVpos().name(), topPadding, rightPadding, bottomPadding, leftPadding);
@@ -139,7 +137,6 @@ public class IOSVideoService extends DefaultVideoService {
     }
 
     // native
-    private static native void initVideo(); // init IDs for java callbacks from native
     private native void setVideoPlaylist(String[] playlist);
     private native void showVideo();
     private native void playVideo();
@@ -164,15 +161,17 @@ public class IOSVideoService extends DefaultVideoService {
             case 5: s = Status.DISPOSED; break;
             default: s = Status.UNKNOWN;
         }
-        Platform.runLater(() -> STATUS.set(s));
+        if (STATUS.get() != s) {
+            Platform.runLater(() -> STATUS.set(s));
+        }
     }
-    
+
     private static void updateFullScreen(boolean value) {
         if (FULL_SCREEN.get() != value) {
             Platform.runLater(() -> FULL_SCREEN.set(value));
         }
     }
-    
+
     private static void updateCurrentIndex(int index) {
         if (CURRENT_INDEX.get() != index) {
             Platform.runLater(() -> CURRENT_INDEX.set(index));

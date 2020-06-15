@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.video {
+package com.gluonhq.attach.video;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.storage;
-
-    exports com.gluonhq.attach.video;
-    exports com.gluonhq.attach.video.impl to com.gluonhq.attach.util;
+/**
+ * Enumeration describing the different status values of a media player.
+ */
+public enum Status {
+    /**
+     * State of the player immediately after creation
+     */
+    UNKNOWN,
+    /**
+     * State of the player once it is prepared to play
+     */
+    READY,
+    /**
+     * State of the player when playback is paused
+     */
+    PAUSED,
+    /**
+     * State of the player when it is currently playing
+     */
+    PLAYING,
+    /**
+     * State of the player when playback has stopped
+     */
+    STOPPED,
+    /**
+     * State of the player after dispose() method is invoked
+     */
+    DISPOSED
 }

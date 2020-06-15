@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.video.impl.AndroidVideoService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

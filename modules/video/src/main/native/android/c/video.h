@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.video {
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.storage;
+#include "util.h"
 
-    exports com.gluonhq.attach.video;
-    exports com.gluonhq.attach.video.impl to com.gluonhq.attach.util;
-}
+jclass substrateGetVideoServiceClass();
