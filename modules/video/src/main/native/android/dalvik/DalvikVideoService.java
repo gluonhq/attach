@@ -111,7 +111,7 @@ public class DalvikVideoService implements TextureView.SurfaceTextureListener, M
 
     public DalvikVideoService(final Activity activity) {
         this.activity = activity;
-        viewGroup = (ViewGroup) activity.getWindow().getDecorView().getParent();
+        viewGroup = (ViewGroup) activity.getWindow().getDecorView();
         debug = Util.isDebug();
 
         activity.setVolumeControlStream(AudioManager.STREAM_MUSIC‌​);
