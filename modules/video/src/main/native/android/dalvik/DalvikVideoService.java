@@ -386,7 +386,12 @@ public class DalvikVideoService implements TextureView.SurfaceTextureListener, M
     private void setupMedia() {
         resizeRelocateVideo();
 
-        mediaPlayer.prepareAsync();
+        try {
+            mediaPlayer.prepareAsync();
+        } catch (IllegalStateException ex) {
+            Log.e(TAG, "Media player error: " + ex.getMessage());
+            return;
+        }
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
