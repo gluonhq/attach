@@ -29,6 +29,14 @@
 #include <android/native_window_jni.h>
 #include "attach_macros_android.h"
 
+#define GETREGISTERCLASS(class, name)               \
+({                                                  \
+    if (class == NULL) {                            \
+        class = registerClass(name);                \
+    }                                               \
+    class;                                          \
+})
+
 JavaVM* getGraalVM();
 
 jclass substrateGetUtilClass();
