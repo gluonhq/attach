@@ -39,6 +39,50 @@ static jmethodID jUtilRequestPermissionsMethod;
 
 static jboolean initialized;
 
+// Attach classes
+static jclass jBatteryServiceClass;
+static jclass jBleServiceClass;
+static jclass jBrowserServiceClass;
+static jclass jConnectivityServiceClass;
+static jclass jDeviceServiceClass;
+static jclass jDialerServiceClass;
+static jclass jDisplayServiceClass;
+static jclass jKeyboardServiceClass;
+static jclass jLifecycleServiceClass;
+static jclass jOrientationServiceClass;
+static jclass jPicturesServiceClass;
+static jclass jPositionServiceClass;
+static jclass jSettingsServiceClass;
+static jclass jShareServiceClass;
+static jclass jStatusBarServiceClass;
+static jclass jStorageServiceClass;
+
+static jmethodID loadClassMethod;
+static jobject classLoaderObject;
+
+static jclass registerClass(const char* className) {
+    ATTACH_DALVIK();
+    if (loadClassMethod == NULL || classLoaderObject == NULL) {
+        jmethodID getClassLoaderMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
+        classLoaderObject = (*dalvikEnv)->CallObjectMethod(dalvikEnv, activity, getClassLoaderMethod);
+        jclass classLoader = (*dalvikEnv)->FindClass(dalvikEnv, "java/lang/ClassLoader");
+        loadClassMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, classLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+    }
+
+    ATTACH_LOG_FINE("Util :: Load className %s", className);
+    jstring strClassName = (*dalvikEnv)->NewStringUTF(dalvikEnv, className);
+    jclass classRetrieved = (jclass) (*dalvikEnv)->CallObjectMethod(dalvikEnv, classLoaderObject, loadClassMethod, strClassName);
+    jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
+    if (t) {
+        (*dalvikEnv)->ExceptionClear(dalvikEnv);
+    }
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, strClassName);
+    if ((t == NULL) && (classRetrieved != NULL)) {
+        return (jclass)(*dalvikEnv)->NewGlobalRef(dalvikEnv, classRetrieved);
+    }
+    return NULL;
+}
+
 static void initializeUtilDalvikHandles() {
     ATTACH_LOG_FINE("Init Util");
     jUtilClass = substrateGetUtilClass();
@@ -59,6 +103,74 @@ static void initializeUtilDalvikHandles() {
     DETACH_DALVIK();
     ATTACH_LOG_FINE("Dalvik Util init was called");
     initialized = JNI_TRUE;
+}
+
+jclass substrateGetUtilClass() {
+    return GETREGISTERCLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
+}
+
+jclass substrateGetBatteryServiceClass() {
+    return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
+}
+
+jclass substrateGetBleServiceClass() {
+    return GETREGISTERCLASS(jBleServiceClass, "com/gluonhq/helloandroid/DalvikBleService");
+}
+
+jclass substrateGetBrowserServiceClass() {
+    return GETREGISTERCLASS(jBrowserServiceClass, "com/gluonhq/helloandroid/DalvikBrowserService");
+}
+
+jclass substrateGetConnectivityServiceClass() {
+    return GETREGISTERCLASS(jConnectivityServiceClass, "com/gluonhq/helloandroid/DalvikConnectivityService");
+}
+
+jclass substrateGetDeviceServiceClass() {
+    return GETREGISTERCLASS(jDeviceServiceClass, "com/gluonhq/helloandroid/DalvikDeviceService");
+}
+
+jclass substrateGetDialerServiceClass() {
+    return GETREGISTERCLASS(jDialerServiceClass, "com/gluonhq/helloandroid/DalvikDialerService");
+}
+
+jclass substrateGetDisplayServiceClass() {
+    return GETREGISTERCLASS(jDisplayServiceClass, "com/gluonhq/helloandroid/DalvikDisplayService");
+}
+
+jclass substrateGetKeyboardServiceClass() {
+    return GETREGISTERCLASS(jKeyboardServiceClass, "com/gluonhq/helloandroid/KeyboardService");
+}
+
+jclass substrateGetLifecycleServiceClass() {
+    return GETREGISTERCLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
+}
+
+jclass substrateGetOrientationServiceClass() {
+    return GETREGISTERCLASS(jOrientationServiceClass, "com/gluonhq/helloandroid/DalvikOrientationService");
+}
+
+jclass substrateGetPicturesServiceClass() {
+    return GETREGISTERCLASS(jPicturesServiceClass, "com/gluonhq/helloandroid/DalvikPicturesService");
+}
+
+jclass substrateGetPositionServiceClass() {
+    return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
+}
+
+jclass substrateGetSettingsServiceClass() {
+    return GETREGISTERCLASS(jSettingsServiceClass, "com/gluonhq/helloandroid/DalvikSettingsService");
+}
+
+jclass substrateGetShareServiceClass() {
+    return GETREGISTERCLASS(jShareServiceClass, "com/gluonhq/helloandroid/DalvikShareService");
+}
+
+jclass substrateGetStatusBarServiceClass() {
+    return GETREGISTERCLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
+}
+
+jclass substrateGetStorageServiceClass() {
+    return GETREGISTERCLASS(jStorageServiceClass, "com/gluonhq/helloandroid/DalvikStorageService");
 }
 
 JNIEXPORT jint JNICALL
