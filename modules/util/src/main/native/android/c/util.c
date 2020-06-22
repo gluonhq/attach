@@ -64,7 +64,7 @@ static jclass registerClass(const char* className) {
     ATTACH_DALVIK();
     if (loadClassMethod == NULL || classLoaderObject == NULL) {
         jmethodID getClassLoaderMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
-        classLoaderObject = (*dalvikEnv)->CallObjectMethod(dalvikEnv, activity, getClassLoaderMethod);
+        classLoaderObject = (*dalvikEnv)->NewGlobalRef(dalvikEnv, (*dalvikEnv)->CallObjectMethod(dalvikEnv, activity, getClassLoaderMethod));
         jclass classLoader = (*dalvikEnv)->FindClass(dalvikEnv, "java/lang/ClassLoader");
         loadClassMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, classLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
     }
