@@ -112,6 +112,13 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsS
         ATTACH_LOG_FINE("Retrieving settings for = %s\n", keyChars);
     }
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRetrieve, dkey);
+    if (answer == NULL) {
+        if (debugAttach) {
+            ATTACH_LOG_FINE("Error: Settings for = %s not found\n", keyChars);
+        }
+        DETACH_DALVIK();
+        return NULL;
+    }
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
     if (debugAttach) {
         ATTACH_LOG_FINE("Retrieved settings for = %s\n", answerChars);
