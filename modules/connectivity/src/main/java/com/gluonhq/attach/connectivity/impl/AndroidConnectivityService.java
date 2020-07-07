@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,38 +28,38 @@
 package com.gluonhq.attach.connectivity.impl;
 
 import com.gluonhq.attach.connectivity.ConnectivityService;
-import com.gluonhq.attach.util.PropertyWatcher;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 
-public class IOSConnectivityService implements ConnectivityService {
+/**
+ * Note: Requires this permission:
+ * {@code &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/&gt;}
+ */
 
+public class AndroidConnectivityService implements ConnectivityService {
+
+    private static final ReadOnlyBooleanWrapper connected = new ReadOnlyBooleanWrapper();
     static {
-        System.loadLibrary("Connectivity");
+        System.loadLibrary("connectivity");
     }
 
-    private ReadOnlyBooleanWrapper connectedProperty;
+    public AndroidConnectivityService() {}
 
     @Override
     public ReadOnlyBooleanProperty connectedProperty() {
-        if (connectedProperty == null) {
-            connectedProperty = new ReadOnlyBooleanWrapper();
-            PropertyWatcher.addPropertyWatcher(() -> {
-                final boolean connected = isConnected();
-                if (connectedProperty.getValue() != connected) {
-                    Platform.runLater(() -> connectedProperty.setValue(connected));
-                }
-            });
-        }
-        return connectedProperty.getReadOnlyProperty();
+        return connected.getReadOnlyProperty();
     }
 
     @Override
     public boolean isConnected() {
-        return singleCheck();
+        return connected.get();
     }
 
-    // native
-    private native boolean singleCheck();
+    // callback
+    private static void notifyConnection(boolean c) {
+        if (c != connected.get()) {
+            Platform.runLater(() -> connected.setValue(c));
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,41 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.connectivity.impl;
 
-import com.gluonhq.attach.connectivity.ConnectivityService;
-import com.gluonhq.attach.util.PropertyWatcher;
-import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
+#include "util.h"
 
-public class IOSConnectivityService implements ConnectivityService {
-
-    static {
-        System.loadLibrary("Connectivity");
-    }
-
-    private ReadOnlyBooleanWrapper connectedProperty;
-
-    @Override
-    public ReadOnlyBooleanProperty connectedProperty() {
-        if (connectedProperty == null) {
-            connectedProperty = new ReadOnlyBooleanWrapper();
-            PropertyWatcher.addPropertyWatcher(() -> {
-                final boolean connected = isConnected();
-                if (connectedProperty.getValue() != connected) {
-                    Platform.runLater(() -> connectedProperty.setValue(connected));
-                }
-            });
-        }
-        return connectedProperty.getReadOnlyProperty();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return singleCheck();
-    }
-
-    // native
-    private native boolean singleCheck();
-}
+jclass substrateGetConnectivityServiceClass();
