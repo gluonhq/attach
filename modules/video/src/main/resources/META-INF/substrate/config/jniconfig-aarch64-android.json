@@ -1,0 +1,10 @@
+[
+  {
+    "name" : "com.gluonhq.attach.video.impl.AndroidVideoService",
+    "methods":[
+      {"name":"updateStatus","parameterTypes":["int"]},
+      {"name":"updateFullScreen","parameterTypes":["boolean"]},
+      {"name":"updateCurrentIndex","parameterTypes":["int"]}
+    ]
+  }
+]
