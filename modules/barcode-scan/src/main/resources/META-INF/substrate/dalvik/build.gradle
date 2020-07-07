@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+    }
+
+    dependencies {
+        provided fileTree(dir: '../libs', include: '*.jar')
+        implementation 'com.google.zxing:core:3.4.0'
+    }
+
+    afterEvaluate {
+        generateDebugBuildConfig.enabled = false
+    }
+}

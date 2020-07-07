@@ -6,6 +6,7 @@ javafx {
 
 dependencies {
     implementation project(':util')
+    androidImplementation 'com.google.zxing:core:3.4.0'
 }
 
 ext.description = 'Common API to access barcode scan features'

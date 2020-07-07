@@ -41,6 +41,7 @@ static jboolean initialized;
 
 // Attach classes
 static jclass jBatteryServiceClass;
+static jclass jBarcodeScanServiceClass;
 static jclass jBleServiceClass;
 static jclass jBrowserServiceClass;
 static jclass jConnectivityServiceClass;
@@ -111,6 +112,10 @@ jclass substrateGetUtilClass() {
 
 jclass substrateGetBatteryServiceClass() {
     return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
+}
+
+jclass substrateGetBarcodeScanServiceClass() {
+    return GETREGISTERCLASS(jBarcodeScanServiceClass, "com/gluonhq/helloandroid/DalvikBarcodeScanService");
 }
 
 jclass substrateGetBleServiceClass() {
