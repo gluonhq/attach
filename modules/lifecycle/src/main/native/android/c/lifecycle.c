@@ -55,7 +55,7 @@ static void initializeLifecycleDalvikHandles() {
     }
 
     jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jLifecycleServiceClass, jLifecycleServiceInitMethod, jActivity);
-    jobject jDalvikLifecycleService = (jobject)(*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
+    jDalvikLifecycleService = (jobject)(*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
     DETACH_DALVIK();
 }
 
