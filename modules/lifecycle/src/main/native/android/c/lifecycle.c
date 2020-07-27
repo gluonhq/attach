@@ -31,25 +31,30 @@
 static jclass jGraalLifecycleClass;
 static jmethodID jGraalSetLifecycleEventMethod;
 
+// Dalvik handles
+static jobject jDalvikLifecycleService;
+static jmethodID jLifecycleServiceShutdownMethod;
+
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalLifecycleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/lifecycle/impl/AndroidLifecycleService"));
     jGraalSetLifecycleEventMethod = (*env)->GetStaticMethodID(env, jGraalLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
 }
 
-static void initializeUtilDalvikHandles() {
+static void initializeLifecycleDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
     jclass jLifecycleServiceClass = substrateGetLifecycleServiceClass();
 
     ATTACH_DALVIK();
-    jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "()V");
+    jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jLifecycleServiceShutdownMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "shutdown", "()V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
     if (t) {
         ATTACH_LOG_INFO("EXCEPTION occurred when dealing with dalvik handles\n");
         (*dalvikEnv)->ExceptionClear(dalvikEnv);
     }
 
-    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jLifecycleServiceClass, jLifecycleServiceInitMethod);
+    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jLifecycleServiceClass, jLifecycleServiceInitMethod, jActivity);
     jobject jDalvikLifecycleService = (jobject)(*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
     DETACH_DALVIK();
 }
@@ -69,12 +74,22 @@ JNI_OnLoad_lifecycle(JavaVM *vm, void *reserved)
     }
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad");
     initializeGraalHandles(graalEnv);
-    initializeUtilDalvikHandles();
+    initializeLifecycleDalvikHandles();
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad Done");
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
 #endif
+}
+
+// from Java to Android
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_lifecycle_impl_AndroidLifecycleService_nativeShutdown
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikLifecycleService, jLifecycleServiceShutdownMethod);
+    DETACH_DALVIK();
 }
 
 ///////////////////////////

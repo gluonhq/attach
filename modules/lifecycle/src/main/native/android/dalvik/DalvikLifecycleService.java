@@ -27,13 +27,17 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.app.Activity;
 import android.util.Log;
 
 public class DalvikLifecycleService {
 
     private static final String TAG = Util.TAG;
 
-    public DalvikLifecycleService() {
+    private final Activity activity;
+
+    public DalvikLifecycleService(Activity activity) {
+        this.activity = activity;
 
         Util.setLifecycleEventHandler(new LifecycleEventHandler() {
             @Override
@@ -45,6 +49,13 @@ public class DalvikLifecycleService {
             }
         });
 
+    }
+
+    private void shutdown() {
+        if (activity != null) {
+            Log.v(TAG, "DalvikLifecycleService::shutdown");
+            activity.finish();
+        }
     }
 
     private native void setLifecycleEventNative(String event);
