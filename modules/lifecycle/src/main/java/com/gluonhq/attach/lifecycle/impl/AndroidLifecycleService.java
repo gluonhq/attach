@@ -36,10 +36,12 @@ public class AndroidLifecycleService extends LifecycleServiceBase {
     }
 
     @Override public void shutdown() {
-        // no-op
+        nativeShutdown();
     }
 
     // native
+    private native void nativeShutdown();
+
     // callback
     private static void setEvent(String event) {
         if (event != null && !event.isEmpty()) {

@@ -31,18 +31,21 @@
 static jclass jGraalLifecycleClass;
 static jmethodID jGraalSetLifecycleEventMethod;
 
+// Dalvik handles
+static jmethodID jDalvikFinishMethod;
+
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalLifecycleClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/lifecycle/impl/AndroidLifecycleService"));
     jGraalSetLifecycleEventMethod = (*env)->GetStaticMethodID(env, jGraalLifecycleClass, "setEvent", "(Ljava/lang/String;)V");
 }
 
-static void initializeUtilDalvikHandles() {
+static void initializeLifecycleDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
-    jobject jActivity = substrateGetActivity();
     jclass jLifecycleServiceClass = substrateGetLifecycleServiceClass();
 
     ATTACH_DALVIK();
     jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "()V");
+    jDalvikFinishMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "finish", "()V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
     if (t) {
         ATTACH_LOG_INFO("EXCEPTION occurred when dealing with dalvik handles\n");
@@ -69,12 +72,25 @@ JNI_OnLoad_lifecycle(JavaVM *vm, void *reserved)
     }
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad");
     initializeGraalHandles(graalEnv);
-    initializeUtilDalvikHandles();
+    initializeLifecycleDalvikHandles();
     ATTACH_LOG_FINE("Initializing native Lifecycle from OnLoad Done");
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
 #endif
+}
+
+// from Java to Android
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_lifecycle_impl_AndroidLifecycleService_nativeShutdown
+(JNIEnv *env, jclass jClass)
+{
+    jobject jActivity = substrateGetActivity();
+
+    ATTACH_DALVIK();
+    ATTACH_LOG_FINE("Finishing application");
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jActivity, jDalvikFinishMethod);
+    DETACH_DALVIK();
 }
 
 ///////////////////////////
