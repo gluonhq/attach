@@ -85,6 +85,8 @@ JNI_OnLoad_lifecycle(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_lifecycle_impl_AndroidLifecycleService_nativeShutdown
 (JNIEnv *env, jclass jClass)
 {
+    jobject jActivity = substrateGetActivity();
+
     ATTACH_DALVIK();
     ATTACH_LOG_FINE("Finishing application");
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jActivity, jDalvikFinishMethod);
