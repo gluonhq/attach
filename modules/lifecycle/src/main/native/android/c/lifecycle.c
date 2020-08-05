@@ -44,7 +44,7 @@ static void initializeLifecycleDalvikHandles() {
     jclass jLifecycleServiceClass = substrateGetLifecycleServiceClass();
 
     ATTACH_DALVIK();
-    jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "()V");
     jDalvikFinishMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "finish", "()V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
     if (t) {
