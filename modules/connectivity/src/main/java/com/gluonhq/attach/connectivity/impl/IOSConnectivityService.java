@@ -39,8 +39,6 @@ public class IOSConnectivityService implements ConnectivityService {
         System.loadLibrary("Connectivity");
     }
 
-    private native boolean singleCheck();
-
     private ReadOnlyBooleanWrapper connectedProperty;
 
     @Override
@@ -61,4 +59,7 @@ public class IOSConnectivityService implements ConnectivityService {
     public boolean isConnected() {
         return singleCheck();
     }
+
+    // native
+    private native boolean singleCheck();
 }

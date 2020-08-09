@@ -27,6 +27,7 @@
  */
 package com.gluonhq.attach.video.impl;
 
+import com.gluonhq.attach.video.Status;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
@@ -36,7 +37,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
-import javafx.scene.media.MediaPlayer.Status;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,10 +55,6 @@ public class IOSVideoService extends DefaultVideoService {
 
     public IOSVideoService() {
         super();
-        
-        if (debug) {
-            enableDebug();
-        }
         
         playlist.addListener((Observable o) -> {
             List<String> list = new ArrayList<>();
@@ -155,8 +151,7 @@ public class IOSVideoService extends DefaultVideoService {
     private native void currentIndex(int currentIndex);
     private native void setFullScreenMode(boolean fullScreen);
     private native void setPosition(String alignmentH, String alignmentV, double topPadding, double rightPadding, double bottomPadding, double leftPadding);
-    private static native void enableDebug();
-    
+
     // callbacks
     private static void updateStatus(int value) {
         Status s;

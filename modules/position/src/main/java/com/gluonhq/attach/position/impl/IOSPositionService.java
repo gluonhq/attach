@@ -32,7 +32,6 @@ import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.position.Parameters;
 import com.gluonhq.attach.position.Position;
 import com.gluonhq.attach.position.PositionService;
-import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -77,9 +76,6 @@ public class IOSPositionService implements PositionService {
     private Parameters parameters;
     
     public IOSPositionService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
         position = new ReadOnlyObjectWrapper<>();
 
         LifecycleService.create().ifPresent(l -> {
@@ -133,8 +129,7 @@ public class IOSPositionService implements PositionService {
     private static native void initPosition(); // init IDs for java callbacks from native
     private static native void startObserver(String accuracy, long timeInterval, float distanceFilter, boolean backgroundModeEnabled);
     private static native void stopObserver();
-    private static native void enableDebug();
-    
+
     // callback
     private static void setLocation(double lat, double lon, double alt) {
         Position p = new Position(lat, lon, alt);

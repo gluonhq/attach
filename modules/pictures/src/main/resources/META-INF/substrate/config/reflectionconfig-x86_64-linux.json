@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.pictures.impl.DesktopPicturesService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

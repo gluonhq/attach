@@ -62,11 +62,6 @@ public class IOSDeviceService implements DeviceService {
     }
 
     @Override
-    public String getSerial() { // Not available on iOS
-        return null;
-    }
-
-    @Override
     public boolean isWearable() {
         // TODO: Find out if iOS device is wearable
         return false; 

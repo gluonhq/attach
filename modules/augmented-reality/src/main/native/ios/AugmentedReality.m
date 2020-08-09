@@ -54,7 +54,6 @@ jmethodID mat_jAugmentedRealityService_notifyCancel = 0;
 API_AVAILABLE(ios(11.3))
 AugmentedReality *_ar;
 
-BOOL debugAugmentedReality;
 BOOL enableDebugAugmentedReality;
 
 JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_initAR
@@ -84,12 +83,6 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
     }
     AttachLog(@"ARKit is not supported");
     return 0;
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugAugmentedReality = YES;
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_enableDebugAR
@@ -390,7 +383,7 @@ double modelScale = 1.0;
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugAugmentedReality) 
+    if (debugAttach)
     {
         va_list args;
         va_start(args, format);

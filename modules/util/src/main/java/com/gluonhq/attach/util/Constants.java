@@ -28,5 +28,11 @@
 package com.gluonhq.attach.util;
 
 public class Constants {
+
+    /**
+     * Constant that can be set as system property with
+     * value {@code "true"} to increase the verbosity of the Attach
+     * services logging while development.
+     */
     public static final String ATTACH_DEBUG = "com.gluonhq.attach.debug";
 }

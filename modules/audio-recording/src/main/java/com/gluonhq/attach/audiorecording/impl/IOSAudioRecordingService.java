@@ -27,7 +27,6 @@
  */
 package com.gluonhq.attach.audiorecording.impl;
 
-import com.gluonhq.attach.util.Constants;
 import javafx.application.Platform;
 
 import java.util.function.Function;
@@ -42,9 +41,6 @@ public class IOSAudioRecordingService extends DefaultAudioRecordingService {
     private static Function<String, Boolean> addChunk;
 
     public IOSAudioRecordingService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
     }
     
     @Override
@@ -62,8 +58,7 @@ public class IOSAudioRecordingService extends DefaultAudioRecordingService {
     private static native void initAudioRecording();
     private native void startAudioRecording(String audioFolderName, float sampleRate, int sampleSizeInBits, int channels, int chunkRecordTime);
     private native void stopAudioRecording();
-    private static native void enableDebug();
-    
+
     // callback
     private static void notifyRecordingStatus(boolean value) {
         Platform.runLater(() -> updateRecordingStatus(value));

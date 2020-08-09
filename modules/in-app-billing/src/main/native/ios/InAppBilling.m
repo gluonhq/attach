@@ -59,7 +59,6 @@ NSArray *arrayOfProductIds;
 NSMutableArray *arrayOfProducts;
 NSNumberFormatter *numberFormatter;
 NSMutableDictionary *orders;
-BOOL debugInAppBilling;
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBillingService_initInAppBilling
 (JNIEnv *env, jclass jClass)
@@ -77,7 +76,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     mat_jInAppBillingService_restorePurchases  = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "restorePurchases", "([Ljava/lang/String;)V");
     mat_jInAppBillingService_setPurchase  = (*env)->GetStaticMethodID(env, mat_jInAppBillingServiceClass, "setPurchase", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
-    debugInAppBilling = NO;
+    debugAttach = NO;
     orders = [[NSMutableDictionary alloc] init];
 
     AttachLog(@"Init InAppBilling");
@@ -119,12 +118,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBilling
     AttachLog(@"Purchasing product %@ with key %@", productId, key);
     [orders setObject:productId forKey:key];
     [_InAppBilling purchaseProduct:productId];
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_inappbilling_impl_IOSInAppBillingService_enableDebug
-(JNIEnv *env, jclass jClass)
-{
-    debugInAppBilling = YES;
 }
 
 void ready(BOOL value) {
@@ -385,7 +378,7 @@ void sendPurchase(NSString *purchasedID, NSString *transactionId, NSString *tran
 
 - (void) logMessage:(NSString *)format, ...;
 {
-    if (debugInAppBilling) 
+    if (debugAttach) 
     {
         va_list args;
         va_start(args, format);

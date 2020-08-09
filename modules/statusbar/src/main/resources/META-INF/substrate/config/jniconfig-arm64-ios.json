@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.display.impl.IOSDisplayService",
-    "methods":[{"name":"notifyDisplay","parameterTypes":["java.lang.String"] }]
-  }
-]

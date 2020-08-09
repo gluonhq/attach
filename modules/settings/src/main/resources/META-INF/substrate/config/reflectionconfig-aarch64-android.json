@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.settings.impl.AndroidSettingsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

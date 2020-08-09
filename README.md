@@ -9,15 +9,19 @@ used to deliver the functionality.
 Attach is open source, and it is freely licensed under the GPL license.
 [Gluon](http://gluonhq.com) can provide [custom consultancy](http://gluonhq.com/services/consulting/) and [training](http://gluonhq.com/services/training/), commercial licenses, and open source [commercial support](http://gluonhq.com/services/commercial-support/), including daily and monthly releases.
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.gluonhq.attach/util)](https://search.maven.org/search?q=g:com.gluonhq.attach%20AND%20a:util)
+[![Travis CI](https://api.travis-ci.com/gluonhq/attach.svg?branch=master)](https://travis-ci.com/gluonhq/attach)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+
 ## Getting started ##
 
-The best way to get started with Gluon Attach is using the [Gluon plugin for your IDE](http://gluonhq.com/get-started/ide-plugins/)
+The best way to get started with Gluon Attach is using the [Gluon Client Maven archetype from your IDE](https://github.com/gluonhq/client-maven-archetypes)
 and creating a [Gluon Mobile](http://gluonhq.com/products/mobile) project.
 
-The [Gluon samples](http://gluonhq.com/developers/samples/) are a good way to find out how Attach is used.
+The [Gluon Client samples](https://github.com/gluonhq/client-samples) are a good way to find out how Attach is used.
 
-See the [documentation](http://docs.gluonhq.com/charm/latest/#_charm_down) and the 
-[Javadoc](http://docs.gluonhq.com/mobile/javadoc/latest/com/gluonhq/charm/down/package-summary.html).
+See the [documentation](https://docs.gluonhq.com/client/#_attach_configuration) on how to add Attach with the Client Plugin.
 
 The list of available services at Attach can be found [here](http://gluonhq.com/products/mobile/attach/).
 
@@ -26,7 +30,9 @@ The list of available services at Attach can be found [here](http://gluonhq.com/
 
 Issues can be reported to the [Issue tracker](https://github.com/gluonhq/attach/issues)
 
-Contributions can be submitted via [Pull requests](https://github.com/gluonhq/attach/pulls)
+Contributions can be submitted via [Pull requests](https://github.com/gluonhq/attach/pulls), 
+ providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY) 
+ (See [What is a CLA and why do I care](https://www.clahub.com/pages/why_cla) in case of doubt).
 
 
 ## Building Attach ##
@@ -55,21 +61,22 @@ If you want to install them, run:
 
 `./gradlew  clean publishToMavenLocal`
 
-To build/install for desktop, add the option `-Pdesktop`. 
+When the process finishes successfully, the different services can be added to a Gluon Mobile project.
 
-To build/install for iOS, add the option `-Pios`.
-
-When the process finishes successfully, the different services can be added to a Gluon Mobile project 
-by including `mavenLocal()` in the list of repositories.
-
-For instance, the Lifecycle service for desktop can be added to the project like:
+For instance, the Display service for desktop can be added to the project like:
 
 ```
-repositories {
-    mavenLocal()
-}
+<!-- dependencies -->
+<dependency>
+    <groupId>com.gluonhq.attach</groupId>
+    <artifactId>display</artifactId>
+    <version>4.0.6-SNAPSHOT</version>
+</dependency>
 
-dependencies {
-    implementation 'com.gluonhq.attach:lifecycle:4.0.0-SNAPSHOT:desktop'
-}
+<!-- plugin -->
+<configuration>
+    <attachList>
+        <list>display</list>
+    </attachList>
+</configuration>
 ```

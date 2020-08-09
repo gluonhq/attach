@@ -29,7 +29,6 @@ package com.gluonhq.attach.share.impl;
 
 
 import com.gluonhq.attach.share.ShareService;
-import com.gluonhq.attach.util.Constants;
 
 import java.io.File;
 
@@ -42,9 +41,6 @@ public class IOSShareService implements ShareService {
     }
 
     public IOSShareService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
     }
     
     @Override
@@ -88,7 +84,6 @@ public class IOSShareService implements ShareService {
 
     // native
     private static native void initShare(); // init IDs for java callbacks from native
-    private static native void enableDebug();
     private static native void nativeShare(String subject, String message, String filePath);
 
 }

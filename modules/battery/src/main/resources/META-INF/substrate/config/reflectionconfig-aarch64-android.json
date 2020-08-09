@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.battery.impl.AndroidBatteryService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

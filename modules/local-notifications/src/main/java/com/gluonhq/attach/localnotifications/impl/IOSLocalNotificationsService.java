@@ -29,7 +29,6 @@ package com.gluonhq.attach.localnotifications.impl;
 
 
 import com.gluonhq.attach.localnotifications.Notification;
-import com.gluonhq.attach.util.Constants;
 
 /**
  *  iOS implementation of LocalNotificationsService.
@@ -42,9 +41,6 @@ public class IOSLocalNotificationsService extends LocalNotificationsServiceBase 
     }
 
     public IOSLocalNotificationsService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            enableDebug();
-        }
     }
 
     @Override
@@ -65,7 +61,5 @@ public class IOSLocalNotificationsService extends LocalNotificationsServiceBase 
     private native void unregisterNotification(String identifier);
     
     private static native void initLocalNotification();
-    private static native void enableDebug();
-
 
 }

@@ -1,0 +1,8 @@
+[
+  {
+    "name" : "com.gluonhq.attach.battery.impl.AndroidBatteryService",
+    "methods":[
+      {"name":"notifyBattery","parameterTypes":["float","boolean"]}
+    ]
+  }
+]

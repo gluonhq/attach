@@ -1,10 +1,19 @@
+import java.time.Duration
+
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-//apply plugin: 'signing'
+apply plugin: 'signing'
+apply plugin: 'de.marcphilipp.nexus-publish'
 
 def nativeLib(buildDir, projectDir, service, osname) {
     return tasks.create("nativeLib${service}${osname}") {
         doLast {
+            if (osname == "android") {
+                File aar = aarBuild("$buildDir", "$projectDir", "$service", "$osname")
+                if (aar == null) {
+                    println "Error creating $aar"
+                }
+            }
             File lib = nativeBuild("$buildDir", "$projectDir", "$service", "$osname")
             if (lib != null) {
                 tasks["jar${service}${osname}"].configure {
@@ -18,27 +27,35 @@ def nativeLib(buildDir, projectDir, service, osname) {
 }
 
 def jarPackage(buildDir, projectDir, service, osname) {
+    if (osname == '') throw new GradleException("jarPackage: osname is required!")
+
     return tasks.create("jar${service}${osname}", Jar) {
         dependsOn(build)
-        if (osname != "") {
-            def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
-            dependsOn(nativeTask)
-            archiveBaseName = "${service}".toLowerCase()
-            archiveClassifier = osname
-            into ("") {
-                from "${buildDir}/resources/main"
-                from "${buildDir}/classes/java/main"
-                if (osname == 'desktop') {
-                    exclude '**/*/impl/Dummy**', "**/impl/IOS**", "**/**ios.json"
-                } else {
-                    exclude '**/*/impl/Dummy**', "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
+        def nativeTask = nativeLib("$buildDir", "$projectDir", "$service", "$osname")
+        dependsOn(nativeTask)
+        archiveBaseName = "${service}".toLowerCase()
+        archiveClassifier = osname
+        into ("") {
+            from "${buildDir}/resources/main"
+            from "$projectDir/src/$osname/resources/"
+            from "${buildDir}/classes/java/main"
+            exclude '**/*/impl/Dummy**'
+            if (osname == 'desktop') {
+                exclude "**/impl/IOS**", "**/**ios.json", '**/*/impl/Android**', "**/**android.json", "**/dalvik"
+            } else {
+                exclude "**/impl/Desktop**", "**/**darwin.json", "**/**linux.json", "**/**windows.json"
+                if (osname == 'ios') {
+                    exclude '**/*/impl/Android**', "**/**android.json", "**/dalvik"
+                } else if (osname == 'android') {
+                    exclude '**/*/impl/IOS**', "**/**ios.json"
                 }
             }
-        } else {
-            from "${buildDir}/classes/java/main"
-            exclude "**/impl/Desktop**", "**/impl/IOS**"
         }
     }
+}
+
+jar {
+    exclude "**/impl/Desktop**", "**/impl/IOS**", "**/impl/Android**", "META-INF/substrate"
 }
 
 task sourcesJar(type: Jar) {
@@ -55,18 +72,22 @@ publishing {
     publications {
         maven(MavenPublication) {
             def service = getServiceName(project.name)
-            if (service != "Util") {
+            if (System.getProperty('os.name').toLowerCase().contains("mac")) {
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "ios")
+            }
+            artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "android")
+            if (service != "Util") {
                 artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "desktop")
             }
-            artifact jarPackage("$project.buildDir", "$project.projectDir", "${service}", "")
+
+            from components.java
             artifact sourcesJar
             artifact javadocJar
 
             pom {
                 name = "Gluon Attach (${project.name})"
                 description = "API for accessing ${project.name} features"
-                url = 'https://gluonhq.com/products/mobile/'
+                url = 'https://github.com/gluonhq/attach/'
 
                 developers {
                     developer {
@@ -98,9 +119,9 @@ publishing {
                 }
 
                 scm {
-                    connection = 'scm:git:https://github.com/tiainen/attach.git'
-                    developerConnection = 'scm:git:ssh://git@github.com/tiainen/attach.git'
-                    url = 'https://github.com/tiainen/attach'
+                    connection = 'scm:git:https://github.com/gluonhq/attach.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/gluonhq/attach.git'
+                    url = 'https://github.com/gluonhq/attach'
                 }
             }
 
@@ -109,30 +130,17 @@ publishing {
                 pomNode.dependencies.'*'.findAll() {
                     it.groupId.text() == 'org.openjfx'
                 }.each {
-                    it.remove(it.classifier)
+                    it.parent().remove(it)
                 }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            // to upload release, use:
-            // ./gradlew -PrepositoryUrl=https://oss.sonatype.org/service/local/staging/deploy/maven2 publish
-//            url = getStringProperty('repositoryUrl', 'https://oss.sonatype.org/content/repositories/snapshots/')
-            url = getStringProperty('repositoryUrl', 'https://nexus.gluonhq.com/nexus/content/repositories/public-snapshots/')
-            credentials {
-                username = getStringPropertyDefaultAsProperty('repositoryUsername', 'gluonNexusUsername')
-                password = getStringPropertyDefaultAsProperty('repositoryPassword', 'gluonNexusPassword')
             }
         }
     }
 }
 
-//signing {
-//    sign publishing.publications.maven
-//    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
-//}
+signing {
+    sign publishing.publications.maven
+    required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
+}
 
 private String getServiceName(projectName) {
     if (projectName.contains("-")) { // in-app-billing -> InAppBilling
@@ -142,24 +150,11 @@ private String getServiceName(projectName) {
     return projectName.capitalize()
 }
 
-private String getStringProperty(String name, String defaultValue) {
-    if (!project.hasProperty(name)) {
-        return defaultValue
+nexusPublishing {
+    repositories {
+        sonatype()
     }
-
-    def propertyValue = project.property(name)
-    return propertyValue != null ? propertyValue.toString().trim() : defaultValue
-}
-
-private String getStringPropertyDefaultAsProperty(String name, String defaultProperty) {
-    if (!project.hasProperty(name)) {
-        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
-    }
-
-    def propertyValue = project.property(name)
-    if (propertyValue != null) {
-        return propertyValue.toString().trim()
-    } else {
-        return project.hasProperty(defaultProperty) ? project.property(defaultProperty) : System.getenv(name)
-    }
+    // credentials are shared from staging plugin
+    clientTimeout = Duration.ofMinutes(5)
+    connectTimeout = Duration.ofMinutes(5)
 }

@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.inappbilling.impl.DesktopInAppBillingService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

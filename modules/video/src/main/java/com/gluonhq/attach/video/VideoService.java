@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2017, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.media.MediaPlayer.Status;
 
 import java.util.Optional;
 
@@ -212,7 +211,7 @@ public interface VideoService {
      * Read only property that indicates the media player status. 
      *
      * @return A {@link ReadOnlyObjectProperty} with the 
-     * {@link javafx.scene.media.MediaPlayer.Status} of the media player
+     * {@link Status} of the media player
      */
     ReadOnlyObjectProperty<Status> statusProperty();
 

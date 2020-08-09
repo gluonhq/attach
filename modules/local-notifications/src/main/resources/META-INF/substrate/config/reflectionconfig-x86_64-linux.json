@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.localnotifications.impl.DesktopLocalNotificationsService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

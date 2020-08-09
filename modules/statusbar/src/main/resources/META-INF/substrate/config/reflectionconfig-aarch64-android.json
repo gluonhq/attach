@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.statusbar.impl.AndroidStatusBarService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

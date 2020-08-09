@@ -1,10 +1,123 @@
+import groovy.io.FileType
+
 def sdkPath(String platform) {
     return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
 }
 
+ext.aarBuild = { buildDir, projectDir, name, os ->
+    def JAVAHOME = System.getenv("JAVA_HOME")
+    def sdk = System.getenv("ANDROID_SDK")
+    if (sdk == null) {
+        throw new GradleException("Error: ANDROID_SDK can't be null")
+    }
+    def androidJar = sdk + "/platforms/android-28/android.jar"
+    if (!file(androidJar).exists()) {
+        throw new GradleException("Error: path for ${androidJar} doesn't exist")
+    }
+
+    // copy android_project
+    File androidDir = file("$projectDir/../../gradle/android_project")
+    def tempDir = File.createTempDir()
+    project.copy {
+        from androidDir
+        exclude "**/gradlew"
+        into tempDir
+    }
+    project.copy {
+        from file("$androidDir/gradlew").getAbsolutePath()
+        into tempDir
+        fileMode 0744
+    }
+
+    // copy service dalvik sources
+    File sourcesDir = file("$projectDir/src/main/native/$os/dalvik")
+    project.copy {
+        from sourcesDir
+        into file("$tempDir/library/src/main/java/com/gluonhq/helloandroid")
+    }
+    if (name != "Util") {
+        def util = file("$projectDir/../util/build/tmp/util_classes.jar")
+        if (!util.exists()) {
+            // compile util
+            File sourcesUtilDir = file("$projectDir/../util/src/main/native/$os/dalvik")
+            def javaSources = [sourcesUtilDir.listFiles()].flatten()
+            def javac = "$JAVAHOME/bin/javac"
+            def javacArgs = ["-d", file("$tempDir/classes").getAbsolutePath(),
+                             "-source", "1.7", "-target", "1.7",
+                             "-bootclasspath", androidJar,
+                             javaSources].flatten()
+            exec {
+                executable javac
+                args javacArgs
+            }
+            // create jar
+            def jar = "$JAVAHOME/bin/jar"
+            file(util.getParent()).mkdirs()
+            def jarArgs = ["cf", util.getAbsolutePath(), "-C",
+                           file("$tempDir/classes").getAbsolutePath(), "."].flatten()
+            exec {
+                executable jar
+                args jarArgs
+            }
+        }
+        // copy util jar
+        project.copy {
+            from util
+            into file("$tempDir/libs")
+        }
+    }
+    // use build
+    File build = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/build.gradle")
+    if (build != null && build.exists()) {
+        file("$tempDir/library/build.gradle").delete()
+        project.copy {
+            from build
+            into file("$tempDir/library/")
+        }
+    }
+    // use manifest
+    File manifest = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/AndroidManifest.xml")
+    if (manifest != null && manifest.exists()) {
+        file("$tempDir/library/src/main/AndroidManifest.xml").delete()
+        project.copy {
+            from manifest
+            into file("$tempDir/library/src/main/")
+        }
+    }
+    // use res
+    File res = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/res/xml/file_provider_paths.xml")
+    if (res != null && res.exists()) {
+        project.copy {
+            from res
+            into file("$tempDir/library/src/main/res/xml/")
+        }
+    }
+    project.delete(files("${buildDir}/resources/main/META-INF/substrate/dalvik/"))
+    // build aar
+    file("$tempDir/gradlew")
+    def aarArgs = ["-p", file("$tempDir/library").getAbsolutePath(), "assembleDebug"].flatten()
+    exec {
+        environment ANDROID_HOME: sdk, JAVA_HOME: JAVAHOME
+        executable file("$tempDir/gradlew").getAbsolutePath()
+        args aarArgs
+    }
+    // copy aar
+    def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/"
+    project.copy {
+        from file("$tempDir/library/build/outputs/aar/library-debug.aar")
+        into dalvikOutput
+        rename { fileName -> fileName.replace('library-debug', "$name") }
+    }
+    println("build for ${name}.aar finished")
+    File a = new File("$dalvikOutput/${name}.aar")
+    if (a.exists()) {
+        a
+    }
+}
+
 ext.nativeBuild = { buildDir, projectDir, name, os ->
 
-    println("native build for $name  started")
+    println("native build for $name started")
     File shareDir = file("$projectDir/src/main/native/share")
     if (!shareDir.exists()) {
         // TODO
@@ -109,6 +222,55 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
         if (n.exists()) {
             println "Adding $n to native jar"
             n
+        }
+    } else if (os == "android") {
+        def ndk = System.getenv("ANDROID_NDK")
+        if (ndk == null) {
+            throw new GradleException("Error: ANDROID_NDK can't be null")
+        }
+        def host = System.getProperty('os.name').toLowerCase().contains("mac") ?
+                "darwin" : "linux"
+
+        def arch = "arm64-v8a"
+        def compileOutput = "$buildDir/native/$os/$arch"
+        File outputDir = file(compileOutput)
+        outputDir.mkdirs()
+
+        def platform="aarch64-linux-android21"
+        def toolchainHome = "$ndk/toolchains/llvm"
+        def compilerHome = "$toolchainHome/prebuilt/${host}-x86_64"
+        def compiler = file("$compilerHome/bin/clang").getAbsolutePath()
+        def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
+
+        osIncludeFlags = ["-I$JAVAHOME/include/$host",
+                          "-I$projectDir/../../gradle/include/android",
+                          "-I$projectDir/../util/src/main/native/$os/c"].flatten()
+
+        File nativeSourcesDir = file("$projectDir/src/main/native/$os/c/")
+        osSources = [nativeSourcesDir.listFiles().findAll {it.name.endsWith(".c")}].flatten()
+
+        def compilerArgs = ["-target", platform, "-Werror", "-c", includeFlags, osIncludeFlags, osSources].flatten()
+
+        exec {
+            executable compiler
+            args compilerArgs
+            workingDir compileOutput
+        }
+
+        def linkerObj = [outputDir.listFiles().findAll {it.name.endsWith(".o")}].flatten()
+        def linkerOutput = "$buildDir/native/$os/lib${name.toLowerCase()}.a"
+        def linkerArgs = ["rcs", linkerOutput, linkerObj].flatten()
+
+        exec {
+            executable linker
+            args linkerArgs
+        }
+
+        println("native build for $name finished")
+        File a = new File(linkerOutput)
+        if (a.exists()) {
+            println "Adding $a to native jar"
+            a
         }
     } else {
         // TODO

@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.device.impl.DesktopDeviceService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

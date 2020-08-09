@@ -27,8 +27,6 @@
  */
 package com.gluonhq.attach.audiorecording.impl;
 
-import com.gluonhq.attach.util.Constants;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.gluonhq.attach.util.Util;
 import javafx.concurrent.Task;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -56,7 +56,7 @@ import javax.sound.sampled.TargetDataLine;
 public class DesktopAudioRecordingService extends DefaultAudioRecordingService {
 
     private static final Logger LOG = Logger.getLogger(DesktopAudioRecordingService.class.getName());
-    private boolean debug;
+    private final boolean debug = Util.DEBUG;
 
     // record duration for a chunk, in seconds
     private long CHUNK_RECORD_TIME = 60;  // 1 minute
@@ -68,9 +68,6 @@ public class DesktopAudioRecordingService extends DefaultAudioRecordingService {
     private Function<String, Boolean> addChunk;
 
     public DesktopAudioRecordingService() {
-        if ("true".equals(System.getProperty(Constants.ATTACH_DEBUG))) {
-            debug = true;
-        }
     }
 
     @Override

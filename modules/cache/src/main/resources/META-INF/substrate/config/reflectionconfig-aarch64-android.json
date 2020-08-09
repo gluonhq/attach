@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.cache.impl.AndroidCacheService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

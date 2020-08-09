@@ -27,7 +27,7 @@
  */
 module com.gluonhq.attach.video {
 
-    requires javafx.media;
+    requires javafx.graphics;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.storage;
 

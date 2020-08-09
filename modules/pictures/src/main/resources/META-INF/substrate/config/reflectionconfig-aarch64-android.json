@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pictures.impl.AndroidPicturesService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
