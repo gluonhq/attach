@@ -37,8 +37,8 @@ static void initializeAudioDalvikHandles() {
     jclass jAudioServiceClass = substrateGetAudioServiceClass();
     jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "()V");
 
-    jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio");
-    jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio");
+    jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio;");
+    jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio;");
 
     jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAudioServiceClass, jAudioServiceInitMethod);
     jDalvikAudioService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
