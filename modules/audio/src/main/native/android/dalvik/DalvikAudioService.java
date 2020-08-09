@@ -44,8 +44,12 @@ public class DalvikAudioService {
 
     private File privateStorage;
 
-    private Audio loadSoundImpl(URL url) {
-        File file = getFile(url, "sounds/");
+    public DalvikAudioService() {
+
+    }
+
+    private Audio loadSoundImpl(String url) {
+        File file = getFile(new URL(url), "sounds/");
 
         if (pool == null)
             pool = createPool();
@@ -59,8 +63,8 @@ public class DalvikAudioService {
         return new AndroidSound(pool, soundID);
     }
 
-    private Audio loadMusicImpl(URL url) {
-        File file = getFile(url, "music/");
+    private Audio loadMusicImpl(String url) {
+        File file = getFile(new URL(url), "music/");
 
         FileInputStream stream = new FileInputStream(file);
 

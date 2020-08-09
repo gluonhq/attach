@@ -43,15 +43,15 @@ public class AndroidAudioService implements AudioService {
 
     @Override
     public Audio loadSound(URL url) {
-        return loadSoundImpl(url);
+        return loadSoundImpl(url.toExternalForm());
     }
 
     @Override
     public Audio loadMusic(URL url) {
-        return loadMusicImpl(url);
+        return loadMusicImpl(url.toExternalForm());
     }
 
     // native
-    private native static Audio loadSoundImpl(URL url);
-    private native static Audio loadMusicImpl(URL url);
+    private native static Audio loadSoundImpl(String url);
+    private native static Audio loadMusicImpl(String url);
 }

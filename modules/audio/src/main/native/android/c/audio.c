@@ -26,3 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "audio.h"
+
+static jobject jDalvikAudioService;
+static jmethodID jAudioServiceLoadSoundMethod;
+static jmethodID jAudioServiceLoadMusicMethod;
+
+static void initializeAudioDalvikHandles() {
+    ATTACH_DALVIK();
+
+    jclass jAudioServiceClass = substrateGetAudioServiceClass();
+    jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "()V");
+
+    jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio");
+    jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio");
+
+    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAudioServiceClass, jAudioServiceInitMethod);
+    jDalvikAudioService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
+
+    DETACH_DALVIK();
+}
+
+// from Java to Android
+
+JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadSoundImpl
+(JNIEnv *env, jclass jClass, jstring jURL)
+{
+    const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
+
+    ATTACH_DALVIK();
+    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
+    jobject answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadSoundMethod, jURLString);
+    DETACH_DALVIK();
+    return answer;
+}
+
+JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadMusicImpl
+(JNIEnv *env, jclass jClass, jstring jURL)
+{
+    const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
+
+    ATTACH_DALVIK();
+    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
+    jobject answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadMusicMethod, jURLString);
+    DETACH_DALVIK();
+    return answer;
+}
