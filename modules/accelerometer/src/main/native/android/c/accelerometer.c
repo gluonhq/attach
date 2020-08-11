@@ -32,18 +32,18 @@ static jclass jGraalAccelerometerClass;
 static jmethodID jGraalNotifyAccelerationMethod;
 
 static jobject jDalvikAccelerometerService;
-static jmethodID jAccelerometerServiceInitMethod;
+static jmethodID jAccelerometerServiceSetupMethod;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalAccelerometerClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/accelerometer/impl/AndroidAccelerometerService"));
-    jGraalNotifyAccelerationMethod = (*env)->GetStaticMethodID(env, jGraalAccelerometerClass, "notifyAccelerometer", "(DDDD)V");
+    jGraalNotifyAccelerationMethod = (*env)->GetStaticMethodID(env, jGraalAccelerometerClass, "notifyAcceleration", "(DDDD)V");
 }
 
 static void initializeAccelerometerDalvikHandles() {
     ATTACH_DALVIK();
     jclass jAccelerometerServiceClass = substrateGetAccelerometerServiceClass();
     jmethodID jAccelerometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jAccelerometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "init", "(ZI)V");
+    jAccelerometerServiceSetupMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "setup", "(ZI)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jAccelerometerServiceClass, jAccelerometerServiceInitMethod, jActivity);
@@ -78,7 +78,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_AndroidAcceler
 (JNIEnv *env, jclass jClass, jboolean jfilterGravity, jint jfrequency)
 {
     ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAccelerometerService, jAccelerometerServiceInitMethod, jfilterGravity, jfrequency);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAccelerometerService, jAccelerometerServiceSetupMethod, jfilterGravity, jfrequency);
     DETACH_DALVIK();
 }
 
@@ -88,9 +88,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_AndroidAcceler
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAccelerometerService_notifyAcceleration(
     JNIEnv *env, jobject service, jdouble x, jdouble y, jdouble z, jdouble t) {
-    if (debugAttach) {
-        ATTACH_LOG_FINE("Native layer got new acceleration: %.2f %.2f %.2f %.2f\n", x, y, z, t);
-    }
     ATTACH_GRAAL();
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalAccelerometerClass, jGraalNotifyAccelerationMethod, x, y, z, t);
     DETACH_GRAAL();

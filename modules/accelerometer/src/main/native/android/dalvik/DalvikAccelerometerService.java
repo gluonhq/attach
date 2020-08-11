@@ -45,10 +45,12 @@ public class DalvikAccelerometerService implements SensorEventListener {
 
     private final double alpha = 0.8;
     private final double[] gravity = new double[3];
+    private final boolean debug;
     private boolean filterGravity;
     private int frequency;
 
     public DalvikAccelerometerService(Activity activity) {
+        debug = Util.isDebug();
         sensorManager = (SensorManager) activity.getSystemService(SENSOR_SERVICE);
         Util.setLifecycleEventHandler(new LifecycleEventHandler() {
             @Override
@@ -56,10 +58,10 @@ public class DalvikAccelerometerService implements SensorEventListener {
                 if (event != null && !event.isEmpty()) {
                     switch (event) {
                         case "pause":
-                            unregisterReceiver();
+                            unregisterListener();
                             break;
                         case "resume":
-                            registerReceiver();
+                            registerListener();
                             break;
                         default:
                             break;
@@ -67,20 +69,26 @@ public class DalvikAccelerometerService implements SensorEventListener {
                 }
             }
         });
-        registerReceiver();
+        registerListener();
     }
 
-    private void init(boolean filterGravity, int frequency) {
+    private void setup(boolean filterGravity, int frequency) {
+        if (debug) {
+            Log.v(TAG, "DalvikAccelerometerService::setup");
+        }
         this.filterGravity = filterGravity;
         if (this.frequency != frequency) {
             this.frequency = frequency;
-            unregisterReceiver();
-            registerReceiver();
+            unregisterListener();
+            registerListener();
         }
     }
 
-    private void registerReceiver() {
+    private void registerListener() {
         if (!isRegistered) {
+            if (debug) {
+                Log.v(TAG, "DalvikAccelerometerService::registerListener");
+            }
             if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
                 int rateInMillis = frequency > 0 ? (int) (1000d / (double) frequency) : 20;
                 sensorManager.registerListener(this,
@@ -93,8 +101,11 @@ public class DalvikAccelerometerService implements SensorEventListener {
         }
     }
 
-    private void unregisterReceiver() {
+    private void unregisterListener() {
         if (isRegistered) {
+            if (debug) {
+                Log.v(TAG, "DalvikAccelerometerService::unregisterListener");
+            }
             sensorManager.unregisterListener(this);
             isRegistered = false;
         }
