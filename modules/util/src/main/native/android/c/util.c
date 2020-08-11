@@ -40,6 +40,7 @@ static jmethodID jUtilRequestPermissionsMethod;
 static jboolean initialized;
 
 // Attach classes
+static jclass jAccelerometerServiceClass;
 static jclass jBatteryServiceClass;
 static jclass jBarcodeScanServiceClass;
 static jclass jBleServiceClass;
@@ -109,6 +110,10 @@ static void initializeUtilDalvikHandles() {
 
 jclass substrateGetUtilClass() {
     return GETREGISTERCLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
+}
+
+jclass substrateGetAccelerometerServiceClass() {
+    return GETREGISTERCLASS(jAccelerometerServiceClass, "com/gluonhq/helloandroid/DalvikAccelerometerService");
 }
 
 jclass substrateGetBatteryServiceClass() {
