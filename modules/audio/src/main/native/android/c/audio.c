@@ -67,7 +67,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
     ATTACH_DALVIK();
-    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
+    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, jURLChars);
     jint result = (*dalvikEnv)->CallIntMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadSoundMethod, jURLString);
     DETACH_DALVIK();
 
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
     ATTACH_DALVIK();
-    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
+    jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, jURLChars);
     jint result = (*dalvikEnv)->CallIntMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadMusicMethod, jURLString);
     DETACH_DALVIK();
 
