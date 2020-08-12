@@ -27,6 +27,7 @@
  */
 module com.gluonhq.attach.audio {
 
+    requires com.gluonhq.attach.storage;
     requires com.gluonhq.attach.util;
 
     exports com.gluonhq.attach.audio;

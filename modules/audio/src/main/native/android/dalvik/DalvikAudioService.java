@@ -32,91 +32,70 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 
-import com.gluonhq.attach.audio.Audio;
-import com.gluonhq.attach.storage.StorageService;
-
 import java.io.*;
-import java.net.URL;
+import java.util.Optional;
 
 public class DalvikAudioService {
 
-    private SoundPool pool;
+    private DalvikAudio[] cache = new DalvikAudio[10];
 
-    private File privateStorage;
+    private SoundPool pool = null;
 
     public DalvikAudioService() {
 
     }
 
-    private Audio loadSoundImpl(String url) {
-        File file = getFile(new URL(url), "sounds/");
-
+    /**
+     * @param fullName file name in private storage
+     * @return audio id or -1 if failure
+     */
+    private int loadSoundImpl(String fullName) {
         if (pool == null)
             pool = createPool();
 
-        FileInputStream stream = new FileInputStream(file);
+        File file = new File(fullName);
 
-        int soundID = pool.load(stream.getFD(), 0, file.length(), 1);
+        try (FileInputStream stream = new FileInputStream(file)) {
 
-        stream.close();
+            int soundID = pool.load(stream.getFD(), 0, file.length(), 1);
 
-        return new AndroidSound(pool, soundID);
+            DalvikSound sound = new DalvikSound(pool, soundID);
+
+            int index = getFreeSlot();
+            cache[index] = sound;
+
+            return index;
+
+        } catch (Exception e) {
+            // TODO: exception
+            return -1;
+        }
     }
 
-    private Audio loadMusicImpl(String url) {
-        File file = getFile(new URL(url), "music/");
+    /**
+     * @param fullName file name in private storage
+     * @return audio id or -1 if failure
+     */
+    private int loadMusicImpl(String fullName) {
+        File file = new File(fullName);
 
-        FileInputStream stream = new FileInputStream(file);
+        try (FileInputStream stream = new FileInputStream(file)) {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(stream.getFD());
+            mediaPlayer.prepare();
 
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setDataSource(stream.getFD());
-        mediaPlayer.prepare();
+            DalvikMusic music = new DalvikMusic(mediaPlayer);
 
-        stream.close();
+            int index = getFreeSlot();
+            cache[index] = music;
 
-        return new AndroidMusic(mediaPlayer);
-    }
+            return index;
 
-    private File getFile(URL url, String subDirName) {
-        if (privateStorage == null) {
-            privateStorage = setUpDirectories();
+        } catch (Exception e) {
+            // TODO: exception
+            return -1;
         }
-
-        String extForm = url.toExternalForm();
-        String fileName = extForm.substring(extForm.lastIndexOf("/") + 1);
-        String fullName = privateStorage.getAbsolutePath() + "/assets/" + subDirName + fileName;
-
-        File outputFile = new File(fullName);
-
-        if (!outputFile.exists()) {
-            copyFile(url, outputFile);
-        }
-
-        return outputFile;
-    }
-
-    private File setUpDirectories() {
-        File storage = StorageService.create()
-                .flatMap(service -> service.getPrivateStorage())
-                .orElseThrow(() -> new RuntimeException("Error accessing Private Storage folder"));
-
-        File assetsDir = new File(storage, "assets");
-        if (!assetsDir.exists()) {
-            assetsDir.mkdir();
-        }
-
-        File musicDir = new File(assetsDir, "music");
-        if (!musicDir.exists()) {
-            musicDir.mkdir();
-        }
-
-        File soundsDir = new File(assetsDir, "sounds");
-        if (!soundsDir.exists()) {
-            soundsDir.mkdir();
-        }
-
-        return storage;
     }
 
     private SoundPool createPool() {
@@ -132,20 +111,61 @@ public class DalvikAudioService {
                 .build();
     }
 
-    private void copyFile(URL url, File outputFile) throws Exception {
-        try (InputStream input = url.openStream()) {
-            if (input == null) {
-                throw new RuntimeException("Internal copy failed: input stream for " + url + " is null");
-            }
-
-            try (OutputStream output = new FileOutputStream(outputFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = input.read(buffer)) > 0) {
-                    output.write(buffer, 0, length);
-                }
-                output.flush();
+    private int getFreeSlot() {
+        for (int i = 0; i < cache.length; i++) {
+            if (cache[i] == null) {
+                return i;
             }
         }
+
+        return growCache();
+    }
+
+    /**
+     * Grows internal cache.
+     *
+     * @return free slot
+     */
+    private int growCache() {
+        int oldLength = cache.length;
+
+        cache = Arrays.copyOf(cache, oldLength + 10);
+
+        // last slot of old cache is oldLength - 1, so next slot is oldLength - 1 + 1
+        return oldLength;
+    }
+
+    private void setLooping(int audioId, boolean looping) {
+        getAudio(audioId).ifPresent(audio -> audio.setLooping(looping));
+    }
+
+    private void setVolume(int audioId, double volume) {
+        getAudio(audioId).ifPresent(audio -> audio.setVolume(volume));
+    }
+
+    private void play(int audioId) {
+        getAudio(audioId).ifPresent(audio -> audio.play());
+    }
+
+    private void pause(int audioId) {
+        getAudio(audioId).ifPresent(audio -> audio.pause());
+    }
+
+    private void stop(int audioId) {
+        getAudio(audioId).ifPresent(audio -> audio.stop());
+    }
+
+    private void dispose(int audioId) {
+        getAudio(audioId).ifPresent(audio -> {
+            cache[audioId] = null;
+            audio.dispose();
+        });
+    }
+
+    private Optional<DalvikAudio> getAudio(int audioId) {
+        if (audioId >= 0 && audioId < cache.length)
+            return Optional.ofNullable(cache[audioId]);
+
+        return Optional.empty();
     }
 }

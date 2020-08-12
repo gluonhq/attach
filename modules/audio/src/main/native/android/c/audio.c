@@ -30,6 +30,12 @@
 static jobject jDalvikAudioService;
 static jmethodID jAudioServiceLoadSoundMethod;
 static jmethodID jAudioServiceLoadMusicMethod;
+static jmethodID jAudioServiceSetLoopingMethod;
+static jmethodID jAudioServiceSetVolumeMethod;
+static jmethodID jAudioServicePlayMethod;
+static jmethodID jAudioServicePauseMethod;
+static jmethodID jAudioServiceStopMethod;
+static jmethodID jAudioServiceDisposeMethod;
 
 static void initializeAudioDalvikHandles() {
     ATTACH_DALVIK();
@@ -37,8 +43,15 @@ static void initializeAudioDalvikHandles() {
     jclass jAudioServiceClass = substrateGetAudioServiceClass();
     jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "()V");
 
-    jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio;");
-    jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)Lcom/gluonhq/attach/audio/Audio;");
+    jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)I");
+    jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)I");
+
+    jAudioServiceSetLoopingMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "setLooping", "(IZ)V");
+    jAudioServiceSetVolumeMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "setVolume", "(ID)V");
+    jAudioServicePlayMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "play", "(I)V");
+    jAudioServicePauseMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "pause", "(I)V");
+    jAudioServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "stop", "(I)V");
+    jAudioServiceDisposeMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "dispose", "(I)V");
 
     jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAudioServiceClass, jAudioServiceInitMethod);
     jDalvikAudioService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
@@ -48,26 +61,76 @@ static void initializeAudioDalvikHandles() {
 
 // from Java to Android
 
-JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadSoundImpl
+JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadSoundImpl
 (JNIEnv *env, jclass jClass, jstring jURL)
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
     ATTACH_DALVIK();
     jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
-    jobject answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadSoundMethod, jURLString);
+    jint result = (*dalvikEnv)->CallIntMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadSoundMethod, jURLString);
     DETACH_DALVIK();
-    return answer;
+
+    return result;
 }
 
-JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadMusicImpl
+JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadMusicImpl
 (JNIEnv *env, jclass jClass, jstring jURL)
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
     ATTACH_DALVIK();
     jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, directoryChars);
-    jobject answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadMusicMethod, jURLString);
+    jint result = (*dalvikEnv)->CallIntMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadMusicMethod, jURLString);
     DETACH_DALVIK();
-    return answer;
+
+    return result;
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_setLooping
+(JNIEnv *env, jclass jClass, jint jAudioId, jboolean jlooping)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceSetLoopingMethod, jAudioId, jlooping);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_setVolume
+(JNIEnv *env, jclass jClass, jint jAudioId, jdouble jvolume)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceSetVolumeMethod, jAudioId, jvolume);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_play
+(JNIEnv *env, jclass jClass, jint jAudioId)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServicePlayMethod, jAudioId);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_pause
+(JNIEnv *env, jclass jClass, jint jAudioId)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServicePauseMethod, jAudioId);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_stop
+(JNIEnv *env, jclass jClass, jint jAudioId)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceStopMethod, jAudioId);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_dispose
+(JNIEnv *env, jclass jClass, jint jAudioId)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceDisposeMethod, jAudioId);
+    DETACH_DALVIK();
 }

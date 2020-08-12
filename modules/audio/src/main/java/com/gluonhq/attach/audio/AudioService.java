@@ -45,7 +45,7 @@ public interface AudioService {
         return Services.get(AudioService.class);
     }
 
-    Audio loadSound(URL url);
+    Optional<Audio> loadSound(URL url);
 
-    Audio loadMusic(URL url);
+    Optional<Audio> loadMusic(URL url);
 }

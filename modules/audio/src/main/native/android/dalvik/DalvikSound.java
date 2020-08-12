@@ -28,12 +28,11 @@
 package com.gluonhq.helloandroid;
 
 import android.media.SoundPool;
-import com.gluonhq.attach.audio.Audio;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class DalvikSound implements Audio {
+public class DalvikSound implements DalvikAudio {
 
     private final SoundPool pool;
     private final int soundID;

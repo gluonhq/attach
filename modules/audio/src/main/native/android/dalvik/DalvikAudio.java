@@ -27,58 +27,24 @@
  */
 package com.gluonhq.helloandroid;
 
-import android.media.MediaPlayer;
-
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
-public class DalvikMusic implements DalvikAudio {
+public interface DalvikAudio {
 
-    private boolean isDisposed = false;
-    private MediaPlayer mediaPlayer;
+    void setLooping(boolean looping);
 
-    public DalvikMusic(MediaPlayer mediaPlayer) {
-        this.mediaPlayer = mediaPlayer;
-    }
+    void setVolume(double volume);
 
-    @Override
-    public void setLooping(boolean looping) {
-        mediaPlayer.setLooping(looping);
-    }
+    void setOnFinished(Runnable action);
 
-    @Override
-    public void setVolume(double volume) {
-        mediaPlayer.setVolume((float)volume, (float)volume);
-    }
+    void play();
 
-    @Override
-    public void setOnFinished(Runnable action) {
-        mediaPlayer.setOnCompletionListener(player -> action.run());
-    }
+    void pause();
 
-    @Override
-    public void play() {
-        mediaPlayer.start();
-    }
+    void stop();
 
-    @Override
-    public void pause() {
-        mediaPlayer.pause();
-    }
+    void dispose();
 
-    @Override
-    public void stop() {
-        mediaPlayer.stop();
-    }
-
-    @Override
-    public void dispose() {
-        isDisposed = true;
-        mediaPlayer.release();
-    }
-
-    @Override
-    public boolean isDisposed() {
-        return isDisposed;
-    }
+    boolean isDisposed();
 }
