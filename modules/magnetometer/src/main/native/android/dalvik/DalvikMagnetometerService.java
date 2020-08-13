@@ -38,13 +38,16 @@ import android.util.Log;
 public class DalvikMagnetometerService implements SensorEventListener {
 
     private static final String TAG = Util.TAG;
+    private static final float ALPHA = 0.1f;
 
     private final SensorManager sensorManager;
     private boolean sensorReady = false;
     private boolean isRegistered = false;
 
-    private final float[] accelerometerReading = new float[3];
-    private final float[] magnetometerReading = new float[3];
+    private float[] accelerometerReading = new float[3];
+    private float[] magnetometerReading = new float[3];
+    private float[] tmpAccelerometerReading = new float[3];
+    private float[] tmpMagnetometerReading = new float[3];
 
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
@@ -122,9 +125,11 @@ public class DalvikMagnetometerService implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            System.arraycopy(se.values, 0, accelerometerReading, 0, accelerometerReading.length);
+            System.arraycopy(se.values, 0, tmpAccelerometerReading, 0, accelerometerReading.length);
+            accelerometerReading = lowPass(tmpAccelerometerReading, accelerometerReading);
         } else if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            System.arraycopy(se.values, 0, magnetometerReading, 0, magnetometerReading.length);
+            System.arraycopy(se.values, 0, tmpMagnetometerReading, 0, magnetometerReading.length);
+            magnetometerReading = lowPass(tmpMagnetometerReading, magnetometerReading);
             sensorReady = true;
         }
 
@@ -147,6 +152,23 @@ public class DalvikMagnetometerService implements SensorEventListener {
         return Math.sqrt(magnetometerReading[0] * magnetometerReading[0] +
                 magnetometerReading[1] * magnetometerReading[1] +
                 magnetometerReading[2] * magnetometerReading[2]);
+    }
+
+    /**
+     * low pass filter
+     * See http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
+     * See http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+     */
+    private float[] lowPass(float[] input, float[] output) {
+        if (output == null) {
+            return input;
+        }
+
+        for (int i = 0; i < input.length; i++) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+
+        return output;
     }
 
     private native void notifyReading(double x, double y, double z, double m, double a, double p, double r);
