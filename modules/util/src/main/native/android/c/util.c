@@ -57,6 +57,7 @@ static jclass jSettingsServiceClass;
 static jclass jShareServiceClass;
 static jclass jStatusBarServiceClass;
 static jclass jStorageServiceClass;
+static jclass jVibrationServiceClass;
 static jclass jVideoServiceClass;
 
 static jmethodID loadClassMethod;
@@ -177,6 +178,10 @@ jclass substrateGetStatusBarServiceClass() {
 
 jclass substrateGetStorageServiceClass() {
     return GETREGISTERCLASS(jStorageServiceClass, "com/gluonhq/helloandroid/DalvikStorageService");
+}
+
+jclass substrateGetVibrationServiceClass() {
+    return GETREGISTERCLASS(jVibrationServiceClass, "com/gluonhq/helloandroid/DalvikVibrationService");
 }
 
 jclass substrateGetVideoServiceClass() {
