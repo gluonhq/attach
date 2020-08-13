@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.compass.impl.AndroidCompassService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
