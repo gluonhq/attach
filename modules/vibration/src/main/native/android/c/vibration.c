@@ -67,7 +67,16 @@ JNI_OnLoad_vibration(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_vibration_impl_AndroidVibrationService_doVibrate
     (JNIEnv *env, jclass jClass, jlongArray jpattern)
 {
+    int count = (*env)->GetArrayLength(env, jpattern);
+    if (debugAttach) {
+        ATTACH_LOG_FINE("Vibrate pattern with %d items", count);
+    }
+
     ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikVibrationService, jVibrationServiceVibrateMethod, jpattern);
+    jlongArray result = (jlongArray) (*dalvikEnv)->NewLongArray(dalvikEnv, count);
+    const jlong* jItems = (*env)->GetLongArrayElements(env, jpattern, JNI_FALSE);
+    (*dalvikEnv)->SetLongArrayRegion(dalvikEnv, result, 0, count, jItems);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikVibrationService, jVibrationServiceVibrateMethod, result);
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, result);
     DETACH_DALVIK();
 }
