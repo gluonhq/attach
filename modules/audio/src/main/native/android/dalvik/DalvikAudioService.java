@@ -34,7 +34,6 @@ import android.media.SoundPool;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class DalvikAudioService {
 
@@ -137,36 +136,52 @@ public class DalvikAudioService {
     }
 
     private void setLooping(int audioId, boolean looping) {
-        getAudio(audioId).ifPresent(audio -> audio.setLooping(looping));
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
+            audio.setLooping(looping);
+        }
     }
 
     private void setVolume(int audioId, double volume) {
-        getAudio(audioId).ifPresent(audio -> audio.setVolume(volume));
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
+            audio.setVolume(volume);
+        }
     }
 
     private void play(int audioId) {
-        getAudio(audioId).ifPresent(audio -> audio.play());
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
+            audio.play();
+        }
     }
 
     private void pause(int audioId) {
-        getAudio(audioId).ifPresent(audio -> audio.pause());
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
+            audio.pause();
+        }
     }
 
     private void stop(int audioId) {
-        getAudio(audioId).ifPresent(audio -> audio.stop());
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
+            audio.stop();
+        }
     }
 
     private void dispose(int audioId) {
-        getAudio(audioId).ifPresent(audio -> {
+        DalvikAudio audio = getAudio(audioId);
+        if (audio != null) {
             cache[audioId] = null;
             audio.dispose();
-        });
+        }
     }
 
-    private Optional<DalvikAudio> getAudio(int audioId) {
+    private DalvikAudio getAudio(int audioId) {
         if (audioId >= 0 && audioId < cache.length)
-            return Optional.ofNullable(cache[audioId]);
+            return cache[audioId];
 
-        return Optional.empty();
+        return null;
     }
 }

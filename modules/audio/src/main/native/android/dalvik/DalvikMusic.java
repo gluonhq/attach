@@ -28,6 +28,7 @@
 package com.gluonhq.helloandroid;
 
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -52,8 +53,13 @@ public class DalvikMusic implements DalvikAudio {
     }
 
     @Override
-    public void setOnFinished(Runnable action) {
-        mediaPlayer.setOnCompletionListener(player -> action.run());
+    public void setOnFinished(final Runnable action) {
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                action.run();
+            }
+        });
     }
 
     @Override
