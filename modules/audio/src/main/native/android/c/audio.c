@@ -59,6 +59,26 @@ static void initializeAudioDalvikHandles() {
     DETACH_DALVIK();
 }
 
+// From Graal to native
+
+JNIEXPORT jint JNICALL
+JNI_OnLoad_audio(JavaVM *vm, void *reserved)
+{
+    JNIEnv* graalEnv;
+    ATTACH_LOG_INFO("JNI_OnLoad_audio called");
+#ifdef JNI_VERSION_1_8
+    if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
+        ATTACH_LOG_WARNING("Error initializing native Audio from OnLoad");
+        return JNI_FALSE;
+    }
+    ATTACH_LOG_FINE("[Audio Service] Initializing native Audio from OnLoad");
+    initializeAudioDalvikHandles();
+    return JNI_VERSION_1_8;
+#else
+    #error Error: Java 8+ SDK is required to compile Attach
+#endif
+}
+
 // from Java to Android
 
 JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadSoundImpl
