@@ -66,6 +66,10 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
+    if (debugAttach) {
+        ATTACH_LOG_FINE("Loading sound from file. Absolute path: %s", jURLChars);
+    }
+
     ATTACH_DALVIK();
     jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, jURLChars);
     jint result = (*dalvikEnv)->CallIntMethod(dalvikEnv, jDalvikAudioService, jAudioServiceLoadSoundMethod, jURLString);
@@ -78,6 +82,10 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
 (JNIEnv *env, jclass jClass, jstring jURL)
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
+
+    if (debugAttach) {
+        ATTACH_LOG_FINE("Loading music from file. Absolute path: %s", jURLChars);
+    }
 
     ATTACH_DALVIK();
     jstring jURLString = (*dalvikEnv)->NewStringUTF(dalvikEnv, jURLChars);
