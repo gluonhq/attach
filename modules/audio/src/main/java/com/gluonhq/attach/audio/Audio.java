@@ -28,23 +28,59 @@
 package com.gluonhq.attach.audio;
 
 /**
+ * An abstraction of a native sound or music object.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
+ * @since 4.0.9
  */
 public interface Audio {
 
+    /**
+     * Set the audio to loop or play once.
+     *
+     * @param looping flag to control whether audio is to be played in looping mode
+     */
     void setLooping(boolean looping);
 
+    /**
+     * Set the volume with which to play this audio.
+     *
+     * @param volume range [0..1]
+     */
     void setVolume(double volume);
 
+    /**
+     * Set an action to be run after audio finished playing.
+     *
+     * @param action action to run
+     */
     void setOnFinished(Runnable action);
 
+    /**
+     * Play (or resume if paused) this audio.
+     */
     void play();
 
+    /**
+     * Pause this audio. Next call to {@link #play()} will resume playing the audio.
+     */
     void pause();
 
+    /**
+     * Stop playing this audio. Next call to {@link #play()} will start playing the audio from the beginning.
+     */
     void stop();
 
+    /**
+     * Releases (native) resources associated with this audio.
+     * No other methods should be called on this audio after this method returns.
+     */
     void dispose();
 
+    /**
+     * If this method returns true, no other methods should be called on this audio.
+     *
+     * @return whether resources associated with this audio were released
+     */
     boolean isDisposed();
 }

@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.Optional;
 
 /**
+ * The audio service provides access to loading native audio (sound and music) objects.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  * @since 4.0.9
  */
@@ -45,7 +47,19 @@ public interface AudioService {
         return Services.get(AudioService.class);
     }
 
+    /**
+     * Load a (short) sound object (typically ".wav") from given URL.
+     *
+     * @param url where the sound file is
+     * @return optional containing the sound file or empty if any errors occurred during loading
+     */
     Optional<Audio> loadSound(URL url);
 
+    /**
+     * Load a (long) music object (typically ".mp3") from given URL.
+     *
+     * @param url where the music file is
+     * @return optional containing the music file or empty if any errors occurred during loading
+     */
     Optional<Audio> loadMusic(URL url);
 }
