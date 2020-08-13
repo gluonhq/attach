@@ -88,10 +88,10 @@ public class AndroidAudioService implements AudioService {
 
     /**
      * Copy file (if it doesn't exist) to private storage.
+     * Throws an exception if any error occurred during copying.
      *
      * @param url where the file is
-     * @return file name in private storage if file was copied or if it already exists at destination,
-     * @throws an exception if any error occurred during copying
+     * @return full path to file in private storage where it was copied
      */
     private String copyToPrivateStorageIfNeeded(URL url) throws Exception {
         if (privateStorage == null) {
@@ -107,7 +107,7 @@ public class AndroidAudioService implements AudioService {
                 .resolve("assets")
                 .resolve("audio")
                 .resolve(fileName);
-        
+
         if (!Files.exists(file)) {
             if (!Files.exists(file.getParent())) {
                 Files.createDirectories(file.getParent());
