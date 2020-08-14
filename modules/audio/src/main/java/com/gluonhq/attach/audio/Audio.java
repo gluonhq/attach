@@ -50,13 +50,6 @@ public interface Audio {
     void setVolume(double volume);
 
     /**
-     * Set an action to be run after audio finished playing.
-     *
-     * @param action action to run
-     */
-    void setOnFinished(Runnable action);
-
-    /**
      * Play (or resume if paused) this audio.
      */
     void play();

@@ -36,8 +36,6 @@ public interface DalvikAudio {
 
     void setVolume(double volume);
 
-    void setOnFinished(Runnable action);
-
     void play();
 
     void pause();

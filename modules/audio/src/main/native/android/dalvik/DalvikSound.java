@@ -59,11 +59,6 @@ public class DalvikSound implements DalvikAudio {
     }
 
     @Override
-    public void setOnFinished(Runnable action) {
-        // TODO: ?
-    }
-
-    @Override
     public void play() {
         lastStreamID = pool.play(soundID, volume, volume, 1, looping ? -1 : 0, 1);
     }
