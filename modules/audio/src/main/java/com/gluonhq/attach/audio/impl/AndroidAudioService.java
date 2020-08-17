@@ -147,11 +147,6 @@ public class AndroidAudioService implements AudioService {
         }
 
         @Override
-        public void setOnFinished(Runnable action) {
-            // TODO:
-        }
-
-        @Override
         public void play() {
             if (isDisposed)
                 return;
