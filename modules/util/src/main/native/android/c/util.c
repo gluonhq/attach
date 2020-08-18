@@ -53,6 +53,7 @@ static jclass jLifecycleServiceClass;
 static jclass jOrientationServiceClass;
 static jclass jPicturesServiceClass;
 static jclass jPositionServiceClass;
+static jclass jRuntimeArgsServiceClass;
 static jclass jSettingsServiceClass;
 static jclass jShareServiceClass;
 static jclass jStatusBarServiceClass;
@@ -161,6 +162,10 @@ jclass substrateGetPicturesServiceClass() {
 
 jclass substrateGetPositionServiceClass() {
     return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
+}
+
+jclass substrateGetRuntimeArgsServiceClass() {
+    return GETREGISTERCLASS(jRuntimeArgsServiceClass, "com/gluonhq/helloandroid/DalvikRuntimeArgsService");
 }
 
 jclass substrateGetSettingsServiceClass() {

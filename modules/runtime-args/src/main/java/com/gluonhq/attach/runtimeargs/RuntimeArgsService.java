@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(RuntimeArgsService.class).ifPresent(service -> {
+ * {@code RuntimeArgsService.create().ifPresent(service -> {
  *      service.addListener("ALERT", value -> {
  *              // show alert(value)
  *      });
@@ -52,7 +52,7 @@ import java.util.function.Consumer;
  * custom scheme in the AndroidManifest.xml file:
  *
  * {@code
-    <activity android:name="com.gluonhq.impl.attach.plugins.android.LaunchURLActivity"
+    <activity android:name="com.gluonhq.helloandroid.LaunchURLActivity"
             android:launchMode="singleTask"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
