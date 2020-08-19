@@ -83,7 +83,7 @@ JNIEXPORT jint JNICALL
 JNI_OnLoad_video(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
-    ATTACH_LOG_INFO("JNI_OnLoad_statusbar called");
+    ATTACH_LOG_INFO("JNI_OnLoad_video called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
         ATTACH_LOG_WARNING("Error initializing native video from OnLoad");
