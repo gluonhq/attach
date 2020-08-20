@@ -48,7 +48,9 @@ public interface AudioService {
     }
 
     /**
-     * Load a (short) sound object (typically ".wav") from given URL.
+     * Load a (short) sound object (typically ".wav") from a given URL. 
+     * This call will block until the audio is fully loaded.
+     * You may wish to load the audio on a non-JavaFX thread.
      *
      * @param url where the sound file is
      * @return optional containing the sound file or empty if any errors occurred during loading
@@ -56,7 +58,9 @@ public interface AudioService {
     Optional<Audio> loadSound(URL url);
 
     /**
-     * Load a (long) music object (typically ".mp3") from given URL.
+     * Load a (long) music object (typically ".mp3") from a given URL.
+     * This call will block until the audio is fully loaded.
+     * You may wish to load the audio on a non-JavaFX thread.
      *
      * @param url where the music file is
      * @return optional containing the music file or empty if any errors occurred during loading
