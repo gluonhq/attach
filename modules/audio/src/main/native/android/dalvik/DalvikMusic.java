@@ -63,7 +63,9 @@ public class DalvikMusic implements DalvikAudio {
 
     @Override
     public void stop() {
-        mediaPlayer.stop();
+        // to avoid resetting and preparing again
+        mediaPlayer.pause();
+        mediaPlayer.seekTo(0);
     }
 
     @Override
