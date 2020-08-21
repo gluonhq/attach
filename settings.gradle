@@ -11,6 +11,7 @@ pluginManagement {
 rootProject.name = 'attach'
 
 include 'accelerometer'
+include 'audio'
 include 'audio-recording'
 include 'augmented-reality'
 include 'barcode-scan'
@@ -42,6 +43,7 @@ include 'video'
 include 'util'
 
 project(':accelerometer').projectDir           = file('modules/accelerometer')
+project(':audio').projectDir                    = file('modules/audio')
 project(':audio-recording').projectDir         = file('modules/audio-recording')
 project(':augmented-reality').projectDir       = file('modules/augmented-reality')
 project(':barcode-scan').projectDir            = file('modules/barcode-scan')

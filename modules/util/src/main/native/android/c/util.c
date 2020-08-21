@@ -40,6 +40,7 @@ static jmethodID jUtilRequestPermissionsMethod;
 static jboolean initialized;
 
 // Attach classes
+static jclass jAudioServiceClass;
 static jclass jBatteryServiceClass;
 static jclass jBarcodeScanServiceClass;
 static jclass jBleServiceClass;
@@ -50,6 +51,7 @@ static jclass jDialerServiceClass;
 static jclass jDisplayServiceClass;
 static jclass jKeyboardServiceClass;
 static jclass jLifecycleServiceClass;
+static jclass jMagnetometerServiceClass;
 static jclass jOrientationServiceClass;
 static jclass jPicturesServiceClass;
 static jclass jPositionServiceClass;
@@ -111,6 +113,10 @@ jclass substrateGetUtilClass() {
     return GETREGISTERCLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
 }
 
+jclass substrateGetAudioServiceClass() {
+    return GETREGISTERCLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
+}
+
 jclass substrateGetBatteryServiceClass() {
     return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
 }
@@ -149,6 +155,10 @@ jclass substrateGetKeyboardServiceClass() {
 
 jclass substrateGetLifecycleServiceClass() {
     return GETREGISTERCLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
+}
+
+jclass substrateGetMagnetometerServiceClass() {
+    return GETREGISTERCLASS(jMagnetometerServiceClass, "com/gluonhq/helloandroid/DalvikMagnetometerService");
 }
 
 jclass substrateGetOrientationServiceClass() {

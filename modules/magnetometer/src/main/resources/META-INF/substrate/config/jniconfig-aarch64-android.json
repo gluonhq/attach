@@ -1,6 +1,6 @@
 [
   {
-    "name" : "com.gluonhq.attach.magnetometer.impl.IOSMagnetometerService",
+    "name" : "com.gluonhq.attach.magnetometer.impl.AndroidMagnetometerService",
     "methods":[{"name":"notifyReading","parameterTypes":["double","double","double","double","double","double","double"] }]
   }
 ]
