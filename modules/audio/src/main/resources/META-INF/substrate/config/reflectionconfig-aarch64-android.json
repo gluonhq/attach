@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audio.impl.AndroidAudioService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

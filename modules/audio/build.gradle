@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":util")
+    implementation project(':storage')
+}
+
+ext.description = 'Common API to access audio features'
