@@ -57,35 +57,15 @@ public class DalvikMagnetometerService implements SensorEventListener {
     public DalvikMagnetometerService(Activity activity) {
         debug = Util.isDebug();
         sensorManager = (SensorManager) activity.getSystemService(SENSOR_SERVICE);
-        Util.setLifecycleEventHandler(new LifecycleEventHandler() {
-            @Override
-            public void lifecycleEvent(String event) {
-                if (event != null && !event.isEmpty()) {
-                    switch (event) {
-                        case "pause":
-                            unregisterListener();
-                            break;
-                        case "resume":
-                            registerListener();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        });
-        registerListener();
     }
 
     private void setup(int frequency) {
         if (debug) {
             Log.v(TAG, "DalvikMagnetometerService::setup");
         }
-        if (this.frequency != frequency) {
-            this.frequency = frequency;
-            unregisterListener();
-            registerListener();
-        }
+        this.frequency = frequency;
+        unregisterListener();
+        registerListener();
     }
 
     private void registerListener() {

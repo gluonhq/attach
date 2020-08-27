@@ -56,8 +56,7 @@ import java.util.Optional;
  */
 public interface MagnetometerService {
 
-    // TODO: Provide API to modify these settings:
-    int FREQUENCY = 10; // in Hz
+    Parameters DEFAULT_PARAMETERS = new Parameters(10);
 
     /**
      * Returns an instance of {@link MagnetometerService}.
@@ -80,4 +79,26 @@ public interface MagnetometerService {
      * @return A property containing a frequently-updated magnetometer reading.
      */
     ReadOnlyObjectProperty<MagnetometerReading> readingProperty();
+
+    /**
+     * Starts the service with {@link #DEFAULT_PARAMETERS}.
+     *
+     * @since 4.0.9
+     */
+    void start();
+
+    /**
+     * Starts the service with given parameters.
+     *
+     * @param parameters Parameters for configuring the service
+     * @since 4.0.9
+     */
+    void start(Parameters parameters);
+
+    /**
+     * Stops the service.
+     *
+     * @since 4.0.9
+     */
+    void stop();
 }

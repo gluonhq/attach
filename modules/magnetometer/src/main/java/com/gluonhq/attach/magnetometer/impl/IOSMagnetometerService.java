@@ -31,27 +31,53 @@ import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
 import com.gluonhq.attach.magnetometer.MagnetometerService;
+import com.gluonhq.attach.magnetometer.Parameters;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 public class IOSMagnetometerService implements MagnetometerService {
 
+    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
+    private static boolean isRunning = false;
+    private Parameters parameters = DEFAULT_PARAMETERS;
+
     static {
         System.loadLibrary("Magnetometer");
         initMagnetometer();
     }
-    
-    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
 
     public IOSMagnetometerService() {
         LifecycleService.create().ifPresent(l -> {
-            l.addListener(LifecycleEvent.PAUSE, IOSMagnetometerService::stopObserver);
-            l.addListener(LifecycleEvent.RESUME, () -> startObserver(FREQUENCY));
+            l.addListener(LifecycleEvent.PAUSE, () -> stopObserver());
+            l.addListener(LifecycleEvent.RESUME, () -> {
+                if (isRunning)
+                    start(parameters);
+            });
         });
-        startObserver(FREQUENCY);
     }
-    
+
+    @Override
+    public void start() {
+        start(DEFAULT_PARAMETERS);
+    }
+
+    @Override
+    public void start(Parameters parameters) {
+        if (isRunning)
+            stopObserver();
+
+        this.parameters = parameters;
+        startObserver(parameters.getFrequency());
+        isRunning = true;
+    }
+
+    @Override
+    public void stop() {
+        stopObserver();
+        isRunning = false;
+    }
+
     @Override
     public ReadOnlyObjectProperty<MagnetometerReading> readingProperty() {
         return reading.getReadOnlyProperty();
