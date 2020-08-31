@@ -46,7 +46,7 @@ static void initializeLocalNotificationsDalvikHandles() {
 
     ATTACH_DALVIK();
     jLocalNotificationsServiceScheduleNotification = (*dalvikEnv)->GetMethodID(dalvikEnv, jLocalNotificationsServiceClass, "scheduleNotification", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
-    jLocalNotificationsServiceUnscheduleNotification = (*dalvikEnv)->GetMethodID(dalvikEnv, jLocalNotificationsServiceClass, "unscheduleNotification", "(Ljava/lang/String)V");
+    jLocalNotificationsServiceUnscheduleNotification = (*dalvikEnv)->GetMethodID(dalvikEnv, jLocalNotificationsServiceClass, "unscheduleNotification", "(Ljava/lang/String;)V");
 
     jmethodID jLocalNotificationsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLocalNotificationsServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
