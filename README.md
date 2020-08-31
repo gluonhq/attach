@@ -25,16 +25,6 @@ See the [documentation](https://docs.gluonhq.com/client/#_attach_configuration) 
 
 The list of available services at Attach can be found [here](http://gluonhq.com/products/mobile/attach/).
 
-
-## Issues and Contributions ##
-
-Issues can be reported to the [Issue tracker](https://github.com/gluonhq/attach/issues)
-
-Contributions can be submitted via [Pull requests](https://github.com/gluonhq/attach/pulls), 
- providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY) 
- (See [What is a CLA and why do I care](https://www.clahub.com/pages/why_cla) in case of doubt).
-
-
 ## Building Attach ##
 
 Gluon Attach is frequently released, and this is only required in case you want to fork and build your local version of Attach.
@@ -80,3 +70,10 @@ For instance, the Display service for desktop can be added to the project like:
     </attachList>
 </configuration>
 ```
+
+## Issues and Contributions ##
+
+Issues can be reported to the [Issue tracker](https://github.com/gluonhq/attach/issues)
+
+Contributions can be submitted via [Pull requests](https://github.com/gluonhq/attach/pulls), 
+ providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY).
