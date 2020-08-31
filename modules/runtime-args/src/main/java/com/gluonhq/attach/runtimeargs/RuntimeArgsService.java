@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,16 @@ import java.util.function.Consumer;
                 <string>yourScheme</string>
             </array>
         </dict>
+    </array>
+ * }
+ *
+ * To launch the app from another app, the latter has to
+ * include in its plist file:
+ *
+ * {@code
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>yourScheme</string>
     </array>
  * }
  * </p>
