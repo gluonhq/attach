@@ -52,6 +52,7 @@ static jclass jDialerServiceClass;
 static jclass jDisplayServiceClass;
 static jclass jKeyboardServiceClass;
 static jclass jLifecycleServiceClass;
+static jclass jLocalNotificationsServiceClass;
 static jclass jMagnetometerServiceClass;
 static jclass jOrientationServiceClass;
 static jclass jPicturesServiceClass;
@@ -160,6 +161,10 @@ jclass substrateGetKeyboardServiceClass() {
 
 jclass substrateGetLifecycleServiceClass() {
     return GETREGISTERCLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
+}
+
+jclass substrateGetLocalNotificationsServiceClass() {
+    return GETREGISTERCLASS(jLocalNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikLocalNotificationsService");
 }
 
 jclass substrateGetMagnetometerServiceClass() {

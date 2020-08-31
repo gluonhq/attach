@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.gluonhq.helloandroid">
+    <uses-sdk android:minSdkVersion="21" />
+    <application>
+        <activity android:name='com.gluonhq.helloandroid.MainActivity'
+                  android:configChanges="orientation|keyboardHidden"
+                  android:launchMode="singleTop">
+            <intent-filter>
+                <category android:name='android.intent.category.LAUNCHER'/>
+                <action android:name='android.intent.action.MAIN'/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.gluonhq.helloandroid.NotificationActivity"
+            android:parentActivityName="com.gluonhq.helloandroid.MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.gluonhq.helloandroid.MainActivity"/>
+        </activity>
+        <receiver android:name="com.gluonhq.helloandroid.AlarmReceiver" />
+    </application>
+</manifest>
