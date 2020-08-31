@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ void processRuntimeArgs(NSString* key, NSString* value) {
     (*env)->DeleteLocalRef(env, jvalue);
 }
 
-@implementation RuntimeArgs
+@implementation GlassApplication (RuntimeArgsAdditions)
 
 // TODO: Add the rest of methods that allow opening externally the application
 

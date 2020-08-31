@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.magnetometer.impl.AndroidMagnetometerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
