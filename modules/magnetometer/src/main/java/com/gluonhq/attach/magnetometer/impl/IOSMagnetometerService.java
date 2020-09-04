@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,67 +27,26 @@
  */
 package com.gluonhq.attach.magnetometer.impl;
 
-import com.gluonhq.attach.lifecycle.LifecycleEvent;
-import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
-import com.gluonhq.attach.magnetometer.Parameters;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-public class IOSMagnetometerService implements MagnetometerService {
-
-    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
-    private static boolean isRunning = false;
-    private Parameters parameters = DEFAULT_PARAMETERS;
+public class IOSMagnetometerService extends MobileMagnetometerService {
 
     static {
         System.loadLibrary("Magnetometer");
         initMagnetometer();
     }
 
-    public IOSMagnetometerService() {
-        LifecycleService.create().ifPresent(l -> {
-            l.addListener(LifecycleEvent.PAUSE, () -> stopObserver());
-            l.addListener(LifecycleEvent.RESUME, () -> {
-                if (isRunning)
-                    start(parameters);
-            });
-        });
+    @Override
+    protected void startMagnetometerImpl(int frequency) {
+        startObserver(frequency);
     }
 
     @Override
-    public void start() {
-        start(DEFAULT_PARAMETERS);
-    }
-
-    @Override
-    public void start(Parameters parameters) {
-        if (isRunning)
-            stopObserver();
-
-        this.parameters = parameters;
-        startObserver(parameters.getFrequency());
-        isRunning = true;
-    }
-
-    @Override
-    public void stop() {
+    protected void stopMagnetometerImpl() {
         stopObserver();
-        isRunning = false;
     }
 
-    @Override
-    public ReadOnlyObjectProperty<MagnetometerReading> readingProperty() {
-        return reading.getReadOnlyProperty();
-    }
-
-    @Override
-    public MagnetometerReading getReading() {
-        return reading.get();
-    }
-    
     // native
     private static native void initMagnetometer();
     private static native void startObserver(int rateInMillis);

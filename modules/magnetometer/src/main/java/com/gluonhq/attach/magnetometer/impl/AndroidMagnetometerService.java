@@ -27,66 +27,25 @@
  */
 package com.gluonhq.attach.magnetometer.impl;
 
-import com.gluonhq.attach.lifecycle.LifecycleEvent;
-import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
-import com.gluonhq.attach.magnetometer.Parameters;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-public class AndroidMagnetometerService implements MagnetometerService {
-
-    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
-    private static boolean isRunning = false;
-    private Parameters parameters = DEFAULT_PARAMETERS;
+public class AndroidMagnetometerService extends MobileMagnetometerService {
 
     static {
         System.loadLibrary("magnetometer");
     }
 
-    public AndroidMagnetometerService() {
-        LifecycleService.create().ifPresent(l -> {
-            l.addListener(LifecycleEvent.PAUSE, () -> stopMagnetometer());
-            l.addListener(LifecycleEvent.RESUME, () -> {
-                if (isRunning)
-                    start(parameters);
-            });
-        });
+    @Override
+    protected void startMagnetometerImpl(int frequency) {
+        startMagnetometer(frequency);
     }
 
     @Override
-    public void start() {
-        start(DEFAULT_PARAMETERS);
-    }
-
-    @Override
-    public void start(Parameters parameters) {
-        if (isRunning)
-            stopMagnetometer();
-
-        this.parameters = parameters;
-        startMagnetometer(parameters.getFrequency());
-        isRunning = true;
-    }
-
-    @Override
-    public void stop() {
+    protected void stopMagnetometerImpl() {
         stopMagnetometer();
-        isRunning = false;
     }
 
-    @Override
-    public ReadOnlyObjectProperty<MagnetometerReading> readingProperty() {
-        return reading.getReadOnlyProperty();
-    }
-
-    @Override
-    public MagnetometerReading getReading() {
-        return reading.get();
-    }
-    
     // native
     private static native void startMagnetometer(int rateInMillis);
     private static native void stopMagnetometer();
