@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.vibration.impl.AndroidVibrationService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
