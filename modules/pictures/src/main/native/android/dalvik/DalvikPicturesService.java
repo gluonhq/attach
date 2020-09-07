@@ -59,6 +59,7 @@ public class DalvikPicturesService  {
 
     private final Activity activity;
     private final boolean debug;
+    private boolean verified;
 
     private final String authority;
     private String photoPath;
@@ -71,8 +72,11 @@ public class DalvikPicturesService  {
     }
 
     private boolean verifyPermissions() {
-        return Util.verifyPermissions(Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!verified) {
+            verified = Util.verifyPermissions(Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        return verified;
     }
 
     public void takePhoto(final boolean savePhoto) {
