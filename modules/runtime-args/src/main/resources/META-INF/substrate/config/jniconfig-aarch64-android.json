@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.runtimeargs.impl.AndroidRuntimeArgsService",
+    "methods":[{"name":"processRuntimeArgs","parameterTypes":["java.lang.String","java.lang.String"] }]
+  }
+]
