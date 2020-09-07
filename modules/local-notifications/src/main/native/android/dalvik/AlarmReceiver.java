@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.local.notifications {
+package com.gluonhq.helloandroid;
 
-    requires javafx.graphics;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.runtime.args;
-    requires com.gluonhq.attach.storage;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 
-    exports com.gluonhq.attach.localnotifications;
-    exports com.gluonhq.attach.localnotifications.impl to com.gluonhq.attach.util;
+public class AlarmReceiver extends BroadcastReceiver {
+    
+    public static final int REQUEST_CODE = 123456;
+    public static String NOTIFICATION_ID = "notification-id";
+    public static String NOTIFICATION = "notification";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Notification notification = intent.getParcelableExtra(NOTIFICATION);
+        String tag = intent.getDataString();
+        notificationManager.notify(tag, REQUEST_CODE, notification);
+    }
+    
 }

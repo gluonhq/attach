@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.localnotifications.impl.AndroidLocalNotificationsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,22 +81,20 @@ import java.util.Optional;
  * <pre>
  * {@code <manifest ...>
  *    ...
- *    <application ...>
- *      <activity android:name="javafxports.android.FXActivity"
- *                android:label="SampleGluonApp"
- *                android:launchMode="singleTop"
- *                android:configChanges="orientation|screenSize">
- *        <meta-data android:name="main.class" android:value="com.gluonhq.sample.SampleGluonApp"/>
- *        ...
- *      </activity>
- *      ...
- *      <activity android:name="com.gluonhq.impl.attach.plugins.localnotifications.android.NotificationActivity"
- *                android:parentActivityName="javafxports.android.FXActivity">
- *            <meta-data android:name="android.support.PARENT_ACTIVITY" 
- *                       android:value="javafxports.android.FXActivity"/>
- *      </activity>
- *      <receiver android:name="com.gluonhq.impl.attach.plugins.localnotifications.android.AlarmReceiver" />
- *    </application>
+ *    <activity android:name='com.gluonhq.helloandroid.MainActivity'
+ *                   android:configChanges="orientation|keyboardHidden"
+ *                   android:launchMode="singleTop">
+ *             <intent-filter>
+ *                 <category android:name='android.intent.category.LAUNCHER'/>
+ *                 <action android:name='android.intent.action.MAIN'/>
+ *             </intent-filter>
+ *         </activity>
+ *         <activity android:name="com.gluonhq.helloandroid.NotificationActivity"
+ *             android:parentActivityName="com.gluonhq.helloandroid.MainActivity">
+ *             <meta-data android:name="android.support.PARENT_ACTIVITY"
+ *                 android:value="com.gluonhq.helloandroid.MainActivity"/>
+ *         </activity>
+ *         <receiver android:name="com.gluonhq.helloandroid.AlarmReceiver" />
  *  </manifest>}</pre>
  *
  * <p><b>iOS Configuration</b>: none</p>
