@@ -182,7 +182,9 @@ public class DalvikBleService  {
         ScanCallback answer = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-                Log.v(TAG, "BLESERVICE: onScanResult, callbacktype = " + callbackType);
+                if (debug) {
+                    Log.v(TAG, "BLESERVICE: onScanResult, callbacktype = " + callbackType);
+                }
                 ScanRecord mScanRecord = result.getScanRecord();
                 byte[] scanRecord = mScanRecord.getBytes();
 
@@ -236,9 +238,11 @@ public class DalvikBleService  {
             power -= 256;
             int proximity = calculateProximity(power, mRssi);
 
-            Log.v(TAG, "Scan: mID: "+mID+", beaconID: "+beaconID+", uuid: "+scannedUuid+
-                    ", major: "+major+", minor: "+minor+", power: "+power+", distance: "+proximity);
-            scanDetected (scannedUuid, major, minor, power, 0);
+            if (debug) {
+                Log.v(TAG, "Scan: mID: " + mID + ", beaconID: " + beaconID + ", uuid: " + scannedUuid +
+                        ", major: " + major + ", minor: " + minor + ", power: " + power + ", distance: " + proximity);
+            }
+            scanDetected (scannedUuid, major, minor, power, proximity);
         }
     }
 
@@ -253,7 +257,9 @@ public class DalvikBleService  {
 
     private static int calculateProximity (int txPower, double rssi) {
         double accuracy = calculateAccuracy(txPower, rssi);
-        Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        if (debug) {
+            Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        }
         if (accuracy < 0) {
             return 0;
         }
