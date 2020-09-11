@@ -67,7 +67,7 @@ public class DalvikBleService  {
     private final Activity activity;
     private static final Logger LOG = Logger.getLogger(DalvikBleService.class.getName());
     private BluetoothLeScanner scanner;
-    private final boolean debug;
+    private static boolean debug;
 
     private final static int REQUEST_ENABLE_BT = 1001;
     private final List<String> uuids = new LinkedList<>();
@@ -80,7 +80,7 @@ public class DalvikBleService  {
 
     public DalvikBleService(Activity a) {
         this.activity = a;
-        this.debug = Util.isDebug();
+        debug = Util.isDebug();
         init();
     }
 
