@@ -67,7 +67,7 @@ public class DalvikBleService  {
     private final Activity activity;
     private static final Logger LOG = Logger.getLogger(DalvikBleService.class.getName());
     private BluetoothLeScanner scanner;
-    private static boolean debug;
+    private final boolean debug;
 
     private final static int REQUEST_ENABLE_BT = 1001;
     private final List<String> uuids = new LinkedList<>();
@@ -80,7 +80,7 @@ public class DalvikBleService  {
 
     public DalvikBleService(Activity a) {
         this.activity = a;
-        debug = Util.isDebug();
+        this.debug = Util.isDebug();
         init();
     }
 
@@ -246,7 +246,7 @@ public class DalvikBleService  {
         }
     }
 
-    private static String ByteArrayToUUIDString(byte[] ba) {
+    private String ByteArrayToUUIDString(byte[] ba) {
         StringBuilder hex = new StringBuilder();
         for (byte b : ba) {
             hex.append(new Formatter().format("%02x", b));
@@ -255,7 +255,7 @@ public class DalvikBleService  {
                 "$1-$2-$3-$4-$5" );
     }
 
-    private static int calculateProximity (int txPower, double rssi) {
+    private int calculateProximity (int txPower, double rssi) {
         double accuracy = calculateAccuracy(txPower, rssi);
         if (debug) {
             Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
@@ -272,7 +272,7 @@ public class DalvikBleService  {
         return 3;
     }
 
-    private static double calculateAccuracy(int txPower, double rssi) {
+    private double calculateAccuracy(int txPower, double rssi) {
         if (rssi == 0 || txPower == 0) {
             return -1.0; // if we cannot determine accuracy, return -1.
         }
@@ -286,7 +286,7 @@ public class DalvikBleService  {
         }
     }
 
-    private static byte[] getPayload(String uuid, int major, int minor) {
+    private byte[] getPayload(String uuid, int major, int minor) {
         byte[] prefixArray = getBytesFromShort((short) 533);
         byte[] uuidArray = getBytesFromUUID(uuid);
         byte[] majorArray = getBytesFromShort((short) major);
@@ -305,7 +305,7 @@ public class DalvikBleService  {
         return buff.array();
     }
 
-    private static byte[] getBytesFromUUID(String uuidString) {
+    private byte[] getBytesFromUUID(String uuidString) {
         final UUID uuid = UUID.fromString(uuidString);
         ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
         buffer.putLong(uuid.getMostSignificantBits());
@@ -313,7 +313,7 @@ public class DalvikBleService  {
         return buffer.array();
     }
 
-    private static byte[] getBytesFromShort(short value) {
+    private byte[] getBytesFromShort(short value) {
         ByteBuffer buffer = ByteBuffer.wrap(new byte[2]);
         buffer.putShort(value);
         return buffer.array();
