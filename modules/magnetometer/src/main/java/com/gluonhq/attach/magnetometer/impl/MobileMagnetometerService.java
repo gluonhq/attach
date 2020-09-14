@@ -48,6 +48,9 @@ public abstract class MobileMagnetometerService implements MagnetometerService {
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, () -> stopMagnetometerImpl());
             l.addListener(LifecycleEvent.RESUME, () -> {
+                // isRunning keeps track of the service start-stop lifecycle
+                // hence, if the user did not call stop, then isRunning = true
+                // therefore, on resume, we should "restart" the service, which we stopped on pause
                 if (isRunning)
                     start(parameters);
             });
