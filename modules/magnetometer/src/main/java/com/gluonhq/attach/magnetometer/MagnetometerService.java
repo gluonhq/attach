@@ -35,6 +35,10 @@ import java.util.Optional;
 /**
  * A magnetometer measures the ambient geomagnetic field for all three physical axes (x, y and z).
  *
+ * <p>The service gets started by calling either {@link #start() } or
+ * {@link #start(Parameters) }, and can be stopped
+ * at any time by calling {@link #stop() }.</p>
+ *
  * <p>The MagnetometerService provides a read-only {@link #readingProperty() reading property}
  * that is updated at regular intervals by the underlying platform implementation. A user of the
  * MagnetometerService can listen to changes of the magnetic field, by registering a
@@ -83,7 +87,7 @@ public interface MagnetometerService {
     /**
      * Starts the service with {@link #DEFAULT_PARAMETERS}.
      *
-     * @since 4.0.9
+     * @since 4.0.10
      */
     void start();
 
@@ -91,14 +95,14 @@ public interface MagnetometerService {
      * Starts the service with given parameters.
      *
      * @param parameters Parameters for configuring the service
-     * @since 4.0.9
+     * @since 4.0.10
      */
     void start(Parameters parameters);
 
     /**
      * Stops the service.
      *
-     * @since 4.0.9
+     * @since 4.0.10
      */
     void stop();
 }
