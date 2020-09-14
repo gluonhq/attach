@@ -28,17 +28,27 @@
 package com.gluonhq.attach.magnetometer;
 
 /**
+ * A data structure that allows configuring the {@link MagnetometerService}.
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
- * @since 4.0.9
+ * @since 4.0.10
  */
 public class Parameters {
 
     private final int frequency;
 
+    /**
+     * Construct new parameters for {@link MagnetometerService}.
+     *
+     * @param frequency the rate with which to update the service
+     */
     public Parameters(int frequency) {
         this.frequency = frequency;
     }
 
+    /**
+     * @return the rate with which to update the service
+     */
     public int getFrequency() {
         return frequency;
     }
