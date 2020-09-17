@@ -16,10 +16,16 @@ jobs:
     steps:
       - name: Install Android Dependencies
         run: |
-          sudo ${ANDROID_HOME}/tools/bin/sdkmanager --update
-          sudo ${ANDROID_HOME}/tools/bin/sdkmanager 'cmdline-tools;latest'
-          sudo ${ANDROID_HOME}/tools/bin/sdkmanager --uninstall 'cmdline-tools;1.0'
-          sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "extras;android;m2repository" "extras;google;m2repository"
+          mkdir $ANDROID_HOME/tools/lib/deps
+          export DEPS_DIR=$ANDROID_HOME/tools/lib/deps
+          wget https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-xjc/2.3.2/jaxb-xjc-2.3.2.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-impl/2.3.0.1/jaxb-impl-2.3.0.1.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-core/2.3.0.1/jaxb-core-2.3.0.1.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/org/glassfish/jaxb/jaxb-jxc/2.3.2/jaxb-jxc-2.3.2.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar -P $DEPS_DIR
+          wget https://repo1.maven.org/maven2/com/sun/istack/istack-commons-runtime/3.0.10/istack-commons-runtime-3.0.10.jar -P $DEPS_DIR
+          java -Dcom.android.sdklib.toolsdir=$ANDROID_HOME/tools -classpath "$ANDROID_HOME/tools/lib/*:$ANDROID_HOME/tools/lib/deps/*" com.android.sdklib.tool.sdkmanager.SdkManagerCli  "extras;android;m2repository" "extras;google;m2repository"
 
       - name: Setup Java 11
         uses: actions/setup-java@v1
