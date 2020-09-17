@@ -6,7 +6,7 @@ sudo: false
 
 # use Mac OS X as operating system to build Android and iOS native libraries
 os: osx
-osx_image: xcode11.3
+osx_image: xcode11.7
 
 before_script:
   - bash .ci/android.sh
