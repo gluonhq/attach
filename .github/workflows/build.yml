@@ -16,8 +16,9 @@ jobs:
     steps:
       - name: Install Android Dependencies
         run: |
-          echo $JAVA_HOME
-          export JAVA_HOME=$JAVA_HOME_8_X64
+          sudo ${ANDROID_HOME}/tools/bin/sdkmanager --update
+          sudo ${ANDROID_HOME}/tools/bin/sdkmanager 'cmdline-tools;latest'
+          sudo ${ANDROID_HOME}/tools/bin/sdkmanager --uninstall 'cmdline-tools;1.0'
           sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "extras;android;m2repository" "extras;google;m2repository"
 
       - name: Setup Java 11
