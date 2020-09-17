@@ -27,8 +27,6 @@ jobs:
 
       - name: Build project
         run: |
-          echo ">>>>>>>"
-          echo $ANDROID_HOME
           ./gradlew -i build
 
       - name: Deploy Snapshot
@@ -37,3 +35,5 @@ jobs:
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          ANDROID_SDK: $ANDROID_HOME
+          ANDROID_NDK: $ANDROID_HOME/ndk-bundle
