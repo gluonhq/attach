@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Install Android Dependencies
         run: |
+          ls $ANDROID_HOME/
+          ls $ANDROID_HOME/platforms/
+          ls $ANDROID_HOME/platforms/android-29
           mkdir $ANDROID_HOME/tools/lib/deps
           export DEPS_DIR=$ANDROID_HOME/tools/lib/deps
           wget https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar -P $DEPS_DIR
