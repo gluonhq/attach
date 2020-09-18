@@ -47,7 +47,7 @@ import java.util.Optional;
  *       android:stateNotNeeded="true"
  *        android:windowSoftInputMode="stateAlwaysHidden">
  *         <intent-filter>
- *             <action android:name="com.gluonhq.attach.barcode.android.SCAN"/>
+ *             <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
  *            <category android:name="android.intent.category.DEFAULT"/>
  *          </intent-filter>
  *    </activity>

@@ -1,6 +1,6 @@
 [
   {
-    "name" : "com.gluonhq.attach.barcode.impl.IOSBarcodeScanService",
+    "name" : "com.gluonhq.attach.barcodescan.impl.IOSBarcodeScanService",
     "methods":[{"name":"setResult","parameterTypes":["java.lang.String"] }]
   }
 ]

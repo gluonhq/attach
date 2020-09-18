@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,13 +54,13 @@ import java.util.Optional;
  *    ...
  *    <application ...>
  *      ...
- *      <activity android:name="com.gluonhq.impl.attach.plugins.barcode.android.scan.zxing.CaptureActivity"
+ *      <activity android:name="com.gluonhq.impl.attach.plugins.barcodescan.android.scan.zxing.CaptureActivity"
  *                android:screenOrientation="sensorLandscape"
  *                android:clearTaskOnLaunch="true"
  *                android:stateNotNeeded="true"
  *                android:windowSoftInputMode="stateAlwaysHidden">
  *        <intent-filter>
- *          <action android:name="com.gluonhq.attach.plugins.barcode.android.scan.SCAN"/>
+ *          <action android:name="com.gluonhq.attach.plugins.barcodescan.android.scan.SCAN"/>
  *          <category android:name="android.intent.category.DEFAULT"/>
  *        </intent-filter>
  *      </activity>

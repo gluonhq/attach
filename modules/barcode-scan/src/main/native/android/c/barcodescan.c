@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ JNI_OnLoad_barcodescan(JavaVM *vm, void *reserved)
 }
 
 // from Java to Android
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcode_impl_AndroidBarcodeScanService_startBarcodeScan
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_AndroidBarcodeScanService_startBarcodeScan
 (JNIEnv *env, jclass jClass, jstring jtitle, jstring jlegend, jstring jresulttext) {
     const char *titleChars = (*env)->GetStringUTFChars(env, jtitle, NULL);
     const char *legendChars = (*env)->GetStringUTFChars(env, jlegend, NULL);
