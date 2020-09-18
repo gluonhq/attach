@@ -9,4 +9,5 @@ dependencies {
     implementation project(":lifecycle")
 }
 
+ext.moduleName = 'com.gluonhq.attach.accelerometer'
 ext.description = 'Common API to access accelerometer features'

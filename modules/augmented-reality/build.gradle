@@ -9,4 +9,5 @@ dependencies {
     implementation project(':storage')
 }
 
+ext.moduleName = 'com.gluonhq.attach.augmentedreality'
 ext.description = 'Common API to access Augmented Reality features'
