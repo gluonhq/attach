@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ar;
+package com.gluonhq.attach.augmentedreality;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyBooleanProperty;
