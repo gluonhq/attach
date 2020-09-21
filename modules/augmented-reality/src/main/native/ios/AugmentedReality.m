@@ -65,7 +65,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmente
     }
     AugmentedRealityInited = 1;
 
-    mat_jAugmentedRealityServiceClass = (*myenv)->NewGlobalRef(myenv, (*myenv)->FindClass(myenv, "com/gluonhq/attach/ar/impl/IOSAugmentedRealityService"));
+    mat_jAugmentedRealityServiceClass = (*myenv)->NewGlobalRef(myenv, (*myenv)->FindClass(myenv, "com/gluonhq/attach/augmentedreality/impl/IOSAugmentedRealityService"));
     mat_jAugmentedRealityService_notifyCancel = (*myenv)->GetStaticMethodID(myenv, mat_jAugmentedRealityServiceClass, "notifyCancel", "()V");
 
     AttachLog(@"Init AugmentedReality");
@@ -377,7 +377,7 @@ double modelScale = 1.0;
 
 -(void)OrientationDidChange:(NSNotification*)notification
 {
-    [self logMessage:@"adjustiong sceneView frame"];
+    [self logMessage:@"adjusting sceneView frame"];
     self.sceneView.frame = [[UIScreen mainScreen] bounds];
 }
 

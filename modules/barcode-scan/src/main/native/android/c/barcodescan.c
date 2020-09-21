@@ -36,7 +36,7 @@ static jmethodID jBarcodeScanServiceScanMethod;
 
 
 static void initializeGraalHandles(JNIEnv* env) {
-    jGraalBarcodeScanClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcode/impl/AndroidBarcodeScanService"));
+    jGraalBarcodeScanClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcodescan/impl/AndroidBarcodeScanService"));
     jGraalResultBarcodeScanMethod = (*env)->GetStaticMethodID(env, jGraalBarcodeScanClass, "setResult", "(Ljava/lang/String;)V");
 }
 

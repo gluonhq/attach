@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_IOSBarcodeScanSe
     }
     BarcodeScanInited = 1;
     
-    mat_jScanServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcode/impl/IOSBarcodeScanService"));
+    mat_jScanServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcodescan/impl/IOSBarcodeScanService"));
     mat_jScanService_setResult = (*env)->GetStaticMethodID(env, mat_jScanServiceClass, "setResult", "(Ljava/lang/String;)V");
 }
 

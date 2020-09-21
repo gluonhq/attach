@@ -54,7 +54,7 @@ import java.util.Optional;
  *    ...
  *    <application ...>
  *      ...
- *      <activity android:name="com.gluonhq.impl.attach.plugins.barcodescan.android.scan.zxing.CaptureActivity"
+ *      <activity android:name="com.gluonhq.helloandroid.zxing.CaptureActivity"
  *                android:screenOrientation="sensorLandscape"
  *                android:clearTaskOnLaunch="true"
  *                android:stateNotNeeded="true"
