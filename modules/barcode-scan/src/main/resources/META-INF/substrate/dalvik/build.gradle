@@ -1,16 +1,17 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.kezong.fat-aar'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
     }
 
     dependencies {
         provided fileTree(dir: '../libs', include: '*.jar')
-        implementation 'com.google.zxing:core:3.4.0'
+        embed 'com.google.zxing:core:3.4.0'
     }
 
     afterEvaluate {
