@@ -40,8 +40,10 @@ public class AndroidCompassService implements CompassService {
     public AndroidCompassService() {
         heading = new ReadOnlyDoubleWrapper();
 
-        Services.get(MagnetometerService.class).ifPresent(m ->
-                m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth())));
+        Services.get(MagnetometerService.class).ifPresent(m -> {
+            m.start();
+            m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
+        });
     }
 
     @Override
