@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(RuntimeArgsService.class).ifPresent(service -> {
+ * {@code RuntimeArgsService.create().ifPresent(service -> {
  *      service.addListener("ALERT", value -> {
  *              // show alert(value)
  *      });
@@ -52,7 +52,7 @@ import java.util.function.Consumer;
  * custom scheme in the AndroidManifest.xml file:
  *
  * {@code
-    <activity android:name="com.gluonhq.impl.attach.plugins.android.LaunchURLActivity"
+    <activity android:name="com.gluonhq.helloandroid.LaunchURLActivity"
             android:launchMode="singleTask"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
@@ -97,6 +97,16 @@ import java.util.function.Consumer;
                 <string>yourScheme</string>
             </array>
         </dict>
+    </array>
+ * }
+ *
+ * To launch the app from another app, the latter has to
+ * include in its plist file:
+ *
+ * {@code
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>yourScheme</string>
     </array>
  * }
  * </p>

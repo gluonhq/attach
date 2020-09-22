@@ -10,7 +10,7 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
     if (sdk == null) {
         throw new GradleException("Error: ANDROID_SDK can't be null")
     }
-    def androidJar = sdk + "/platforms/android-28/android.jar"
+    def androidJar = sdk + "/platforms/android-29/android.jar"
     if (!file(androidJar).exists()) {
         throw new GradleException("Error: path for ${androidJar} doesn't exist")
     }

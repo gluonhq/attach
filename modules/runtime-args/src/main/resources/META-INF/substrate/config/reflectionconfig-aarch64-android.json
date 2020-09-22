@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.runtimeargs.impl.AndroidRuntimeArgsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

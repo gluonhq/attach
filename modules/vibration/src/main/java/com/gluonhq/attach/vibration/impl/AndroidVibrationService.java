@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.vibration.impl;
+
+import com.gluonhq.attach.vibration.VibrationService;
 
 /**
- * Primary API package for Attach - Augmented Reality plugin,
- * contains the interface {@link com.gluonhq.attach.ar.AugmentedRealityService} and related classes.
+ * Requires
+ * {@code
+ * <uses-permission android:name="android.permission.VIBRATE"/>
+ * }
  */
-package com.gluonhq.attach.ar;
+public class AndroidVibrationService implements VibrationService {
+
+    static {
+        System.loadLibrary("vibration");
+    }
+    
+    @Override
+    public void vibrate() {
+        doVibrate(new long[]{});
+    }
+    
+    @Override
+    public void vibrate(long... pattern) {
+        doVibrate(pattern);
+    }
+
+    private native static void doVibrate(long[] pattern);
+}

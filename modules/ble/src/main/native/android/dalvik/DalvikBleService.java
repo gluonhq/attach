@@ -182,7 +182,9 @@ public class DalvikBleService  {
         ScanCallback answer = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-                Log.v(TAG, "BLESERVICE: onScanResult, callbacktype = " + callbackType);
+                if (debug) {
+                    Log.v(TAG, "BLESERVICE: onScanResult, callbacktype = " + callbackType);
+                }
                 ScanRecord mScanRecord = result.getScanRecord();
                 byte[] scanRecord = mScanRecord.getBytes();
 
@@ -236,13 +238,15 @@ public class DalvikBleService  {
             power -= 256;
             int proximity = calculateProximity(power, mRssi);
 
-            Log.v(TAG, "Scan: mID: "+mID+", beaconID: "+beaconID+", uuid: "+scannedUuid+
-                    ", major: "+major+", minor: "+minor+", power: "+power+", distance: "+proximity);
-            scanDetected (scannedUuid, major, minor, power, 0);
+            if (debug) {
+                Log.v(TAG, "Scan: mID: " + mID + ", beaconID: " + beaconID + ", uuid: " + scannedUuid +
+                        ", major: " + major + ", minor: " + minor + ", power: " + power + ", distance: " + proximity);
+            }
+            scanDetected (scannedUuid, major, minor, power, proximity);
         }
     }
 
-    private static String ByteArrayToUUIDString(byte[] ba) {
+    private String ByteArrayToUUIDString(byte[] ba) {
         StringBuilder hex = new StringBuilder();
         for (byte b : ba) {
             hex.append(new Formatter().format("%02x", b));
@@ -251,9 +255,11 @@ public class DalvikBleService  {
                 "$1-$2-$3-$4-$5" );
     }
 
-    private static int calculateProximity (int txPower, double rssi) {
+    private int calculateProximity (int txPower, double rssi) {
         double accuracy = calculateAccuracy(txPower, rssi);
-        Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        if (debug) {
+            Log.v(TAG, "accuracy = "+accuracy+", power = "+txPower+", rssi = "+rssi);
+        }
         if (accuracy < 0) {
             return 0;
         }
@@ -266,7 +272,7 @@ public class DalvikBleService  {
         return 3;
     }
 
-    private static double calculateAccuracy(int txPower, double rssi) {
+    private double calculateAccuracy(int txPower, double rssi) {
         if (rssi == 0 || txPower == 0) {
             return -1.0; // if we cannot determine accuracy, return -1.
         }
@@ -280,7 +286,7 @@ public class DalvikBleService  {
         }
     }
 
-    private static byte[] getPayload(String uuid, int major, int minor) {
+    private byte[] getPayload(String uuid, int major, int minor) {
         byte[] prefixArray = getBytesFromShort((short) 533);
         byte[] uuidArray = getBytesFromUUID(uuid);
         byte[] majorArray = getBytesFromShort((short) major);
@@ -299,7 +305,7 @@ public class DalvikBleService  {
         return buff.array();
     }
 
-    private static byte[] getBytesFromUUID(String uuidString) {
+    private byte[] getBytesFromUUID(String uuidString) {
         final UUID uuid = UUID.fromString(uuidString);
         ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
         buffer.putLong(uuid.getMostSignificantBits());
@@ -307,7 +313,7 @@ public class DalvikBleService  {
         return buffer.array();
     }
 
-    private static byte[] getBytesFromShort(short value) {
+    private byte[] getBytesFromShort(short value) {
         ByteBuffer buffer = ByteBuffer.wrap(new byte[2]);
         buffer.putShort(value);
         return buffer.array();

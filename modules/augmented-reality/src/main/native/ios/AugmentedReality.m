@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ AugmentedReality *_ar;
 
 BOOL enableDebugAugmentedReality;
 
-JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_initAR
+JNIEXPORT jint JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_initAR
 (JNIEnv *myenv, jclass jClass)
 {
     if (AugmentedRealityInited)
@@ -65,7 +65,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
     }
     AugmentedRealityInited = 1;
 
-    mat_jAugmentedRealityServiceClass = (*myenv)->NewGlobalRef(myenv, (*myenv)->FindClass(myenv, "com/gluonhq/attach/ar/impl/IOSAugmentedRealityService"));
+    mat_jAugmentedRealityServiceClass = (*myenv)->NewGlobalRef(myenv, (*myenv)->FindClass(myenv, "com/gluonhq/attach/augmentedreality/impl/IOSAugmentedRealityService"));
     mat_jAugmentedRealityService_notifyCancel = (*myenv)->GetStaticMethodID(myenv, mat_jAugmentedRealityServiceClass, "notifyCancel", "()V");
 
     AttachLog(@"Init AugmentedReality");
@@ -85,13 +85,13 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
     return 0;
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_enableDebugAR
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_enableDebugAR
 (JNIEnv *env, jclass jClass)
 {
     enableDebugAugmentedReality = YES;
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_showNativeAR
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_showNativeAR
 (JNIEnv *env, jclass jClass)
 {
     if (@available(iOS 11.3, *)) {
@@ -103,7 +103,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityServic
     return;
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ar_impl_IOSAugmentedRealityService_setARModel
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_setARModel
 (JNIEnv *env, jclass jClass, jstring jObjFileName, jdouble scale)
 {
     const jchar *charsObjFileName = (*env)->GetStringChars(env, jObjFileName, NULL);
@@ -377,7 +377,7 @@ double modelScale = 1.0;
 
 -(void)OrientationDidChange:(NSNotification*)notification
 {
-    [self logMessage:@"adjustiong sceneView frame"];
+    [self logMessage:@"adjusting sceneView frame"];
     self.sceneView.frame = [[UIScreen mainScreen] bounds];
 }
 
