@@ -38,7 +38,7 @@ public class IOSMagnetometerService extends MobileMagnetometerService {
     }
 
     @Override
-    protected void startMagnetometerImpl(int frequency) {
+    protected void startMagnetometerImpl(double frequency) {
         startObserver(frequency);
     }
 
@@ -49,7 +49,7 @@ public class IOSMagnetometerService extends MobileMagnetometerService {
 
     // native
     private static native void initMagnetometer();
-    private static native void startObserver(int frequency);
+    private static native void startObserver(double frequency);
     private static native void stopObserver();
     
     // callback

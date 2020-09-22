@@ -44,7 +44,7 @@ static void initializeMagnetometerDalvikHandles() {
     ATTACH_DALVIK();
     jclass jMagnetometerServiceClass = substrateGetMagnetometerServiceClass();
     jmethodID jMagnetometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jMagnetometerServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "start", "(I)V");
+    jMagnetometerServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "start", "(D)V");
     jMagnetometerServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "stop", "()V");
 
     jobject jActivity = substrateGetActivity();
@@ -77,7 +77,7 @@ JNI_OnLoad_magnetometer(JavaVM *vm, void *reserved)
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_magnetometer_impl_AndroidMagnetometerService_startMagnetometer
-    (JNIEnv *env, jclass jClass, jint jfrequency)
+    (JNIEnv *env, jclass jClass, jdouble jfrequency)
 {
     ATTACH_DALVIK();
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikMagnetometerService, jMagnetometerServiceStartMethod, jfrequency);

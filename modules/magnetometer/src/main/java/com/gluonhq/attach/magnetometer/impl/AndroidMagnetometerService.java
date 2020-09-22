@@ -37,7 +37,7 @@ public class AndroidMagnetometerService extends MobileMagnetometerService {
     }
 
     @Override
-    protected void startMagnetometerImpl(int frequency) {
+    protected void startMagnetometerImpl(double frequency) {
         startMagnetometer(frequency);
     }
 
@@ -47,7 +47,7 @@ public class AndroidMagnetometerService extends MobileMagnetometerService {
     }
 
     // native
-    private static native void startMagnetometer(int frequency);
+    private static native void startMagnetometer(double frequency);
     private static native void stopMagnetometer();
 
     // callback

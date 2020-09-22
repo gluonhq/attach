@@ -90,6 +90,6 @@ public abstract class MobileMagnetometerService implements MagnetometerService {
         isRunning = false;
     }
 
-    protected abstract void startMagnetometerImpl(int frequency);
+    protected abstract void startMagnetometerImpl(double frequency);
     protected abstract void stopMagnetometerImpl();
 }

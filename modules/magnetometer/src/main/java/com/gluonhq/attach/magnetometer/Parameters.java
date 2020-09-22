@@ -35,21 +35,21 @@ package com.gluonhq.attach.magnetometer;
  */
 public class Parameters {
 
-    private final int frequency;
+    private final double frequency;
 
     /**
      * Construct new parameters for {@link MagnetometerService}.
      *
      * @param frequency the rate with which to update the service
      */
-    public Parameters(int frequency) {
+    public Parameters(double frequency) {
         this.frequency = frequency;
     }
 
     /**
      * @return the rate with which to update the service
      */
-    public int getFrequency() {
+    public double getFrequency() {
         return frequency;
     }
 

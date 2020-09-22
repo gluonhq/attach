@@ -59,7 +59,7 @@ public class DalvikMagnetometerService implements SensorEventListener {
         sensorManager = (SensorManager) activity.getSystemService(SENSOR_SERVICE);
     }
 
-    private void start(int frequency) {
+    private void start(double frequency) {
         if (debug) {
             Log.v(TAG, "DalvikMagnetometerService::start");
         }
