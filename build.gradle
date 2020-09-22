@@ -1,7 +1,8 @@
 plugins {
+    id 'jp.classmethod.aws.s3' version '0.41'
     id 'io.codearte.nexus-staging' version '0.21.1'
-    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
     id "org.openjfx.javafxplugin" version "0.0.8" apply false
+    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
 apply from: rootProject.file("gradle/native-build.gradle")
@@ -35,6 +36,10 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
+    javafx {
+        modules 'javafx.graphics'
+    }
 }
 
 nexusStaging {
@@ -43,4 +48,44 @@ nexusStaging {
     password = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''
     numberOfRetries = 30
     delayBetweenRetriesInMillis = 5000
+}
+
+// Required for Javadoc compilation
+apply plugin: "org.openjfx.javafxplugin"
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    modules 'javafx.graphics'
+}
+// Required End
+
+task copyModuleSources {
+    doLast {
+        subprojects.each {p ->
+            copy {
+                from p.sourceSets.main.java
+                into "${buildDir}/modules/sources/${p.ext.moduleName}"
+            }
+        }
+    }
+}
+
+javadoc {
+    exclude("com/gluonhq/attach/*/impl")
+    source fileTree("${buildDir}/modules/sources")
+    options.addStringOption('-module-path', configurations.compileClasspath.asPath)
+    classpath = files()
+    options.addStringOption("-module-source-path", "$buildDir/modules/sources")
+    title "Attach ${project.version} API"
+    dependsOn copyModuleSources
+}
+
+task uploadJavadocToS3(type: jp.classmethod.aws.gradle.s3.SyncTask) {
+    source file("$buildDir/docs/javadoc/")
+    bucketName 'docs.gluonhq.com'
+    prefix "attach/javadoc/$project.version/"
+    acl 'PublicRead'
 }

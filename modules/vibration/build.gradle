@@ -2,4 +2,5 @@ dependencies {
     implementation project(':util')
 }
 
+ext.moduleName = 'com.gluonhq.attach.vibration'
 ext.description = 'Common API to access vibration features'
