@@ -1,6 +1,6 @@
 [
   {
-    "name" : "com.gluonhq.attach.ar.impl.IOSAugmentedRealityService",
+    "name" : "com.gluonhq.attach.augmentedreality.impl.IOSAugmentedRealityService",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]

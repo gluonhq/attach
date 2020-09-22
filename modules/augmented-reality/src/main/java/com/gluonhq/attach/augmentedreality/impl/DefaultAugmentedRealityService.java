@@ -1,6 +1,6 @@
-package com.gluonhq.attach.ar.impl;
+package com.gluonhq.attach.augmentedreality.impl;
 
-import com.gluonhq.attach.ar.AugmentedRealityService;
+import com.gluonhq.attach.augmentedreality.AugmentedRealityService;
 import com.gluonhq.attach.util.Util;
 
 import java.util.logging.Logger;

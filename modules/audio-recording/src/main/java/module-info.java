@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.audio.recording {
+module com.gluonhq.attach.audiorecording {
 
     requires javafx.graphics;
     requires com.gluonhq.attach.util;

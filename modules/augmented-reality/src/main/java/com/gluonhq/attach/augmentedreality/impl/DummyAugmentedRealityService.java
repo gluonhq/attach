@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2018, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.augmentedreality.impl;
 
-/**
- * Primary API package for Attach - Augmented Reality plugin,
- * contains the interface {@link com.gluonhq.attach.ar.AugmentedRealityService} and related classes.
- */
-package com.gluonhq.attach.ar;
+import com.gluonhq.attach.augmentedreality.AugmentedRealityService;
+
+// no-op
+public abstract class DummyAugmentedRealityService implements AugmentedRealityService {
+}

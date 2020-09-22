@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.barcode.impl;
+package com.gluonhq.attach.barcodescan.impl;
 
-import com.gluonhq.attach.barcode.BarcodeScanService;
+import com.gluonhq.attach.barcodescan.BarcodeScanService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -47,7 +47,7 @@ import java.util.Optional;
  *       android:stateNotNeeded="true"
  *        android:windowSoftInputMode="stateAlwaysHidden">
  *         <intent-filter>
- *             <action android:name="com.gluonhq.attach.barcode.android.SCAN"/>
+ *             <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
  *            <category android:name="android.intent.category.DEFAULT"/>
  *          </intent-filter>
  *    </activity>
