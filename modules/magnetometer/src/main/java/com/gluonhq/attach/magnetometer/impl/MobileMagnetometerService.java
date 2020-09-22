@@ -51,8 +51,9 @@ public abstract class MobileMagnetometerService implements MagnetometerService {
                 // isRunning keeps track of the service start-stop lifecycle
                 // hence, if the user did not call stop, then isRunning = true
                 // therefore, on resume, we should "restart" the service, which we stopped on pause
-                if (isRunning)
+                if (isRunning) {
                     start(parameters);
+                }
             });
         });
     }
@@ -74,8 +75,9 @@ public abstract class MobileMagnetometerService implements MagnetometerService {
 
     @Override
     public void start(Parameters parameters) {
-        if (isRunning)
+        if (isRunning) {
             stopMagnetometerImpl();
+        }
 
         this.parameters = parameters;
         startMagnetometerImpl(parameters.getFrequency());

@@ -48,6 +48,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code Services.get(MagnetometerService.class).ifPresent(service -> {
+ *      service.start();
  *      MagnetometerReading reading = service.getReading();
  *      System.out.printf("Magnetic field: %.4f, %.4f, %.4f. Magnitude: %.4f",
  *              reading.getX(), reading.getY(), reading.getZ(), reading.getMagnitude());
@@ -60,6 +61,9 @@ import java.util.Optional;
  */
 public interface MagnetometerService {
 
+    /**
+     * Default frequency is 10 Hz (10 samples per second).
+     */
     Parameters DEFAULT_PARAMETERS = new Parameters(10);
 
     /**

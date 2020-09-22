@@ -49,7 +49,7 @@ public class IOSMagnetometerService extends MobileMagnetometerService {
 
     // native
     private static native void initMagnetometer();
-    private static native void startObserver(int rateInMillis);
+    private static native void startObserver(int frequency);
     private static native void stopObserver();
     
     // callback

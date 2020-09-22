@@ -69,6 +69,9 @@ public class DalvikMagnetometerService implements SensorEventListener {
     }
     
     private void stop() {
+        if (debug) {
+            Log.v(TAG, "DalvikMagnetometerService::stop");
+        }
         unregisterListener();
     }
 
@@ -77,18 +80,21 @@ public class DalvikMagnetometerService implements SensorEventListener {
             if (debug) {
                 Log.v(TAG, "DalvikMagnetometerService::registerListener");
             }
-            int rateInMillis = frequency > 0 ? (int) (1000d / (double) frequency) : 100;
+
+            double rateInSeconds = frequency > 0 ? (1.0d / (double) frequency) : 0.1;
+            int rateInMicroseconds = (int) (rateInSeconds * 1_000_000);
+
             if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
                 sensorManager.registerListener(this,
                         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                        rateInMillis);
+                        rateInMicroseconds);
             } else {
                 Log.e(TAG, "No accelerometer available");
             }
             if (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
                 sensorManager.registerListener(this,
                         sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                        rateInMillis);
+                        rateInMicroseconds);
             } else {
                 Log.e(TAG, "No magnetometer available");
             }

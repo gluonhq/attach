@@ -47,7 +47,7 @@ public class AndroidMagnetometerService extends MobileMagnetometerService {
     }
 
     // native
-    private static native void startMagnetometer(int rateInMillis);
+    private static native void startMagnetometer(int frequency);
     private static native void stopMagnetometer();
 
     // callback
