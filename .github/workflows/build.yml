@@ -29,13 +29,13 @@ jobs:
 
       - name: Build project
         run: |
+          export ANDROID_SDK=$ANDROID_HOME
+          export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
           ./gradlew -i publishToMavenLocal
 
       - name: Deploy Snapshot
         if: github.ref == 'refs/heads/master'
         run: |
-          export ANDROID_SDK=$ANDROID_HOME
-          export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
           ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
