@@ -1,11 +1,6 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
 dependencies {
     implementation project(':util')
 }
 
+ext.moduleName = 'com.gluonhq.attach.ble'
 ext.description = 'Common API to access bluetooth low energy features'

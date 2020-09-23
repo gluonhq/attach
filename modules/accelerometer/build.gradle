@@ -1,12 +1,9 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
 dependencies {
     implementation project(':util')
     implementation project(":lifecycle")
 }
 
-ext.description = 'Common API to access accelerometer features'
+ext {
+    moduleName = 'com.gluonhq.attach.accelerometer'
+    description = 'Common API to access accelerometer features'
+}

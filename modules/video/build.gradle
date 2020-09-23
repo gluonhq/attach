@@ -1,12 +1,7 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
 dependencies {
     implementation project(':util')
     implementation project(':storage')
 }
 
+ext.moduleName = 'com.gluonhq.attach.video'
 ext.description = 'Common API to access video features'
