@@ -5,8 +5,6 @@ plugins {
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
-apply from: rootProject.file("gradle/native-build.gradle")
-
 if (System.getProperty('os.name').toLowerCase().contains("mac")) {
     new ByteArrayOutputStream().withStream { os ->
         exec {

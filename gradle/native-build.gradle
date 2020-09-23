@@ -1,7 +1,112 @@
-import groovy.io.FileType
+def dummyFiles   = [ '**/*/impl/Dummy**' ]
+def iosFiles     = [ '**/*/impl/IOS**', '**/**ios.json' ]
+def androidFiles = [ '**/*/impl/Android**', '**/**android.json', '**/dalvik' ]
+def desktopFiles = [ '**/impl/Desktop**', '**/**darwin.json', '**/**linux.json', '**/**windows.json' ]
+
+def projectClasses          = "$project.buildDir/classes/java/main"
+def projectResources        = "$project.buildDir/resources/main"
+def projectIOSResources     = "$project.projectDir/src/ios/resources/"
+def projectAndroidResources = "$project.projectDir/src/android/resources/"
+def projectDesktopResources = "$project.projectDir/src/desktop/resources/"
 
 def sdkPath(String platform) {
     return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
+}
+
+task androidBuild {
+    group = "native"
+    dependsOn build
+    doLast {
+        def serviceName = getServiceName(project.name)
+        File aar = aarBuild ("$project.buildDir", "$project.projectDir", serviceName, 'android')
+        if (aar == null) {
+            println "Error creating $aar"
+        }
+        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'android')
+    }
+}
+
+task androidJar (type: Jar, dependsOn: androidBuild) {
+    group = "native"
+
+    from projectClasses, projectResources, projectAndroidResources
+    exclude dummyFiles
+    exclude iosFiles
+    exclude desktopFiles
+
+    archiveClassifier = 'android'
+
+    afterEvaluate {
+        into("native") {
+            from ("$project.buildDir/native/android") {
+                include 'lib*.a'
+            }
+        }
+    }
+}
+
+task iosBuild {
+    enabled = System.getProperty('os.name').toLowerCase().contains("mac")
+    group = "native"
+    dependsOn build
+    doLast {
+        def serviceName = getServiceName(project.name)
+        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'ios')
+    }
+}
+
+task iosJar (type: Jar, dependsOn: iosBuild) {
+    enabled = System.getProperty('os.name').toLowerCase().contains("mac")
+    group = "native"
+
+    from projectClasses, projectResources, projectIOSResources
+    exclude dummyFiles
+    exclude desktopFiles
+    exclude androidFiles
+
+    archiveClassifier = 'ios'
+
+    afterEvaluate {
+        def serviceName = getServiceName(project.name)
+        into("native") {
+            from "$project.buildDir/native/ios/lib${serviceName}.a"
+        }
+    }
+}
+
+task desktopBuild {
+    enabled = project.name != "util"
+    group = "native"
+    dependsOn build
+    doLast {
+        def serviceName = getServiceName(project.name)
+        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'desktop')
+    }
+}
+
+task desktopJar (type: Jar, dependsOn: desktopBuild) {
+    enabled = project.name != "util"
+    group = "native"
+
+    from projectClasses, projectResources, projectDesktopResources
+    exclude dummyFiles
+    exclude iosFiles
+    exclude androidFiles
+
+    archiveClassifier = 'desktop'
+
+    afterEvaluate {
+        def serviceName = getServiceName(project.name)
+        into("native") {
+            from "$project.buildDir/native/desktop/lib${serviceName}.a"
+        }
+    }
+}
+
+task nativeBuild {
+    dependsOn androidBuild, iosBuild, desktopBuild
+    group = "native"
+    description = "Runs native build for android, ios and desktop"
 }
 
 ext.aarBuild = { buildDir, projectDir, name, os ->
@@ -296,4 +401,12 @@ ext.nativeBuild = { buildDir, projectDir, name, os ->
                     .first()
         }
     }
+}
+
+private String getServiceName(projectName) {
+    if (projectName.contains("-")) { // in-app-billing -> InAppBilling
+        def values = projectName.tokenize("-")
+        return values.inject("") { name, pn -> name + pn.capitalize()  }
+    }
+    return projectName.capitalize()
 }
