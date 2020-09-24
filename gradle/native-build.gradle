@@ -22,7 +22,7 @@ task androidBuild {
         if (aar == null) {
             println "Error creating $aar"
         }
-        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'android')
+        nativeBuildLib("$project.buildDir", "$project.projectDir", serviceName, 'android')
     }
 }
 
@@ -34,7 +34,7 @@ task androidJar (type: Jar, dependsOn: androidBuild) {
     exclude iosFiles
     exclude desktopFiles
 
-    archiveClassifier = 'android'
+    archiveClassifier.set('android')
 
     afterEvaluate {
         into("native") {
@@ -51,7 +51,7 @@ task iosBuild {
     dependsOn build
     doLast {
         def serviceName = getServiceName(project.name)
-        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'ios')
+        nativeBuildLib("$project.buildDir", "$project.projectDir", serviceName, 'ios')
     }
 }
 
@@ -64,7 +64,7 @@ task iosJar (type: Jar, dependsOn: iosBuild) {
     exclude desktopFiles
     exclude androidFiles
 
-    archiveClassifier = 'ios'
+    archiveClassifier.set('ios')
 
     afterEvaluate {
         def serviceName = getServiceName(project.name)
@@ -80,7 +80,7 @@ task desktopBuild {
     dependsOn build
     doLast {
         def serviceName = getServiceName(project.name)
-        nativeBuild("$project.buildDir", "$project.projectDir", serviceName, 'desktop')
+        nativeBuildLib("$project.buildDir", "$project.projectDir", serviceName, 'desktop')
     }
 }
 
@@ -93,7 +93,7 @@ task desktopJar (type: Jar, dependsOn: desktopBuild) {
     exclude iosFiles
     exclude androidFiles
 
-    archiveClassifier = 'desktop'
+    archiveClassifier.set('desktop')
 
     afterEvaluate {
         def serviceName = getServiceName(project.name)
@@ -220,7 +220,7 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
     }
 }
 
-ext.nativeBuild = { buildDir, projectDir, name, os ->
+ext.nativeBuildLib = { buildDir, projectDir, name, os ->
 
     println("native build for $name started")
     File shareDir = file("$projectDir/src/main/native/share")
