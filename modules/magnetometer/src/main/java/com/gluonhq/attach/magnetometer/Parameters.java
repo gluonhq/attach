@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,35 +25,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.compass.impl;
+package com.gluonhq.attach.magnetometer;
 
-import com.gluonhq.attach.compass.CompassService;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
-import com.gluonhq.attach.util.Services;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
+/**
+ * A data structure that allows configuring the {@link MagnetometerService}.
+ *
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ * @since 4.0.10
+ */
+public class Parameters {
 
-public class AndroidCompassService implements CompassService {
+    private final double frequency;
 
-    private final ReadOnlyDoubleWrapper heading;
+    /**
+     * Construct new parameters for {@link MagnetometerService}.
+     *
+     * @param frequency the rate with which to update the service
+     */
+    public Parameters(double frequency) {
+        this.frequency = frequency;
+    }
 
-    public AndroidCompassService() {
-        heading = new ReadOnlyDoubleWrapper();
-
-        Services.get(MagnetometerService.class).ifPresent(m -> {
-            m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
-            m.start();
-        });
+    /**
+     * @return the rate with which to update the service
+     */
+    public double getFrequency() {
+        return frequency;
     }
 
     @Override
-    public double getHeading() {
-        return heading.get();
+    public String toString() {
+        return "Parameters{" + "frequency=" + frequency + '}';
     }
-
-    @Override
-    public ReadOnlyDoubleProperty headingProperty() {
-        return heading.getReadOnlyProperty();
-    }
-
 }

@@ -28,35 +28,27 @@
 package com.gluonhq.attach.magnetometer.impl;
 
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-public class AndroidMagnetometerService implements MagnetometerService {
+public class AndroidMagnetometerService extends MobileMagnetometerService {
 
     static {
         System.loadLibrary("magnetometer");
     }
 
-    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
-
-    public AndroidMagnetometerService() {
-        initMagnetometer(FREQUENCY);
-    }
-    
     @Override
-    public ReadOnlyObjectProperty<MagnetometerReading> readingProperty() {
-        return reading.getReadOnlyProperty();
+    protected void startMagnetometerImpl(double frequency) {
+        startMagnetometer(frequency);
     }
 
     @Override
-    public MagnetometerReading getReading() {
-        return reading.get();
+    protected void stopMagnetometerImpl() {
+        stopMagnetometer();
     }
-    
+
     // native
-    private static native void initMagnetometer(int rateInMillis);
+    private static native void startMagnetometer(double frequency);
+    private static native void stopMagnetometer();
 
     // callback
     private static void notifyReading(double x, double y, double z, double m, double a, double p, double r) {

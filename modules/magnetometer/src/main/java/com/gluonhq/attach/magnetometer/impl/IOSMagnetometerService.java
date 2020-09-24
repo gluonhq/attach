@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,44 +27,29 @@
  */
 package com.gluonhq.attach.magnetometer.impl;
 
-import com.gluonhq.attach.lifecycle.LifecycleEvent;
-import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.magnetometer.MagnetometerReading;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-public class IOSMagnetometerService implements MagnetometerService {
+public class IOSMagnetometerService extends MobileMagnetometerService {
 
     static {
         System.loadLibrary("Magnetometer");
         initMagnetometer();
     }
-    
-    private static final ReadOnlyObjectWrapper<MagnetometerReading> reading = new ReadOnlyObjectWrapper<>();
 
-    public IOSMagnetometerService() {
-        LifecycleService.create().ifPresent(l -> {
-            l.addListener(LifecycleEvent.PAUSE, IOSMagnetometerService::stopObserver);
-            l.addListener(LifecycleEvent.RESUME, () -> startObserver(FREQUENCY));
-        });
-        startObserver(FREQUENCY);
-    }
-    
     @Override
-    public ReadOnlyObjectProperty<MagnetometerReading> readingProperty() {
-        return reading.getReadOnlyProperty();
+    protected void startMagnetometerImpl(double frequency) {
+        startObserver(frequency);
     }
 
     @Override
-    public MagnetometerReading getReading() {
-        return reading.get();
+    protected void stopMagnetometerImpl() {
+        stopObserver();
     }
-    
+
     // native
     private static native void initMagnetometer();
-    private static native void startObserver(int rateInMillis);
+    private static native void startObserver(double frequency);
     private static native void stopObserver();
     
     // callback
