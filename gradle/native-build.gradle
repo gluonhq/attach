@@ -325,7 +325,6 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         println("native build for $name finished")
         File n = new File(lipoOutput)
         if (n.exists()) {
-            println "Adding $n to native jar"
             n
         }
     } else if (os == "android") {
@@ -374,7 +373,6 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         println("native build for $name finished")
         File a = new File(linkerOutput)
         if (a.exists()) {
-            println "Adding $a to native jar"
             a
         }
     } else {
@@ -396,7 +394,6 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         // TODO
         File n = new File("$buildDir/native/${os}")
         if (n.exists()) {
-            println "Adding lib${name} to native jar"
             fileTree("$buildDir/native/${os}").filter { it.isFile() }.files
                     .first()
         }
