@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_magnetometer_impl_IOSMagnetometer
 (JNIEnv *env, jclass jClass, jdouble jfrequency)
 {
     if (jfrequency > 0) {
-        magRate = 1.0 / ((double) jfrequency);
+        magRate = 1.0 / jfrequency;
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{

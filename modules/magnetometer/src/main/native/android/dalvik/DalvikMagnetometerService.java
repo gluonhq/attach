@@ -52,7 +52,7 @@ public class DalvikMagnetometerService implements SensorEventListener {
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     private final boolean debug;
-    private int frequency;
+    private double frequency;
 
     public DalvikMagnetometerService(Activity activity) {
         debug = Util.isDebug();
@@ -81,7 +81,7 @@ public class DalvikMagnetometerService implements SensorEventListener {
                 Log.v(TAG, "DalvikMagnetometerService::registerListener");
             }
 
-            double rateInSeconds = frequency > 0 ? (1.0d / (double) frequency) : 0.1;
+            double rateInSeconds = frequency > 0 ? (1.0 / frequency) : 0.1;
             int rateInMicroseconds = (int) (rateInSeconds * 1_000_000);
 
             if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {

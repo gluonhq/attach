@@ -41,8 +41,8 @@ public class AndroidCompassService implements CompassService {
         heading = new ReadOnlyDoubleWrapper();
 
         Services.get(MagnetometerService.class).ifPresent(m -> {
-            m.start();
             m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
+            m.start();
         });
     }
 
