@@ -2,5 +2,16 @@
 <manifest xmlns:android='http://schemas.android.com/apk/res/android' xmlns:tools="http://schemas.android.com/tools" package='com.gluonhq.helloandroid'>
     <uses-sdk android:minSdkVersion="21" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity android:name="com.gluonhq.helloandroid.zxing.CaptureActivity"
+                  android:screenOrientation="sensorLandscape"
+                  android:clearTaskOnLaunch="true" android:stateNotNeeded="true"
+                  android:windowSoftInputMode="stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>
 

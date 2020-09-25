@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,10 @@
 #include "AttachMacros.h"
 #import <UserNotifications/UserNotifications.h>
 
-@interface RuntimeArgs : NSObject <UIApplicationDelegate> { }
+@interface GlassApplication : NSObject <UIApplicationDelegate> { }
+@end
+
+@interface GlassApplication (RuntimeArgsAdditions)
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options;
 

@@ -1,12 +1,8 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
 dependencies {
     implementation project(':util')
     implementation project(':runtime-args')
+    implementation project(':storage')
 }
 
+ext.moduleName = 'com.gluonhq.attach.localnotifications'
 ext.description = 'Common API to access local notifications features'

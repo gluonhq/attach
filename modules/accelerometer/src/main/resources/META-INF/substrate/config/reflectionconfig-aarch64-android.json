@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.accelerometer.impl.AndroidAccelerometerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

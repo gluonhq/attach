@@ -6,13 +6,13 @@ sudo: false
 
 # use Mac OS X as operating system to build Android and iOS native libraries
 os: osx
-osx_image: xcode11.3
+osx_image: xcode11.7
 
 before_script:
   - bash .ci/android.sh
   - export ANDROID_SDK=$HOME/android-sdk
   - export ANDROID_NDK=$HOME/android-sdk/ndk-bundle
-  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-14.jdk/Contents/Home
+  - export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-14.0.2.jdk/Contents/Home
 
 # run maven build
 script:
@@ -21,18 +21,3 @@ script:
 cache:
   directories:
     - $HOME/.gradle/caches/
-
-# Deploy snapshots on every commit made to master branch
-# Deploy releases on every tag push
-deploy:
-  - provider: script
-    script: ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
-    skip_cleanup: true
-    on:
-      branch: master
-
-  - provider: script
-    script: bash .ci/release.sh
-    skip_cleanup: true
-    on:
-      tags: true

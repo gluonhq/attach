@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.localnotifications.impl.AndroidLocalNotificationsService",
+    "methods":[{"name":"processRuntimeArgs","parameterTypes":["java.lang.String","java.lang.String"] }]
+  }
+]

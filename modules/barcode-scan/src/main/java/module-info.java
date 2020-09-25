@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.barcode {
+module com.gluonhq.attach.barcodescan {
 
     requires javafx.graphics;
     requires com.gluonhq.attach.util;
 
-    exports com.gluonhq.attach.barcode;
-    exports com.gluonhq.attach.barcode.impl to com.gluonhq.attach.util;
+    exports com.gluonhq.attach.barcodescan;
+    exports com.gluonhq.attach.barcodescan.impl to com.gluonhq.attach.util;
 }

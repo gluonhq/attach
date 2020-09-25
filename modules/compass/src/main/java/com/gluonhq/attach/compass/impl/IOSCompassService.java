@@ -42,6 +42,7 @@ public class IOSCompassService implements CompassService {
 
         Services.get(MagnetometerService.class).ifPresent(m -> {
             m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
+            m.start();
         });
     }
 

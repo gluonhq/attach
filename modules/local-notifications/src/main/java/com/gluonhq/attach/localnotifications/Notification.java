@@ -148,4 +148,13 @@ public class Notification {
         return runnable;
     }
 
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", dateTime=" + dateTime +
+                '}';
+    }
 }

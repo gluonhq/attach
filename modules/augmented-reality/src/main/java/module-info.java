@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.audio.recording {
+module com.gluonhq.attach.augmentedreality {
 
     requires javafx.graphics;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.storage;
 
-    exports com.gluonhq.attach.ar;
-    exports com.gluonhq.attach.ar.impl to com.gluonhq.attach.util;
+    exports com.gluonhq.attach.augmentedreality;
+    exports com.gluonhq.attach.augmentedreality.impl to com.gluonhq.attach.util;
 }

@@ -1,7 +1,2 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
+ext.moduleName = 'com.gluonhq.attach.util'
 ext.description = 'Common API'

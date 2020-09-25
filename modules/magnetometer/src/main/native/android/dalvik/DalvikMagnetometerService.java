@@ -52,40 +52,27 @@ public class DalvikMagnetometerService implements SensorEventListener {
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     private final boolean debug;
-    private int frequency;
+    private double frequency;
 
     public DalvikMagnetometerService(Activity activity) {
         debug = Util.isDebug();
         sensorManager = (SensorManager) activity.getSystemService(SENSOR_SERVICE);
-        Util.setLifecycleEventHandler(new LifecycleEventHandler() {
-            @Override
-            public void lifecycleEvent(String event) {
-                if (event != null && !event.isEmpty()) {
-                    switch (event) {
-                        case "pause":
-                            unregisterListener();
-                            break;
-                        case "resume":
-                            registerListener();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        });
-        registerListener();
     }
 
-    private void setup(int frequency) {
+    private void start(double frequency) {
         if (debug) {
-            Log.v(TAG, "DalvikMagnetometerService::setup");
+            Log.v(TAG, "DalvikMagnetometerService::start");
         }
-        if (this.frequency != frequency) {
-            this.frequency = frequency;
-            unregisterListener();
-            registerListener();
+        this.frequency = frequency;
+        unregisterListener();
+        registerListener();
+    }
+    
+    private void stop() {
+        if (debug) {
+            Log.v(TAG, "DalvikMagnetometerService::stop");
         }
+        unregisterListener();
     }
 
     private void registerListener() {
@@ -93,18 +80,21 @@ public class DalvikMagnetometerService implements SensorEventListener {
             if (debug) {
                 Log.v(TAG, "DalvikMagnetometerService::registerListener");
             }
-            int rateInMillis = frequency > 0 ? (int) (1000d / (double) frequency) : 100;
+
+            double rateInSeconds = frequency > 0 ? (1.0 / frequency) : 0.1;
+            int rateInMicroseconds = (int) (rateInSeconds * 1_000_000);
+
             if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
                 sensorManager.registerListener(this,
                         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                        rateInMillis);
+                        rateInMicroseconds);
             } else {
                 Log.e(TAG, "No accelerometer available");
             }
             if (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
                 sensorManager.registerListener(this,
                         sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                        rateInMillis);
+                        rateInMicroseconds);
             } else {
                 Log.e(TAG, "No magnetometer available");
             }

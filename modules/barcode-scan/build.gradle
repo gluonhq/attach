@@ -1,12 +1,7 @@
-apply plugin: 'org.openjfx.javafxplugin'
-
-javafx {
-    modules 'javafx.graphics'
-}
-
 dependencies {
     implementation project(':util')
     androidImplementation 'com.google.zxing:core:3.4.0'
 }
 
+ext.moduleName = 'com.gluonhq.attach.barcodescan'
 ext.description = 'Common API to access barcode scan features'

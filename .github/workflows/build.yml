@@ -1,0 +1,44 @@
+name: Attach Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: |
+          export ANDROID_SDK=$ANDROID_HOME
+          export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
+          ./gradlew -i nativeBuild
+
+      - name: Deploy Snapshot
+        if: github.ref == 'refs/heads/master'
+        run: |
+          export ANDROID_SDK=$ANDROID_HOME
+          export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
+          ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

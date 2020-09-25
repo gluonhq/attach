@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ jmethodID mat_jScanService_setResult = 0;
 BarcodeScan *_barcodeScan;
 
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcode_impl_IOSBarcodeScanService_initBarcodeScan
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_IOSBarcodeScanService_initBarcodeScan
 (JNIEnv *env, jclass jClass)
 {
     if (BarcodeScanInited)
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcode_impl_IOSBarcodeScanServic
     }
     BarcodeScanInited = 1;
     
-    mat_jScanServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcode/impl/IOSBarcodeScanService"));
+    mat_jScanServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/barcodescan/impl/IOSBarcodeScanService"));
     mat_jScanService_setResult = (*env)->GetStaticMethodID(env, mat_jScanServiceClass, "setResult", "(Ljava/lang/String;)V");
 }
 
@@ -73,7 +73,7 @@ void sendScanResult(NSString *scanResult) {
 	AttachLog(@"Finished sending scan result");
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcode_impl_IOSBarcodeScanService_startBarcodeScan
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_IOSBarcodeScanService_startBarcodeScan
 (JNIEnv *env, jclass jClass, jstring jTitle, jstring jLegend, jstring jResult)
 {
 

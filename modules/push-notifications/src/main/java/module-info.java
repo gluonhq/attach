@@ -30,7 +30,7 @@ module com.gluonhq.attach.pushnotifications {
     requires transitive javafx.graphics;
 
     requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.runtime.args;
+    requires com.gluonhq.attach.runtimeargs;
 
     exports com.gluonhq.attach.pushnotifications;
     exports com.gluonhq.attach.pushnotifications.impl to com.gluonhq.attach.util;

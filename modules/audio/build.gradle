@@ -3,4 +3,5 @@ dependencies {
     implementation project(':storage')
 }
 
+ext.moduleName = 'com.gluonhq.attach.audio'
 ext.description = 'Common API to access audio features'
