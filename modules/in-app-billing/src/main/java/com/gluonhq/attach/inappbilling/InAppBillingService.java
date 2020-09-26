@@ -47,7 +47,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code InAppBillingService service = Services.get(InAppBillingService.class)
+ * {@code InAppBillingService service = InAppBillingService.create()
  *          .orElseThrow(() -> new RuntimeException("Could not load In-App Billing service"));
  *
  *      // initialize and register available products

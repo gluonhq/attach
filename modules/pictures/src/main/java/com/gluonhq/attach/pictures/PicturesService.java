@@ -40,7 +40,7 @@ import javafx.scene.image.Image;
  * <p><b>Example</b></p>
  * <pre>
  * {@code ImageView imageView = new ImageView();
- *  Services.get(PicturesService.class).ifPresent(service -> {
+ *  PicturesService.create().ifPresent(service -> {
  *      service.takePhoto(false).ifPresent(image -> imageView.setImage(image));
  *  });}</pre>
  *
@@ -50,10 +50,10 @@ import javafx.scene.image.Image;
  * <p><b>Example</b></p>
  * <pre>
  * {@code ImageView imageView = new ImageView();
- *  Services.get(PicturesService.class).ifPresent(service -> {
+ *  PicturesService.create().ifPresent(service -> {
  *      service.loadFromGallery().ifPresent(image -> imageView.setImage(image));
  *      service.getImageFile().ifPresent(file ->
- *          Services.get(ShareService.class).ifPresent(share ->
+ *          ShareService.create().ifPresent(share ->
  *              share.share("image/jpeg", file)));
  *  });}</pre>
  *

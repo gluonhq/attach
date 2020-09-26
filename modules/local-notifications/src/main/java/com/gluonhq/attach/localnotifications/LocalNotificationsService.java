@@ -66,7 +66,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code String notificationId = "abcd1234";
- *  Services.get(LocalNotificationsService.class).ifPresent(service -> {
+ *  LocalNotificationsService.create().ifPresent(service -> {
  *      service.getNotifications().add(new Notification(notificationId, "Sample Notification Text",
  *              ZonedDateTime.now().plusSeconds(20), () -> {
  *                      Alert alert = new Alert(AlertType.INFORMATION, "You have been notified!");

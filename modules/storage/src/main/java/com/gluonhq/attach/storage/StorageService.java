@@ -38,7 +38,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code File privateStorage = Services.get(StorageService.class)
+ * {@code File privateStorage = StorageService.create()
  *      .flatMap(StorageService::getPrivateStorage)
  *      .orElseThrow(() -> new FileNotFoundException("Could not access private storage."));
  *  });}</pre>

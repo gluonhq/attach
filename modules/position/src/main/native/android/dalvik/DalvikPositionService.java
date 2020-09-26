@@ -187,7 +187,7 @@ public class DalvikPositionService implements LocationListener {
         final Intent serviceIntent = new Intent(activityContext, AndroidPositionBackgroundService.class);
         final IntentFilter intentFilter = new IntentFilter(AndroidPositionBackgroundService.class.getName());
         
-        Services.get(LifecycleService.class).ifPresent(l -> {
+        LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, () -> {
                 quitLooperTask();
                 // if the PositionService is still running and backgroundModeEnabled 

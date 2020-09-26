@@ -52,7 +52,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code
- * File root = Services.get(StorageService.class)
+ * File root = StorageService.create()
  *           .flatMap(s -> s.getPublicStorage("Documents"))
  *           .orElseThrow(() -> new RuntimeException("Documents not available"));
  *
@@ -60,7 +60,7 @@ import java.util.Optional;
  * File file = new File(root, "myFile.txt");
  *
  * // share the file
- * Services.get(ShareService.class).ifPresent(service -> {
+ * ShareService.create().ifPresent(service -> {
  *      service.share("text/plain", file);
  * });
  * }</pre>

@@ -38,7 +38,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code String senderId = "abcd1234";
- *  Services.get(PushNotificationsService.class).ifPresent(service -> {
+ *  PushNotificationsService.create().ifPresent(service -> {
  *      service.register(senderId);
  *      service.tokenProperty.addListener((observable, oldValue, newValue) -> {
  *          if (newValue != null) {
