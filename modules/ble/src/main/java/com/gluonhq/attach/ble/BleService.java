@@ -174,7 +174,7 @@ import java.util.function.Consumer;
  *    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
  *    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
  *    ...
- *    <activity android:name="com.gluonhq.impl.charm.down.plugins.android.PermissionRequestActivity" />
+ *    <activity android:name="com.gluonhq.helloandroid.PermissionRequestActivity" />
  *  </manifest>}</pre>
  *
  * <p><b>iOS Configuration</b></p>
