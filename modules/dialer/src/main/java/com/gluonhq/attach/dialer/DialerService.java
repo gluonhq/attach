@@ -37,7 +37,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(DialerService.class).ifPresent(service -> {
+ * {@code DialerService.create().ifPresent(service -> {
  *      service.call("+32987123456");
  *  });}</pre>
  *

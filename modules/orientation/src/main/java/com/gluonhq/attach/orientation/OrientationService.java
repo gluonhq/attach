@@ -45,7 +45,7 @@ import javafx.geometry.Orientation;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(OrientationService.class).ifPresent(service -> {
+ * {@code OrientationService.create().ifPresent(service -> {
  *      Orientation orientation = service.getOrientation();
  *      System.out.println("Current orientation: " + orientation.name());
  *  });}</pre>

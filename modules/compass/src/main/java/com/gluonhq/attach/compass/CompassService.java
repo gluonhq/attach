@@ -44,7 +44,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(CompassService.class).ifPresent(service -> {
+ * {@code CompassService.create().ifPresent(service -> {
  *      double heading = service.getHeading();
  *      System.out.printf("Current heading: %.2f", heading);
  *  });}</pre>

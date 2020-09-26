@@ -39,7 +39,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(BarcodeScanService.class).ifPresent(service -> {
+ * {@code BarcodeScanService.create().ifPresent(service -> {
  *      Optional<String> barcode = barcodeScanService.scan();
  *      barcode.ifPresent(barcodeValue -> System.out.println("Scanned Bar Code: " + barcodeValue));
  *  });}</pre>

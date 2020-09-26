@@ -59,7 +59,7 @@ import javafx.beans.property.ReadOnlyListProperty;
  * 10 files of 1 minute duration each.</p>
  * 
  * <pre>
- * {@code Services.get(AudioRecordingService.class).ifPresent(audio -> {
+ * {@code AudioRecordingService.create().ifPresent(audio -> {
  *      audio.clearAudioFolder();
  *      audio.getAudioChunkFiles().addListener((ListChangeListener.Change<? extends String> c) -> {
  *          while (c.next()) {

@@ -54,7 +54,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(PositionService.class).ifPresent(service -> {
+ * {@code PositionService.create().ifPresent(service -> {
  *      service.positionProperty().addListener((obs, ov, nv) ->
  *          System.out.printf("Current position: %.5f, %.5f",
  *              nv.getLatitude(), nv.getLongitude()));

@@ -39,7 +39,7 @@ import java.util.Optional;
  * 
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(AugmentedRealityService.class).ifPresent(service -> {
+ * {@code AugmentedRealityService.create().ifPresent(service -> {
  *       Availability availability = service.checkAR(() -> {
  *          // perform action after ARCore is installed
  *       });
@@ -59,7 +59,7 @@ import java.util.Optional;
  * Android</p>
  * 
  * <pre>
- * {@code Services.get(AugmentedRealityService.class).ifPresent(service -> {
+ * {@code AugmentedRealityService.create().ifPresent(service -> {
  *       ARModel model = new ARModel();
  *       model.setName("DukeKing");
  *       model.setObjFilename("models/DukeKing.obj");

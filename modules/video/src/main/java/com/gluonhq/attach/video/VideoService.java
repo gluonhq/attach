@@ -50,7 +50,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(VideoService.class).ifPresent(service -> {
+ * {@code VideoService.create().ifPresent(service -> {
  *      service.setControlsVisible(true);
  * 　　  service.getPlaylist().add("my.video.mp4");
  *      service.play();

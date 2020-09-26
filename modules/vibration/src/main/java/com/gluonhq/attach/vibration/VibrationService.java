@@ -38,7 +38,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(VibrationService.class).ifPresent(service -> {
+ * {@code VibrationService.create().ifPresent(service -> {
  *      service.vibrate();
  *  });}</pre>
  *

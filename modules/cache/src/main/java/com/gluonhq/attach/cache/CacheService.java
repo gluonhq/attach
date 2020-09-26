@@ -38,7 +38,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(CacheService.class).ifPresent(service -> {
+ * {@code CacheService.create().ifPresent(service -> {
  *      Cache<String, String> cache = service.getCache("simpleCache");
  *      cache.put("key", "value");
  *      String value = cache.get("key");

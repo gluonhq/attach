@@ -36,7 +36,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(DeviceService.class).ifPresent(service -> {
+ * {@code DeviceService.create().ifPresent(service -> {
  *      System.out.printf("Device Model Name: %s", service.getModel());
  *  });}</pre>
  *

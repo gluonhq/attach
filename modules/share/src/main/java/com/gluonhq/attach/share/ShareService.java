@@ -39,7 +39,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(ShareService.class).ifPresent(service -> {
+ * {@code ShareService.create().ifPresent(service -> {
  *      service.share("This is the subject", "This is the content of the message");
  *  });}</pre>
  *

@@ -45,7 +45,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(ConnectivityService.class).ifPresent(service -> {
+ * {@code ConnectivityService.create().ifPresent(service -> {
  *      boolean connected = service.isConnected();
  *      System.out.println("Network connectivity available? " + String.valueOf(connected));
  *  });}</pre>
