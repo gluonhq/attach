@@ -35,6 +35,16 @@ import java.util.Optional;
 /**
  * The audio service provides access to loading native audio (sound and music) objects.
  *
+ * <p><b>Example</b></p>
+ * <pre>
+ * {@code AudioService.create().ifPresent(service -> {
+ *      service.loadSound(getClass().getResource("test.wav"))
+ *             .ifPresent(audio -> audio.play());
+ *  });}</pre>
+ *
+ * <p><b>Android Configuration</b>: none</p>
+ * <p><b>iOS Configuration</b>: none</p>
+ *
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  * @since 4.0.9
  */
