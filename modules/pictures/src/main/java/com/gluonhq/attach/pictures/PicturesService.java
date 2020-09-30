@@ -73,6 +73,8 @@ import javafx.scene.image.Image;
  * <p>The permission <code>android.permission.CAMERA</code> needs to be added as well as the permissions
  * <code>android.permission.READ_EXTERNAL_STORAGE</code> and <code>android.permission.WRITE_EXTERNAL_STORAGE</code>
  * to be able to read and write images. Also a {@code provider} is required:</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest package="${application.package.name}" ...>
  *    <uses-permission android:name="android.permission.CAMERA"/>

@@ -80,6 +80,8 @@ import javafx.beans.property.ReadOnlyListProperty;
  * <p><b>Android Configuration</b></p>
  * <p>The following <code>permission</code> and activity need to be added to the 
  * android manifest configuration file:</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    ...

@@ -75,6 +75,8 @@ import java.util.Optional;
  *
  * <p><b>Android Configuration</b></p>
  * <p>Add the following to the manifest</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *   <uses-permission android:name="android.permission.CAMERA" />

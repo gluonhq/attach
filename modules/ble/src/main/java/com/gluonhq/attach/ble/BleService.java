@@ -168,6 +168,7 @@ import java.util.function.Consumer;
  * <code>android.permission.BLUETOOTH_ADMIN</code> and
  * <code>android.permission.ACCESS_FINE_LOCATION</code> need to be added to the Android manifest.</p>
  *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.BLUETOOTH"/>

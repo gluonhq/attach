@@ -69,7 +69,8 @@ import java.util.Optional;
  * <p>For background updates, the service <code>positionBackgroundService</code>
  * has to be included as well. Note that in this mode the accuracy could be reduced
  * by the system.</p>
-
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

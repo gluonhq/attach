@@ -44,6 +44,8 @@ import java.util.Optional;
  *
  * <p><b>Android Configuration</b></p>
  * <p>The permission <code>android.permission.VIBRATE</code> needs to be added.</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.VIBRATE"/>

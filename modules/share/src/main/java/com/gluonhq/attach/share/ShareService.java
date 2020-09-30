@@ -68,6 +68,8 @@ import java.util.Optional;
  * <p><b>Android Configuration</b></p>
  * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
  * the following content that allows access to the external storage:</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code
  *    <?xml version="1.0" encoding="utf-8"?>

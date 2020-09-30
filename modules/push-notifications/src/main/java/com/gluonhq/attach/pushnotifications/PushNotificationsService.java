@@ -57,6 +57,8 @@ import java.util.Optional;
  * <p>Also, make sure that you replace <code>$packageName</code> with the value of the <code>package</code> attribute
  * in the <code>manifest</code> element that is defined at the top of your AndroidManifest.xml. You should have replaced
  * the <code>$packageName</code> string three times.</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    ...
