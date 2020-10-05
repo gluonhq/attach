@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+    }
+
+    afterEvaluate {
+        generateDebugBuildConfig.enabled = false
+    }
+
+}
+
+repositories {
+    google()
+}
+
+dependencies {
+    provided fileTree(dir: '../libs', include: '*.jar')
+    implementation 'com.google.gms:google-services:4.3.3'
+    implementation 'com.google.firebase:firebase-messaging:20.3.0'
+}

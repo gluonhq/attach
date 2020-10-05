@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.pushnotifications {
+package com.gluonhq.helloandroid;
 
-    requires transitive javafx.graphics;
-    requires java.json;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.runtimeargs;
+import android.util.Log;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 
-    exports com.gluonhq.attach.pushnotifications;
-    exports com.gluonhq.attach.pushnotifications.impl to com.gluonhq.attach.util;
+
+public class PushInstanceIdService extends FirebaseInstanceIdService {
+
+    private static final String TAG = Util.TAG;
+    private static final boolean debug = Util.isDebug();
+
+    /**
+     * Called if InstanceID token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is also called
+     * when the InstanceID token is initially generated, so this is where
+     * you retrieve the token.
+     */
+    @Override
+    public void onTokenRefresh() {
+        if (debug) {
+            Log.v(TAG, "onTokenRefresh called, starting RegistrationIntent service.");
+        }
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        sendToken(refreshedToken);
+    }
+
+    private native void sendToken(String token);
 }
