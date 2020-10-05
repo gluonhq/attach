@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gluonhq.attach.ar;
+package com.gluonhq.attach.augmentedreality;
 
 /**
  * ARModel gathers information about the 3D obj model that will be displayed

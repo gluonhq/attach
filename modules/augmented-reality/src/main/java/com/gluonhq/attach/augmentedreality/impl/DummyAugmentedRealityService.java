@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2018, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,35 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.compass.impl;
+package com.gluonhq.attach.augmentedreality.impl;
 
-import com.gluonhq.attach.compass.CompassService;
-import com.gluonhq.attach.magnetometer.MagnetometerService;
-import com.gluonhq.attach.util.Services;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
+import com.gluonhq.attach.augmentedreality.AugmentedRealityService;
 
-public class AndroidCompassService implements CompassService {
-
-    private final ReadOnlyDoubleWrapper heading;
-
-    public AndroidCompassService() {
-        heading = new ReadOnlyDoubleWrapper();
-
-        Services.get(MagnetometerService.class).ifPresent(m -> {
-            m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
-            m.start();
-        });
-    }
-
-    @Override
-    public double getHeading() {
-        return heading.get();
-    }
-
-    @Override
-    public ReadOnlyDoubleProperty headingProperty() {
-        return heading.getReadOnlyProperty();
-    }
-
+// no-op
+public abstract class DummyAugmentedRealityService implements AugmentedRealityService {
 }

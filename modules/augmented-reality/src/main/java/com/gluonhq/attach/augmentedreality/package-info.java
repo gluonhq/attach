@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Attach - BarcodeScan plugin,
- * contains the interface {@link com.gluonhq.attach.barcode.BarcodeScanService} and related classes.
+ * Primary API package for Attach - Augmented Reality plugin,
+ * contains the interface {@link com.gluonhq.attach.augmentedreality.AugmentedRealityService} and related classes.
  */
-package com.gluonhq.attach.barcode;
+package com.gluonhq.attach.augmentedreality;

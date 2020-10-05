@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.magnetometer;
 
 /**
- * Primary API package for Attach - Augmented Reality plugin,
- * contains the interface {@link com.gluonhq.attach.ar.AugmentedRealityService} and related classes.
+ * A data structure that allows configuring the {@link MagnetometerService}.
+ *
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ * @since 4.0.10
  */
-package com.gluonhq.attach.ar;
+public class Parameters {
+
+    private final double frequency;
+
+    /**
+     * Construct new parameters for {@link MagnetometerService}.
+     *
+     * @param frequency the rate with which to update the service
+     */
+    public Parameters(double frequency) {
+        this.frequency = frequency;
+    }
+
+    /**
+     * @return the rate with which to update the service
+     */
+    public double getFrequency() {
+        return frequency;
+    }
+
+    @Override
+    public String toString() {
+        return "Parameters{" + "frequency=" + frequency + '}';
+    }
+}

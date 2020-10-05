@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.ar;
+package com.gluonhq.attach.augmentedreality;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -93,7 +93,7 @@ import java.util.Optional;
  * <p>Note: Uncomment the above commented lines if ARCore is strictly required.</p>
  * 
  * <p>The 3D model files (.obj, .mtl, .png, ...) have to be placed directly or 
- * within a folder under {@code /src/ios/assets/}</p>
+ * within a folder under {@code /src/android/assets/}</p>
  * 
  * <p><b>iOS Configuration</b></p>
  * <p>The following frameworks have to be added to the iOS configuration in 
@@ -121,7 +121,7 @@ import java.util.Optional;
  * <p>Note: Uncomment the above commented line if ARKit is strictly required.</p>
  * 
  * <p>The 3D model files (.obj, .mtl, .png, ...) have to be placed directly or 
- * within a folder under under {@code /src/android/assets/} or 
+ * within a folder under under {@code /src/ios/assets/} or 
  * {@code /src/main/resources/assets/}</p>
  * 
  * @since 3.9.0
