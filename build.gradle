@@ -1,7 +1,7 @@
 plugins {
     id 'io.codearte.nexus-staging' version '0.21.1'
-    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
     id "org.openjfx.javafxplugin" version "0.0.9" apply false
+    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
 apply from: rootProject.file("gradle/native-build.gradle")
