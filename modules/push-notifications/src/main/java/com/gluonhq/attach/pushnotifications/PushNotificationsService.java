@@ -55,9 +55,6 @@ import java.util.Optional;
  * <p>The following <code>permissions</code>, <code>services</code> and <code>receiver</code> need to be added to the
  * android manifest configuration file to make push notifications work on android. The main activity also requires the
  * attribute <code>android:launchMode</code> with value <code>singleTop</code>.</p>
- * <p>Also, make sure that you replace <code>$packageName</code> with the value of the <code>package</code> attribute
- * in the <code>manifest</code> element that is defined at the top of your AndroidManifest.xml. You should have replaced
- * the <code>$packageName</code> string three times.</p>
  * <pre>
  * {@code <manifest ...>
  *    ...
@@ -77,7 +74,7 @@ import java.util.Optional;
  *                android:permission="com.google.android.c2dm.permission.SEND" >
  *        <intent-filter>
  *          <action android:name="com.google.android.c2dm.intent.RECEIVE" />
- *          <category android:name="$packageName" />
+ *          <category android:name="${applicationId}" />
  *        </intent-filter>
  *      </receiver>
  *      <service android:name="com.gluonhq.helloandroid.PushFcmMessagingService">
@@ -102,9 +99,6 @@ import java.util.Optional;
  *            <meta-data android:name="android.support.PARENT_ACTIVITY"
  *                       android:value="com.gluonhq.helloandroid.MainActivity"/>
  *      </activity>
- *
- *      <meta-data android:name="com.google.android.gms.version"
- *               android:value="12451000"/>
  *    </application>
  *  </manifest>}</pre>
  *

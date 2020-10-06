@@ -19,7 +19,7 @@
                 android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="$packageName" />
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
         <service android:name="com.gluonhq.helloandroid.PushFcmMessagingService">
@@ -44,8 +44,5 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value="com.gluonhq.helloandroid.MainActivity"/>
         </activity>
-
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="12451000"/>
     </application>
 </manifest>
