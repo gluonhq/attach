@@ -1,7 +1,7 @@
 plugins {
     id 'jp.classmethod.aws.s3' version '0.41'
     id 'io.codearte.nexus-staging' version '0.21.1'
-    id "org.openjfx.javafxplugin" version "0.0.8" apply false
+    id "org.openjfx.javafxplugin" version "0.0.9" apply false
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
@@ -26,10 +26,6 @@ subprojects {
 
     sourceCompatibility = 11
     targetCompatibility = 11
-
-    configurations {
-        androidImplementation
-    }
 
     repositories {
         mavenCentral()
