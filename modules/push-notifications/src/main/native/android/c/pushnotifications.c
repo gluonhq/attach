@@ -49,9 +49,9 @@ static void initializePushNotificationsDalvikHandles() {
     jclass jPushNotificationsServiceClass = substrateGetPushNotificationsServiceClass();
 
     ATTACH_DALVIK();
-    jDalvikPushNotificationsServiceGetPackageName = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getPackageName", "()java/lang/String;");
+    jDalvikPushNotificationsServiceGetPackageName = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getPackageName", "()Ljava/lang/String;");
     jDalvikPushNotificationsServiceIsGooglePlayServicesAvailable = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "isGooglePlayServicesAvailable", "()I");
-    jDalvikPushNotificationsServiceGetErrorString = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getErrorString", "(I)java/lang/String;");
+    jDalvikPushNotificationsServiceGetErrorString = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getErrorString", "(I)Ljava/lang/String;");
     jDalvikPushNotificationsServiceInitializeFirebase = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "initializeFirebase", "(Ljava/lang/String;Ljava/lang/String;)V");
 
     jmethodID jPushNotificationsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "<init>", "(Landroid/app/Activity;)V");
