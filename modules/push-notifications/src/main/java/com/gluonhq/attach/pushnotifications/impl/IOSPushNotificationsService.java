@@ -65,6 +65,7 @@ public class IOSPushNotificationsService implements PushNotificationsService {
     }
 
     @Override
+    @Deprecated
     public void register(String authorizedEntity) {
         register();
     }

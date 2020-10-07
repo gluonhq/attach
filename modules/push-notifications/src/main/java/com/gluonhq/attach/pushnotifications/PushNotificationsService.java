@@ -102,11 +102,13 @@ import java.util.Optional;
  *    </application>
  *  </manifest>}</pre>
  *
+ * <b>Note</b>: All these modifications are handled automatically by the
+ * <a href="https://docs.gluonhq.com/client">Gluon Client plugin</a> during the package goal.
+ *
  * <p><b>iOS Configuration</b></p>
  *
- * <p>You need to make sure that you set the <code>jfxmobile.ios.apsEnvironment</code> property in the
- * <code>build.gradle</code> of your project to either <code>development</code> or <code>production</code>, matching the
- * configured provisioning profile.</p>
+ * <p>You need to use a Provisioning Profile that defines the <code>aps-environment</code> property in the
+ * <code>Entitlements</code> section to either <code>development</code> or <code>production</code>.</p>
  *
  * @since 3.2.0
  */
@@ -143,5 +145,6 @@ public interface PushNotificationsService {
      * @param authorizedEntity a string that matches the Sender ID of a GCM or FCM application
      * @deprecated
      */
+    @Deprecated
     void register(String authorizedEntity);
 }
