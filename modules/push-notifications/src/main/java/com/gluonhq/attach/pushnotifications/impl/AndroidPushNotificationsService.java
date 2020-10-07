@@ -69,6 +69,11 @@ public class AndroidPushNotificationsService implements PushNotificationsService
     }
 
     @Override
+    public void register(String authorizedEntity) {
+        register();
+    }
+
+    @Override
     public void register() {
         int resultCode = isGooglePlayServicesAvailable();
         if (resultCode == 0) { // ConnectionResult.SUCCESS

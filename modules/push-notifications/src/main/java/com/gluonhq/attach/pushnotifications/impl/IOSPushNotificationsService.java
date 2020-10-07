@@ -65,6 +65,11 @@ public class IOSPushNotificationsService implements PushNotificationsService {
     }
 
     @Override
+    public void register(String authorizedEntity) {
+        register();
+    }
+
+    @Override
     public void register() {
         initPushNotifications();
     }

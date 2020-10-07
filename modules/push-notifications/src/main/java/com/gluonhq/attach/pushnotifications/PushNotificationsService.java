@@ -131,6 +131,17 @@ public interface PushNotificationsService {
     /**
      * Register the app for receiving push notifications. On iOS this will trigger a confirmation dialog that
      * must be accepted by the user.
+     * @since  4.0.10
      */
     void register();
+
+    /**
+     * Register the app for receiving push notifications. On iOS this will trigger a confirmation dialog that
+     * must be accepted by the user. For Android, you need to pass in the authorizedEntity value that matches the
+     * Sender ID of your Google Cloud Messaging or Firebase Cloud Messaging application.
+     *
+     * @param authorizedEntity a string that matches the Sender ID of a GCM or FCM application
+     * @deprecated
+     */
+    void register(String authorizedEntity);
 }
