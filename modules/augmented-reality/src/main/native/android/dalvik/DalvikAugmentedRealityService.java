@@ -30,6 +30,7 @@ package com.gluonhq.helloandroid;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.exceptions.UnavailableException;
@@ -82,6 +83,15 @@ public class DalvikAugmentedRealityService {
         try {
             final ArCoreApk.Availability availability = ArCoreApk.getInstance().checkAvailability(activity);
             Log.v(TAG, "ARCore availability: " + availability.name());
+            if (availability.isTransient()) {
+                new Handler(activity.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (debug) Log.v(TAG, "ARCore transient, checking again");
+                        nativeAugmentedRealityAvailability(checkAR());
+                    }
+                }, 200);
+            }
             switch (availability) {
                 case UNSUPPORTED_DEVICE_NOT_CAPABLE:
                     if (debug) Log.v(TAG, "ARCore not supported on this device");

@@ -79,14 +79,10 @@ import java.util.Optional;
  * <pre>
  * {@code <manifest ...>
  *   <uses-permission android:name="android.permission.CAMERA" />
- *   <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="26"/>
  *   <!--<uses-feature android:name="android.hardware.camera.ar" android:required="true"/>-->
  *   <application ...>
  *       <meta-data android:name="com.google.ar.core" android:value="optional" />
  *       <!--<meta-data android:name="com.google.ar.core" android:value="required" />-->
- *       <meta-data android:name="com.google.ar.core.min_apk_version" android:value="180815000" />
- *       ...
- *       <activity android:name="com.google.ar.core.InstallActivity"/>
  *   </application>
  * </manifest>}
  * </pre>
@@ -97,16 +93,7 @@ import java.util.Optional;
  * within a folder under {@code /src/android/assets/}</p>
  * 
  * <p><b>iOS Configuration</b></p>
- * <p>The following frameworks have to be added to the iOS configuration in 
- * the build file:</p>
- * <pre>{@code 
- *     ios {
- *       infoPList = file('src/ios/Default-Info.plist')
- *       frameworks = ['ARKit', 'SceneKit', 'CoreImage', 'CoreVideo']
- *          ...
- *     }
-   }</pre>
-   * 
+ *
  * <p>The following keys are required:</p>
  * <pre>
  * {@code <key>UIRequiredDeviceCapabilities</key>
@@ -115,9 +102,9 @@ import java.util.Optional;
  *       <!--<string>arkit</string>-->
  *      </array>
  *      <key>MinimumOSVersion</key>
- *	<string>11.0</string>    
+ *	    <string>11.0</string>
  *      <key>NSCameraUsageDescription</key>
- *	<string>This application will use the camera for Augmented Reality.</string>}
+ *	    <string>This application will use the camera for Augmented Reality.</string>}
  * </pre>
  * <p>Note: Uncomment the above commented line if ARKit is strictly required.</p>
  * 
