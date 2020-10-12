@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Gluon
+ * Copyright (c) 2018, 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ package com.gluonhq.attach.augmentedreality;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 import java.util.Optional;
 
@@ -142,12 +143,16 @@ public interface AugmentedRealityService {
 
     /**
      * Checks if device supports AR
-     * @param afterInstall action that can be performed if AR is installed 
-     * successfully
      * @return the availability of AR on the device
      */
-    Availability checkAR(Runnable afterInstall);
-        
+    Availability getAvailability();
+
+    /**
+     * Property that can be used to listen if the AR availability has changed
+     * @return a {@link ReadOnlyObjectProperty}
+     */
+    ReadOnlyObjectProperty<Availability> availabilityProperty();
+
     /**
      * Sets the 3D model that is going to be used by the AR session.
      * The .obj 3D model can be displayed during the AR session when the user

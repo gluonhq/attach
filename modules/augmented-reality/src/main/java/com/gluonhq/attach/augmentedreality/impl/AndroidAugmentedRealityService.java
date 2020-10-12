@@ -37,38 +37,29 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
+public class AndroidAugmentedRealityService extends DefaultAugmentedRealityService {
 
-    private static final Logger LOG = Logger.getLogger(IOSAugmentedRealityService.class.getName());
-
-    private static final int CHECK_AR;
-    private static final int ARKIT_NOT_SUPPORTED = 0;
-    private static final int IOS_NOT_UPDATED = 1;
-    private static final int ARKIT_SUPPORTED = 2;
+    private static final Logger LOG = Logger.getLogger(AndroidAugmentedRealityService.class.getName());
 
     private static final ReadOnlyBooleanWrapper CANCELLED = new ReadOnlyBooleanWrapper();
-    
+    private static final ReadOnlyObjectWrapper<Availability> AR_AVAILABILITY = new ReadOnlyObjectWrapper<>();
+
     static {
-        System.loadLibrary("AugmentedReality");
-        CHECK_AR = initAR();
+        System.loadLibrary("augmentedreality");
     }
 
-    public IOSAugmentedRealityService() {
+    public AndroidAugmentedRealityService() {
     }
     
     @Override
     public Availability getAvailability() {
-        if (CHECK_AR == ARKIT_NOT_SUPPORTED) {
-            return Availability.AR_NOT_SUPPORTED;
-        } else if (CHECK_AR == IOS_NOT_UPDATED) {
-            return Availability.IOS_NOT_UPDATED;
-        }
-        return Availability.AR_SUPPORTED;
+        AR_AVAILABILITY.set(Availability.valueOf(checkAR()));
+        return AR_AVAILABILITY.get();
     }
 
     @Override
     public ReadOnlyObjectProperty<Availability> availabilityProperty() {
-        return new ReadOnlyObjectWrapper<>(getAvailability()).getReadOnlyProperty();
+        return AR_AVAILABILITY.getReadOnlyProperty();
     }
 
     @Override
@@ -96,12 +87,20 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     }
     
     // native
-    private static native int initAR(); // init IDs for java callbacks from native
+    private static native String checkAR();
     private native void showNativeAR();
     private native void setARModel(String objFileName, double scale);
     
     private static native void enableDebugAR();
-    
+
+    // callback
+    private static void notifyAvailability(String value) {
+        Availability av = Availability.valueOf(value);
+        if (AR_AVAILABILITY.get() != av) {
+            Platform.runLater(() -> AR_AVAILABILITY.set(av));
+        }
+    }
+
     private static void notifyCancel() {
         if (!CANCELLED.get()) {
             Platform.runLater(() -> CANCELLED.set(true));
