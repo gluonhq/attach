@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ import android.util.Log;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.exceptions.UnavailableException;
 
+import com.gluonhq.helloandroid.ar.ARModel;
+import com.gluonhq.helloandroid.ar.ARRenderer;
+
 public class DalvikAugmentedRealityService {
 
     private static final String TAG = Util.TAG;
@@ -43,9 +46,7 @@ public class DalvikAugmentedRealityService {
     private boolean debugAR;
     private boolean installRequested;
 
-    private String objFilename;
-    private String textureFile;
-    private float scaleFactor = 1f;
+    private ARModel arModel;
 
     private enum Availability {
         AR_NOT_SUPPORTED, ARCORE_NOT_INSTALLED, ARCORE_OUTDATED, AR_SUPPORTED
@@ -89,6 +90,8 @@ public class DalvikAugmentedRealityService {
             Log.e(TAG, "Camera is disabled");
             return;
         }
+        ARRenderer renderer = new ARRenderer(activity, arModel, debugAR);
+        renderer.render();
     }
 
     private void enableDebugAR(boolean enable) {
@@ -96,9 +99,10 @@ public class DalvikAugmentedRealityService {
     }
 
     private void setARModel(String objFilename, String textureFile, double scale) {
-        this.objFilename = objFilename;
-        this.textureFile = textureFile;
-        scaleFactor = (float) scale;
+        arModel = new ARModel();
+        arModel.setObjFilename(objFilename);
+        arModel.setTextureFile(textureFile);
+        arModel.setScale(scale);
     }
 
     private final Availability checkAvailability() {

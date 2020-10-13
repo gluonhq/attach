@@ -30,6 +30,7 @@
 // Graal handles
 static jclass jGraalAugmentedRealityClass;
 static jmethodID jGraalAvailabilityAugmentedRealityMethod;
+static jmethodID jGraalCancelAugmentedRealityMethod;
 
 static jobject jDalvikAugmentedRealityService;
 static jmethodID jAugmentedRealityServiceCheckARMethod;
@@ -41,6 +42,7 @@ static jmethodID jAugmentedRealityServiceModelARMethod;
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalAugmentedRealityClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/augmentedreality/impl/AndroidAugmentedRealityService"));
     jGraalAvailabilityAugmentedRealityMethod = (*env)->GetStaticMethodID(env, jGraalAugmentedRealityClass, "notifyAvailability", "(Ljava/lang/String;)V");
+    jGraalCancelAugmentedRealityMethod = (*env)->GetStaticMethodID(env, jGraalAugmentedRealityClass, "notifyCancel", "()V");
 }
 
 static void initializeAugmentedRealityDalvikHandles() {
@@ -150,11 +152,21 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAugmentedRealityServi
     JNIEnv *env, jobject service, jstring result) {
     const char *resultChars = (*env)->GetStringUTFChars(env, result, NULL);
     if (debugAttach) {
-        ATTACH_LOG_FINE("AugmentedReality result %s\n", resultChars);
+        ATTACH_LOG_FINE("AugmentedReality result %s", resultChars);
     }
     ATTACH_GRAAL();
     jstring jresult = (*graalEnv)->NewStringUTF(graalEnv, resultChars);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalAugmentedRealityClass, jGraalAvailabilityAugmentedRealityMethod, jresult);
     DETACH_GRAAL();
     (*env)->ReleaseStringUTFChars(env, result, resultChars);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_ar_ARRenderer_nativeCancelAR(
+    JNIEnv *env, jobject service) {
+    if (debugAttach) {
+        ATTACH_LOG_FINE("AugmentedReality cancel AR");
+    }
+    ATTACH_GRAAL();
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalAugmentedRealityClass, jGraalCancelAugmentedRealityMethod);
+    DETACH_GRAAL();
 }
