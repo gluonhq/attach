@@ -50,7 +50,7 @@ static void initializeAugmentedRealityDalvikHandles() {
     jAugmentedRealityServiceCheckARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "checkAR", "()Ljava/lang/String;");
     jAugmentedRealityServiceShowARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "showAR", "()V");
     jAugmentedRealityServiceDebugARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "enableDebugAR", "(Z)V");
-    jAugmentedRealityServiceModelARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "setARModel", "(Ljava/lang/String;D)V");
+    jAugmentedRealityServiceModelARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "setARModel", "(Ljava/lang/String;Ljava/lang/String;D)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jAugmentedRealityServiceClass, jAugmentedRealityServiceInitMethod, jActivity);
