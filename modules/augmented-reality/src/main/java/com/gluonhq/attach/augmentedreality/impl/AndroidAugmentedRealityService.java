@@ -50,7 +50,7 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
 
     public AndroidAugmentedRealityService() {
     }
-    
+
     @Override
     public Availability getAvailability() {
         AR_AVAILABILITY.set(Availability.valueOf(checkAR()));
@@ -64,7 +64,7 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
 
     @Override
     public void setModel(ARModel model) {
-        setARModel(model.getObjFilename(), model.getScale());
+        setARModel(model.getObjFilename(), model.getTextureFile(), model.getScale());
     }
 
     @Override
@@ -85,12 +85,12 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
     public ReadOnlyBooleanProperty cancelled() {
         return CANCELLED.getReadOnlyProperty();
     }
-    
+
     // native
     private static native String checkAR();
     private native void showNativeAR();
-    private native void setARModel(String objFileName, double scale);
-    
+    private native void setARModel(String objFilename, String textureFile, double scale);
+
     private static native void enableDebugAR();
 
     // callback
@@ -106,5 +106,5 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
             Platform.runLater(() -> CANCELLED.set(true));
         }
     }
-    
+
 }

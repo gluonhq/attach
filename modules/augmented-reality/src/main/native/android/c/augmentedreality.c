@@ -33,6 +33,9 @@ static jmethodID jGraalAvailabilityAugmentedRealityMethod;
 
 static jobject jDalvikAugmentedRealityService;
 static jmethodID jAugmentedRealityServiceCheckARMethod;
+static jmethodID jAugmentedRealityServiceShowARMethod;
+static jmethodID jAugmentedRealityServiceDebugARMethod;
+static jmethodID jAugmentedRealityServiceModelARMethod;
 
 
 static void initializeGraalHandles(JNIEnv* env) {
@@ -45,7 +48,10 @@ static void initializeAugmentedRealityDalvikHandles() {
     jclass jAugmentedRealityServiceClass = substrateGetAugmentedRealityServiceClass();
     jmethodID jAugmentedRealityServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jAugmentedRealityServiceCheckARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "checkAR", "()Ljava/lang/String;");
-        
+    jAugmentedRealityServiceShowARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "showAR", "()V");
+    jAugmentedRealityServiceDebugARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "enableDebugAR", "(Z)V");
+    jAugmentedRealityServiceModelARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "setARModel", "(Ljava/lang/String;D)V");
+
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jAugmentedRealityServiceClass, jAugmentedRealityServiceInitMethod, jActivity);
     jDalvikAugmentedRealityService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
@@ -92,10 +98,48 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidA
     }
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
     if (debugAttach) {
-        ATTACH_LOG_FINE("AugmentedReality availability is %s\n", answerChars);
+        ATTACH_LOG_FINE("AugmentedReality availability is %s", answerChars);
     }
     DETACH_DALVIK();
     return (*env)->NewStringUTF(env, answerChars);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_showNativeAR
+(JNIEnv *env, jclass jClass) {
+    if (debugAttach) {
+        ATTACH_LOG_FINE("AugmentedReality show AR");
+    }
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAugmentedRealityService, jAugmentedRealityServiceShowARMethod);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_enableDebugAR
+(JNIEnv *env, jclass jClass, jboolean enable) {
+    if (debugAttach) {
+        ATTACH_LOG_FINE("AugmentedReality enable debug AR");
+    }
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAugmentedRealityService, jAugmentedRealityServiceDebugARMethod, enable);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_setARModel
+(JNIEnv *env, jclass jClass, jstring jobjfile, jstring jtexturefile, jdouble scale) {
+    if (debugAttach) {
+        ATTACH_LOG_FINE("AugmentedReality AR model");
+    }
+    const char *objfileChars = (*env)->GetStringUTFChars(env, jobjfile, NULL);
+    const char *texturefileChars = (*env)->GetStringUTFChars(env, jtexturefile, NULL);
+
+    ATTACH_DALVIK();
+    jstring dobjfile = (*dalvikEnv)->NewStringUTF(dalvikEnv, objfileChars);
+    jstring dtexturefile = (*dalvikEnv)->NewStringUTF(dalvikEnv, texturefileChars);
+
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAugmentedRealityService, jAugmentedRealityServiceModelARMethod, dobjfile, dtexturefile, scale);
+    DETACH_DALVIK();
+    (*env)->ReleaseStringUTFChars(env, jobjfile, objfileChars);
+    (*env)->ReleaseStringUTFChars(env, jtexturefile, texturefileChars);
 }
 
 ///////////////////////////

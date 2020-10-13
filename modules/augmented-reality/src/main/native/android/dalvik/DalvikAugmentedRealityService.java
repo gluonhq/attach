@@ -40,7 +40,12 @@ public class DalvikAugmentedRealityService {
     private static final String TAG = Util.TAG;
 
     private final boolean debug;
+    private boolean debugAR;
     private boolean installRequested;
+
+    private String objFilename;
+    private String textureFile;
+    private float scaleFactor = 1f;
 
     private enum Availability {
         AR_NOT_SUPPORTED, ARCORE_NOT_INSTALLED, ARCORE_OUTDATED, AR_SUPPORTED
@@ -77,6 +82,23 @@ public class DalvikAugmentedRealityService {
             installARCore();
         }
         return availability.name();
+    }
+
+    private void showAR() {
+        if (!Util.verifyPermissions(Manifest.permission.CAMERA)) {
+            Log.e(TAG, "Camera is disabled");
+            return;
+        }
+    }
+
+    private void enableDebugAR(boolean enable) {
+        this.debugAR = enable;
+    }
+
+    private void setARModel(String objFilename, String textureFile, double scale) {
+        this.objFilename = objFilename;
+        this.textureFile = textureFile;
+        scaleFactor = (float) scale;
     }
 
     private final Availability checkAvailability() {
