@@ -31,6 +31,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,23 +95,24 @@ public class ComplexObjectRenderer {
         if (debug) Log.v(TAG, "resources path: " + path);
 
         // Read the obj file.
-        InputStream objInputStream = context.getAssets().open(objAssetName);
-        Obj obj = ObjReader.read(objInputStream);
+        try (InputStream objInputStream = new FileInputStream(objAssetName)) {
+            Obj obj = ObjReader.read(objInputStream);
 
-        // Prepare the Obj so that its structure is suitable for
-        // rendering with OpenGL:
-        // 1. Triangulate it
-        // 2. Make sure that texture coordinates are not ambiguous
-        // 3. Make sure that normals are not ambiguous
-        // 4. Convert it to single-indexed data
-        Obj renderableObj = ObjUtils.convertToRenderable(obj);
-        // When there are no material groups, then just render the object
-        // using the default texture
-        if (renderableObj.getNumMaterialGroups() == 0) {
-            createRenderers(context, renderableObj, defaultTextureFileName, null);
-        } else {
-            // Otherwise, create one renderer for each material
-            createMaterialBasedRenderers(context, renderableObj, defaultTextureFileName);
+            // Prepare the Obj so that its structure is suitable for
+            // rendering with OpenGL:
+            // 1. Triangulate it
+            // 2. Make sure that texture coordinates are not ambiguous
+            // 3. Make sure that normals are not ambiguous
+            // 4. Convert it to single-indexed data
+            Obj renderableObj = ObjUtils.convertToRenderable(obj);
+            // When there are no material groups, then just render the object
+            // using the default texture
+            if (renderableObj.getNumMaterialGroups() == 0) {
+                createRenderers(context, renderableObj, defaultTextureFileName, null);
+            } else {
+                // Otherwise, create one renderer for each material
+                createMaterialBasedRenderers(context, renderableObj, defaultTextureFileName);
+            }
         }
     }
 
@@ -159,9 +161,10 @@ public class ComplexObjectRenderer {
         List<String> mtlFileNames = obj.getMtlFileNames();
         List<Mtl> allMtls = new ArrayList<>();
         for (String mtlFileName : mtlFileNames) {
-            InputStream mtlInputStream = context.getAssets().open(path + mtlFileName);
-            List<Mtl> mtls = MtlReader.read(mtlInputStream);
-            allMtls.addAll(mtls);
+            try (InputStream mtlInputStream = new FileInputStream(path + mtlFileName)) {
+                List<Mtl> mtls = MtlReader.read(mtlInputStream);
+                allMtls.addAll(mtls);
+            }
         }
 
         // Obtain the material groups from the OBJ, and create renderers for

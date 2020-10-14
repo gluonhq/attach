@@ -64,7 +64,16 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
 
     @Override
     public void setModel(ARModel model) {
-        setARModel(model.getObjFilename(), model.getTextureFile(), model.getScale());
+        String obj = model.getObjFilename();
+        if (obj != null) {
+            getFileFromAssets(obj.replace(".obj",".mtl"));
+            obj = getFileFromAssets(obj).toString();
+        }
+        String txt = model.getTextureFile();
+        if (txt != null) {
+            txt = getFileFromAssets(txt).toString();
+        }
+        setARModel(obj, txt, model.getScale());
     }
 
     @Override
