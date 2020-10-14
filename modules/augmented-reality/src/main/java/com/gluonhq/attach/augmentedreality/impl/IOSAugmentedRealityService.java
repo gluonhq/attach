@@ -85,9 +85,7 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
 
     @Override
     public void debugAR(boolean enable) {
-        if (enable) {
-            enableDebugAR();
-        }
+        enableDebugAR(enable);
     }
 
     @Override
@@ -100,7 +98,7 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     private native void showNativeAR();
     private native void setARModel(String objFileName, double scale);
     
-    private static native void enableDebugAR();
+    private static native void enableDebugAR(boolean enable);
     
     private static void notifyCancel() {
         if (!CANCELLED.get()) {

@@ -184,6 +184,10 @@ public class ARRenderer implements GLSurfaceView.Renderer {
             float[] viewmtx = new float[16];
             camera.getViewMatrix(viewmtx, 0);
 
+            // Compute lighting from average intensity of the image.
+            final float[] colorCorrectionRgba = new float[4];
+            frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
+
             if (debugAR) {
                 // Visualize tracked points.
                 PointCloud pointCloud = frame.acquirePointCloud();
@@ -196,9 +200,6 @@ public class ARRenderer implements GLSurfaceView.Renderer {
                         session.getAllTrackables(Plane.class),
                         camera.getDisplayOrientedPose(), projmtx);
             }
-            // Compute lighting from average intensity of the image.
-            final float[] colorCorrectionRgba = new float[4];
-            frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
 
             // Visualize anchors created by touch
             for (ColoredAnchor coloredAnchor : anchors) {

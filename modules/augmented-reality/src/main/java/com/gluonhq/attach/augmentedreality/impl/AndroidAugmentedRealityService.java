@@ -76,9 +76,7 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
 
     @Override
     public void debugAR(boolean enable) {
-        if (enable) {
-            enableDebugAR();
-        }
+        enableDebugAR(enable);
     }
 
     @Override
@@ -91,7 +89,7 @@ public class AndroidAugmentedRealityService extends DefaultAugmentedRealityServi
     private native void showNativeAR();
     private native void setARModel(String objFilename, String textureFile, double scale);
 
-    private static native void enableDebugAR();
+    private static native void enableDebugAR(boolean enable);
 
     // callback
     private static void notifyAvailability(String value) {

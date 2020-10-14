@@ -86,9 +86,9 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmente
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_enableDebugAR
-(JNIEnv *env, jclass jClass)
+(JNIEnv *env, jclass jClass, jboolean enable)
 {
-    enableDebugAugmentedReality = YES;
+    enableDebugAugmentedReality = enable;
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_IOSAugmentedRealityService_showNativeAR
