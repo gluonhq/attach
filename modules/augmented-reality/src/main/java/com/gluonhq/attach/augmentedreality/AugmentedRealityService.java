@@ -34,7 +34,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import java.util.Optional;
 
 /**
- * The Augmented Reality Service allows accesing the native AR kit, if it is available.
+ * The Augmented Reality Service allows accessing the native AR kit, if it is available.
  * 
  * The developer can check if the device has Augmented Reality support.
  * 
@@ -44,7 +44,7 @@ import java.util.Optional;
  *       Availability availability = service.checkAR(() -> {
  *          // perform action after ARCore is installed
  *       });
- *       System.out.println("AR availabity: " + availability.name());
+ *       System.out.println("AR availability: " + availability.name());
  *  });}</pre>
  * 
  * A 3D model with .obj format can be added, and when the user taps on the Augmented Reality
@@ -56,15 +56,14 @@ import java.util.Optional;
  * 
  * <p><b>Example</b></p>
  * <p>The following example includes two files: {@code DukeKing.obj}
- * and {@code DukeKing.mtl} under the {@code assets/models} folder on iOS and 
- * Android</p>
+ * and {@code DukeKing.mtl} under the {@code src/main/resources/models} folder</p>
  * 
  * <pre>
  * {@code Services.get(AugmentedRealityService.class).ifPresent(service -> {
  *       ARModel model = new ARModel();
  *       model.setName("DukeKing");
  *       model.setObjFilename("models/DukeKing.obj");
- *       model.setScale(0.9);
+ *       model.setScale(0.8);
  *       service.setModel(model);
  *       service.cancelled().addListener((obs, ov, nv) -> {
  *           if (nv) {
@@ -88,30 +87,14 @@ import java.util.Optional;
  * </pre>
  * 
  * <p>Note: Uncomment the above commented lines if ARCore is strictly required.</p>
- * 
- * <p>The 3D model files (.obj, .mtl, .png, ...) have to be placed directly or 
- * within a folder under {@code /src/android/assets/}</p>
- * 
+ *
+ * <b>Note</b>: All these modifications are handled automatically by the
+ * <a href="https://docs.gluonhq.com/client">Gluon Client plugin</a> during the package goal.
+ *
  * <p><b>iOS Configuration</b></p>
  *
- * <p>The following keys are required:</p>
- * <pre>
- * {@code <key>UIRequiredDeviceCapabilities</key>
- *      <array>
- *           <string>arm64</string>
- *       <!--<string>arkit</string>-->
- *      </array>
- *      <key>MinimumOSVersion</key>
- *	    <string>11.0</string>
- *      <key>NSCameraUsageDescription</key>
- *	    <string>This application will use the camera for Augmented Reality.</string>}
- * </pre>
- * <p>Note: Uncomment the above commented line if ARKit is strictly required.</p>
- * 
- * <p>The 3D model files (.obj, .mtl, .png, ...) have to be placed directly or 
- * within a folder under under {@code /src/ios/assets/} or 
- * {@code /src/main/resources/assets/}</p>
- * 
+ * None
+ *
  * @since 3.9.0
  */
 public interface AugmentedRealityService {

@@ -73,7 +73,12 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
 
     @Override
     public void setModel(ARModel model) {
-        setARModel(model.getObjFilename(), model.getScale());
+        String obj = model.getObjFilename();
+        if (obj != null) {
+            getFileFromAssets(obj.replace(".obj",".mtl"));
+            obj = getFileFromAssets(obj).toString();
+        }
+        setARModel(obj, model.getScale());
     }
 
     @Override

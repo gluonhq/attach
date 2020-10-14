@@ -26,6 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "AugmentedReality.h"
+#import <ModelIO/ModelIO.h>
+#import <SceneKit/ModelIO.h>
 
 // JNIEnv *env = NULL;
 
@@ -348,19 +350,20 @@ double modelScale = 1.0;
         [self logMessage:@"Result %@", result];      
 
         SCNNode *model = [[SCNNode new] autorelease];
-        // Create a new scene
-        if ([self.modelFileName length] > 0) {
-            SCNScene *scene = [SCNScene sceneNamed:self.modelFileName];
-            [self logMessage:@"Adding new scene %@", scene];
-            for (SCNNode *childNode in [[scene rootNode] childNodes]) {
-                [model addChildNode:childNode];
-            }
+        // Create a new model from obj file
+        if ([self.modelFileName length] > 0 &&
+            [[NSFileManager defaultManager] fileExistsAtPath:self.modelFileName]) {
+                [self logMessage:@"obj from resources, path: %@", self.modelFileName];
+            NSURL *url = [NSURL fileURLWithPath:self.modelFileName];
+            MDLAsset *asset = [[MDLAsset alloc]initWithURL:url];
+            SCNNode *objectNode = [SCNNode nodeWithMDLObject:[asset objectAtIndex:0]];
+            objectNode.transform = SCNMatrix4MakeScale(modelScale, modelScale, modelScale);
+            [model addChildNode:objectNode];
         } else {
             AttachLog(@"No model was set. Use AugmentedRealityService::setModel");
         }
         [self logMessage:@"node: %@", model];
-        SCNMatrix4 sc = SCNMatrix4MakeScale(modelScale, modelScale, modelScale);
-        model.transform = SCNMatrix4Mult(SCNMatrix4FromMat4(result.worldTransform), sc);
+        model.transform = SCNMatrix4FromMat4(result.worldTransform);
         [self.sceneView.scene.rootNode addChildNode:model];
     }    
 }
