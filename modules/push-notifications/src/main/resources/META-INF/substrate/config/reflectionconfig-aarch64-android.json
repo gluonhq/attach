@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pushnotifications.impl.AndroidPushNotificationsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pushnotifications.impl.AndroidPushNotificationsService",
+    "methods":[
+      {"name":"<init>","parameterTypes":[]},
+      {"name":"setToken","parameterTypes":["java.lang.String"]},
+      {"name":"processRuntimeArgs","parameterTypes":["java.lang.String","java.lang.String"] }
+    ]
+  }
+]

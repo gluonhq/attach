@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.pushnotifications {
+package com.gluonhq.attach.pushnotifications.impl.gms;
 
-    requires transitive javafx.graphics;
-    requires java.json;
-    requires com.gluonhq.attach.util;
-    requires com.gluonhq.attach.runtimeargs;
+public class GoogleServicesConfiguration {
 
-    exports com.gluonhq.attach.pushnotifications;
-    exports com.gluonhq.attach.pushnotifications.impl to com.gluonhq.attach.util;
+    private String applicationId;
+    private String projectNumber;
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
+    }
+
+    public String getProjectNumber() {
+        return projectNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "GoogleServicesConfiguration{" +
+                "applicationId='" + applicationId + '\'' +
+                ", projectNumber='" + projectNumber + '\'' +
+                '}';
+    }
 }

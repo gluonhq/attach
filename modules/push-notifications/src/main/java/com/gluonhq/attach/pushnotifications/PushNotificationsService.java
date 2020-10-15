@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,86 +37,78 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code String senderId = "abcd1234";
- *  Services.get(PushNotificationsService.class).ifPresent(service -> {
- *      service.register(senderId);
- *      service.tokenProperty.addListener((observable, oldValue, newValue) -> {
- *          if (newValue != null) {
- *              String deviceToken = newValue;
- *              // This deviceToken can be used to send push notifications to this device by calling
- *              // the appropriate server API for the platform. Usually, this token is sent to a server
- *              // where the push notifications are created and sent out.
- *          }
- *      });
- *  });}</pre>
+ * {@code PushNotificationsService.create().ifPresent(service -> {
+ *       service.tokenProperty.addListener((observable, oldValue, newValue) -> {
+ *           if (newValue != null) {
+ *               String deviceToken = newValue;
+ *               // This deviceToken can be used to send push notifications to this device by calling
+ *               // the appropriate server API for the platform. Usually, this token is sent to a server
+ *               // where the push notifications are created and sent out.
+ *           }
+ *       });
+ *       service.register();
+ *   });}</pre>
  *
  * <p><b>Android Configuration</b></p>
+ * <p>To enable push notifications on android, an existing <a href="https://console.firebase.google.com">Google Firebase project</a>
+ * is required. Copy the <code>google-services.json</code> file into your project's <code>src/android/resources</code> folder.</p>
  * <p>The following <code>permissions</code>, <code>services</code> and <code>receiver</code> need to be added to the
  * android manifest configuration file to make push notifications work on android. The main activity also requires the
  * attribute <code>android:launchMode</code> with value <code>singleTop</code>.</p>
- * <p>Also, make sure that you replace <code>$packageName</code> with the value of the <code>package</code> attribute
- * in the <code>manifest</code> element that is defined at the top of your AndroidManifest.xml. You should have replaced
- * the <code>$packageName</code> string three times.</p>
  * <pre>
  * {@code <manifest ...>
  *    ...
- *    <permission android:name="$packageName.permission.C2D_MESSAGE" android:protectionLevel="signature" />
- *    <uses-permission android:name="$packageName.permission.C2D_MESSAGE" />
  *    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+ *    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
  *    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
- *    <uses-permission android:name="android.permission.WAKE_LOCK" />
  *    ...
  *    <application ...>
- *      <activity android:name="javafxports.android.FXActivity"
- *                android:label="SampleGluonApp"
- *                android:launchMode="singleTop"
- *                android:configChanges="orientation|screenSize">
- *        <meta-data android:name="main.class" android:value="com.gluonhq.sample.SampleGluonApp"/>
+ *      <activity android:name="com.gluonhq.helloandroid.MainActivity"
+ *                android:configChanges="orientation|keyboardHidden"
+ *                android:launchMode="singleTop">
  *        ...
  *      </activity>
  *      ...
- *      <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
+ *      <receiver android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
  *                android:exported="true"
  *                android:permission="com.google.android.c2dm.permission.SEND" >
  *        <intent-filter>
  *          <action android:name="com.google.android.c2dm.intent.RECEIVE" />
- *          <category android:name="$packageName" />
+ *          <category android:name="${applicationId}" />
  *        </intent-filter>
  *      </receiver>
- *      <service android:name="com.gluonhq.impl.attach.plugins.android.PushNotificationJobService"
+ *      <service android:name="com.gluonhq.helloandroid.PushFcmMessagingService">
+ *        <intent-filter>
+ *          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+ *        </intent-filter>
+ *      </service>
+ *      <service android:name="com.gluonhq.helloandroid.PushInstanceIdService">
+ *        <intent-filter>
+ *          <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+ *        </intent-filter>
+ *      </service>
+ *      <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+ *        <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+ *                   android:value="com.google.firebase.components.ComponentRegistrar"/>
+ *      </service>
+ *      <service android:name="com.gluonhq.helloandroid.PushNotificationJobService"
  *               android:permission="android.permission.BIND_JOB_SERVICE"
  *               android:exported="true" />
- *      <service android:name="com.gluonhq.impl.attach.plugins.pushnotifications.android.PushGcmListenerService"
- *               android:exported="false">
- *        <intent-filter>
- *          <action android:name="com.google.android.c2dm.intent.RECEIVE" />
- *        </intent-filter>
- *      </service>
- *      <service android:name="com.gluonhq.impl.attach.plugins.pushnotifications.android.PushInstanceIDListenerService"
- *               android:exported="false">
- *        <intent-filter>
- *          <action android:name="com.google.android.gms.iid.InstanceID" />
- *        </intent-filter>
- *      </service>
- *      <service android:name="com.gluonhq.impl.attach.plugins.pushnotifications.android.RegistrationIntentService"
- *               android:exported="false">
- *      </service>
- *      <activity android:name="com.gluonhq.impl.attach.plugins.pushnotifications.android.PushNotificationActivity"
- *                android:parentActivityName="javafxports.android.FXActivity">
+ *      <activity android:name="com.gluonhq.helloandroid.PushNotificationActivity"
+ *                android:parentActivityName="com.gluonhq.helloandroid.MainActivity">
  *            <meta-data android:name="android.support.PARENT_ACTIVITY"
- *                       android:value="javafxports.android.FXActivity"/>
+ *                       android:value="com.gluonhq.helloandroid.MainActivity"/>
  *      </activity>
- *
- *      <meta-data android:name="com.google.android.gms.version"
- *               android:value="9452000"/>
  *    </application>
  *  </manifest>}</pre>
  *
+ * <b>Note</b>: All these modifications are handled automatically by the
+ * <a href="https://docs.gluonhq.com/client">Gluon Client plugin</a> during the package goal.
+ *
  * <p><b>iOS Configuration</b></p>
  *
- * <p>You need to make sure that you set the <code>jfxmobile.ios.apsEnvironment</code> property in the
- * <code>build.gradle</code> of your project to either <code>development</code> or <code>production</code>, matching the
- * configured provisioning profile.</p>
+ * <p>You need to use a Provisioning Profile that defines the <code>aps-environment</code> property in the
+ * <code>Entitlements</code> section to either <code>development</code> or <code>production</code>.</p>
  *
  * @since 3.2.0
  */
@@ -140,10 +132,19 @@ public interface PushNotificationsService {
 
     /**
      * Register the app for receiving push notifications. On iOS this will trigger a confirmation dialog that
+     * must be accepted by the user.
+     * @since  4.0.10
+     */
+    void register();
+
+    /**
+     * Register the app for receiving push notifications. On iOS this will trigger a confirmation dialog that
      * must be accepted by the user. For Android, you need to pass in the authorizedEntity value that matches the
      * Sender ID of your Google Cloud Messaging or Firebase Cloud Messaging application.
      *
      * @param authorizedEntity a string that matches the Sender ID of a GCM or FCM application
+     * @deprecated
      */
+    @Deprecated
     void register(String authorizedEntity);
 }

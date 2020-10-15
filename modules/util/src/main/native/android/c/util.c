@@ -57,6 +57,7 @@ static jclass jMagnetometerServiceClass;
 static jclass jOrientationServiceClass;
 static jclass jPicturesServiceClass;
 static jclass jPositionServiceClass;
+static jclass jPushNotificationsServiceClass;
 static jclass jRuntimeArgsServiceClass;
 static jclass jSettingsServiceClass;
 static jclass jShareServiceClass;
@@ -183,6 +184,10 @@ jclass substrateGetPicturesServiceClass() {
 
 jclass substrateGetPositionServiceClass() {
     return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
+}
+
+jclass substrateGetPushNotificationsServiceClass() {
+    return GETREGISTERCLASS(jPushNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikPushNotificationsService");
 }
 
 jclass substrateGetRuntimeArgsServiceClass() {
