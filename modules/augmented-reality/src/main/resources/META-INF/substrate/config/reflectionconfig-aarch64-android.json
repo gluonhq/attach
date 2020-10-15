@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.augmentedreality.impl.AndroidAugmentedRealityService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.gluonhq.attach.augmentedreality.impl.AndroidAugmentedRealityService",
+    "methods":[
+      {"name":"notifyCancel","parameterTypes":[] },
+      {"name":"notifyAvailability","parameterTypes":["java.lang.String"] }
+    ]
+  }
+]

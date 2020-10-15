@@ -198,6 +198,12 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
             into file("$tempDir/library/src/main/res/xml/")
         }
     }
+    // use dalvik assets
+    File assetsDir = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/assets")
+    project.copy {
+        from assetsDir
+        into file("$tempDir/library/src/main/assets")
+    }
     // prepare output
     def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/"
     project.delete(files(dalvikOutput))

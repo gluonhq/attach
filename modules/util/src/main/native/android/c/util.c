@@ -42,6 +42,7 @@ static jboolean initialized;
 // Attach classes
 static jclass jAccelerometerServiceClass;
 static jclass jAudioServiceClass;
+static jclass jAugmentedRealityServiceClass;
 static jclass jBatteryServiceClass;
 static jclass jBarcodeScanServiceClass;
 static jclass jBleServiceClass;
@@ -124,6 +125,10 @@ jclass substrateGetAccelerometerServiceClass() {
 
 jclass substrateGetAudioServiceClass() {
     return GETREGISTERCLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
+}
+
+jclass substrateGetAugmentedRealityServiceClass() {
+    return GETREGISTERCLASS(jAugmentedRealityServiceClass, "com/gluonhq/helloandroid/DalvikAugmentedRealityService");
 }
 
 jclass substrateGetBatteryServiceClass() {
