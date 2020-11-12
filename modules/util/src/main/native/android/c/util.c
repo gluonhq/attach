@@ -42,6 +42,7 @@ static jboolean initialized;
 // Attach classes
 static jclass jAccelerometerServiceClass;
 static jclass jAudioServiceClass;
+static jclass jAugmentedRealityServiceClass;
 static jclass jBatteryServiceClass;
 static jclass jBarcodeScanServiceClass;
 static jclass jBleServiceClass;
@@ -57,6 +58,7 @@ static jclass jMagnetometerServiceClass;
 static jclass jOrientationServiceClass;
 static jclass jPicturesServiceClass;
 static jclass jPositionServiceClass;
+static jclass jPushNotificationsServiceClass;
 static jclass jRuntimeArgsServiceClass;
 static jclass jSettingsServiceClass;
 static jclass jShareServiceClass;
@@ -125,6 +127,10 @@ jclass substrateGetAudioServiceClass() {
     return GETREGISTERCLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
 }
 
+jclass substrateGetAugmentedRealityServiceClass() {
+    return GETREGISTERCLASS(jAugmentedRealityServiceClass, "com/gluonhq/helloandroid/DalvikAugmentedRealityService");
+}
+
 jclass substrateGetBatteryServiceClass() {
     return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
 }
@@ -183,6 +189,10 @@ jclass substrateGetPicturesServiceClass() {
 
 jclass substrateGetPositionServiceClass() {
     return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
+}
+
+jclass substrateGetPushNotificationsServiceClass() {
+    return GETREGISTERCLASS(jPushNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikPushNotificationsService");
 }
 
 jclass substrateGetRuntimeArgsServiceClass() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,21 @@ package com.gluonhq.attach.pushnotifications.impl;
 
 import com.gluonhq.attach.pushnotifications.PushNotificationsService;
 import com.gluonhq.attach.runtimeargs.RuntimeArgsService;
+import com.gluonhq.attach.util.Util;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * iOS implementation of PushNotificationsService.
  */
 public class IOSPushNotificationsService implements PushNotificationsService {
+
+    private static final Logger LOG = Logger.getLogger(IOSPushNotificationsService.class.getName());
+    private static final boolean debug = Util.DEBUG;
 
     static {
         System.loadLibrary("PushNotifications");
@@ -58,7 +65,13 @@ public class IOSPushNotificationsService implements PushNotificationsService {
     }
 
     @Override
+    @Deprecated
     public void register(String authorizedEntity) {
+        register();
+    }
+
+    @Override
+    public void register() {
         initPushNotifications();
     }
 
@@ -69,7 +82,7 @@ public class IOSPushNotificationsService implements PushNotificationsService {
      * @param s String with the error description
      */
     private static void failToRegisterForRemoteNotifications(String s) {
-        Platform.runLater(() -> System.out.println("Failed registering Push Notifications with error: " + s));
+        Platform.runLater(() -> LOG.log(Level.WARNING, "Failed registering Push Notifications with error: " + s));
     }
 
     /**
@@ -78,6 +91,9 @@ public class IOSPushNotificationsService implements PushNotificationsService {
     private static void didRegisterForRemoteNotifications(String token) {
         if (token == null) {
             return;
+        }
+        if (debug) {
+            LOG.info("Registered successfully for Push Notifications with token: " + token);
         }
         Platform.runLater(() -> TOKEN.setValue(token));
     }

@@ -122,7 +122,8 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
 
     // copy android_project
     File androidDir = file("$projectDir/../../gradle/android_project")
-    def tempDir = File.createTempDir()
+    def tempDir = file("${buildDir}/aar")
+    mkdir tempDir
     project.copy {
         from androidDir
         exclude "**/gradlew"
@@ -197,7 +198,16 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
             into file("$tempDir/library/src/main/res/xml/")
         }
     }
-    project.delete(files("${buildDir}/resources/main/META-INF/substrate/dalvik/"))
+    // use dalvik assets
+    File assetsDir = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/assets")
+    project.copy {
+        from assetsDir
+        into file("$tempDir/library/src/main/assets")
+    }
+    // prepare output
+    def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/"
+    project.delete(files(dalvikOutput))
+
     // build aar
     file("$tempDir/gradlew")
     def aarArgs = ["-p", file("$tempDir/library").getAbsolutePath(), "assembleDebug"].flatten()
@@ -206,13 +216,15 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
         executable file("$tempDir/gradlew").getAbsolutePath()
         args aarArgs
     }
-    // copy aar
-    def dalvikOutput = "${buildDir}/resources/main/META-INF/substrate/dalvik/"
+
+    // copy aar, dependencies
     project.copy {
         from file("$tempDir/library/build/outputs/aar/library-debug.aar")
+        from file("$projectDir/src/main/resources/META-INF/substrate/dalvik/android-dependencies.txt")
         into dalvikOutput
         rename { fileName -> fileName.replace('library-debug', "$name") }
     }
+    
     println("build for ${name}.aar finished")
     File a = new File("$dalvikOutput/${name}.aar")
     if (a.exists()) {

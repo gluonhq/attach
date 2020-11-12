@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.gluonhq.helloandroid">
+    <uses-sdk android:minSdkVersion="21" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <application>
+        <activity android:name='com.gluonhq.helloandroid.MainActivity'
+                  android:configChanges="orientation|keyboardHidden"
+                  android:launchMode="singleTop">
+            <intent-filter>
+                <category android:name='android.intent.category.LAUNCHER'/>
+                <action android:name='android.intent.action.MAIN'/>
+            </intent-filter>
+        </activity>
+
+        <receiver android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+                android:exported="true"
+                android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.gluonhq.helloandroid.PushFcmMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="com.gluonhq.helloandroid.PushInstanceIdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+                    android:value="com.google.firebase.components.ComponentRegistrar"/>
+        </service>
+        <service android:name="com.gluonhq.helloandroid.PushNotificationJobService"
+               android:permission="android.permission.BIND_JOB_SERVICE"
+               android:exported="true" />
+        <activity android:name="com.gluonhq.helloandroid.PushNotificationActivity"
+                android:parentActivityName="com.gluonhq.helloandroid.MainActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value="com.gluonhq.helloandroid.MainActivity"/>
+        </activity>
+    </application>
+</manifest>
