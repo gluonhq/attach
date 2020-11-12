@@ -39,20 +39,19 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(ShareService.class).ifPresent(service -> {
+ * {@code ShareService.create().ifPresent(service -> {
  *      service.share("This is the subject", "This is the content of the message");
  *  });}</pre>
  *
  * When sharing files, the Attach
- * <a href="http://docs.gluonhq.com/charm/javadoc/latest/com/gluonhq/charm/down/plugins/StorageService.html">
- * StorageService</a> can be used to create/read the file. Note that on Android, 
+ * StorageService can be used to create/read the file. Note that on Android, 
  * the file has to be located in a public folder (see 
  * StorageService#getPublicStorage), or sharing it won't be allowed. 
  *
  * <p><b>Example</b></p>
  * <pre>
  * {@code
- * File root = Services.get(StorageService.class)
+ * File root = StorageService.create()
  *           .flatMap(s -> s.getPublicStorage("Documents"))
  *           .orElseThrow(() -> new RuntimeException("Documents not available"));
  *
@@ -60,7 +59,7 @@ import java.util.Optional;
  * File file = new File(root, "myFile.txt");
  *
  * // share the file
- * Services.get(ShareService.class).ifPresent(service -> {
+ * ShareService.create().ifPresent(service -> {
  *      service.share("text/plain", file);
  * });
  * }</pre>
@@ -68,6 +67,8 @@ import java.util.Optional;
  * <p><b>Android Configuration</b></p>
  * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
  * the following content that allows access to the external storage:</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code
  *    <?xml version="1.0" encoding="utf-8"?>

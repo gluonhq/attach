@@ -47,7 +47,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code InAppBillingService service = Services.get(InAppBillingService.class)
+ * {@code InAppBillingService service = InAppBillingService.create()
  *          .orElseThrow(() -> new RuntimeException("Could not load In-App Billing service"));
  *
  *      // initialize and register available products
@@ -97,6 +97,8 @@ import java.util.Optional;
  *
  * <p><b>Android Configuration</b></p>
  * <p>The permission <code>com.android.vending.BILLING</code> needs to be added.</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="com.android.vending.BILLING"/>

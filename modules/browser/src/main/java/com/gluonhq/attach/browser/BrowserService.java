@@ -39,7 +39,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(BrowserService.class).ifPresent(service -> {
+ * {@code BrowserService.create().ifPresent(service -> {
  *      service.launchExternalBrowser("https://gluonhq.com/");
  *  });}</pre>
  *

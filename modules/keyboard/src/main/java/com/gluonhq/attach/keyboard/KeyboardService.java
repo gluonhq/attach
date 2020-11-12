@@ -40,7 +40,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(KeyboardService.class).ifPresent(service -> {
+ * {@code KeyboardService.create().ifPresent(service -> {
  *      service.visibleHeightProperty().addListener((obs, ov, nv) ->
  *          System.out.println("height: " + nv));
  *  });}</pre>

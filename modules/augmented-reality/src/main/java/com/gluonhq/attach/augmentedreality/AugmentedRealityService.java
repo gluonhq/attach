@@ -40,7 +40,7 @@ import java.util.Optional;
  * 
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(AugmentedRealityService.class).ifPresent(service -> {
+ * {@code AugmentedRealityService.create().ifPresent(service -> {
  *       Availability availability = service.checkAR(() -> {
  *          // perform action after ARCore is installed
  *       });
@@ -59,7 +59,7 @@ import java.util.Optional;
  * and {@code DukeKing.mtl} under the {@code src/main/resources/models} folder</p>
  * 
  * <pre>
- * {@code Services.get(AugmentedRealityService.class).ifPresent(service -> {
+ * {@code AugmentedRealityService.create().ifPresent(service -> {
  *       ARModel model = new ARModel();
  *       model.setName("DukeKing");
  *       model.setObjFilename("models/DukeKing.obj");
@@ -75,6 +75,8 @@ import java.util.Optional;
  *
  * <p><b>Android Configuration</b></p>
  * <p>Add the following to the manifest</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *   <uses-permission android:name="android.permission.CAMERA" />

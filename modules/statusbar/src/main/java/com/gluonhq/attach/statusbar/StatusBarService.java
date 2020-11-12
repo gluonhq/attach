@@ -38,7 +38,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(StatusBarService.class).ifPresent(service -> {
+ * {@code StatusBarService.create().ifPresent(service -> {
  *      service.setColor(Color.GOLD);
  *  });}</pre>
  *

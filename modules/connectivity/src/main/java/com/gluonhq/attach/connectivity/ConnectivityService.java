@@ -45,13 +45,15 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(ConnectivityService.class).ifPresent(service -> {
+ * {@code ConnectivityService.create().ifPresent(service -> {
  *      boolean connected = service.isConnected();
  *      System.out.println("Network connectivity available? " + String.valueOf(connected));
  *  });}</pre>
  *
  * <p><b>Android Configuration</b></p>
  * <p>The permission <code>android.permission.ACCESS_NETWORK_STATE</code> needs to be added.</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
