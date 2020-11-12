@@ -44,8 +44,7 @@ import java.util.Optional;
  *  });}</pre>
  *
  * When sharing files, the Attach
- * <a href="http://docs.gluonhq.com/attach/javadoc/latest/com.gluonhq.attach.storage/com/gluonhq/attach/storage/StorageService.html">
- * StorageService</a> can be used to create/read the file. Note that on Android, 
+ * StorageService can be used to create/read the file. Note that on Android, 
  * the file has to be located in a public folder (see 
  * StorageService#getPublicStorage), or sharing it won't be allowed. 
  *
