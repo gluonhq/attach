@@ -1,4 +1,5 @@
 plugins {
+    id 'java-library'
     id 'jp.classmethod.aws.s3' version '0.41'
     id 'io.codearte.nexus-staging' version '0.21.1'
     id "org.openjfx.javafxplugin" version "0.0.9" apply false
@@ -20,7 +21,6 @@ if (System.getProperty('os.name').toLowerCase().contains("mac")) {
 }
 
 subprojects {
-    apply plugin: "java-library"
     apply plugin: "org.openjfx.javafxplugin"
     apply from: rootProject.file('gradle/mavenPublish.gradle')
 
@@ -44,20 +44,8 @@ nexusStaging {
     delayBetweenRetriesInMillis = 5000
 }
 
-// Required for Javadoc compilation
-apply plugin: "org.openjfx.javafxplugin"
-
-repositories {
-    mavenCentral()
-}
-
-javafx {
-    modules 'javafx.graphics'
-}
-// Required End
-
 task copyModuleSources {
-    doLast {
+    doFirst {
         subprojects.each {p ->
             copy {
                 from p.sourceSets.main.java
@@ -68,11 +56,14 @@ task copyModuleSources {
 }
 
 javadoc {
+    doFirst {
+        subprojects.each {p -> classpath += p.sourceSets.main.compileClasspath }
+        options.addStringOption('-module-path', classpath.asPath)
+    }
     exclude("com/gluonhq/attach/*/impl")
     source fileTree("${buildDir}/modules/sources")
-    options.addStringOption('-module-path', configurations.compileClasspath.asPath)
-    classpath = files()
     options.addStringOption("-module-source-path", "$buildDir/modules/sources")
+    classpath = files()
     title "Attach ${project.version} API"
     dependsOn copyModuleSources
 }
