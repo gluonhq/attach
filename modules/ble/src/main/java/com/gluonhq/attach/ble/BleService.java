@@ -47,7 +47,7 @@ import java.util.function.Consumer;
  * <p><b>Example</b></p>
  * <pre>
  * {@code String uuid = UUID.randomUUID().toString(); // for example a known UUID of a beacon
- *  Services.get(BleService.class).ifPresent(service -> {
+ *  BleService.create().ifPresent(service -> {
  *      service.startScanning(new Configuration(uuid), scanResult -> {
  *          System.out.printf("major: %d, minor: %d, proximity: %s",
  *                  scanResult.getMajor(), scanResult.getMinor(),
@@ -94,7 +94,7 @@ import java.util.function.Consumer;
  * <p>This code snippet shows how to discover devices:</p>
  * <pre>
  * {@code
- * Services.get(BleService.class).ifPresent(ble -> {
+ * BleService.create().ifPresent(ble -> {
  *        ble.startScanningDevices().addListener((ListChangeListener.Change<? extends BleDevice> c) -> {
  *            while (c.next()) {
  *                if (c.wasAdded()) {
@@ -116,7 +116,7 @@ import java.util.function.Consumer;
  * <p>This code snippet shows how to discover the services for a given device:</p>
  * <pre>
  * {@code
- * Services.get(BleService.class).ifPresent(ble -> {
+ * BleService.create().ifPresent(ble -> {
  *        ...
  *        bleDevice.getProfiles().addListener((ListChangeListener.Change<? extends BleProfile> c) -> {
  *            while (c.next()) {
@@ -135,7 +135,7 @@ import java.util.function.Consumer;
  * <p>This code snippet shows how to discover the characteristics for a given service:</p>
  * <pre>
  * {@code
- * Services.get(BleService.class).ifPresent(ble -> {
+ * BleService.create().ifPresent(ble -> {
  *        ...
  *        bleProfile.getCharacteristics().addListener((ListChangeListener.Change<? extends BleCharacteristic> c) -> {
  *            while (c.next()) {
@@ -154,7 +154,7 @@ import java.util.function.Consumer;
  * <p>And finally, this code snippet shows how to subscribe to a characteristic of a given device and service to listen to its values:</p>
  * <pre>
  * {@code
- * Services.get(BleService.class).ifPresent(ble -> {
+ * BleService.create().ifPresent(ble -> {
  *        ...
  *        bleCharacteristic.valueProperty().addListener((obs, ov, nv) ->
  *              System.out.println("Value: " + Arrays.toString(nv)));
@@ -168,13 +168,14 @@ import java.util.function.Consumer;
  * <code>android.permission.BLUETOOTH_ADMIN</code> and
  * <code>android.permission.ACCESS_FINE_LOCATION</code> need to be added to the Android manifest.</p>
  *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.BLUETOOTH"/>
  *    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
  *    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
  *    ...
- *    <activity android:name="com.gluonhq.impl.charm.down.plugins.android.PermissionRequestActivity" />
+ *    <activity android:name="com.gluonhq.helloandroid.PermissionRequestActivity" />
  *  </manifest>}</pre>
  *
  * <p><b>iOS Configuration</b></p>

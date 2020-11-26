@@ -1,0 +1,2 @@
+implementation 'com.google.ar:core:1.20.0'
+implementation 'de.javagl:obj:0.3.0'

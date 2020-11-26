@@ -39,7 +39,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(BatteryService.class).ifPresent(service -> {
+ * {@code BatteryService.create().ifPresent(service -> {
  *      float batteryLevel = service.getBatteryLevel();
  *      boolean pluggedIn = service.isPluggedIn();
  *  });}</pre>

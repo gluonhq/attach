@@ -1,6 +1,5 @@
 dependencies {
     implementation project(':util')
-    androidImplementation 'com.google.zxing:core:3.4.0'
 }
 
 ext.moduleName = 'com.gluonhq.attach.barcodescan'

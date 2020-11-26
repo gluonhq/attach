@@ -44,8 +44,8 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(AccelerometerService.class).ifPresent(service -> {
- *      Acceleration acceleration = accelerometerService.getCurrentAcceleration();
+ * {@code AccelerometerService.create().ifPresent(service -> {
+ *      Acceleration acceleration = service.getCurrentAcceleration();
  *      System.out.printf("Current acceleration: %.2f, %.2f, %.2f",
  *              acceleration.getX(), acceleration.getY(), acceleration.getZ());
  *  });}</pre>

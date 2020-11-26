@@ -38,7 +38,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(LifecycleService.class).ifPresent(service -> {
+ * {@code LifecycleService.create().ifPresent(service -> {
  *      service.addListener(LifecycleEvent.PAUSE, () -> System.out.println("Application is paused."));
  *      service.addListener(LifecycleEvent.RESUME, () -> System.out.println("Application is resumed."));
  *  });}</pre>

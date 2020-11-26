@@ -66,7 +66,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code String notificationId = "abcd1234";
- *  Services.get(LocalNotificationsService.class).ifPresent(service -> {
+ *  LocalNotificationsService.create().ifPresent(service -> {
  *      service.getNotifications().add(new Notification(notificationId, "Sample Notification Text",
  *              ZonedDateTime.now().plusSeconds(20), () -> {
  *                      Alert alert = new Alert(AlertType.INFORMATION, "You have been notified!");
@@ -78,6 +78,8 @@ import java.util.Optional;
  * <p>The following <code>activity</code> and <code>receiver</code> need to be added to the android manifest
  * configuration file to make local notifications work on android. The main activity also requires the attribute
  * <code>android:launchMode</code> with value <code>singleTop</code>.</p>
+ *
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    ...

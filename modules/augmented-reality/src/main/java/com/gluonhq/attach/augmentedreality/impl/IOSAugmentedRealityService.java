@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ import com.gluonhq.attach.augmentedreality.ARModel;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,7 +57,7 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     }
     
     @Override
-    public Availability checkAR(Runnable afterInstall) {
+    public Availability getAvailability() {
         if (CHECK_AR == ARKIT_NOT_SUPPORTED) {
             return Availability.AR_NOT_SUPPORTED;
         } else if (CHECK_AR == IOS_NOT_UPDATED) {
@@ -65,8 +67,18 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     }
 
     @Override
+    public ReadOnlyObjectProperty<Availability> availabilityProperty() {
+        return new ReadOnlyObjectWrapper<>(getAvailability()).getReadOnlyProperty();
+    }
+
+    @Override
     public void setModel(ARModel model) {
-        setARModel(model.getObjFilename(), model.getScale());
+        String obj = model.getObjFilename();
+        if (obj != null) {
+            getFileFromAssets(obj.replace(".obj",".mtl"));
+            obj = getFileFromAssets(obj).toString();
+        }
+        setARModel(obj, model.getScale());
     }
 
     @Override
@@ -78,9 +90,7 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
 
     @Override
     public void debugAR(boolean enable) {
-        if (enable) {
-            enableDebugAR();
-        }
+        enableDebugAR(enable);
     }
 
     @Override
@@ -93,10 +103,10 @@ public class IOSAugmentedRealityService extends DefaultAugmentedRealityService {
     private native void showNativeAR();
     private native void setARModel(String objFileName, double scale);
     
-    private static native void enableDebugAR();
+    private static native void enableDebugAR(boolean enable);
     
     private static void notifyCancel() {
-        if (CANCELLED != null && ! CANCELLED.get()) {
+        if (!CANCELLED.get()) {
             Platform.runLater(() -> CANCELLED.set(true));
         }
     }

@@ -28,7 +28,7 @@
 module com.gluonhq.attach.pushnotifications {
 
     requires transitive javafx.graphics;
-
+    requires java.json;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.runtimeargs;
 

@@ -1,0 +1,2 @@
+implementation 'com.google.gms:google-services:4.3.3'
+implementation 'com.google.firebase:firebase-messaging:20.3.0'

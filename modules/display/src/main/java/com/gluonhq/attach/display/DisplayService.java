@@ -40,7 +40,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(DisplayService.class).ifPresent(service -> {
+ * {@code DisplayService.create().ifPresent(service -> {
  * 　　  Dimension2D resolution = service.getScreenResolution();
  *      System.out.printf("Screen resolution: %.0fx%.0f", resolution.getWidth(), resolution.getHeight());
  *  });}</pre>

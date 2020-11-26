@@ -37,7 +37,7 @@ import java.util.Optional;
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code Services.get(SettingsService.class).ifPresent(service -> {
+ * {@code SettingsService.create().ifPresent(service -> {
  *      service.store("key", "value");
  *      String value = service.retrieve("key");
  *      service.remove("key");
