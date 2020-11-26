@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code CompassService.create().ifPresent(service -> {
+ *      service.start();
  *      double heading = service.getHeading();
  *      System.out.printf("Current heading: %.2f", heading);
  *  });}</pre>
@@ -78,4 +79,18 @@ public interface CompassService {
      * @return A property containing a frequently-updated compass heading.
      */
     ReadOnlyDoubleProperty headingProperty();
+
+    /**
+     * Starts the service.
+     *
+     * @since 4.0.11
+     */
+    void start();
+
+    /**
+     * Stops the service.
+     *
+     * @since 4.0.11
+     */
+    void stop();
 }
