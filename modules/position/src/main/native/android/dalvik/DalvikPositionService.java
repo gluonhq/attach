@@ -79,7 +79,7 @@ public class DalvikPositionService implements LocationListener {
         if (debug) {
             Log.v(TAG, "Construct DalvikPositionService");
         }
-        boolean gpsEnabled = Util.verifyPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) | // Don't use || here! 
+        boolean gpsEnabled = Util.verifyPermissions(Manifest.permission.ACCESS_COARSE_LOCATION) | // Both permissions require to be verified
                 Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
         if (!gpsEnabled) {
             Log.v(TAG, "GPS disabled. ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION permissions are required");
