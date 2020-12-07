@@ -39,6 +39,9 @@ import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import java.util.UUID;
@@ -113,6 +116,26 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         sendToken(token);
     }
 
+    static void retrieveToken() {
+        // Retrieve token
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                    return;
+                }
+
+                // Get new FCM registration token
+                String token = task.getResult();
+                if (debug) {
+                    Log.v(TAG, "Updated registration token: " + token);
+                }
+                sendToken(token);
+            }
+        });
+    }
+
     private void sendNotification(String id, String title, String body) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
@@ -179,5 +202,5 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         mNotificationManager.createNotificationChannel(mChannel);
     }
 
-    private native void sendToken(String token);
+    private native static void sendToken(String token);
 }

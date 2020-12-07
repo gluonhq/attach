@@ -110,6 +110,9 @@ public class DalvikPushNotificationsService {
             JobScheduler scheduler = (JobScheduler) activity.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             scheduler.schedule(jobInfo);
         }
+
+        // retrieve token, as it might have been updated
+        PushFcmMessagingService.retrieveToken();
     }
 
     static void sendRuntimeArgs(String value) {
