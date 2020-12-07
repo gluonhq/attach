@@ -116,14 +116,15 @@ public class AndroidPushNotificationsService implements PushNotificationsService
                             String clientPackageName = androidClientInfo.getString("package_name", "");
                             if (packageName.equals(clientPackageName)) {
                                 clientId = i;
-                                configuration.setApplicationId(clientInfo.getString("mobilesdk_app_id", null));
                                 break;
                             }
                         }
                     }
                 }
                 if (clientId > -1) {
-                    JsonArray apiKey = clients.getJsonObject(clientId).getJsonArray("api_key");
+                    JsonObject client = clients.getJsonObject(clientId);
+                    configuration.setApplicationId(client.getJsonObject("client_info").getString("mobilesdk_app_id", null));
+                    JsonArray apiKey = client.getJsonArray("api_key");
                     if (apiKey != null && !apiKey.isEmpty()) {
                         configuration.setApiKey(apiKey.getJsonObject(0).getString("current_key"));
                     }
