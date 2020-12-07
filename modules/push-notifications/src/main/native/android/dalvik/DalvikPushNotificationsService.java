@@ -82,14 +82,18 @@ public class DalvikPushNotificationsService {
         return apiAvailability.getErrorString(resultCode);
     }
 
-    public void initializeFirebase(String applicationId, String projectNumber) {
+    public void initializeFirebase(String applicationId, String projectNumber, String projectId, String apiKey) {
         if (debug) {
-            Log.d(TAG, "Initializing Firebase for application " + applicationId + " and project number " + projectNumber);
+            Log.d(TAG, "Initializing Firebase for application: " + applicationId +
+                    ", project number: " + projectNumber + ", project id: " + projectId +
+                    ", and api key: " + apiKey);
         }
 
         FirebaseApp firebaseApp = FirebaseApp.initializeApp(activity, new FirebaseOptions.Builder()
                 .setApplicationId(applicationId)
                 .setGcmSenderId(projectNumber)
+                .setProjectId(projectId)
+                .setApiKey(apiKey)
                 .build());
 
         Log.i(TAG, "FirebaseApp initialized succesfully: " + firebaseApp);

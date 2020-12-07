@@ -52,7 +52,7 @@ static void initializePushNotificationsDalvikHandles() {
     jDalvikPushNotificationsServiceGetPackageName = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getPackageName", "()Ljava/lang/String;");
     jDalvikPushNotificationsServiceIsGooglePlayServicesAvailable = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "isGooglePlayServicesAvailable", "()I");
     jDalvikPushNotificationsServiceGetErrorString = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getErrorString", "(I)Ljava/lang/String;");
-    jDalvikPushNotificationsServiceInitializeFirebase = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "initializeFirebase", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jDalvikPushNotificationsServiceInitializeFirebase = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "initializeFirebase", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
     jmethodID jPushNotificationsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
@@ -127,29 +127,37 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_pushnotifications_impl_Android
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_AndroidPushNotificationsService_initializeFirebase
-(JNIEnv *env, jobject service, jstring applicationId, jstring projectNumber) {
+(JNIEnv *env, jobject service, jstring applicationId, jstring projectNumber, jstring projectId, jstring apiKey) {
     const char *applicationIdChars = (*env)->GetStringUTFChars(env, applicationId, NULL);
     const char *projectNumberChars = (*env)->GetStringUTFChars(env, projectNumber, NULL);
+    const char *projectIdChars = (*env)->GetStringUTFChars(env, projectId, NULL);
+    const char *apiKeyChars = (*env)->GetStringUTFChars(env, apiKey, NULL);
     if (debugAttach) {
-        ATTACH_LOG_FINE("PushNotification::initializeFirebase with app Id: %s and project number: %s", applicationIdChars, projectNumberChars);
+        ATTACH_LOG_FINE("PushNotification::initializeFirebase with app Id: %s, project number: %s, project id: %s, and api key: %s", applicationIdChars, projectNumberChars, projectIdChars, apiKeyChars);
     }
     ATTACH_DALVIK();
     jstring dalvikApplicationId = (*dalvikEnv)->NewStringUTF(dalvikEnv, applicationIdChars);
     jstring dalvikProjectNumber = (*dalvikEnv)->NewStringUTF(dalvikEnv, projectNumberChars);
+    jstring dalvikProjectId = (*dalvikEnv)->NewStringUTF(dalvikEnv, projectIdChars);
+    jstring dalvikApiKey = (*dalvikEnv)->NewStringUTF(dalvikEnv, apiKeyChars);
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikPushNotificationsService, jDalvikPushNotificationsServiceInitializeFirebase,
-                                                        dalvikApplicationId, dalvikProjectNumber);
+                                                        dalvikApplicationId, dalvikProjectNumber, dalvikProjectId, dalvikApiKey);
     (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikApplicationId);
     (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikProjectNumber);
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikProjectId);
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikApiKey);
     DETACH_DALVIK();
     (*env)->ReleaseStringUTFChars(env, applicationId, applicationIdChars);
     (*env)->ReleaseStringUTFChars(env, projectNumber, projectNumberChars);
+    (*env)->ReleaseStringUTFChars(env, projectId, projectIdChars);
+    (*env)->ReleaseStringUTFChars(env, apiKey, apiKeyChars);
 }
 
 ///////////////////////////
 // From Dalvik to native //
 ///////////////////////////
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_PushInstanceIdService_sendToken
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_PushFcmMessagingService_sendToken
     (JNIEnv *env, jobject service, jstring jtoken) {
     const char *tokenChars = (*env)->GetStringUTFChars(env, jtoken, NULL);
     if (debugAttach) {
