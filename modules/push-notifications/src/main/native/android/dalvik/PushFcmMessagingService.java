@@ -98,7 +98,21 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             sendNotification(id, title, body);
         }
     }
- 
+
+    /**
+     * Called if FCM registration token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is called when the
+     * FCM registration token is initially generated so this is where you would retrieve
+     * the token.
+     */
+    @Override
+    public void onNewToken(String token) {
+        if (debug) {
+            Log.v(TAG, "New token: " + token);
+        }
+        sendToken(token);
+    }
+
     private void sendNotification(String id, String title, String body) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
@@ -164,4 +178,6 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         mChannel.setShowBadge(true);
         mNotificationManager.createNotificationChannel(mChannel);
     }
+
+    private native void sendToken(String token);
 }
