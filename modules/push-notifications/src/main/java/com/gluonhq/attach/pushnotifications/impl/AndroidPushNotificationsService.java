@@ -82,7 +82,8 @@ public class AndroidPushNotificationsService implements PushNotificationsService
                 LOG.info("Google Play Services is available");
             }
             GoogleServicesConfiguration configuration = readGoogleServicesConfiguration();
-            initializeFirebase(configuration.getApplicationId(), configuration.getProjectNumber());
+            initializeFirebase(configuration.getApplicationId(), configuration.getProjectNumber(),
+                    configuration.getProjectId(), configuration.getApiKey());
         } else {
             LOG.log(Level.SEVERE, "Google Play Services Error:\n" +
                     getErrorString(resultCode) +
@@ -99,11 +100,13 @@ public class AndroidPushNotificationsService implements PushNotificationsService
             JsonObject projectInfo = json.getJsonObject("project_info");
             if (projectInfo != null) {
                 configuration.setProjectNumber(projectInfo.getString("project_number", null));
+                configuration.setProjectId(projectInfo.getString("project_id", null));
             }
 
             String packageName = getPackageName();
             JsonArray clients = json.getJsonArray("client");
             if (clients != null) {
+                int clientId = -1;
                 for (int i = 0; i < clients.size(); i++) {
                     JsonObject client = clients.getJsonObject(i);
                     JsonObject clientInfo = client.getJsonObject("client_info");
@@ -112,11 +115,21 @@ public class AndroidPushNotificationsService implements PushNotificationsService
                         if (androidClientInfo != null) {
                             String clientPackageName = androidClientInfo.getString("package_name", "");
                             if (packageName.equals(clientPackageName)) {
-                                configuration.setApplicationId(clientInfo.getString("mobilesdk_app_id", null));
+                                clientId = i;
                                 break;
                             }
                         }
                     }
+                }
+                if (clientId > -1) {
+                    JsonObject client = clients.getJsonObject(clientId);
+                    configuration.setApplicationId(client.getJsonObject("client_info").getString("mobilesdk_app_id", null));
+                    JsonArray apiKey = client.getJsonArray("api_key");
+                    if (apiKey != null && !apiKey.isEmpty()) {
+                        configuration.setApiKey(apiKey.getJsonObject(0).getString("current_key"));
+                    }
+                } else {
+                    LOG.log(Level.WARNING, "Package name mismatch: App's package name (" + packageName + ") not found in google-services");
                 }
             }
         } catch (Exception e) {
@@ -133,7 +146,7 @@ public class AndroidPushNotificationsService implements PushNotificationsService
     private native String getPackageName();
     private native int isGooglePlayServicesAvailable();
     private native String getErrorString(int resultCode);
-    private native void initializeFirebase(String applicationId, String projectNumber);
+    private native void initializeFirebase(String applicationId, String projectNumber, String projectId, String apiKey);
 
     // callback
     private static void setToken(String token) {

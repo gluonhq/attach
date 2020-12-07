@@ -39,6 +39,9 @@ import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import java.util.UUID;
@@ -98,7 +101,41 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             sendNotification(id, title, body);
         }
     }
- 
+
+    /**
+     * Called if FCM registration token is updated. This may occur if the security of
+     * the previous token had been compromised. Note that this is called when the
+     * FCM registration token is initially generated so this is where you would retrieve
+     * the token.
+     */
+    @Override
+    public void onNewToken(String token) {
+        if (debug) {
+            Log.v(TAG, "New token: " + token);
+        }
+        sendToken(token);
+    }
+
+    static void retrieveToken() {
+        // Retrieve token
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                    return;
+                }
+
+                // Get new FCM registration token
+                String token = task.getResult();
+                if (debug) {
+                    Log.v(TAG, "Updated registration token: " + token);
+                }
+                sendToken(token);
+            }
+        });
+    }
+
     private void sendNotification(String id, String title, String body) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
@@ -164,4 +201,6 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         mChannel.setShowBadge(true);
         mNotificationManager.createNotificationChannel(mChannel);
     }
+
+    private native static void sendToken(String token);
 }

@@ -14,27 +14,10 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
-                android:exported="true"
-                android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="${applicationId}" />
-            </intent-filter>
-        </receiver>
         <service android:name="com.gluonhq.helloandroid.PushFcmMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-        <service android:name="com.gluonhq.helloandroid.PushInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name="com.google.firebase.components.ComponentDiscoveryService">
-            <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
-                    android:value="com.google.firebase.components.ComponentRegistrar"/>
         </service>
         <service android:name="com.gluonhq.helloandroid.PushNotificationJobService"
                android:permission="android.permission.BIND_JOB_SERVICE"
