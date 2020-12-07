@@ -123,9 +123,9 @@ public class AndroidPushNotificationsService implements PushNotificationsService
                     }
                 }
                 if (clientId > -1) {
-                    JsonObject apiKey = clients.getJsonObject(clientId).getJsonObject("api_key");
-                    if (apiKey != null) {
-                        configuration.setApiKey(apiKey.getString("current_key"));
+                    JsonArray apiKey = clients.getJsonObject(clientId).getJsonArray("api_key");
+                    if (apiKey != null && !apiKey.isEmpty()) {
+                        configuration.setApiKey(apiKey.getJsonObject(0).getString("current_key"));
                     }
                 } else {
                     LOG.log(Level.WARNING, "Package name mismatch: App's package name (" + packageName + ") not found in google-services");
