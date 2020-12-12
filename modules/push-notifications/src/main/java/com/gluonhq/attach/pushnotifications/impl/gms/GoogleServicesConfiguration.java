@@ -31,6 +31,8 @@ public class GoogleServicesConfiguration {
 
     private String applicationId;
     private String projectNumber;
+    private String projectId;
+    private String apiKey;
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
@@ -48,11 +50,30 @@ public class GoogleServicesConfiguration {
         return projectNumber;
     }
 
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
     @Override
     public String toString() {
         return "GoogleServicesConfiguration{" +
                 "applicationId='" + applicationId + '\'' +
                 ", projectNumber='" + projectNumber + '\'' +
+                ", projectId='" + projectId + '\'' +
+                ", apiKey='" + apiKey + '\'' +
                 '}';
     }
+
 }

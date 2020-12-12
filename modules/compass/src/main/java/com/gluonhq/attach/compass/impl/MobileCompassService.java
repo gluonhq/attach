@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020, Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,32 +25,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.compass.impl;
 
-import android.util.Log;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.gluonhq.attach.compass.CompassService;
+import com.gluonhq.attach.magnetometer.MagnetometerService;
+import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 
+/**
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ */
+public abstract class MobileCompassService implements CompassService {
 
-public class PushInstanceIdService extends FirebaseInstanceIdService {
+    private final ReadOnlyDoubleWrapper heading = new ReadOnlyDoubleWrapper();
 
-    private static final String TAG = Util.TAG;
-    private static final boolean debug = Util.isDebug();
-
-    /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. Note that this is also called
-     * when the InstanceID token is initially generated, so this is where
-     * you retrieve the token.
-     */
-    @Override
-    public void onTokenRefresh() {
-        if (debug) {
-            Log.v(TAG, "onTokenRefresh called, starting RegistrationIntent service.");
-        }
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        sendToken(refreshedToken);
+    public MobileCompassService() {
+        Services.get(MagnetometerService.class).ifPresent(m -> {
+            m.readingProperty().addListener((obs, ov, nv) -> heading.setValue(nv.getAzimuth()));
+        });
     }
 
-    private native void sendToken(String token);
+    @Override
+    public double getHeading() {
+        return heading.get();
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty headingProperty() {
+        return heading.getReadOnlyProperty();
+    }
+
+    @Override
+    public void start() {
+        Services.get(MagnetometerService.class).ifPresent(MagnetometerService::start);
+    }
+
+    @Override
+    public void stop() {
+        Services.get(MagnetometerService.class).ifPresent(MagnetometerService::stop);
+    }
 }
