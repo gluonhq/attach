@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code AccelerometerService.create().ifPresent(service -> {
+ *      service.start();
  *      Acceleration acceleration = service.getCurrentAcceleration();
  *      System.out.printf("Current acceleration: %.2f, %.2f, %.2f",
  *              acceleration.getX(), acceleration.getY(), acceleration.getZ());
@@ -57,10 +58,11 @@ import java.util.Optional;
  */
 public interface AccelerometerService {
 
-    // TODO: Provide API to modify these settings:
-    boolean FILTER_GRAVITY = false;
-    
-    int FREQUENCY = 50; // in Hz
+    /**
+     * Default frequency is 50 Hz (50 samples per second).
+     * By default, gravity is not filtered.
+     */
+    Parameters DEFAULT_PARAMETERS = new Parameters(50, false);
 
     /**
      * Returns an instance of {@link AccelerometerService}.
@@ -83,6 +85,28 @@ public interface AccelerometerService {
      * @return A property containing a frequently-updated accelerometer reading.
      */
     ReadOnlyObjectProperty<Acceleration> accelerationProperty();
+
+    /**
+     * Starts the service with {@link #DEFAULT_PARAMETERS}.
+     *
+     * @since 4.0.11
+     */
+    void start();
+
+    /**
+     * Starts the service with given parameters.
+     *
+     * @param parameters Parameters for configuring the service
+     * @since 4.0.11
+     */
+    void start(Parameters parameters);
+
+    /**
+     * Stops the service.
+     *
+     * @since 4.0.11
+     */
+    void stop();
 
     // TODO: Add Gyroscope
 }

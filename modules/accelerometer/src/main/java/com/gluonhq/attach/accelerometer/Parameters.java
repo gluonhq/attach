@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, 2020, Gluon
+ * Copyright (c) 2020 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,36 +25,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.accelerometer.impl;
+package com.gluonhq.attach.accelerometer;
 
-import com.gluonhq.attach.accelerometer.Acceleration;
-import javafx.application.Platform;
+/**
+ * A data structure that allows configuring the {@link AccelerometerService}.
+ *
+ * @author Almas Baimagambetov (almaslvl@gmail.com)
+ * @since 4.0.11
+ */
+public class Parameters {
 
-public class IOSAccelerometerService extends MobileAccelerometerService {
+    private final double frequency;
 
-    static {
-        System.loadLibrary("Accelerometer");
-        initAccelerometer();
+    private final boolean isFilteringGravity;
+
+    /**
+     * Construct new parameters for {@link AccelerometerService}.
+     *
+     * @param frequency the rate with which to update the service
+     * @param isFilteringGravity whether to filter gravity
+     */
+    public Parameters(double frequency, boolean isFilteringGravity) {
+        this.frequency = frequency;
+        this.isFilteringGravity = isFilteringGravity;
+    }
+
+    /**
+     * @return the rate with which to update the service
+     */
+    public double getFrequency() {
+        return frequency;
+    }
+
+    /**
+     * @return true if gravity is being filtered
+     */
+    public boolean isFilteringGravity() {
+        return isFilteringGravity;
     }
 
     @Override
-    protected void startAccelerometerImpl(boolean isFilterGravity, double frequency) {
-        startObserver(isFilterGravity, frequency);
-    }
-
-    @Override
-    protected void stopAccelerometerImpl() {
-        stopObserver();
-    }
-
-    // native
-    private static native void initAccelerometer();
-    private static native void startObserver(boolean filterGravity, double frequency);
-    private static native void stopObserver();
-    
-    // callback
-    private static void notifyAcceleration(double x, double y, double z, double t) {
-        Acceleration a = new Acceleration(x, y, z, toLocalDateTime(t));
-        Platform.runLater(() -> reading.setValue(a));
+    public String toString() {
+        return "Parameters{" +
+                "frequency=" + frequency +
+                ", isFilteringGravity=" + isFilteringGravity +
+                '}';
     }
 }

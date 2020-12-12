@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2019, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,11 +77,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_IOSAcceleromet
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_IOSAccelerometerService_startObserver
-(JNIEnv *env, jclass jClass, jboolean jfilterGravity, jint jfrequency)
+(JNIEnv *env, jclass jClass, jboolean jfilterGravity, jdouble jfrequency)
 {
     filterGravity = jfilterGravity;
     if (jfrequency > 0) {
-        rate = 1.0 / ((double) jfrequency);
+        rate = 1.0 / jfrequency;
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
