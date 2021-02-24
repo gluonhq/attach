@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_AndroidLo
     (*env)->ReleaseStringUTFChars(env, jImagePath, imageChars);
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalNotificationsService_unregisterNotification
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_AndroidLocalNotificationsService_unregisterNotification
 (JNIEnv *env, jclass jClass, jstring jIdentifier)
 {
     const char *idChars = (*env)->GetStringUTFChars(env, jIdentifier, NULL);
