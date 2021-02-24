@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,6 +134,27 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalN
         content.body = text;
         content.sound = [UNNotificationSound defaultSound];
         content.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:identifier, @"userId", nil];
+
+        NSString *documentsDir = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
+        NSString *imagePath = [documentsDir stringByAppendingPathComponent:@"gluon/assets/notificationImage.png"];
+
+        if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+            if (debugAttach)
+            {
+                AttachLog(@"Image from resources %@", imagePath);
+            }
+            NSURL *imageURL = [[NSURL alloc] initFileURLWithPath:imagePath];
+            NSError *error = nil;
+            UNNotificationAttachment *icon = [UNNotificationAttachment attachmentWithIdentifier:@"Image" URL:imageURL options:nil error:&error];
+            if (error)
+            {
+                AttachLog(@"Error creating image attachment: %@", error);
+            }
+            if (icon)
+            {
+                content.attachments = @[icon];
+            }
+        }
 
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:seconds];
         NSDateComponents *triggerDate = [[NSCalendar currentCalendar]
