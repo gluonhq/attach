@@ -10,7 +10,7 @@ android {
 
     dependencies {
         provided fileTree(dir: '../libs', include: '*.jar')
-        implementation 'com.google.zxing:core:3.4.0'
+        implementation 'com.google.zxing:core:3.4.1'
     }
 
     afterEvaluate {
