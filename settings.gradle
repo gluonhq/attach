@@ -33,6 +33,7 @@ include 'orientation'
 include 'pictures'
 include 'position'
 include 'push-notifications'
+include 'review'
 include 'runtime-args'
 include 'settings'
 include 'share'
@@ -65,6 +66,7 @@ project(':orientation').projectDir             = file('modules/orientation')
 project(':pictures').projectDir                = file('modules/pictures')
 project(':position').projectDir                = file('modules/position')
 project(':push-notifications').projectDir      = file('modules/push-notifications')
+project(':review').projectDir                  = file('modules/review')
 project(':runtime-args').projectDir            = file('modules/runtime-args')
 project(':settings').projectDir                = file('modules/settings')
 project(':share').projectDir                   = file('modules/share')
