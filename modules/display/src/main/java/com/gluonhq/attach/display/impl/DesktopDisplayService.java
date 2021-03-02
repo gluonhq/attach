@@ -87,6 +87,11 @@ public class DesktopDisplayService implements DisplayService {
     }
 
     @Override
+    public int getHomeIndicatorHeight() {
+        return 0;
+    }
+
+    @Override
     public boolean isScreenRound() {
         return false;
     }
