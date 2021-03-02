@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2021 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,4 +62,10 @@ public interface StatusBarService {
      * @param color The color to set the status bar to.
      */
     void setColor(Color color);
+
+    /**
+     * Returns the height of the status bar
+     * @return The height of the status bar
+     */
+    int getBarHeight();
 }
