@@ -32,7 +32,8 @@ static jclass jGraalAccelerometerClass;
 static jmethodID jGraalNotifyAccelerationMethod;
 
 static jobject jDalvikAccelerometerService;
-static jmethodID jAccelerometerServiceSetupMethod;
+static jmethodID jAccelerometerServiceStartMethod;
+static jmethodID jAccelerometerServiceStopMethod;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalAccelerometerClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/accelerometer/impl/AndroidAccelerometerService"));
@@ -43,7 +44,8 @@ static void initializeAccelerometerDalvikHandles() {
     ATTACH_DALVIK();
     jclass jAccelerometerServiceClass = substrateGetAccelerometerServiceClass();
     jmethodID jAccelerometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "<init>", "(Landroid/app/Activity;)V");
-    jAccelerometerServiceSetupMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "setup", "(ZI)V");
+    jAccelerometerServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "start", "(ZD)V");
+    jAccelerometerServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "stop", "()V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jAccelerometerServiceClass, jAccelerometerServiceInitMethod, jActivity);
@@ -74,11 +76,19 @@ JNI_OnLoad_accelerometer(JavaVM *vm, void *reserved)
 #endif
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_AndroidAccelerometerService_initAccelerometer
-(JNIEnv *env, jclass jClass, jboolean jfilterGravity, jint jfrequency)
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_AndroidAccelerometerService_startAccelerometer
+(JNIEnv *env, jclass jClass, jboolean jfilterGravity, jdouble jfrequency)
 {
     ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAccelerometerService, jAccelerometerServiceSetupMethod, jfilterGravity, jfrequency);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAccelerometerService, jAccelerometerServiceStartMethod, jfilterGravity, jfrequency);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_accelerometer_impl_AndroidAccelerometerService_stopAccelerometer
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAccelerometerService, jAccelerometerServiceStopMethod);
     DETACH_DALVIK();
 }
 
