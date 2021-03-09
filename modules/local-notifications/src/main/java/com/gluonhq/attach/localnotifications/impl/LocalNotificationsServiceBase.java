@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2021 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ import javafx.collections.ObservableList;
  * is added too soon, before the notifications are provided.
  */
 public abstract class LocalNotificationsServiceBase implements LocalNotificationsService {
-    private static final Logger LOGGER = Logger.getLogger(LocalNotificationsServiceBase.class.getName());
+    static final Logger LOGGER = Logger.getLogger(LocalNotificationsServiceBase.class.getName());
 
     private final ObservableList<Notification> notifications;
 
