@@ -46,4 +46,4 @@ jclass substrateGetUtilClass();
 
 jboolean isDebugAttach();
 
-#endif
+#endif // ATTACH_UTIL
