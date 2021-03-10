@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ JNI_OnLoad_connectivity(JavaVM *vm, void *reserved)
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikConnectivityService_nativeConnectivity(
     JNIEnv *env, jobject service, jboolean jconnected) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Native layer got new connectivity: %d\n", (jconnected ? 1 : 0));
     }
     ATTACH_GRAAL();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,20 +86,20 @@ JNI_OnLoad_augmentedreality(JavaVM *vm, void *reserved)
 // from Java to Android
 JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_checkAR
 (JNIEnv *env, jclass jClass) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality check AR\n");
     }
     ATTACH_DALVIK();
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikAugmentedRealityService, jAugmentedRealityServiceCheckARMethod);
     if (answer == NULL) {
-        if (debugAttach) {
+        if (isDebugAttach()) {
             ATTACH_LOG_FINE("Error: AugmentedReality:: availability is null\n");
         }
         DETACH_DALVIK();
         return NULL;
     }
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality availability is %s", answerChars);
     }
     DETACH_DALVIK();
@@ -108,7 +108,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidA
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_showNativeAR
 (JNIEnv *env, jclass jClass) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality show AR");
     }
     ATTACH_DALVIK();
@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugm
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_enableDebugAR
 (JNIEnv *env, jclass jClass, jboolean enable) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality enable debug AR");
     }
     ATTACH_DALVIK();
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugm
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugmentedRealityService_setARModel
 (JNIEnv *env, jclass jClass, jstring jobjfile, jstring jtexturefile, jdouble scale) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality AR model");
     }
     const char *objfileChars = (*env)->GetStringUTFChars(env, jobjfile, NULL);
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_augmentedreality_impl_AndroidAugm
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAugmentedRealityService_nativeAugmentedRealityAvailability(
     JNIEnv *env, jobject service, jstring result) {
     const char *resultChars = (*env)->GetStringUTFChars(env, result, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality result %s", resultChars);
     }
     ATTACH_GRAAL();
@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAugmentedRealityServi
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_ar_ARRenderer_nativeCancelAR(
     JNIEnv *env, jobject service) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("AugmentedReality cancel AR");
     }
     ATTACH_GRAAL();

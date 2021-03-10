@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ JNI_OnLoad_battery(JavaVM *vm, void *reserved)
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBatteryService_nativeBattery(
     JNIEnv *env, jobject service, jfloat flevel, jboolean bstatus) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Native layer got new battery level: %.2f status %d\n", flevel, (bstatus ? 1 : 0));
     }
     ATTACH_GRAAL();

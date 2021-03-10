@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_AndroidVideoService_se
 (JNIEnv *env, jclass jClass, jobjectArray jPlaylistArray)
 {
     int playlistCount = (*env)->GetArrayLength(env, jPlaylistArray);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Adding video playlist with %d items", playlistCount);
     }
     ATTACH_DALVIK();
@@ -203,7 +203,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_AndroidVideoService_se
 
     const char *alignmentHChars = (*env)->GetStringUTFChars(env, jalignmentH, NULL);
     const char *alignmentVChars = (*env)->GetStringUTFChars(env, jalignmentV, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Video Alignment H: %s, V: %s", alignmentHChars, alignmentVChars);
     }
     ATTACH_DALVIK();
@@ -222,7 +222,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_AndroidVideoService_se
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikVideoService_nativeStatus
     (JNIEnv *env, jobject service, jint status) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Media Player Status: %d", status);
     }
     ATTACH_GRAAL();
@@ -239,7 +239,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikVideoService_nativeFu
 
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikVideoService_nativeCurrentIndex
     (JNIEnv *env, jobject service, jint index) {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Media Player index: %d", index);
     }
     ATTACH_GRAAL();

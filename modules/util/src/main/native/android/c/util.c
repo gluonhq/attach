@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ static jmethodID jUtilOnLifecycleEventMethod;
 static jmethodID jUtilRequestPermissionsMethod;
 
 static jboolean initialized;
+static jboolean debugAttach;
 
 // Attach classes
 static jclass jAccelerometerServiceClass;
@@ -244,6 +245,10 @@ JNI_OnLoad_util(JavaVM *vm, void *reserved)
 
 JavaVM* getGraalVM() {
     return graalVM;
+}
+
+jboolean isDebugAttach() {
+    return debugAttach;
 }
 
 // from Java to Android
