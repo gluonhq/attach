@@ -26,6 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ATTACH_UTIL
+#define ATTACH_UTIL
+
 #include <android/native_window_jni.h>
 #include "attach_macros_android.h"
 
@@ -42,3 +45,5 @@ JavaVM* getGraalVM();
 jclass substrateGetUtilClass();
 
 jboolean isDebugAttach();
+
+#endif
