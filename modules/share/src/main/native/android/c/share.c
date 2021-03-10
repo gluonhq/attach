@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_AndroidShareService_sh
     ATTACH_DALVIK();
     jstring dsubject = (*dalvikEnv)->NewStringUTF(dalvikEnv, subjectChars);
     jstring dcontent = (*dalvikEnv)->NewStringUTF(dalvikEnv, contentChars);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Share text, subject = %s, content = %s\n", subjectChars, contentChars);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikShareService, jShareServiceShareText, dsubject, dcontent);
@@ -98,7 +98,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_share_impl_AndroidShareService_sh
     jstring dcontent = (*dalvikEnv)->NewStringUTF(dalvikEnv, contentChars);
     jstring dtype = (*dalvikEnv)->NewStringUTF(dalvikEnv, typeChars);
     jstring dfilename = (*dalvikEnv)->NewStringUTF(dalvikEnv, filenameChars);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Share file, subject = %s, content = %s, type = %s, filename = %s\n",
             subjectChars, contentChars, typeChars, filenameChars);
     }

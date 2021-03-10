@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
     jstring dvalue = (*dalvikEnv)->NewStringUTF(dalvikEnv, valueChars);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Storing settings for = %s, %s\n", keyChars, valueChars);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceStore, dkey, dvalue);
@@ -94,7 +94,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsServ
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Remove settings for = %s\n", keyChars);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRemove, dkey);
@@ -108,19 +108,19 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_settings_impl_AndroidSettingsS
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     ATTACH_DALVIK();
     jstring dkey = (*dalvikEnv)->NewStringUTF(dalvikEnv, keyChars);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Retrieving settings for = %s\n", keyChars);
     }
     jstring answer = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikSettingsService, jSettingsServiceRetrieve, dkey);
     if (answer == NULL) {
-        if (debugAttach) {
+        if (isDebugAttach()) {
             ATTACH_LOG_FINE("Error: Settings for = %s not found\n", keyChars);
         }
         DETACH_DALVIK();
         return NULL;
     }
     const char *answerChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, answer, 0);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Retrieved settings for = %s\n", answerChars);
     }
     DETACH_DALVIK();
