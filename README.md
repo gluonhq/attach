@@ -19,7 +19,7 @@ Attach is open source, and it is freely licensed under the GPL license.
 The best way to get started with Gluon Attach is using the [Gluon Client Maven archetype from your IDE](https://github.com/gluonhq/client-maven-archetypes)
 and creating a [Gluon Mobile](http://gluonhq.com/products/mobile) project.
 
-The [Gluon Client samples](https://github.com/gluonhq/client-samples) are a good way to find out how Attach is used.
+The [Gluon samples](https://github.com/gluonhq/gluon-samples) are a good way to find out how Attach is used.
 
 See the [documentation](https://docs.gluonhq.com/client/#_attach_configuration) on how to add Attach with the Client Plugin.
 
