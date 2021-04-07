@@ -37,7 +37,6 @@ public class DalvikStoreReviewService  {
     private static final String TAG = Util.TAG;
 
     private final Activity activity;
-    private final String authority;
     private final boolean debug;
 
     public DalvikStoreReviewService(Activity activity) {
