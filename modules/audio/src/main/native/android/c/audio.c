@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Loading sound from file. Absolute path: %s", jURLChars);
     }
 
@@ -103,7 +103,7 @@ JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_lo
 {
     const char *jURLChars = (*env)->GetStringUTFChars(env, jURL, NULL);
 
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Loading music from file. Absolute path: %s", jURLChars);
     }
 

@@ -28,48 +28,31 @@
 package com.gluonhq.attach.accelerometer.impl;
 
 import com.gluonhq.attach.accelerometer.Acceleration;
-import com.gluonhq.attach.accelerometer.AccelerometerService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-public class AndroidAccelerometerService implements AccelerometerService {
+public class AndroidAccelerometerService extends MobileAccelerometerService {
 
     static {
         System.loadLibrary("accelerometer");
     }
 
-    private static ReadOnlyObjectWrapper<Acceleration> acceleration;
-
-    public AndroidAccelerometerService() {
-        acceleration = new ReadOnlyObjectWrapper<>();
-        initAccelerometer(FILTER_GRAVITY, FREQUENCY);
-    }    
-    
     @Override
-    public Acceleration getCurrentAcceleration() {
-        return acceleration.get();
+    protected void startAccelerometerImpl(boolean isFilterGravity, double frequency) {
+        startAccelerometer(isFilterGravity, frequency);
     }
 
     @Override
-    public ReadOnlyObjectProperty<Acceleration> accelerationProperty() {
-        return acceleration.getReadOnlyProperty();
+    protected void stopAccelerometerImpl() {
+        stopAccelerometer();
     }
-    
+
     // native
-    private static native void initAccelerometer(boolean filterGravity, int rateInMillis);
+    private static native void startAccelerometer(boolean filterGravity, double frequency);
+    private static native void stopAccelerometer();
 
     // callback
     private static void notifyAcceleration(double x, double y, double z, double t) {
         Acceleration a = new Acceleration(x, y, z, toLocalDateTime(t));
-        Platform.runLater(() -> acceleration.setValue(a));
-    }
-    
-    private static LocalDateTime toLocalDateTime(double t) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli((long) t), ZoneId.systemDefault());
+        Platform.runLater(() -> reading.setValue(a));
     }
 }

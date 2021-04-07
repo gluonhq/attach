@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,18 +29,38 @@ package com.gluonhq.attach.localnotifications.impl;
 
 
 import com.gluonhq.attach.localnotifications.Notification;
+import com.gluonhq.attach.storage.StorageService;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
 
 /**
  *  iOS implementation of LocalNotificationsService.
  */
 public class IOSLocalNotificationsService extends LocalNotificationsServiceBase {
 
+    private static final String NOTIFICATION_IMAGE = "notificationImage.png";
+
     static {
         System.loadLibrary("LocalNotifications");
         initLocalNotification();
     }
 
+    private final File assetsFolder;
+
     public IOSLocalNotificationsService() {
+        assetsFolder = new File(StorageService.create()
+                    .flatMap(StorageService::getPrivateStorage)
+                    .orElseThrow(() -> new RuntimeException("Error accessing Private Storage folder")),
+                "assets");
+
+        if (!assetsFolder.exists()) {
+            assetsFolder.mkdir();
+        }
     }
 
     @Override
@@ -52,10 +72,42 @@ public class IOSLocalNotificationsService extends LocalNotificationsServiceBase 
     
     @Override
     protected void scheduleNotification(Notification notification) {
+        createImageInAssets(notification.getImageInputStream());
         registerNotification(notification.getTitle() == null ? "" : notification.getTitle(), 
                 notification.getText(), notification.getId(), notification.getDateTime().toEpochSecond());
     }
-    
+
+    private void createImageInAssets(InputStream imageInputStream) {
+        File file = new File(assetsFolder, NOTIFICATION_IMAGE);
+        if (file.exists()) {
+            file.delete();
+        }
+
+        try (imageInputStream) {
+            copyFile(imageInputStream, file.getAbsolutePath());
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Error reading image file", ex);
+        }
+    }
+
+    private void copyFile(InputStream is, String pathEnd)  {
+        if (is == null) {
+            return;
+        }
+
+        try (OutputStream os = new FileOutputStream(pathEnd)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+            os.flush();
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Error copying file", ex);
+        }
+    }
+
+    // native
     private native void registerNotification(String title, String text, String identifier, double seconds);
     
     private native void unregisterNotification(String identifier);

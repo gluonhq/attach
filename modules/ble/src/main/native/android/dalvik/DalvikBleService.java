@@ -432,7 +432,10 @@ public class DalvikBleService  {
                     return;
                 }
                 String address = device.getAddress();
-                String name = device.getName();
+                if (address == null) {
+                    return;
+                }
+                String name = getNameForDevice(device);
                 devices.put(address, device);
                 if (debug) {
                     Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address);
@@ -440,6 +443,18 @@ public class DalvikBleService  {
                 scanDeviceDetected(name, address);
             }
         };
+    }
+
+    static String getNameForDevice(BluetoothDevice device) {
+        if (device == null) {
+            return null;
+        }
+
+        String name = device.getName();
+        if (name == null) {
+            name = "N/A (" + device.getAddress() + ")";
+        }
+        return name;
     }
 
     // native

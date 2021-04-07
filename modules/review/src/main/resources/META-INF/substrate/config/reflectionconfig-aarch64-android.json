@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.review.impl.AndroidStoreReviewService",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
-  }
-]

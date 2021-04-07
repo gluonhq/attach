@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_AndroidLo
     (*env)->ReleaseStringUTFChars(env, jImagePath, imageChars);
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_IOSLocalNotificationsService_unregisterNotification
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_localnotifications_impl_AndroidLocalNotificationsService_unregisterNotification
 (JNIEnv *env, jclass jClass, jstring jIdentifier)
 {
     const char *idChars = (*env)->GetStringUTFChars(env, jIdentifier, NULL);
@@ -125,7 +125,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_NotificationActivity_proces
     (JNIEnv *env, jobject service, jstring jkey, jstring jvalue) {
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     const char *valueChars = (*env)->GetStringUTFChars(env, jvalue, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("LocalNotifications:: Native layer got key: %s, value: %s", keyChars, valueChars);
     }
     ATTACH_GRAAL();

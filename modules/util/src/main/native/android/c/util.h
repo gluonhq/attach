@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ATTACH_UTIL
+#define ATTACH_UTIL
+
 #include <android/native_window_jni.h>
 #include "attach_macros_android.h"
 
@@ -41,4 +44,6 @@ JavaVM* getGraalVM();
 
 jclass substrateGetUtilClass();
 
-jboolean debugAttach;
+jboolean isDebugAttach();
+
+#endif // ATTACH_UTIL

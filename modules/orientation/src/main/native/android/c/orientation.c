@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ JNI_OnLoad_orientation(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikOrientationService_nativeOrientation(
     JNIEnv *env, jobject service, jstring jorientation) {
     const char *chars = (*env)->GetStringUTFChars(env, jorientation, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Native layer got new orientation: %s\n", chars);
     }
     ATTACH_GRAAL();
