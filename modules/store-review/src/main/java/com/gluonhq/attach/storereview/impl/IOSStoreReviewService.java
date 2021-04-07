@@ -42,6 +42,6 @@ public class IOSStoreReviewService implements StoreReviewService {
     }
 
     // native
-    private static native void nativeRequestStoreReview();
+    private native static void nativeRequestStoreReview();
 
 }

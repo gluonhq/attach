@@ -42,7 +42,6 @@ public class DalvikStoreReviewService  {
 
     public DalvikStoreReviewService(Activity activity) {
         this.activity = activity;
-        authority = activity.getPackageName() + ".fileprovider";
         debug = Util.isDebug();
     }
 

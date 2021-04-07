@@ -27,7 +27,7 @@
  */
 
 /**
- * Primary API package for Attach - Review plugin,
+ * Primary API package for Attach - StoreReview plugin,
  * contains the interface {@link com.gluonhq.attach.storereview.StoreReviewService} and related classes.
  */
 package com.gluonhq.attach.storereview;
