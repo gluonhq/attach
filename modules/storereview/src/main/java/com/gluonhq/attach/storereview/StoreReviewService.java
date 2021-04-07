@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2017, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,29 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.helloandroid;
+package com.gluonhq.attach.storereview;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
+import com.gluonhq.attach.util.Services;
 
-public class DalvikReviewService  {
+import java.util.Optional;
 
-    private static final String TAG = Util.TAG;
+/**
+ *
+ * The StoreReviewService provides a way to request Store ratings and reviews
+ * from users.
+ *
+ * <p><b>Example</b></p>
+ * <pre>
+ * {@code StoreReviewService.create().ifPresent(service -> {
+ *      service.requestStoreReview();
+ *  });}</pre>
+ *
+ * @since 4.0.12
+ */
+public interface StoreReviewService {
 
-    private final Activity activity;
-    private final String authority;
-    private final boolean debug;
-
-    public DalvikReviewService(Activity activity) {
-        this.activity = activity;
-        authority = activity.getPackageName() + ".fileprovider";
-        debug = Util.isDebug();
+    /**
+     * Returns an instance of {@link StoreReviewService}.
+     * @return An instance of {@link StoreReviewService}.
+     */
+    static Optional<StoreReviewService> create() {
+        return Services.get(StoreReviewService.class);
     }
 
-    private void requestReview() {
-       // needs implementation
-    }
+    /**
+     * Allows developer to request Store ratings and reviews from users 
+     *
+     */
+    void requestStoreReview();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2017, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gluonhq.attach.storereview.impl;
 
-/**
- * Primary API package for Attach - Review plugin,
- * contains the interface {@link com.gluonhq.attach.review.StoreReviewService} and related classes.
- */
-package com.gluonhq.attach.review;
+
+import com.gluonhq.attach.storereview.StoreReviewService;
+import com.gluonhq.attach.util.Util;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class AndroidStoreReviewService implements StoreReviewService {
+
+    private static final Logger LOGGER = Logger.getLogger(AndroidStoreReviewService.class.getName());
+
+    static {
+        System.loadLibrary("storereview");
+    }
+
+    @Override
+    public void requestStoreReview() {
+        // Needs implementation
+    }
+
+}

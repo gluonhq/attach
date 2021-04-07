@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Gluon
+ * Copyright (c) 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,23 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.review.impl;
+package com.gluonhq.helloandroid;
 
-import com.gluonhq.attach.review.StoreReviewService;
-import javafx.application.Platform;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
-public class IOSStoreReviewService implements StoreReviewService {
+public class DalvikStoreReviewService  {
 
-    static {
-       Platform.runLater(() -> System.loadLibrary("Review"));
+    private static final String TAG = Util.TAG;
+
+    private final Activity activity;
+    private final String authority;
+    private final boolean debug;
+
+    public DalvikStoreReviewService(Activity activity) {
+        this.activity = activity;
+        authority = activity.getPackageName() + ".fileprovider";
+        debug = Util.isDebug();
     }
-    
-    @Override
-    public void requestReview() {
-        nativeRequestReview();
-    }
 
-    // native
-    private static native void nativeRequestReview();
+    private void requestStoreReview() {
+       // needs implementation
+    }
 
 }

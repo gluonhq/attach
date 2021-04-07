@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2021 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,18 +25,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "review.h"
+#include "storereview.h"
 
-static jobject jDalvikReviewService;
+static jobject jDalvikStoreReviewService;
 
-static void initializeReviewDalvikHandles() {
+static void initializeStoreReviewDalvikHandles() {
     ATTACH_DALVIK();
-    jclass jReviewServiceClass = substrateGetReviewServiceClass();
-    jmethodID jReviewServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jReviewServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jclass jStoreReviewServiceClass = substrateGetStoreReviewServiceClass();
+    jmethodID jStoreReviewServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStoreReviewServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jobject jActivity = substrateGetActivity();
-    jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jReviewServiceClass, jReviewServiceInitMethod, jActivity);
-    jDalvikReviewService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
+    jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jStoreReviewServiceClass, jStoreReviewServiceInitMethod, jActivity);
+    jDalvikStoreReviewService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
     DETACH_DALVIK();
 }
 
@@ -46,7 +46,7 @@ static void initializeReviewDalvikHandles() {
 
 
 JNIEXPORT jint JNICALL
-JNI_OnLoad_review(JavaVM *vm, void *reserved)
+JNI_OnLoad_storereview(JavaVM *vm, void *reserved)
 {
     JNIEnv* graalEnv;
     ATTACH_LOG_INFO("JNI_OnLoad_share called");
@@ -55,8 +55,8 @@ JNI_OnLoad_review(JavaVM *vm, void *reserved)
         ATTACH_LOG_WARNING("Error initializing native Review from OnLoad");
         return JNI_FALSE;
     }
-    ATTACH_LOG_FINE("[Review Service] Initializing native Review from OnLoad");
-    initializeReviewDalvikHandles();
+    ATTACH_LOG_FINE("[StoreReview Service] Initializing native StoreReview from OnLoad");
+    initializeStoreReviewDalvikHandles();
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
@@ -65,7 +65,7 @@ JNI_OnLoad_review(JavaVM *vm, void *reserved)
 
 // from Java to Android
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_review_impl_AndroidReviewService_nativeRequestReview
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_storereview_impl_AndroidStoreReviewService_nativeRequestStoreReview
 (JNIEnv *env, jclass jClass)
 {
 }

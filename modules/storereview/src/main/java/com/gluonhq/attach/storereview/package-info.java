@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2017, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.review {
 
-    requires transitive javafx.graphics;
-
-    requires com.gluonhq.attach.util;
-
-    exports com.gluonhq.attach.review;
-    exports com.gluonhq.attach.review.impl to com.gluonhq.attach.util;
-}
+/**
+ * Primary API package for Attach - Review plugin,
+ * contains the interface {@link com.gluonhq.attach.storereview.StoreReviewService} and related classes.
+ */
+package com.gluonhq.attach.storereview;

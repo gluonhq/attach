@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019 Gluon
+ * Copyright (c) 2017, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,39 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.review;
+#import <StoreKit/StoreKit.h>
+#include "jni.h"
 
-import com.gluonhq.attach.util.Services;
+JNIEnv *env;
 
-import java.util.Optional;
-
-/**
- *
- * The StoreReviewService provides a way to request Store ratings and reviews
- * from users.
- *
- * <p><b>Example</b></p>
- * <pre>
- * {@code StoreReviewService.create().ifPresent(service -> {
- *      service.requestReview();
- *  });}</pre>
- *
- * @since 4.0.12
- */
-public interface StoreReviewService {
-
-    /**
-     * Returns an instance of {@link StoreReviewService}.
-     * @return An instance of {@link StoreReviewService}.
-     */
-    static Optional<StoreReviewService> create() {
-        return Services.get(StoreReviewService.class);
+JNIEXPORT jint JNICALL
+JNI_OnLoad_StoreReview(JavaVM *vm, void *reserved)
+{
+#ifdef JNI_VERSION_1_8
+    //min. returned JNI_VERSION required by JDK8 for builtin libraries
+    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_VERSION_1_4;
     }
+    return JNI_VERSION_1_8;
+#else
+    return JNI_VERSION_1_4;
+#endif
+}
 
-    /**
-     * Allows developer to request Store ratings and reviews from users 
-     *
-     */
-    void requestReview();
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_storereview_impl_IOSStoreReviewService_nativeRequestStoreReview
+(JNIEnv *env, jclass jClass) {
+    if (@available(iOS 10.3, *)) {
+        [SKStoreReviewController requestReview];
+    }
 }

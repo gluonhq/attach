@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020, Gluon
+ * Copyright (c) 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,27 +25,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.review.impl;
+module com.gluonhq.attach.storereview {
 
+    requires transitive javafx.graphics;
 
-import com.gluonhq.attach.review.StoreReviewService;
-import com.gluonhq.attach.util.Util;
+    requires com.gluonhq.attach.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
-public class AndroidStoreReviewService implements StoreReviewService {
-
-    private static final Logger LOGGER = Logger.getLogger(AndroidStoreReviewService.class.getName());
-
-    static {
-        System.loadLibrary("review");
-    }
-
-    @Override
-    public void requestReview() {
-        // Needs implementation
-    }
-
+    exports com.gluonhq.attach.storereview;
+    exports com.gluonhq.attach.storereview.impl to com.gluonhq.attach.util;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2017, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.review.impl;
+package com.gluonhq.attach.storereview.impl;
 
-import com.gluonhq.attach.review.StoreReviewService;
+import com.gluonhq.attach.storereview.StoreReviewService;
+import javafx.application.Platform;
 
-public abstract class DummyStoreReviewService implements StoreReviewService {
+public class IOSStoreReviewService implements StoreReviewService {
+
+    static {
+       Platform.runLater(() -> System.loadLibrary("StoreReview"));
+    }
+    
+    @Override
+    public void requestStoreReview() {
+        nativeRequestStoreReview();
+    }
+
+    // native
+    private static native void nativeRequestStoreReview();
 
 }
