@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2019, Gluon
+ * Copyright (c) 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,29 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import <StoreKit/StoreKit.h>
-#include "jni.h"
+package com.gluonhq.attach.storereview.impl;
 
-JNIEnv *env;
 
-JNIEXPORT jint JNICALL
-JNI_OnLoad_StoreReview(JavaVM *vm, void *reserved)
-{
-#ifdef JNI_VERSION_1_8
-    //min. returned JNI_VERSION required by JDK8 for builtin libraries
-    if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_8) != JNI_OK) {
-        return JNI_VERSION_1_4;
+import com.gluonhq.attach.storereview.StoreReviewService;
+import com.gluonhq.attach.util.Util;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class AndroidStoreReviewService implements StoreReviewService {
+
+    private static final Logger LOGGER = Logger.getLogger(AndroidStoreReviewService.class.getName());
+
+    static {
+        System.loadLibrary("storereview");
     }
-    return JNI_VERSION_1_8;
-#else
-    return JNI_VERSION_1_4;
-#endif
-}
 
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_storereview_impl_IOSStoreReviewService_nativeRequestStoreReview
-(JNIEnv *env, jclass jClass) {
-    if (@available(iOS 10.3, *)) {
-        [SKStoreReviewController requestReview];
+    @Override
+    public void requestStoreReview() {
+        // Needs implementation
     }
+
 }
