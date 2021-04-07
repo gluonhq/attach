@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import <StoreKit/StoreKit.h>
+#include "AttachMacros.h"
 #include "jni.h"
 
 JNIEnv *env;
