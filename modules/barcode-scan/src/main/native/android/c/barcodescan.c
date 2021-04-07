@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_AndroidBarcodeSc
     const char *titleChars = (*env)->GetStringUTFChars(env, jtitle, NULL);
     const char *legendChars = (*env)->GetStringUTFChars(env, jlegend, NULL);
     const char *resulttextChars = (*env)->GetStringUTFChars(env, jresulttext, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("BarcodeScan start for title %s, legend %s, resulttext %s\n", titleChars, legendChars, resulttextChars);
     }
     ATTACH_DALVIK();
@@ -103,7 +103,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_barcodescan_impl_AndroidBarcodeSc
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBarcodeScanService_nativeBarcodeScanResult(
     JNIEnv *env, jobject service, jstring result) {
     const char *resultChars = (*env)->GetStringUTFChars(env, result, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("BarcodeScan result %s\n", resultChars);
     }
     ATTACH_GRAAL();

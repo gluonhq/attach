@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ JNIEXPORT jstring JNICALL Java_com_gluonhq_attach_pushnotifications_impl_Android
     jstring dalvikErrorString = (jstring) (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikPushNotificationsService, jDalvikPushNotificationsServiceGetErrorString,
                 resultCode);
     const char *errorStringChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, dalvikErrorString, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("PushNotification error string: %s", errorStringChars);
     }
     jstring graalErrorString = (*env)->NewStringUTF(env, errorStringChars);
@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_AndroidPus
     const char *projectNumberChars = (*env)->GetStringUTFChars(env, projectNumber, NULL);
     const char *projectIdChars = (*env)->GetStringUTFChars(env, projectId, NULL);
     const char *apiKeyChars = (*env)->GetStringUTFChars(env, apiKey, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("PushNotification::initializeFirebase with app Id: %s, project number: %s, project id: %s, and api key: %s", applicationIdChars, projectNumberChars, projectIdChars, apiKeyChars);
     }
     ATTACH_DALVIK();
@@ -160,7 +160,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_AndroidPus
 JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_PushFcmMessagingService_sendToken
     (JNIEnv *env, jobject service, jstring jtoken) {
     const char *tokenChars = (*env)->GetStringUTFChars(env, jtoken, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("PushNotifications:: Native layer got token: %s", tokenChars);
     }
     ATTACH_GRAAL();
@@ -175,7 +175,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPushNotificationsServ
     (JNIEnv *env, jobject service, jstring jkey, jstring jvalue) {
     const char *keyChars = (*env)->GetStringUTFChars(env, jkey, NULL);
     const char *valueChars = (*env)->GetStringUTFChars(env, jvalue, NULL);
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("PushNotifications:: Native layer got key: %s, value: %s", keyChars, valueChars);
     }
     ATTACH_GRAAL();

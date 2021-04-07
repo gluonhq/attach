@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarSe
 (JNIEnv *env, jclass jClass, jint color)
 {
     ATTACH_DALVIK();
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Set native color, value: %d", color);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jStatusBarServiceColorMethod, color);

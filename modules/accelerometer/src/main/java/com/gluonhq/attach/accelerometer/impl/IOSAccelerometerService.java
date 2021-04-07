@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,58 +28,33 @@
 package com.gluonhq.attach.accelerometer.impl;
 
 import com.gluonhq.attach.accelerometer.Acceleration;
-import com.gluonhq.attach.accelerometer.AccelerometerService;
-import com.gluonhq.attach.lifecycle.LifecycleEvent;
-import com.gluonhq.attach.lifecycle.LifecycleService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-public class IOSAccelerometerService implements AccelerometerService {
+public class IOSAccelerometerService extends MobileAccelerometerService {
 
     static {
         System.loadLibrary("Accelerometer");
         initAccelerometer();
     }
-    
-    private static ReadOnlyObjectWrapper<Acceleration> acceleration;
 
-    public IOSAccelerometerService() {
-        acceleration = new ReadOnlyObjectWrapper<>();
-
-        LifecycleService.create().ifPresent(l -> {
-            l.addListener(LifecycleEvent.PAUSE, IOSAccelerometerService::stopObserver);
-            l.addListener(LifecycleEvent.RESUME, () -> startObserver(FILTER_GRAVITY, FREQUENCY));
-        });
-        startObserver(FILTER_GRAVITY, FREQUENCY);
-    }    
-    
     @Override
-    public Acceleration getCurrentAcceleration() {
-        return acceleration.get();
+    protected void startAccelerometerImpl(boolean isFilterGravity, double frequency) {
+        startObserver(isFilterGravity, frequency);
     }
 
     @Override
-    public ReadOnlyObjectProperty<Acceleration> accelerationProperty() {
-        return acceleration.getReadOnlyProperty();
+    protected void stopAccelerometerImpl() {
+        stopObserver();
     }
-    
+
     // native
     private static native void initAccelerometer();
-    private static native void startObserver(boolean filterGravity, int rateInMillis);
+    private static native void startObserver(boolean filterGravity, double frequency);
     private static native void stopObserver();
     
     // callback
     private static void notifyAcceleration(double x, double y, double z, double t) {
         Acceleration a = new Acceleration(x, y, z, toLocalDateTime(t));
-        Platform.runLater(() -> acceleration.setValue(a));
-    }
-    
-    private static LocalDateTime toLocalDateTime(double t) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli((long) t), ZoneId.systemDefault());
+        Platform.runLater(() -> reading.setValue(a));
     }
 }

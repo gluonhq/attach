@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ JNI_OnLoad_device(JavaVM *vm, void *reserved)
 JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceService_getDeviceInfo
 (JNIEnv *env, jclass jClass)
 {
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Retrieving DeviceInfo\n");
     }
 
@@ -103,7 +103,7 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     jboolean wearable = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceIsWearable);
     DETACH_DALVIK();
 
-    if (debugAttach) {
+    if (isDebugAttach()) {
         ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, wearable=%d\n",
                 responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, wearable);
     }

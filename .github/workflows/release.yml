@@ -51,9 +51,12 @@ jobs:
         run: |
           TAG=${GITHUB_REF/refs\/tags\//}
           ./gradlew uploadJavadocToS3
+          # Update /latest with release version
+          aws s3 sync $AWS_S3_BUCKET_DOCS/attach/javadoc/$TAG/ $AWS_S3_BUCKET_DOCS/attach/javadoc/latest/ --acl public-read --region us-east-1
         env:
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_S3_BUCKET_DOCS: ${{ secrets.AWS_S3_BUCKET_DOCS }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
 
       - name: Commit next development version
         if: steps.deploy.outputs.exit_code == 0

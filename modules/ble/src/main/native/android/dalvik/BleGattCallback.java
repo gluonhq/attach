@@ -69,32 +69,32 @@ class BleGattCallback extends BluetoothGattCallback {
                 if (debug) {
                     Log.v(TAG, "STATE_CONNECTED");
                 }
-                setState(bluetoothDevice.getName(), "STATE_CONNECTED");
+                setState(getDeviceName(), "STATE_CONNECTED");
                 gatt.discoverServices();
                 break;
             case BluetoothProfile.STATE_DISCONNECTED:
                 if (debug) {
                     Log.v(TAG, "STATE_DISCONNECTED");
                 }
-                setState(bluetoothDevice.getName(), "STATE_DISCONNECTED");
+                setState(getDeviceName(), "STATE_DISCONNECTED");
                 break;
             case BluetoothProfile.STATE_CONNECTING:
                 if (debug) {
                     Log.v(TAG, "STATE_CONNECTING");
                 }
-                setState(bluetoothDevice.getName(), "STATE_CONNECTING");
+                setState(getDeviceName(), "STATE_CONNECTING");
                 break;
             case BluetoothProfile.STATE_DISCONNECTING:
                 if (debug) {
                     Log.v(TAG, "STATE_DISCONNECTING");
                 }
-                setState(bluetoothDevice.getName(), "STATE_DISCONNECTING");
+                setState(getDeviceName(), "STATE_DISCONNECTING");
                 break;
             default:
                 if (debug) {
                     Log.v(TAG, "STATE_OTHER");
                 }
-                setState(bluetoothDevice.getName(), "STATE_OTHER");
+                setState(getDeviceName(), "STATE_OTHER");
         }
     }
 
@@ -108,7 +108,7 @@ class BleGattCallback extends BluetoothGattCallback {
             if (debug) {
                 Log.v(TAG, "BLE, service: " + service + ", with uuid: " + service.getUuid().toString());
             }
-            addProfile(bluetoothDevice.getName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
+            addProfile(getDeviceName(), service.getUuid().toString(), service.getType() == 0 ? "Primary Service" : "Secondary Service");
         }
         try {
             Thread.sleep(100);
@@ -120,7 +120,7 @@ class BleGattCallback extends BluetoothGattCallback {
                 if (debug) {
                     Log.v(TAG, "  BLE, char = " + characteristic + " with uuid: " + characteristic.getUuid().toString());
                 }
-                addCharacteristic(bluetoothDevice.getName(), service.getUuid().toString(),
+                addCharacteristic(getDeviceName(), service.getUuid().toString(),
                         characteristic.getUuid().toString(), getProperties(characteristic.getProperties()));
             }
         }
@@ -136,7 +136,7 @@ class BleGattCallback extends BluetoothGattCallback {
                     if (debug) {
                         Log.v(TAG, "    BLE, char = " + characteristic + " with descriptor uuid: " + descriptor.getUuid().toString() + " , value: " + Arrays.toString(value));
                     }
-                    addDescriptor(bluetoothDevice.getName(), service.getUuid().toString(),
+                    addDescriptor(getDeviceName(), service.getUuid().toString(),
                             characteristic.getUuid().toString(), descriptor.getUuid().toString(), value);
                 }
             }
@@ -170,7 +170,7 @@ class BleGattCallback extends BluetoothGattCallback {
             Log.v(TAG, "onCharacteristicRead read characteristic " + characteristic + ", with status: " + status);
         }
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
-        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
+        setValue(getDeviceName(), characteristic.getUuid().toString(), value);
     }
 
     void write(String profile, String characteristic, byte[] value) {
@@ -201,7 +201,7 @@ class BleGattCallback extends BluetoothGattCallback {
             Log.v(TAG, "onCharacteristicWrite write characteristic " + characteristic + ", with status: " + status);
         }
         byte[] value = characteristic.getValue() != null ? characteristic.getValue() : new byte[]{};
-        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
+        setValue(getDeviceName(), characteristic.getUuid().toString(), value);
     }
 
     void subscribe(String profile, String characteristic, boolean subscribe) {
@@ -233,7 +233,7 @@ class BleGattCallback extends BluetoothGattCallback {
                 }
                 descriptor.setValue(value);
                 connectedGatt.writeDescriptor(descriptor);
-                addDescriptor(bluetoothDevice.getName(), service1.getUuid().toString(),
+                addDescriptor(getDeviceName(), service1.getUuid().toString(),
                         characteristic1.getUuid().toString(), descriptor.getUuid().toString(), value);
             }
         }
@@ -245,14 +245,14 @@ class BleGattCallback extends BluetoothGattCallback {
         if (debug) {
             Log.v(TAG, "onCharacteristicChanged characteristic " + characteristic + " changed with value: " + Arrays.toString(value));
         }
-        setValue(bluetoothDevice.getName(), characteristic.getUuid().toString(), value);
+        setValue(getDeviceName(), characteristic.getUuid().toString(), value);
     }
 
     void connect() {
         if (bluetoothDevice != null) {
             connectedGatt = bluetoothDevice.connectGatt(activity, false, this);
             if (connectedGatt != null) {
-                setState(bluetoothDevice.getName(), "STATE_CONNECTING");
+                setState(getDeviceName(), "STATE_CONNECTING");
                 connected = connectedGatt.connect();
             }
         }
@@ -299,6 +299,10 @@ class BleGattCallback extends BluetoothGattCallback {
         }
 
         return properties.isEmpty() ? "" : properties.substring(0, properties.length() - 2);
+    }
+
+    private String getDeviceName() {
+        return DalvikBleService.getNameForDevice(bluetoothDevice);
     }
 
     // native
