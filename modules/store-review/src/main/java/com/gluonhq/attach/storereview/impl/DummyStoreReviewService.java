@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.storereview {
+package com.gluonhq.attach.storereview.impl;
 
-    requires transitive javafx.graphics;
+import com.gluonhq.attach.storereview.StoreReviewService;
 
-    requires com.gluonhq.attach.util;
+public abstract class DummyStoreReviewService implements StoreReviewService {
 
-    exports com.gluonhq.attach.storereview;
-    exports com.gluonhq.attach.storereview.impl to com.gluonhq.attach.util;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.storereview.impl;
 
-import com.gluonhq.attach.storereview.StoreReviewService;
-
-public abstract class DummyStoreReviewService implements StoreReviewService {
-
-}
+/**
+ * Primary API package for Attach - Review plugin,
+ * contains the interface {@link com.gluonhq.attach.storereview.StoreReviewService} and related classes.
+ */
+package com.gluonhq.attach.storereview;
