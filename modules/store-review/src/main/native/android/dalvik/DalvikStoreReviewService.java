@@ -28,9 +28,14 @@
 package com.gluonhq.helloandroid;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
+
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.tasks.Task;
+import com.google.android.play.core.tasks.RuntimeExecutionException;
+import com.google.android.play.core.tasks.OnCompleteListener;
 
 public class DalvikStoreReviewService  {
 
@@ -45,7 +50,31 @@ public class DalvikStoreReviewService  {
     }
 
     private void requestStoreReview() {
-       // needs implementation
+       if (debug) {
+            Log.v(TAG, "Request Store Review: ");
+        }
+        final ReviewManager manager = ReviewManagerFactory.create(activity);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
+
+            @Override
+            public void onComplete(Task<ReviewInfo> task) {
+                if (task.isSuccessful()) {
+                    ReviewInfo reviewInfo = task.getResult();
+                    Task<Void> flow = manager.launchReviewFlow(activity, reviewInfo);
+                    flow.addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                        @Override
+                        public void onComplete(Task<Void> task) {
+                            Log.v(TAG, "RequestStoreReview done");
+                        }
+                    });
+                } else {
+                    int reviewErrorCode = ((RuntimeExecutionException) task.getException()).getErrorCode();
+                    Log.v(TAG, "RequestStoreReview error: " + reviewErrorCode);
+                }
+            }
+        });
     }
 
 }
