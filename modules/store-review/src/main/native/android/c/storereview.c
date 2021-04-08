@@ -28,11 +28,13 @@
 #include "storereview.h"
 
 static jobject jDalvikStoreReviewService;
+static jmethodID jReviewServiceStoreRequestReview;
 
 static void initializeStoreReviewDalvikHandles() {
     ATTACH_DALVIK();
     jclass jStoreReviewServiceClass = substrateGetStoreReviewServiceClass();
     jmethodID jStoreReviewServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStoreReviewServiceClass, "<init>", "(Landroid/app/Activity;)V");
+    jReviewServiceStoreRequestReview = (*dalvikEnv)->GetMethodID(dalvikEnv, jStoreReviewServiceClass, "requestStoreReview", "()V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jStoreReviewServiceClass, jStoreReviewServiceInitMethod, jActivity);
@@ -52,7 +54,7 @@ JNI_OnLoad_storereview(JavaVM *vm, void *reserved)
     ATTACH_LOG_INFO("JNI_OnLoad_share called");
 #ifdef JNI_VERSION_1_8
     if ((*vm)->GetEnv(vm, (void **)&graalEnv, JNI_VERSION_1_8) != JNI_OK) {
-        ATTACH_LOG_WARNING("Error initializing native Review from OnLoad");
+        ATTACH_LOG_WARNING("Error initializing native StoreReview from OnLoad");
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("[StoreReview Service] Initializing native StoreReview from OnLoad");
@@ -68,5 +70,10 @@ JNI_OnLoad_storereview(JavaVM *vm, void *reserved)
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_storereview_impl_AndroidStoreReviewService_nativeRequestStoreReview
 (JNIEnv *env, jclass jClass)
 {
+    ATTACH_DALVIK();
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Requesting store review:");
+    }
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStoreReviewService, jReviewServiceStoreRequestReview);
+    DETACH_DALVIK();    
 }
-
