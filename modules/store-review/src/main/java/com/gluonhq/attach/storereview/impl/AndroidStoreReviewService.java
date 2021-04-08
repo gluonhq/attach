@@ -45,7 +45,8 @@ public class AndroidStoreReviewService implements StoreReviewService {
 
     @Override
     public void requestStoreReview() {
-        // Needs implementation
+        nativeRequestStoreReview();
     }
 
+    private native static void nativeRequestStoreReview();
 }
