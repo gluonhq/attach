@@ -102,6 +102,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     }
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNotificationsService_setApplicationIconBadgeNumber
+(JNIEnv *env, jclass jClass, jint badgeNumber)
+{
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+}
+
 @implementation GlassApplication (NotificationsAdditions)
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
