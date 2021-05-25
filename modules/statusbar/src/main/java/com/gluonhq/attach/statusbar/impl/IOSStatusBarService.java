@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,5 +41,12 @@ public class IOSStatusBarService implements StatusBarService {
         setNativeColor(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity());
     }
 
+    @Override
+    public int getBarHeight() {
+        return barHeight();
+    }
+
     private native void setNativeColor(double red, double green, double blue, double opacity);
+    private static native int barHeight();
+
 }
