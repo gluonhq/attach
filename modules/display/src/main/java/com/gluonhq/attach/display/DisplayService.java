@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2021 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,6 +137,12 @@ public interface DisplayService {
      * @since 3.3.0
      */
     float getScreenScale();
+
+    /**
+     * Returns the height of Home Indicator
+     * @return the height of Home Indicator
+     */
+    int getHomeIndicatorHeight();
 
     /**
      * Returns true if the device has a round screen

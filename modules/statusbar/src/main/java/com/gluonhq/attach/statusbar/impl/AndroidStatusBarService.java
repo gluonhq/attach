@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,12 @@ public class AndroidStatusBarService implements StatusBarService {
         intColor += (int) Math.round(color.getOpacity() * 0xFF) << 24;
 
         return intColor;
+    }
+
+    @Override
+    public int getBarHeight() {
+        // Not implemented yet
+        return 0;
     }
 
     private native void setNativeColor(int color);
