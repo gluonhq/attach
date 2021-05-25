@@ -51,7 +51,7 @@ import javafx.scene.image.Image;
  * <pre>
  * {@code ImageView imageView = new ImageView();
  *  PicturesService.create().ifPresent(service -> {
- *      service.loadFromGallery().ifPresent(image -> imageView.setImage(image));
+ *      service.loadImageFromGallery().ifPresent(image -> imageView.setImage(image));
  *      service.getImageFile().ifPresent(file ->
  *          ShareService.create().ifPresent(share ->
  *              share.share("image/jpeg", file)));
