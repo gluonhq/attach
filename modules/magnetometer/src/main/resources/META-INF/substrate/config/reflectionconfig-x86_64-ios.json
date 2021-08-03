@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.magnetometer.impl.IOSMagnetometerService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

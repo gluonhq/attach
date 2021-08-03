@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pushnotifications.impl.IOSPushNotificationsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "name" : "com.gluonhq.attach.inappbilling.impl.IOSInAppBillingService",
+    "methods":[
+      {"name":"setInAppReady","parameterTypes":["boolean"]},
+      {"name":"setProduct","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String"]},
+      {"name":"doneFetching","parameterTypes":["boolean"]},
+      {"name":"restorePurchases","parameterTypes":["java.lang.String"]},
+      {"name":"setPurchase","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"]}
+    ]
+  }
+]

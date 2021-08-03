@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.gluonhq.attach.battery.impl.IOSBatteryService",
+    "methods":[
+      {"name":"notifyBatteryLevel","parameterTypes":["float"]},
+      {"name":"notifyBatteryState","parameterTypes":["java.lang.String"]}
+    ]
+  }
+]

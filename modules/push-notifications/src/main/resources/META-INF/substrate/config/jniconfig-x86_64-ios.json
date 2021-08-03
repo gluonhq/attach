@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pushnotifications.impl.IOSPushNotificationsService",
+    "methods":[
+      {"name":"failToRegisterForRemoteNotifications","parameterTypes":["java.lang.String"]},
+      {"name":"didRegisterForRemoteNotifications","parameterTypes":["java.lang.String"]}
+    ]
+  }
+]

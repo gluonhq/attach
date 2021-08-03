@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.device.impl.IOSDeviceService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
