@@ -25,13 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "pushnotifications.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalPushNotificationsClass;
 static jmethodID jGraalSetTokenMethod;
 static jmethodID jGraalPushNotificationsProcessMethod;
 
+static jclass jPushNotificationsServiceClass;
 static jobject jDalvikPushNotificationsService;
 jmethodID jDalvikPushNotificationsServiceGetPackageName;
 jmethodID jDalvikPushNotificationsServiceIsGooglePlayServicesAvailable;
@@ -46,7 +47,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 
 static void initializePushNotificationsDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
-    jclass jPushNotificationsServiceClass = substrateGetPushNotificationsServiceClass();
+    jPushNotificationsServiceClass = GET_REGISTER_DALVIK_CLASS(jPushNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikPushNotificationsService");
 
     ATTACH_DALVIK();
     jDalvikPushNotificationsServiceGetPackageName = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getPackageName", "()Ljava/lang/String;");

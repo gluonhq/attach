@@ -26,11 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "pictures.h"
+#include "util.h"
 
 static jclass jGraalPicturesClass;
 static jmethodID jGraalSendPhotoFileMethod;
 
+static jclass jPicturesServiceClass;
 static jobject jDalvikPicturesService;
 static jmethodID jPicturesServiceTakePhotoMethod;
 static jmethodID jPicturesServiceSelectPictureMethod;
@@ -41,7 +42,7 @@ void initializePicturesGraalHandles(JNIEnv *graalEnv) {
 }
 
 void initializePicturesDalvikHandles() {
-    jclass jPicturesServiceClass = substrateGetPicturesServiceClass();
+    jPicturesServiceClass = GET_REGISTER_DALVIK_CLASS(jPicturesServiceClass, "com/gluonhq/helloandroid/DalvikPicturesService");
     ATTACH_DALVIK();
     jmethodID jPicturesServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jPicturesServiceTakePhotoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPicturesServiceClass, "takePhoto", "(Z)V");

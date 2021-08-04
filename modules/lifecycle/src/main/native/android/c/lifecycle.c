@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "lifecycle.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalLifecycleClass;
 static jmethodID jGraalSetLifecycleEventMethod;
 
 // Dalvik handles
+static jclass jLifecycleServiceClass;
 static jmethodID jDalvikFinishMethod;
 
 static void initializeGraalHandles(JNIEnv* env) {
@@ -41,7 +42,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 
 static void initializeLifecycleDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
-    jclass jLifecycleServiceClass = substrateGetLifecycleServiceClass();
+    jLifecycleServiceClass = GET_REGISTER_DALVIK_CLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
 
     ATTACH_DALVIK();
     jmethodID jLifecycleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jLifecycleServiceClass, "<init>", "()V");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "browser.h"
+#include "util.h"
 
 
+static jclass jBrowserServiceClass;
 static jobject jDalvikBrowserService;
 static jmethodID jBrowserServiceLaunchMethod;
 
 static void initializeDalvikHandles() {
-    jclass jBrowserServiceClass = substrateGetBrowserServiceClass();
+    jBrowserServiceClass = GET_REGISTER_DALVIK_CLASS(jBrowserServiceClass, "com/gluonhq/helloandroid/DalvikBrowserService");
     ATTACH_DALVIK();
     jmethodID jBrowserServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBrowserServiceLaunchMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");

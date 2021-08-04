@@ -25,11 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "connectivity.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalConnectivityClass;
 static jmethodID jGraalNotifyConnectivityMethod;
+
+static jclass jConnectivityServiceClass;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalConnectivityClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/connectivity/impl/AndroidConnectivityService"));
@@ -37,8 +39,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeConnectivityDalvikHandles() {
+    jConnectivityServiceClass = GET_REGISTER_DALVIK_CLASS(jConnectivityServiceClass, "com/gluonhq/helloandroid/DalvikConnectivityService");
     ATTACH_DALVIK();
-    jclass jConnectivityServiceClass = substrateGetConnectivityServiceClass();
     jmethodID jConnectivityServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jConnectivityServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jobject jActivity = substrateGetActivity();

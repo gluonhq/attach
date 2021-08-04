@@ -25,8 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "audio.h"
+#include "util.h"
 
+static jclass jAudioServiceClass;
 static jobject jDalvikAudioService;
 static jmethodID jAudioServiceLoadSoundMethod;
 static jmethodID jAudioServiceLoadMusicMethod;
@@ -38,9 +39,8 @@ static jmethodID jAudioServiceStopMethod;
 static jmethodID jAudioServiceDisposeMethod;
 
 static void initializeAudioDalvikHandles() {
+    jAudioServiceClass = GET_REGISTER_DALVIK_CLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
     ATTACH_DALVIK();
-
-    jclass jAudioServiceClass = substrateGetAudioServiceClass();
     jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "()V");
 
     jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)I");

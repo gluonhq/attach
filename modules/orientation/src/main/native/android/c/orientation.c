@@ -25,11 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "orientation.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalOrientationClass;
 static jmethodID jGraalNotifyOrientationMethod;
+
+static jclass jOrientationServiceClass;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalOrientationClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/orientation/impl/AndroidOrientationService"));
@@ -37,8 +39,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeOrientationDalvikHandles() {
+    jOrientationServiceClass = GET_REGISTER_DALVIK_CLASS(jOrientationServiceClass, "com/gluonhq/helloandroid/DalvikOrientationService");
     ATTACH_DALVIK();
-    jclass jOrientationServiceClass = substrateGetOrientationServiceClass();
     jmethodID jOrientationServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jOrientationServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jobject jActivity = substrateGetActivity();

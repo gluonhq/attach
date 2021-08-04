@@ -25,11 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "runtimeargs.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalRuntimeArgsClass;
 static jmethodID jGraalRuntimeArgsProcessMethod;
+
+static jclass jRuntimeArgsServiceClass;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalRuntimeArgsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/runtimeargs/impl/AndroidRuntimeArgsService"));
@@ -38,7 +40,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 
 static void initializeRuntimeArgsDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
-    jclass jRuntimeArgsServiceClass = substrateGetRuntimeArgsServiceClass();
+    jRuntimeArgsServiceClass = GET_REGISTER_DALVIK_CLASS(jRuntimeArgsServiceClass, "com/gluonhq/helloandroid/DalvikRuntimeArgsService");
 
     ATTACH_DALVIK();
     jmethodID jRuntimeArgsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jRuntimeArgsServiceClass, "<init>", "(Landroid/app/Activity;)V");

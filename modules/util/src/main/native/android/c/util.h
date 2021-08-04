@@ -32,10 +32,10 @@
 #include <android/native_window_jni.h>
 #include "attach_macros_android.h"
 
-#define GETREGISTERCLASS(class, name)               \
+#define GET_REGISTER_DALVIK_CLASS(class, name)               \
 ({                                                  \
     if (class == NULL) {                            \
-        class = registerClass(name);                \
+        class = registerDalvikClass(name);                \
     }                                               \
     class;                                          \
 })
@@ -45,5 +45,7 @@ JavaVM* getGraalVM();
 jclass substrateGetUtilClass();
 
 jboolean isDebugAttach();
+
+jclass registerDalvikClass(const char* className);
 
 #endif // ATTACH_UTIL

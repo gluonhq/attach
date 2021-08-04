@@ -25,13 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "augmentedreality.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalAugmentedRealityClass;
 static jmethodID jGraalAvailabilityAugmentedRealityMethod;
 static jmethodID jGraalCancelAugmentedRealityMethod;
 
+static jclass jAugmentedRealityServiceClass;
 static jobject jDalvikAugmentedRealityService;
 static jmethodID jAugmentedRealityServiceCheckARMethod;
 static jmethodID jAugmentedRealityServiceShowARMethod;
@@ -46,8 +47,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeAugmentedRealityDalvikHandles() {
+    jAugmentedRealityServiceClass = GET_REGISTER_DALVIK_CLASS(jAugmentedRealityServiceClass, "com/gluonhq/helloandroid/DalvikAugmentedRealityService");
     ATTACH_DALVIK();
-    jclass jAugmentedRealityServiceClass = substrateGetAugmentedRealityServiceClass();
     jmethodID jAugmentedRealityServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jAugmentedRealityServiceCheckARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "checkAR", "()Ljava/lang/String;");
     jAugmentedRealityServiceShowARMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAugmentedRealityServiceClass, "showAR", "()V");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "accelerometer.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalAccelerometerClass;
 static jmethodID jGraalNotifyAccelerationMethod;
 
+static jclass jAccelerometerServiceClass;
 static jobject jDalvikAccelerometerService;
 static jmethodID jAccelerometerServiceStartMethod;
 static jmethodID jAccelerometerServiceStopMethod;
@@ -41,8 +42,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeAccelerometerDalvikHandles() {
+    jAccelerometerServiceClass = GET_REGISTER_DALVIK_CLASS(jAccelerometerServiceClass, "com/gluonhq/helloandroid/DalvikAccelerometerService");
     ATTACH_DALVIK();
-    jclass jAccelerometerServiceClass = substrateGetAccelerometerServiceClass();
     jmethodID jAccelerometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jAccelerometerServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "start", "(ZD)V");
     jAccelerometerServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAccelerometerServiceClass, "stop", "()V");

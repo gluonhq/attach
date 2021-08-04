@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "keyboard.h"
+#include "util.h"
 
+static jclass jKeyboardServiceClass;
 static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
+
 void initKeyboard();
+jfloat density;
+jfloat android_getDensity(JNIEnv *env);
+
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad_keyboard(JavaVM *vm, void *reserved)
@@ -65,7 +70,7 @@ void initKeyboard()
     ATTACH_LOG_FINE("Init AndroidKeyboardService");
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
-    jclass jKeyboardServiceClass = substrateGetKeyboardServiceClass();
+    jKeyboardServiceClass = GET_REGISTER_DALVIK_CLASS(jKeyboardServiceClass, "com/gluonhq/helloandroid/KeyboardService");
 
     ATTACH_DALVIK();
     jmethodID jKeyboardServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jKeyboardServiceClass, "<init>", "(Landroid/app/Activity;)V");

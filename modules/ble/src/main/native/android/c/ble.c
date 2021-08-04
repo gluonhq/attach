@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "ble.h"
+#include "util.h"
 
 static jclass jGraalBleClass;
 static jmethodID jGraalSetDetectionMethod;
@@ -36,6 +36,7 @@ static jmethodID jGraalSetDeviceCharMethod;
 static jmethodID jGraalSetDeviceDescMethod;
 static jmethodID jGraalSetDeviceValueMethod;
 
+static jclass jBleServiceClass;
 static jobject jDalvikBleService;
 static jmethodID jBleServiceStartScanningMethod;
 static jmethodID jBleServiceStopScanningMethod;
@@ -62,7 +63,7 @@ void initializeGraalHandles(JNIEnv *graalEnv) {
 }
 
 void initializeBleDalvikHandles() {
-    jclass jBleServiceClass = substrateGetBleServiceClass();
+    jBleServiceClass = GET_REGISTER_DALVIK_CLASS(jBleServiceClass, "com/gluonhq/helloandroid/DalvikBleService");
     ATTACH_DALVIK();
     jmethodID jBleServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBleServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBleServiceStartScanningMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBleServiceClass, "startScanning", "()V");

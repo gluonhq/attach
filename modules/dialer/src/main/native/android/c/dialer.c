@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "dialer.h"
+#include "util.h"
 
-
+static jclass jDialerServiceClass;
 static jobject jDalvikDialerService;
 static jmethodID jDialerServiceCallMethod;
 
 static void initializeDalvikHandles() {
-    jclass jDialerServiceClass = substrateGetDialerServiceClass();
+    jDialerServiceClass = GET_REGISTER_DALVIK_CLASS(jDialerServiceClass, "com/gluonhq/helloandroid/DalvikDialerService");
     ATTACH_DALVIK();
     jmethodID jDialerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDialerServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDialerServiceCallMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDialerServiceClass, "call", "(Ljava/lang/String;)V");

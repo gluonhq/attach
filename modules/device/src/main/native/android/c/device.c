@@ -24,13 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "device.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalDeviceInfoClass;
 static jmethodID jGraalDeviceInfoInitMethod;
 
 // Dalvik handles
+static jclass jDeviceServiceClass;
 static jobject jDalvikDeviceService;
 static jmethodID jDeviceServiceGetModel;
 static jmethodID jDeviceServiceGetUuid;
@@ -44,8 +45,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeDeviceDalvikHandles() {
+    jDeviceServiceClass = GET_REGISTER_DALVIK_CLASS(jDeviceServiceClass, "com/gluonhq/helloandroid/DalvikDeviceService");
     ATTACH_DALVIK();
-    jclass jDeviceServiceClass = substrateGetDeviceServiceClass();
     jmethodID jDeviceServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDeviceServiceGetModel = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getModel", "()Ljava/lang/String;");
     jDeviceServiceGetUuid = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getUuid", "()Ljava/lang/String;");

@@ -25,12 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "localnotifications.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalLocalNotificationsClass;
 static jmethodID jGraalLocalNotificationsProcessMethod;
 
+static jclass jLocalNotificationsServiceClass;
 static jobject jDalvikLocalNotificationsService;
 static jmethodID jLocalNotificationsServiceScheduleNotification;
 static jmethodID jLocalNotificationsServiceUnscheduleNotification;
@@ -42,7 +43,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 
 static void initializeLocalNotificationsDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
-    jclass jLocalNotificationsServiceClass = substrateGetLocalNotificationsServiceClass();
+    jLocalNotificationsServiceClass = GET_REGISTER_DALVIK_CLASS(jLocalNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikLocalNotificationsService");
 
     ATTACH_DALVIK();
     jLocalNotificationsServiceScheduleNotification = (*dalvikEnv)->GetMethodID(dalvikEnv, jLocalNotificationsServiceClass, "scheduleNotification", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");

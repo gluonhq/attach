@@ -9,7 +9,7 @@ android {
     }
 
     dependencies {
-        provided fileTree(dir: '../libs', include: '*.jar')
+        compileOnly fileTree(dir: '../libs', include: '*.jar')
     }
 
     afterEvaluate {
