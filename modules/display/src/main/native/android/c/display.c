@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "display.h"
+#include "util.h"
 
+static jclass jDisplayServiceClass;
 static jobject jDalvikDisplayService;
 static jmethodID jDisplayServiceWidthMethod;
 static jmethodID jDisplayServiceHeightMethod;
@@ -34,8 +35,8 @@ static jmethodID jDisplayServiceFactorMethod;
 static jmethodID jDisplayServiceRoundMethod;
 
 static void initializeDisplayDalvikHandles() {
+    jDisplayServiceClass = GET_REGISTER_DALVIK_CLASS(jDisplayServiceClass, "com/gluonhq/helloandroid/DalvikDisplayService");
     ATTACH_DALVIK();
-    jclass jDisplayServiceClass = substrateGetDisplayServiceClass();
     jmethodID jDisplayServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDisplayServiceWidthMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "screenWidth", "()D");
     jDisplayServiceHeightMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "screenHeight", "()D");

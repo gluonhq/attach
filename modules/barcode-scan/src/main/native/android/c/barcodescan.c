@@ -25,12 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "barcodescan.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalBarcodeScanClass;
 static jmethodID jGraalResultBarcodeScanMethod;
 
+static jclass jBarcodeScanServiceClass;
 static jobject jDalvikBarcodeScanService;
 static jmethodID jBarcodeScanServiceScanMethod;
 
@@ -41,8 +42,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeBarcodeScanDalvikHandles() {
+    jBarcodeScanServiceClass = GET_REGISTER_DALVIK_CLASS(jBarcodeScanServiceClass, "com/gluonhq/helloandroid/DalvikBarcodeScanService");
     ATTACH_DALVIK();
-    jclass jBarcodeScanServiceClass = substrateGetBarcodeScanServiceClass();
     jmethodID jBarcodeScanServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBarcodeScanServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBarcodeScanServiceScanMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBarcodeScanServiceClass, "scan", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
         

@@ -25,13 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "video.h"
+#include "util.h"
 
 static jclass jGraalVideoClass;
 static jmethodID jGraalStatusMethod;
 static jmethodID jGraalFullScreenMethod;
 static jmethodID jGraalCurrentIndexMethod;
 
+static jclass jVideoServiceClass;
 static jobject jDalvikVideoService;
 static jmethodID jVideoPlaylistMethod;
 static jmethodID jVideoShowVideoMethod;
@@ -53,8 +54,8 @@ static void initializeGraalHandles(JNIEnv *graalEnv) {
 }
 
 static void initializeVideoDalvikHandles() {
+    jVideoServiceClass = GET_REGISTER_DALVIK_CLASS(jVideoServiceClass, "com/gluonhq/helloandroid/DalvikVideoService");
     ATTACH_DALVIK();
-    jclass jVideoServiceClass = substrateGetVideoServiceClass();
     jmethodID jVideoServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jVideoPlaylistMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "setPlaylist", "([Ljava/lang/String;)V");
     jVideoShowVideoMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVideoServiceClass, "show", "()V");

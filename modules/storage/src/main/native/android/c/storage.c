@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "storage.h"
+#include "util.h"
 
+static jclass jStorageServiceClass;
 static jobject jDalvikStorageService;
 static jmethodID jStorageServicePublicStorage;
 static jmethodID jStorageServiceStorageWritable;
 static jmethodID jStorageServiceStorageReadable;
 
 static void initializeStorageDalvikHandles() {
+    jStorageServiceClass = GET_REGISTER_DALVIK_CLASS(jStorageServiceClass, "com/gluonhq/helloandroid/DalvikStorageService");
     ATTACH_DALVIK();
-    jclass jStorageServiceClass = substrateGetStorageServiceClass();
     jmethodID jStorageServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jStorageServicePublicStorage = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "getPublicStorage", "(Ljava/lang/String;)Ljava/lang/String;");
     jStorageServiceStorageWritable = (*dalvikEnv)->GetMethodID(dalvikEnv, jStorageServiceClass, "isExternalStorageWritable", "()Z");

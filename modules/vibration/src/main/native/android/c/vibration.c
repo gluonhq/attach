@@ -25,14 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "vibration.h"
+#include "util.h"
 
+static jclass jVibrationServiceClass;
 static jobject jDalvikVibrationService;
 static jmethodID jVibrationServiceVibrateMethod;
 
 static void initializeVibrationDalvikHandles() {
+    jVibrationServiceClass = GET_REGISTER_DALVIK_CLASS(jVibrationServiceClass, "com/gluonhq/helloandroid/DalvikVibrationService");
     ATTACH_DALVIK();
-    jclass jVibrationServiceClass = substrateGetVibrationServiceClass();
     jmethodID jVibrationServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVibrationServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jVibrationServiceVibrateMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jVibrationServiceClass, "vibrate", "([J)V");
 

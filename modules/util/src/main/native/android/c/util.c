@@ -40,38 +40,10 @@ static jmethodID jUtilRequestPermissionsMethod;
 static jboolean initialized;
 static jboolean debugAttach;
 
-// Attach classes
-static jclass jAccelerometerServiceClass;
-static jclass jAudioServiceClass;
-static jclass jAugmentedRealityServiceClass;
-static jclass jBatteryServiceClass;
-static jclass jBarcodeScanServiceClass;
-static jclass jBleServiceClass;
-static jclass jBrowserServiceClass;
-static jclass jConnectivityServiceClass;
-static jclass jDeviceServiceClass;
-static jclass jDialerServiceClass;
-static jclass jDisplayServiceClass;
-static jclass jKeyboardServiceClass;
-static jclass jLifecycleServiceClass;
-static jclass jLocalNotificationsServiceClass;
-static jclass jMagnetometerServiceClass;
-static jclass jOrientationServiceClass;
-static jclass jPicturesServiceClass;
-static jclass jPositionServiceClass;
-static jclass jPushNotificationsServiceClass;
-static jclass jRuntimeArgsServiceClass;
-static jclass jSettingsServiceClass;
-static jclass jShareServiceClass;
-static jclass jStatusBarServiceClass;
-static jclass jStorageServiceClass;
-static jclass jVibrationServiceClass;
-static jclass jVideoServiceClass;
-
 static jmethodID loadClassMethod;
 static jobject classLoaderObject;
 
-static jclass registerClass(const char* className) {
+jclass registerDalvikClass(const char* className) {
     ATTACH_DALVIK();
     if (loadClassMethod == NULL || classLoaderObject == NULL) {
         jmethodID getClassLoaderMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
@@ -96,7 +68,7 @@ static jclass registerClass(const char* className) {
 
 static void initializeUtilDalvikHandles() {
     ATTACH_LOG_FINE("Init Util");
-    jUtilClass = substrateGetUtilClass();
+    jUtilClass = GET_REGISTER_DALVIK_CLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
     jPermissionActivityClass = substrateGetPermissionActivityClass();
     ATTACH_DALVIK();
     jmethodID jUtilInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jUtilClass, "<init>", "()V");
@@ -114,114 +86,6 @@ static void initializeUtilDalvikHandles() {
     DETACH_DALVIK();
     ATTACH_LOG_FINE("Dalvik Util init was called");
     initialized = JNI_TRUE;
-}
-
-jclass substrateGetUtilClass() {
-    return GETREGISTERCLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
-}
-
-jclass substrateGetAccelerometerServiceClass() {
-    return GETREGISTERCLASS(jAccelerometerServiceClass, "com/gluonhq/helloandroid/DalvikAccelerometerService");
-}
-
-jclass substrateGetAudioServiceClass() {
-    return GETREGISTERCLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
-}
-
-jclass substrateGetAugmentedRealityServiceClass() {
-    return GETREGISTERCLASS(jAugmentedRealityServiceClass, "com/gluonhq/helloandroid/DalvikAugmentedRealityService");
-}
-
-jclass substrateGetBatteryServiceClass() {
-    return GETREGISTERCLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
-}
-
-jclass substrateGetBarcodeScanServiceClass() {
-    return GETREGISTERCLASS(jBarcodeScanServiceClass, "com/gluonhq/helloandroid/DalvikBarcodeScanService");
-}
-
-jclass substrateGetBleServiceClass() {
-    return GETREGISTERCLASS(jBleServiceClass, "com/gluonhq/helloandroid/DalvikBleService");
-}
-
-jclass substrateGetBrowserServiceClass() {
-    return GETREGISTERCLASS(jBrowserServiceClass, "com/gluonhq/helloandroid/DalvikBrowserService");
-}
-
-jclass substrateGetConnectivityServiceClass() {
-    return GETREGISTERCLASS(jConnectivityServiceClass, "com/gluonhq/helloandroid/DalvikConnectivityService");
-}
-
-jclass substrateGetDeviceServiceClass() {
-    return GETREGISTERCLASS(jDeviceServiceClass, "com/gluonhq/helloandroid/DalvikDeviceService");
-}
-
-jclass substrateGetDialerServiceClass() {
-    return GETREGISTERCLASS(jDialerServiceClass, "com/gluonhq/helloandroid/DalvikDialerService");
-}
-
-jclass substrateGetDisplayServiceClass() {
-    return GETREGISTERCLASS(jDisplayServiceClass, "com/gluonhq/helloandroid/DalvikDisplayService");
-}
-
-jclass substrateGetKeyboardServiceClass() {
-    return GETREGISTERCLASS(jKeyboardServiceClass, "com/gluonhq/helloandroid/KeyboardService");
-}
-
-jclass substrateGetLifecycleServiceClass() {
-    return GETREGISTERCLASS(jLifecycleServiceClass, "com/gluonhq/helloandroid/DalvikLifecycleService");
-}
-
-jclass substrateGetLocalNotificationsServiceClass() {
-    return GETREGISTERCLASS(jLocalNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikLocalNotificationsService");
-}
-
-jclass substrateGetMagnetometerServiceClass() {
-    return GETREGISTERCLASS(jMagnetometerServiceClass, "com/gluonhq/helloandroid/DalvikMagnetometerService");
-}
-
-jclass substrateGetOrientationServiceClass() {
-    return GETREGISTERCLASS(jOrientationServiceClass, "com/gluonhq/helloandroid/DalvikOrientationService");
-}
-
-jclass substrateGetPicturesServiceClass() {
-    return GETREGISTERCLASS(jPicturesServiceClass, "com/gluonhq/helloandroid/DalvikPicturesService");
-}
-
-jclass substrateGetPositionServiceClass() {
-    return GETREGISTERCLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
-}
-
-jclass substrateGetPushNotificationsServiceClass() {
-    return GETREGISTERCLASS(jPushNotificationsServiceClass, "com/gluonhq/helloandroid/DalvikPushNotificationsService");
-}
-
-jclass substrateGetRuntimeArgsServiceClass() {
-    return GETREGISTERCLASS(jRuntimeArgsServiceClass, "com/gluonhq/helloandroid/DalvikRuntimeArgsService");
-}
-
-jclass substrateGetSettingsServiceClass() {
-    return GETREGISTERCLASS(jSettingsServiceClass, "com/gluonhq/helloandroid/DalvikSettingsService");
-}
-
-jclass substrateGetShareServiceClass() {
-    return GETREGISTERCLASS(jShareServiceClass, "com/gluonhq/helloandroid/DalvikShareService");
-}
-
-jclass substrateGetStatusBarServiceClass() {
-    return GETREGISTERCLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
-}
-
-jclass substrateGetStorageServiceClass() {
-    return GETREGISTERCLASS(jStorageServiceClass, "com/gluonhq/helloandroid/DalvikStorageService");
-}
-
-jclass substrateGetVibrationServiceClass() {
-    return GETREGISTERCLASS(jVibrationServiceClass, "com/gluonhq/helloandroid/DalvikVibrationService");
-}
-
-jclass substrateGetVideoServiceClass() {
-    return GETREGISTERCLASS(jVideoServiceClass, "com/gluonhq/helloandroid/DalvikVideoService");
 }
 
 JNIEXPORT jint JNICALL

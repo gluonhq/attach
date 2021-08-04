@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "magnetometer.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalMagnetometerClass;
 static jmethodID jGraalNotifyReadingMethod;
 
+static jclass jMagnetometerServiceClass;
 static jobject jDalvikMagnetometerService;
 static jmethodID jMagnetometerServiceStartMethod;
 static jmethodID jMagnetometerServiceStopMethod;
@@ -41,8 +42,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeMagnetometerDalvikHandles() {
+    jMagnetometerServiceClass = GET_REGISTER_DALVIK_CLASS(jMagnetometerServiceClass, "com/gluonhq/helloandroid/DalvikMagnetometerService");
     ATTACH_DALVIK();
-    jclass jMagnetometerServiceClass = substrateGetMagnetometerServiceClass();
     jmethodID jMagnetometerServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jMagnetometerServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "start", "(D)V");
     jMagnetometerServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jMagnetometerServiceClass, "stop", "()V");

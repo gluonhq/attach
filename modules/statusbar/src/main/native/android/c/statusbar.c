@@ -25,14 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "statusbar.h"
+#include "util.h"
 
+static jclass jStatusBarServiceClass;
 static jobject jDalvikStatusBarService;
 static jmethodID jStatusBarServiceColorMethod;
 
 static void initializeStatusBarDalvikHandles() {
+    jStatusBarServiceClass = GET_REGISTER_DALVIK_CLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
     ATTACH_DALVIK();
-    jclass jStatusBarServiceClass = substrateGetStatusBarServiceClass();
     jmethodID jStatusBarServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jStatusBarServiceColorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setColor", "(I)V");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "position.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalPositionClass;
 jmethodID jGraalSetLocationMethod;
 
 // Dalvik handles
+static jclass jPositionServiceClass;
 static jobject jDalvikPositionService;
 jmethodID jDalvikPositionServiceStartMethod;
 jmethodID jDalvikPositionServiceStopMethod;
@@ -44,7 +45,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 static void initializeDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
-    jclass jPositionServiceClass = substrateGetPositionServiceClass();
+    jclass jPositionServiceClass = GET_REGISTER_DALVIK_CLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
     ATTACH_DALVIK();
     jmethodID jPositionServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDalvikPositionServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "start", "(JFZ)V");

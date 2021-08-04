@@ -25,11 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "battery.h"
+#include "util.h"
 
 // Graal handles
 static jclass jGraalBatteryClass;
 static jmethodID jGraalNotifyBatteryMethod;
+
+static jclass jBatteryServiceClass;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalBatteryClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/battery/impl/AndroidBatteryService"));
@@ -37,8 +39,8 @@ static void initializeGraalHandles(JNIEnv* env) {
 }
 
 static void initializeBatteryDalvikHandles() {
+    jBatteryServiceClass = GET_REGISTER_DALVIK_CLASS(jBatteryServiceClass, "com/gluonhq/helloandroid/DalvikBatteryService");
     ATTACH_DALVIK();
-    jclass jBatteryServiceClass = substrateGetBatteryServiceClass();
     jmethodID jBatteryServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBatteryServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jobject jActivity = substrateGetActivity();

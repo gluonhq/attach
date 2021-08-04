@@ -25,15 +25,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "share.h"
+#include "util.h"
 
+static jclass jShareServiceClass;
 static jobject jDalvikShareService;
 static jmethodID jShareServiceShareText;
 static jmethodID jShareServiceShareFile;
 
 static void initializeShareDalvikHandles() {
+    jShareServiceClass = GET_REGISTER_DALVIK_CLASS(jShareServiceClass, "com/gluonhq/helloandroid/DalvikShareService");
     ATTACH_DALVIK();
-    jclass jShareServiceClass = substrateGetShareServiceClass();
     jmethodID jShareServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jShareServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jShareServiceShareText = (*dalvikEnv)->GetMethodID(dalvikEnv, jShareServiceClass, "shareText", "(Ljava/lang/String;Ljava/lang/String;)V");
     jShareServiceShareFile = (*dalvikEnv)->GetMethodID(dalvikEnv, jShareServiceClass, "shareFile", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");

@@ -25,16 +25,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "settings.h"
+#include "util.h"
 
+static jclass jSettingsServiceClass;
 static jobject jDalvikSettingsService;
 static jmethodID jSettingsServiceStore;
 static jmethodID jSettingsServiceRemove;
 static jmethodID jSettingsServiceRetrieve;
 
 static void initializeSettingsDalvikHandles() {
+    jSettingsServiceClass = GET_REGISTER_DALVIK_CLASS(jSettingsServiceClass, "com/gluonhq/helloandroid/DalvikSettingsService");
     ATTACH_DALVIK();
-    jclass jSettingsServiceClass = substrateGetSettingsServiceClass();
     jmethodID jSettingsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jSettingsServiceStore = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "store", "(Ljava/lang/String;Ljava/lang/String;)V");
     jSettingsServiceRemove = (*dalvikEnv)->GetMethodID(dalvikEnv, jSettingsServiceClass, "remove", "(Ljava/lang/String;)V");
