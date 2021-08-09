@@ -69,7 +69,7 @@ public enum Platform {
     static {
         String platform = System.getProperty("javafx.platform", null);
         if (platform == null) {
-            LOGGER.info("[Gluon Attach] System Property javafx.platform is not defined. Platform wil be set to PLATFORM.DESKTOP");
+            LOGGER.info("[Gluon Attach] System Property javafx.platform is not defined. Platform will be set to Platform.DESKTOP");
             platform = DESKTOP.getName();
         }
 
