@@ -23,7 +23,7 @@ The [Gluon samples](https://github.com/gluonhq/gluon-samples) are a good way to 
 
 See the [documentation](https://docs.gluonhq.com/client/#_attach_configuration) on how to add Attach with the Client Plugin.
 
-The [JavaDoc](https://docs.gluonhq.com/attach/javadoc) contains the reference documentation for the Attach API's.
+The [JavaDoc](https://docs.gluonhq.com/attach/javadoc/latest/) contains the reference documentation for the Attach API's.
 
 The list of available services at Attach can be found [here](http://gluonhq.com/products/mobile/attach/).
 
