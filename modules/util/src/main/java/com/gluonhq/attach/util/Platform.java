@@ -62,14 +62,14 @@ public enum Platform {
         this.javafxPlatformName = javafxPlatformName;
     }
 
-    private static Platform current;
+    private final static Platform current;
 
     private static final Logger LOGGER = Logger.getLogger(Platform.class.getName());
 
     static {
         String platform = System.getProperty("javafx.platform", null);
         if (platform == null) {
-            LOGGER.info("javafx.platform is not defined. Desktop will be assumed by default.");
+            LOGGER.info("[Gluon Attach] System Property javafx.platform is not defined. Platform will be set to Platform.DESKTOP");
             platform = DESKTOP.getName();
         }
 
@@ -86,6 +86,8 @@ public enum Platform {
     /**
      * Returns the current platform that the code is being executed on. This obviously won't change during the
      * execution of the code.
+     * The current platform is obtained by querying the System Property <code>javafx.platform</code>.
+     * If no such property exists, the current platform is set to be the <code>DESKTOP</code> platform.
      * @return The current {@link Platform}.
      */
     public static Platform getCurrent() {
