@@ -1,5 +1,5 @@
 def dummyFiles   = [ '**/*/impl/Dummy**' ]
-def iosFiles     = [ '**/*/impl/IOS**', '**/**ios.json' ]
+def iosFiles     = [ '**/*/impl/IOS**', '**/**ios.json', '**/ios' ]
 def androidFiles = [ '**/*/impl/Android**', '**/**android.json', '**/dalvik' ]
 def desktopFiles = [ '**/impl/Desktop**', '**/**darwin.json', '**/**linux.json', '**/**windows.json' ]
 
