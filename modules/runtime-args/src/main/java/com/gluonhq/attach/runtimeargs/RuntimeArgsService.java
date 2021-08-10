@@ -51,7 +51,7 @@ import java.util.function.Consumer;
  * To launch the app from a custom URL, like yourScheme://foo.html, register a
  * custom scheme in the AndroidManifest.xml file:
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/">GluonFX plugin</a> if it is used.
  *
  * {@code
     <activity android:name="com.gluonhq.helloandroid.LaunchURLActivity"

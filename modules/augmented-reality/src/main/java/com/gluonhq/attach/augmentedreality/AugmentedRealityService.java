@@ -76,7 +76,7 @@ import java.util.Optional;
  * <p><b>Android Configuration</b></p>
  * <p>Add the following to the manifest</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/">GluonFX plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *   <uses-permission android:name="android.permission.CAMERA" />
@@ -91,7 +91,7 @@ import java.util.Optional;
  * <p>Note: Uncomment the above commented lines if ARCore is strictly required.</p>
  *
  * <b>Note</b>: All these modifications are handled automatically by the
- * <a href="https://docs.gluonhq.com/client">Gluon Client plugin</a> during the package goal.
+ * <a href="https://docs.gluonhq.com/">GluonFX plugin</a> during the package goal.
  *
  * <p><b>iOS Configuration</b></p>
  *

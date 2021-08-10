@@ -56,6 +56,13 @@ import java.util.function.Consumer;
  *  });}</pre>
  *
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>The permissions <code>android.permission.BLUETOOTH</code> and
  * <code>android.permission.BLUETOOTH_ADMIN</code> need to be added.</p>
@@ -71,7 +78,7 @@ import java.util.function.Consumer;
  * <pre>
  * {@code <key>NSLocationUsageDescription</key>
  *  <string>Reason to use Location Service (iOS 6+)</string>
- *  <key>NSLocationAlwaysUsageDescription</key>
+ *  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
  *  <string>Reason to use Location Service (iOS 8+)</string>
  *  <key>NSBluetoothAlwaysUsageDescription</key>
  *  <string>Reason to use Bluetooth interface (iOS 13+)</string>}</pre>
@@ -163,12 +170,18 @@ import java.util.function.Consumer;
  * }</pre>
  *
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>The same permissions <code>android.permission.BLUETOOTH</code>,
  * <code>android.permission.BLUETOOTH_ADMIN</code> and
  * <code>android.permission.ACCESS_FINE_LOCATION</code> need to be added to the Android manifest.</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.BLUETOOTH"/>

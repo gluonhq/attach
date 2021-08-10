@@ -49,7 +49,7 @@ import java.util.Optional;
  * storage on the device for read and/or write operations respectively. Defining write permissions implicitly
  * activate read permissions as well.</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/">GluonFX plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
