@@ -61,6 +61,13 @@ import java.util.Optional;
  *      service.start();
  *  });}</pre>
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>The permissions <code>android.permission.ACCESS_COARSE_LOCATION</code> and/or
  * <code>android.permission.ACCESS_FINE_LOCATION</code> need to be added to the
@@ -70,7 +77,6 @@ import java.util.Optional;
  * has to be included as well. Note that in this mode the accuracy could be reduced
  * by the system.</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

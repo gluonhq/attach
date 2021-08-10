@@ -44,12 +44,18 @@ import java.util.Optional;
  *      barcode.ifPresent(barcodeValue -> System.out.println("Scanned Bar Code: " + barcodeValue));
  *  });}</pre>
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>The permission <code>android.permission.CAMERA</code> needs to be added together
  * with the following <code>activity</code> configuration that handles the SCAN intent
  * of the BarcodeScanService.</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    <uses-permission android:name="android.permission.CAMERA"/>

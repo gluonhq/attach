@@ -64,11 +64,17 @@ import java.util.Optional;
  * });
  * }</pre>
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
  * the following content that allows access to the external storage:</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code
  *    <?xml version="1.0" encoding="utf-8"?>

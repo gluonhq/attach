@@ -57,6 +57,13 @@ import javafx.scene.image.Image;
  *              share.share("image/jpeg", file)));
  *  });}</pre>
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  *
  * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
@@ -74,7 +81,6 @@ import javafx.scene.image.Image;
  * <code>android.permission.READ_EXTERNAL_STORAGE</code> and <code>android.permission.WRITE_EXTERNAL_STORAGE</code>
  * to be able to read and write images. Also a {@code provider} is required:</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
  * <pre>
  * {@code <manifest package="${application.package.name}" ...>
  *    <uses-permission android:name="android.permission.CAMERA"/>

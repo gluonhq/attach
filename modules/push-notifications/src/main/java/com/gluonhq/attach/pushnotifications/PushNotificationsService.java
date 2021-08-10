@@ -49,6 +49,13 @@ import java.util.Optional;
  *       service.register();
  *   });}</pre>
  *
+ * <p><b>Requirements</b></p>
+ *
+ * <p>The service requires the following changes on Android and iOS.</p>
+ *
+ * <p>However, these are handled automatically by the <a href="https://docs.gluonhq.com/">GluonFX plugin</a>,
+ * when used.</p>
+ *
  * <p><b>Android Configuration</b></p>
  * <p>To enable push notifications on android, an existing <a href="https://console.firebase.google.com">Google Firebase project</a>
  * is required. Copy the <code>google-services.json</code> file into your project's <code>src/android/resources</code> folder.</p>
@@ -84,9 +91,6 @@ import java.util.Optional;
  *      </activity>
  *    </application>
  *  </manifest>}</pre>
- *
- * <b>Note</b>: All these modifications are handled automatically by the
- * <a href="https://docs.gluonhq.com/client">Gluon Client plugin</a> during the package goal.
  *
  * <p><b>iOS Configuration</b></p>
  *

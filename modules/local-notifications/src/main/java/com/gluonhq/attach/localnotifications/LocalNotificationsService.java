@@ -79,7 +79,7 @@ import java.util.Optional;
  * configuration file to make local notifications work on android. The main activity also requires the attribute
  * <code>android:launchMode</code> with value <code>singleTop</code>.</p>
  *
- * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/client">Client plugin</a> if it is used.
+ * Note: these modifications are handled automatically by <a href="https://docs.gluonhq.com/">GluonFX plugin</a> if it is used.
  * <pre>
  * {@code <manifest ...>
  *    ...
