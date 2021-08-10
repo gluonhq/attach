@@ -16,12 +16,12 @@ Attach is open source, and it is freely licensed under the GPL license.
 
 ## Getting started ##
 
-The best way to get started with Gluon Attach is using the [Gluon Client Maven archetype from your IDE](https://github.com/gluonhq/client-maven-archetypes)
+The best way to get started with Gluon Attach is using the [GluonFX Maven archetype from your IDE](https://github.com/gluonhq/gluonfx-maven-archetypes)
 and creating a [Gluon Mobile](http://gluonhq.com/products/mobile) project.
 
 The [Gluon samples](https://github.com/gluonhq/gluon-samples) are a good way to find out how Attach is used.
 
-See the [documentation](https://docs.gluonhq.com/client/#_attach_configuration) on how to add Attach with the Client Plugin.
+See the [documentation](https://docs.gluonhq.com/#_attach_with_gluonfx_plugin) on how to add Attach with the GluonFX Plugin.
 
 The [JavaDoc](https://docs.gluonhq.com/attach/javadoc/latest/) contains the reference documentation for the Attach API's.
 
