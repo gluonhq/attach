@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.cache.impl.IOSCacheService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

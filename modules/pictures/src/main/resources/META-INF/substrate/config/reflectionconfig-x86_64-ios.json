@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.pictures.impl.IOSPicturesService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

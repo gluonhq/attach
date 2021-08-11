@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.share.impl.IOSShareService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

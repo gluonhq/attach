@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audiorecording.impl.IOSAudioRecordingService",
+    "methods":[
+      {"name":"notifyRecordingStatus","parameterTypes":["boolean"]},
+      {"name":"notifyRecordingChunk","parameterTypes":["java.lang.String"]}
+    ]
+  }
+]

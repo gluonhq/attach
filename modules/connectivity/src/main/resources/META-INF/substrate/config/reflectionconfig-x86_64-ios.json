@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.connectivity.impl.IOSConnectivityService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

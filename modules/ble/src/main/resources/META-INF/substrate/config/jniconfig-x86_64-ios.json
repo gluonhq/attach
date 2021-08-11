@@ -1,0 +1,15 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ble.impl.IOSBleService",
+    "methods":[
+      {"name":"setDetection","parameterTypes":["java.lang.String","int","int","int","int"] },
+      {"name":"gotPeripheral","parameterTypes":["java.lang.String","java.lang.String"] },
+      {"name":"gotState","parameterTypes":["java.lang.String","java.lang.String"] },
+      {"name":"gotProfile","parameterTypes":["java.lang.String","java.lang.String","boolean"] },
+      {"name":"removeProfile","parameterTypes":["java.lang.String","java.lang.String"] },
+      {"name":"gotCharacteristic","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] },
+      {"name":"gotValue","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] },
+      {"name":"gotDescriptor","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }
+    ]
+  }
+]

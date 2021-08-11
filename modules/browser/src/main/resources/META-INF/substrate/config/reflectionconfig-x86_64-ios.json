@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.browser.impl.IOSBrowserService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

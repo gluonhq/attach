@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audiorecording.impl.IOSAudioRecordingService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
