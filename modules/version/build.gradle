@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":util")
+}
+
+ext.moduleName = 'com.gluonhq.attach.version'
+ext.description = 'Common API to access app versioning features'

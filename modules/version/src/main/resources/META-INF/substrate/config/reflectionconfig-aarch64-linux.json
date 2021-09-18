@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.version.impl.DesktopVersionService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]

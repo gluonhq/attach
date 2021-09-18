@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.version.impl.AndroidVersionService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
