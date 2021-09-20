@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.version.impl.IOSVersionService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
