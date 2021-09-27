@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.filechooser.impl.AndroidFileChooserService",
+    "methods":[{"name":"setResult","parameterTypes":["java.lang.String", "int"] }]
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.filechooser.impl.IOSFileChooserService",
+    "methods":[{"name":"setResult","parameterTypes":["java.lang.String","java.lang.String"] }]
+  }
+]

@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":util")
+}
+
+ext.moduleName = 'com.gluonhq.attach.filechooser'
+ext.description = 'Common API to access file features'

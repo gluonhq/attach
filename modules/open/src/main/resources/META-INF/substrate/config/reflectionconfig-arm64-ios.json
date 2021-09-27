@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.open.impl.IOSOpenService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
