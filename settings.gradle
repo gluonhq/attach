@@ -23,10 +23,13 @@ include 'connectivity'
 include 'device'
 include 'dialer'
 include 'display', 'display:desktop'
+include 'display'
+include 'file-chooser'
 include 'in-app-billing'
 include 'lifecycle', 'lifecycle:desktop'
 include 'local-notifications'
 include 'magnetometer'
+include 'open'
 include 'orientation'
 include 'pictures'
 include 'position'
@@ -56,11 +59,13 @@ project(':device').projectDir                  = file('modules/device')
 project(':dialer').projectDir                  = file('modules/dialer')
 project(':display').projectDir                 = file('modules/display')
 project(':display:desktop').projectDir         = file('modules/display/desktop')
+project(':file-chooser').projectDir            = file('modules/file-chooser')
 project(':in-app-billing').projectDir          = file('modules/in-app-billing')
 project(':lifecycle').projectDir               = file('modules/lifecycle')
 project(':lifecycle:desktop').projectDir       = file('modules/lifecycle/desktop')
 project(':local-notifications').projectDir     = file('modules/local-notifications')
 project(':magnetometer').projectDir            = file('modules/magnetometer')
+project(':open').projectDir                    = file('modules/open')
 project(':orientation').projectDir             = file('modules/orientation')
 project(':pictures').projectDir                = file('modules/pictures')
 project(':position').projectDir                = file('modules/position')

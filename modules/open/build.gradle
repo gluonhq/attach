@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':util')
+}
+
+ext.moduleName = 'com.gluonhq.attach.open'
+ext.description = 'Common API to access opening features'

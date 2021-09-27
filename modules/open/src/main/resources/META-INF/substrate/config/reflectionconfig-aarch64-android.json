@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.open.impl.AndroidOpenService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
