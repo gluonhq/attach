@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'jp.classmethod.aws.s3' version '0.41'
     id 'io.codearte.nexus-staging' version '0.21.1'
-    id "org.openjfx.javafxplugin" version "0.0.9" apply false
+    id "org.openjfx.javafxplugin" version "0.0.10" apply false
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
@@ -74,4 +74,9 @@ task uploadJavadocToS3(type: jp.classmethod.aws.gradle.s3.SyncTask) {
     prefix "attach/javadoc/$project.version/"
     acl 'PublicRead'
     dependsOn javadoc
+}
+
+// Do not publish Gradle modules
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
 }
