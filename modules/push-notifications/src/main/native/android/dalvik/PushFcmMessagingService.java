@@ -53,7 +53,6 @@ import java.util.Map.Entry;
 
 public class PushFcmMessagingService extends FirebaseMessagingService {
 
-    public static final int REQUEST_CODE = 123456;
     private static final String CHANNEL_ID = "gluon_attach_channel";
     private static final String TAG = Util.TAG;
     private static final boolean debug = Util.isDebug();
@@ -64,11 +63,11 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             Log.v(TAG, "Message received from " + remoteMessage.getFrom());
         }
 
-        HashMap<String,String> payload = new HashMap<String,String>(remoteMessage.getData());
-		payload.putIfAbsent("id", "");
-		payload.putIfAbsent("silent", "false");
-		payload.putIfAbsent("title", "");
-		payload.putIfAbsent("body", "");
+        HashMap<String, String> payload = new HashMap<String, String>(remoteMessage.getData());
+        payload.putIfAbsent("id", "");
+        payload.putIfAbsent("silent", "false");
+        payload.putIfAbsent("title", "");
+        payload.putIfAbsent("body", "");
 
         boolean silent = false;
         try {
@@ -83,7 +82,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
                 Log.v(TAG, "Message will be processed through RAS");
             }
 
-            String rasMessage = jsonPrintMap(payload,"id","body","title");
+            String rasMessage = jsonPrintMap(payload);
 
             // set the message as system property in case app was closed, so later on, 
             // when resuming the app, RAS can handle it
@@ -132,42 +131,37 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         });
     }
 
-    private void sendNotification(HashMap<String,String>payload) {
+    private void sendNotification(HashMap<String, String> payload) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
         if (debug) {
-            Log.v(TAG, "Sending push notification with payload:"+jsonPrintMap(payload));
+            Log.v(TAG, "Sending push notification with payload: " + jsonPrintMap(payload));
         }
 	int requestCode = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
         notificationManager.notify(requestCode, getNotification(requestCode,payload));
     }
 
-	private static String jsonPrintMap(HashMap<String, String> map, String... include) {
-		return jsonPrintMap(map,true,include);
-	}
-
-    private static String jsonPrintMap(HashMap<String, String> map, boolean include, String... keys) {
-		String json = "";
-		HashSet<String> skipMap = new HashSet<>(Arrays.asList(keys));
-		for (Entry<String, String> entry : map.entrySet())
-		{
-			if (!skipMap.isEmpty()) { 
-				if (include==false && skipMap.contains(entry.getKey())) continue;
-				if (include==true  && !skipMap.contains(entry.getKey())) continue;
-			}
-			if (!json.isEmpty()) json+=",";
-			json+="\""+entry.getKey()+"\":\""+entry.getValue()+"\"";
-		}
-		return "{"+json+"}";
-	}
+    private static String jsonPrintMap(HashMap<String, String> map, String... keys) {
+        String json = "";
+        HashSet<String> keySet = new HashSet<>(Arrays.asList(keys));
+        for (Entry<String, String> entry : map.entrySet()) {
+            if (!keySet.isEmpty() && !keySet.contains(entry.getKey())) {
+                continue;
+            }
+            if (!json.isEmpty()) json+=",";
+            json+="\""+entry.getKey()+"\":\""+entry.getValue()+"\"";
+        }
+        return "{"+json+"}";
+    }
 	
     private Notification getNotification(int requestCode, HashMap<String,String>payload) {
         final Application application = getApplication();
         String id = payload.get("id");
         String title = payload.get("title");
         String body = payload.get("body");
-        if (id.isEmpty()) id=UUID.randomUUID().toString();
-        
+        if (id.isEmpty()) {
+            id = UUID.randomUUID().toString();
+        }
         Intent resultIntent = new Intent(application, PushNotificationActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         resultIntent.setData(getData(id));
