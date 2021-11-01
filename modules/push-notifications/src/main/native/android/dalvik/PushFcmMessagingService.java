@@ -141,7 +141,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         notificationManager.notify(requestCode, getNotification(requestCode,payload));
     }
 
-    private static String jsonPrintMap(HashMap<String, String> map, String... keys) {
+    private String jsonPrintMap(HashMap<String, String> map, String... keys) {
         String json = "";
         HashSet<String> keySet = new HashSet<>(Arrays.asList(keys));
         for (Entry<String, String> entry : map.entrySet()) {
