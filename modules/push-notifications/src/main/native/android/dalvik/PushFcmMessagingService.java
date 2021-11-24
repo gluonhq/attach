@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020, Gluon
+ * Copyright (c) 2018, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             Log.v(TAG, "Message received from " + remoteMessage.getFrom());
         }
 
-        HashMap<String, String> payload = new HashMap<String, String>(remoteMessage.getData());
+        HashMap<String, String> payload = new HashMap<>(remoteMessage.getData());
         payload.putIfAbsent("id", "");
         payload.putIfAbsent("silent", "false");
         payload.putIfAbsent("title", "");
@@ -138,7 +138,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             Log.v(TAG, "Sending push notification with payload: " + jsonPrintMap(payload));
         }
 	int requestCode = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
-        notificationManager.notify(requestCode, getNotification(requestCode,payload));
+        notificationManager.notify(requestCode, getNotification(requestCode, payload));
     }
 
     private String jsonPrintMap(HashMap<String, String> map, String... keys) {
@@ -148,13 +148,15 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             if (!keySet.isEmpty() && !keySet.contains(entry.getKey())) {
                 continue;
             }
-            if (!json.isEmpty()) json+=",";
-            json+="\""+entry.getKey()+"\":\""+entry.getValue()+"\"";
+            if (!json.isEmpty()) {
+                json += ",";
+            }
+            json += "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"";
         }
-        return "{"+json+"}";
+        return "{" + json + "}";
     }
 	
-    private Notification getNotification(int requestCode, HashMap<String,String>payload) {
+    private Notification getNotification(int requestCode, HashMap<String, String> payload) {
         final Application application = getApplication();
         String id = payload.get("id");
         String title = payload.get("title");
