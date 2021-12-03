@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020, Gluon
+ * Copyright (c) 2018, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 public class PushFcmMessagingService extends FirebaseMessagingService {
 
-    public static final int REQUEST_CODE = 123456;
     private static final String CHANNEL_ID = "gluon_attach_channel";
     private static final String TAG = Util.TAG;
     private static final boolean debug = Util.isDebug();
@@ -59,24 +63,15 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             Log.v(TAG, "Message received from " + remoteMessage.getFrom());
         }
 
-        String id = "";
-        String body = "";
-        String title  = "";
+        HashMap<String, String> payload = new HashMap<>(remoteMessage.getData());
+        payload.putIfAbsent("id", "");
+        payload.putIfAbsent("silent", "false");
+        payload.putIfAbsent("title", "");
+        payload.putIfAbsent("body", "");
+
         boolean silent = false;
         try {
-            id = remoteMessage.getData().get("id");
-            body = remoteMessage.getData().get("body");
-            title = remoteMessage.getData().get("title");
-            if (id == null) {
-                id = "";
-            } 
-            if (body == null) {
-                body = "";
-            } 
-            if (title == null) {
-                title = "";
-            }
-            silent = Boolean.parseBoolean(remoteMessage.getData().get("silent"));
+            silent = Boolean.parseBoolean(payload.get("silent"));
         } catch (Exception e) {
             Log.e(TAG, "Error parsing remote message data: " + remoteMessage.getData() + ", " + e.getMessage());
         }
@@ -87,7 +82,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
                 Log.v(TAG, "Message will be processed through RAS");
             }
 
-            String rasMessage = "{\"id\":\"" + id + "\", \"body\":\"" + body + "\", \"title\":\"" + title + "\"}";
+            String rasMessage = jsonPrintMap(payload);
 
             // set the message as system property in case app was closed, so later on, 
             // when resuming the app, RAS can handle it
@@ -98,10 +93,10 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
             if (debug) {
                 Log.v(TAG, "Message will be processed through a PushNotificationActivity");
             }
-            sendNotification(id, title, body);
+            sendNotification(payload);
         }
     }
-
+  
     /**
      * Called if FCM registration token is updated. This may occur if the security of
      * the previous token had been compromised. Note that this is called when the
@@ -136,26 +131,42 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         });
     }
 
-    private void sendNotification(String id, String title, String body) {
+    private void sendNotification(HashMap<String, String> payload) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Activity.NOTIFICATION_SERVICE);
         if (debug) {
-            Log.v(TAG, "Sending push notification with id: " + id + ", title: " + title + ", body: " + body);
+            Log.v(TAG, "Sending push notification with payload: " + jsonPrintMap(payload));
         }
-        notificationManager.notify(REQUEST_CODE, getNotification(title, body, 
-                id.isEmpty() ? UUID.randomUUID().toString() : id));
+	int requestCode = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+        notificationManager.notify(requestCode, getNotification(requestCode, payload));
     }
-    
-    private Notification getNotification(String title, String body, String id) {
+
+    private String jsonPrintMap(HashMap<String, String> map) {
+        String json = "";
+        for (Entry<String, String> entry : map.entrySet()) {
+            if (!json.isEmpty()) {
+                json += ",";
+            }
+            json += "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"";
+        }
+        return "{" + json + "}";
+    }
+	
+    private Notification getNotification(int requestCode, HashMap<String, String> payload) {
         final Application application = getApplication();
-        
+        String id = payload.get("id");
+        String title = payload.get("title");
+        String body = payload.get("body");
+        if (id.isEmpty()) {
+            id = UUID.randomUUID().toString();
+        }
         Intent resultIntent = new Intent(application, PushNotificationActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         resultIntent.setData(getData(id));
-        resultIntent.putExtra(PushNotificationActivity.MESSAGE, "{\"id\":\"" + id + "\", \"body\":\"" + body + "\", \"title\":\"" + title + "\"}");
+        resultIntent.putExtra(PushNotificationActivity.MESSAGE, jsonPrintMap(payload));
         resultIntent.putExtra(PushNotificationActivity.PACKAGE_NAME, application.getPackageName());
         
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(application, REQUEST_CODE, 
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(application, requestCode, 
                 resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         android.app.Notification.Builder builder = new android.app.Notification.Builder(application);
@@ -181,7 +192,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         builder.setAutoCancel(true);
         return builder.build();
     }
-    
+
     // Provides unique Uri based on the id of the notification
     private Uri getData(String id) {
        return Uri.withAppendedPath(Uri.parse("charm://attach/Id/#"), id);
