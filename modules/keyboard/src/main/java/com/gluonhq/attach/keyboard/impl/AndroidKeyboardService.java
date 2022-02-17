@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ public class AndroidKeyboardService implements KeyboardService {
             if (debug) {
                 LOG.log(Level.INFO, String.format("Moving %s %.2f pixels", root, y));
             }
-            final TranslateTransition transition = new TranslateTransition(Duration.millis(100), root);
+            final TranslateTransition transition = new TranslateTransition(Duration.millis(50), root);
             transition.setFromY(root.getTranslateY());
             transition.setToY(y);
             transition.setInterpolator(Interpolator.EASE_OUT);

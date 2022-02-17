@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ static jclass jAttachKeyboardClass;
 static jmethodID jAttach_notifyHeightMethod;
 
 void initKeyboard();
-jfloat density;
+static jfloat density;
 jfloat android_getDensity(JNIEnv *env);
 
 

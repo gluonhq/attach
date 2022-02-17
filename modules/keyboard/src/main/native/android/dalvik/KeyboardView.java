@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,18 +28,20 @@
 package com.gluonhq.helloandroid;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.graphics.Rect;
-import android.widget.PopupWindow;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager.LayoutParams;
+import android.widget.PopupWindow;
 
 class KeyboardView extends PopupWindow implements OnGlobalLayoutListener {
     private final Activity activity;
     private final View rootView;
     private final KeyboardHeightListener listener;
-    private int maxHeight;
+    private int lastOrientation = -1, lastKeyboardHeight = -1;
 
     public KeyboardView(Activity activity, KeyboardHeightListener listener) {
         super(activity);
@@ -69,15 +71,24 @@ class KeyboardView extends PopupWindow implements OnGlobalLayoutListener {
 
     @Override
     public void onGlobalLayout() {
-        Rect bounds = new Rect();
-        rootView.getWindowVisibleDisplayFrame(bounds);
-        if (bounds.bottom > maxHeight) {
-            maxHeight = bounds.bottom;
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Point screenSize = new Point();
+                activity.getWindowManager().getDefaultDisplay().getSize(screenSize);
 
-        int keyboardHeight = maxHeight - bounds.bottom;
-        if (listener != null) {
-            listener.onHeightChanged((float) keyboardHeight);
-        }
+                Rect bounds = new Rect();
+                rootView.getWindowVisibleDisplayFrame(bounds);
+                int orientation = activity.getResources().getConfiguration().orientation;
+                int keyboardHeight = screenSize.y - bounds.bottom;
+                if (listener != null) {
+                    listener.onHeightChanged(
+                            orientation != lastOrientation && keyboardHeight != lastKeyboardHeight ?
+                                    (float) 0 : (float) keyboardHeight);
+                }
+                lastKeyboardHeight = keyboardHeight;
+                lastOrientation = orientation;
+            }
+        }, 60);
     }
 }
