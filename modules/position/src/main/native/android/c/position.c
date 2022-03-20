@@ -45,7 +45,7 @@ static void initializeGraalHandles(JNIEnv* env) {
 static void initializeDalvikHandles() {
     jclass activityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
-    jclass jPositionServiceClass = GET_REGISTER_DALVIK_CLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
+    jPositionServiceClass = GET_REGISTER_DALVIK_CLASS(jPositionServiceClass, "com/gluonhq/helloandroid/DalvikPositionService");
     ATTACH_DALVIK();
     jmethodID jPositionServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jDalvikPositionServiceStartMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPositionServiceClass, "start", "(JFZ)V");
