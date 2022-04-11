@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Gluon
+ * Copyright (c) 2018, 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <sys/utsname.h>
 #include "jni.h"
 #include "AttachMacros.h"
 
