@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,7 +146,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_st
 
 void sendNotch() {
     NSString *notch = [_display getNotch];
-    AttachLog(@"Notch is %@", notch);
+    if (debugAttach) {
+        AttachLog(@"Notch is %@", notch);
+    }
     const char *notchChars = [notch UTF8String];
     jstring arg = (*env)->NewStringUTF(env, notchChars);
     (*env)->CallStaticVoidMethod(env, mat_jDisplayServiceClass, mat_jDisplayService_notifyDisplay, arg);
@@ -155,15 +157,75 @@ void sendNotch() {
 
 @implementation Display
 
+NSString * GetDeviceModel(void)
+{
+    static dispatch_once_t token;
+    static NSString *modelString = nil;
+
+    dispatch_once(&token, ^{
+#if TARGET_OS_SIMULATOR
+        modelString = NSProcessInfo.processInfo.environment[@"SIMULATOR_MODEL_IDENTIFIER"];
+#else
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        modelString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+#endif
+    });
+    if (debugAttach) {
+        AttachLog(@"Device name: %@", modelString);
+    }
+    return modelString;
+}
+
 - (void) isIPhoneX
 {
     iPhoneX = NO;
-    if ([[UIDevice currentDevice].model hasPrefix:@"iPhone"] &&
-        ([[UIScreen mainScreen] nativeBounds].size.height == 1792 || // XR
-         [[UIScreen mainScreen] nativeBounds].size.height == 2436 || // X, XS
-         [[UIScreen mainScreen] nativeBounds].size.height == 2688)) // XS MAX
-    {
+
+    NSArray<NSString *> *modelsWithNotch = @[
+            @"iPhone10,3", @"iPhone10,6", // iPhone X Global, X GSM
+            @"iPhone11,2", @"iPhone11,4", @"iPhone11,6", // iPhone XS, XS Max, XS Max Global
+            @"iPhone11,8", // iPhone XR
+            @"iPhone12,1", @"iPhone12,3", @"iPhone12,5", // iPhone 11, 11 Pro, 11 Pro Max
+            @"iPhone13,1", @"iPhone13,2", @"iPhone13,3", @"iPhone13,4", // iPhone 12 Mini, 12, 12 Pro, 12 Pro Max
+            @"iPhone14,2", @"iPhone14,3", @"iPhone14,4", @"iPhone14,5", // iPhone 13 Pro, 13 Pro Max, 13 Mini, 13
+        ];
+
+    if ([modelsWithNotch containsObject:GetDeviceModel()]) {
+        if (debugAttach) {
+            AttachLog(@"This device has a notch according to the model list");
+        }
         iPhoneX = YES;
+    } else {
+        // try safeAreaInsets
+        if (@available(iOS 11.0, *)) {
+            UIWindow *window = UIApplication.sharedApplication.keyWindow;
+            if (!window) {
+                AttachLog(@"key window was nil");
+                return;
+            }
+            CGFloat topPadding = window.safeAreaInsets.top;
+            if (debugAttach) {
+                AttachLog(@"topPadding is %.3f", topPadding);
+            }
+            if (topPadding > 24) {
+                if (debugAttach) {
+                    AttachLog(@"This device has a notch according to the top padding");
+                }
+                iPhoneX = YES;
+            }
+        } else {
+            // check height
+            if ([[UIDevice currentDevice].model hasPrefix:@"iPhone"] &&
+                ([[UIScreen mainScreen] nativeBounds].size.height == 1792 || // XR
+                 [[UIScreen mainScreen] nativeBounds].size.height == 2436 || // X, XS
+                 [[UIScreen mainScreen] nativeBounds].size.height == 2688)) // XS MAX
+            {
+                if (debugAttach) {
+                    AttachLog(@"This device has a notch according to the screen bounds");
+                }
+                iPhoneX = YES;
+            }
+        }
     }
 }
 
