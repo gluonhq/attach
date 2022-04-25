@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":util")
+}
+
+ext.moduleName = 'com.gluonhq.attach.storereview'
+ext.description = 'Common API to request store ratings and review'

@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.storage.impl;
+module com.gluonhq.attach.storereview {
+    requires com.gluonhq.attach.util;
 
-import com.gluonhq.attach.storage.StorageService;
-
-abstract class DummyStorageServiceImpl implements StorageService {
+    exports com.gluonhq.attach.storereview;
+    exports com.gluonhq.attach.storereview.impl to com.gluonhq.attach.util;
 }

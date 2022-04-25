@@ -38,6 +38,7 @@ include 'settings'
 include 'share'
 include 'statusbar'
 include 'storage'
+include 'store-review'
 include 'version'
 include 'vibration'
 include 'video'
@@ -71,6 +72,7 @@ project(':settings').projectDir                = file('modules/settings')
 project(':share').projectDir                   = file('modules/share')
 project(':statusbar').projectDir               = file('modules/statusbar')
 project(':storage').projectDir                 = file('modules/storage')
+project(':store-review').projectDir            = file('modules/store-review')
 project(':version').projectDir                 = file('modules/version')
 project(':vibration').projectDir               = file('modules/vibration')
 project(':video').projectDir                   = file('modules/video')

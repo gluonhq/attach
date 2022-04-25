@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Gluon
+ * Copyright (c) 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.storage.impl;
+package com.gluonhq.attach.storereview;
 
-import com.gluonhq.attach.storage.StorageService;
+import com.gluonhq.attach.util.Services;
 
-abstract class DummyStorageServiceImpl implements StorageService {
+import java.util.Optional;
+
+/**
+ *
+ * The StoreReviewService provides a way to request store ratings and reviews
+ * from users.
+ *
+ * <p><b>Example</b></p>
+ * <pre>
+ * {@code StoreReviewService.create().ifPresent(service -> {
+ *      service.requestStoreReview();
+ *  });}</pre>
+ *
+ * @since 4.0.15
+ */
+public interface StoreReviewService {
+
+    /**
+     * Returns an instance of {@link StoreReviewService}.
+     * @return An instance of {@link StoreReviewService}.
+     */
+    static Optional<StoreReviewService> create() {
+        return Services.get(StoreReviewService.class);
+    }
+
+    /**
+     * Prompts the user with a request to rate and do a review
+     * of the current app in the store, without leaving the app
+     *
+     * Warning: on iOS it can be used only up to three times a year for the same app and version,
+     * and also the user could have disabled it from Settings
+     *
+     * @param fallbackURL A string with a URL to access directly the store to leave a review,
+     *                    in case the request failed
+     */
+    void requestStoreReview(String fallbackURL);
+
 }
