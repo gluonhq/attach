@@ -25,9 +25,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.storage.impl;
+package com.gluonhq.attach.storereview.impl;
 
-import com.gluonhq.attach.storage.StorageService;
+import com.gluonhq.attach.storereview.StoreReviewService;
+import com.gluonhq.attach.util.Util;
 
-abstract class DummyStorageServiceImpl implements StorageService {
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class AndroidStoreReviewService implements StoreReviewService {
+
+    private static final Logger LOG = Logger.getLogger(AndroidStoreReviewService.class.getName());
+
+    static {
+        System.loadLibrary("storereview");
+    }
+
+    public AndroidStoreReviewService() {
+        if (Util.DEBUG) {
+            LOG.log(Level.INFO, "AndroidStoreReviewService <init>");
+        }
+    }
+
+    @Override
+    public void requestStoreReview(String fallbackURL) {
+        nativeRequestStoreReview(fallbackURL);
+    }
+
+    // native
+    private native static void nativeRequestStoreReview(String fallbackURL);
+
 }

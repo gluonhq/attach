@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.storereview.impl.IOSStoreReviewService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
