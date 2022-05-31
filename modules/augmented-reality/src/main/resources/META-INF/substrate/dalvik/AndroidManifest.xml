@@ -5,5 +5,10 @@
     <application>
         <meta-data android:name="com.google.ar.core" android:value="optional" />
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
 </manifest>
 
