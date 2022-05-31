@@ -280,8 +280,6 @@ NSString *resultString;
         else
         {
             AttachLog(@"String: none");
-            NSString *result = nil;
-            sendScanResult(result);
         }
     }
 
