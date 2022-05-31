@@ -11,4 +11,9 @@
                     android:resource="@xml/file_provider_paths" />
         </provider>
     </application>
+    <queries>
+        <intent>
+            <action android:name="android.media.action.SEND" />
+        </intent>
+    </queries>
 </manifest>
