@@ -40,7 +40,7 @@ These are the requisites:
 
 To build the iOS Services:
  
-* A Mac with with MacOS X 10.14.4 or superior
+* A Mac with with MacOS X 11 or superior
 * XCode 11.x or superior
 
 ### How to build and install Attach ###
