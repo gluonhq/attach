@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.gluonhq.attach.util.impl.ClipboardUtils",
+    "methods":[
+      {"name":"syncClipboardFromOS","parameterTypes":["java.lang.String"]},
+      {"name":"syncClipboardToOS","parameterTypes":[]}
+    ]
+  }
+]

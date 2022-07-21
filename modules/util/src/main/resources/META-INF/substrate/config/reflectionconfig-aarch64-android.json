@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.util.impl.ClipboardUtil",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
