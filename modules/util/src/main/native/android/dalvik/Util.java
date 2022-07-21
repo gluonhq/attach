@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,12 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 import java.util.Arrays;
 
@@ -35,12 +40,15 @@ public class Util {
 
     public static final String TAG = "GluonAttach";
 
+    private static Activity activity;
     private static IntentHandler intentHandler;
     private static LifecycleEventHandler lifecycleEventHandler;
     private static boolean debug = false;
 
-    public Util() {
+    public Util(Activity activity) {
+        this.activity = activity;
         Log.v(TAG, "Util <init>");
+        syncClipboardFromOS();
     }
 
     private static void enableDebug() {
@@ -63,8 +71,59 @@ public class Util {
         if (debug) {
             Log.v(TAG, "Util::verifyPermissions for permissions: " + Arrays.toString(permissions));
         }
-        Util util = new Util();
+        Util util = new Util(null);
         return util.nativeVerifyPermissions(permissions);
+    }
+
+    private static void syncClipboardFromOS() {
+        if (activity == null) {
+            return;
+        }
+        Util.activity.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard != null) {
+                            ClipData data = clipboard.getPrimaryClip();
+                            ClipData.Item item = data.getItemAt(0);
+                            if (item != null && item.getText() != null) {
+                                if (debug) {
+                                    Log.v(TAG, "Util::clipboardFromOS set text");
+                                }
+                                nativeSyncClipboardFromOS(item.getText().toString());
+                            }
+                        }
+                    }
+                }, 100);
+            }
+        });
+    }
+
+    private static void syncClipboardToOS() {
+        if (activity == null) {
+            return;
+        }
+        final String text = nativeSyncClipboardToOS();
+        if (text != null && !text.isEmpty()) {
+            Util.activity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    if (clipboard != null) {
+                        if (debug) {
+                            Log.v(TAG, "Util::clipboardToOS set text");
+                        }
+                        clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
+                    }
+                }
+            });
+        }
     }
 
     private static void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -83,7 +142,15 @@ public class Util {
             }
             Util.lifecycleEventHandler.lifecycleEvent(event);
         }
+
+        if ("resume".equals(event)) {
+            syncClipboardFromOS();
+        } else if ("pause".equals(event)) {
+            syncClipboardToOS();
+        }
     }
 
     private native boolean nativeVerifyPermissions(String[] permissions);
+    private static native void nativeSyncClipboardFromOS(String content);
+    private static native String nativeSyncClipboardToOS();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
  */
 package com.gluonhq.attach.util;
 
+import com.gluonhq.attach.util.impl.ClipboardUtils;
 import com.gluonhq.attach.util.impl.Debug;
 
 import java.util.Locale;
@@ -77,8 +78,12 @@ public enum Platform {
         current = valueOf(name);
         LOGGER.fine("Current platform: "  + current);
 
-        if (isAndroid() || isIOS()) {
-            System.loadLibrary(isAndroid() ? "util" : "Util");
+        if (isAndroid()) {
+            new ClipboardUtils();
+            System.loadLibrary("util");
+            Debug.init();
+        } else if (isIOS()) {
+            System.loadLibrary("Util");
             Debug.init();
         }
     }

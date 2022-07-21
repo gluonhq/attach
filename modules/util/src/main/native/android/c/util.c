@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,11 +37,22 @@ static jmethodID jUtilOnActivityResultMethod;
 static jmethodID jUtilOnLifecycleEventMethod;
 static jmethodID jUtilRequestPermissionsMethod;
 
+// Graal handles
+static jclass jGraalUtilClass;
+static jmethodID jGraalSyncClipboardFromMethod;
+static jmethodID jGraalSyncClipboardToMethod;
+
 static jboolean initialized;
 static jboolean debugAttach;
 
 static jmethodID loadClassMethod;
 static jobject classLoaderObject;
+
+static void initializeGraalHandles(JNIEnv* env) {
+    jGraalUtilClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/util/impl/ClipboardUtils"));
+    jGraalSyncClipboardFromMethod = (*env)->GetStaticMethodID(env, jGraalUtilClass, "syncClipboardFromOS", "(Ljava/lang/String;)V");
+    jGraalSyncClipboardToMethod = (*env)->GetStaticMethodID(env, jGraalUtilClass, "syncClipboardToOS", "()Ljava/lang/String;");
+}
 
 jclass registerDalvikClass(const char* className) {
     ATTACH_DALVIK();
@@ -71,7 +82,7 @@ static void initializeUtilDalvikHandles() {
     jUtilClass = GET_REGISTER_DALVIK_CLASS(jUtilClass, "com/gluonhq/helloandroid/Util");
     jPermissionActivityClass = substrateGetPermissionActivityClass();
     ATTACH_DALVIK();
-    jmethodID jUtilInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jUtilClass, "<init>", "()V");
+    jmethodID jUtilInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jUtilClass, "<init>", "(Landroid/app/Activity;)V");
     jUtilEnableDebugMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "enableDebug", "()V");
     jUtilOnActivityResultMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "onActivityResult", "(IILandroid/content/Intent;)V");
     jUtilOnLifecycleEventMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jUtilClass, "lifecycleEvent", "(Ljava/lang/String;)V");
@@ -82,7 +93,8 @@ static void initializeUtilDalvikHandles() {
         (*dalvikEnv)->ExceptionClear(dalvikEnv);
     }
 
-    jobject util = (*dalvikEnv)->NewObject(dalvikEnv, jUtilClass, jUtilInitMethod);
+    jobject jActivity = substrateGetActivity();
+    jobject util = (*dalvikEnv)->NewObject(dalvikEnv, jUtilClass, jUtilInitMethod, jActivity);
     DETACH_DALVIK();
     ATTACH_LOG_FINE("Dalvik Util init was called");
     initialized = JNI_TRUE;
@@ -100,6 +112,7 @@ JNI_OnLoad_util(JavaVM *vm, void *reserved)
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("Initializing native Util from OnLoad");
+    initializeGraalHandles(graalEnv);
     initializeUtilDalvikHandles();
     return JNI_VERSION_1_8;
 #else
@@ -169,4 +182,33 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_helloandroid_Util_nativeVerifyPermis
     jboolean jresult = (*env)->CallStaticBooleanMethod(env, jPermissionActivityClass, jUtilRequestPermissionsMethod, substrateGetActivity(), jpermissionsArray);
     ATTACH_LOG_FINE("Verify Permissions from native Attach::Util done");
     return jresult;
+}
+
+///////////////////////////
+// From Dalvik to native //
+///////////////////////////
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_Util_nativeSyncClipboardFromOS(
+    JNIEnv *env, jobject service, jstring content) {
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Native layer got new clipboard content from OS\n");
+    }
+    const char *contentChars = (*env)->GetStringUTFChars(env, content, NULL);
+    ATTACH_GRAAL();
+    jstring jcontent = (*graalEnv)->NewStringUTF(graalEnv, contentChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalUtilClass, jGraalSyncClipboardFromMethod, jcontent);
+    DETACH_GRAAL();
+    (*env)->ReleaseStringUTFChars(env, content, contentChars);
+}
+
+JNIEXPORT jstring JNICALL Java_com_gluonhq_helloandroid_Util_nativeSyncClipboardToOS(
+    JNIEnv *env, jobject service) {
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Native layer set new clipboard content to OS\n");
+    }
+    ATTACH_GRAAL();
+    jstring result = (*graalEnv)->CallStaticObjectMethod(graalEnv, jGraalUtilClass, jGraalSyncClipboardToMethod);
+    const char *resultChars = (*graalEnv)->GetStringUTFChars(graalEnv, result, 0);
+    DETACH_GRAAL();
+    return (*env)->NewStringUTF(env, resultChars);
 }
