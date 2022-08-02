@@ -90,12 +90,14 @@ public class Util {
                         ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
                         if (clipboard != null) {
                             ClipData data = clipboard.getPrimaryClip();
-                            ClipData.Item item = data.getItemAt(0);
-                            if (item != null && item.getText() != null) {
-                                if (debug) {
-                                    Log.v(TAG, "Util::clipboardFromOS set text");
+                            if (data != null) {
+                                ClipData.Item item = data.getItemAt(0);
+                                if (item != null && item.getText() != null) {
+                                    if (debug) {
+                                        Log.v(TAG, "Util::clipboardFromOS set text");
+                                    }
+                                    nativeSyncClipboardFromOS(item.getText().toString());
                                 }
-                                nativeSyncClipboardFromOS(item.getText().toString());
                             }
                         }
                     }
