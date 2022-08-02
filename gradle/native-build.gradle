@@ -365,7 +365,7 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         File nativeSourcesDir = file("$projectDir/src/main/native/$os/c/")
         osSources = [nativeSourcesDir.listFiles().findAll {it.name.endsWith(".c")}].flatten()
 
-        def compilerArgs = ["-target", platform, "-Werror", "-c", includeFlags, osIncludeFlags, osSources].flatten()
+        def compilerArgs = ["-target", platform, "-Werror", "-c", includeFlags, osIncludeFlags, osSources, "--verbose"].flatten()
 
         exec {
             executable compiler
