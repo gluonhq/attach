@@ -30,8 +30,8 @@ jobs:
       - name: Build project
         run: |
           export ANDROID_SDK=$ANDROID_HOME
-          export ANDROID_NDK=$ANDROID_HOME/ndk-bundle
-          ./gradlew -d nativeBuild
+          export ANDROID_NDK=$ANDROID_HOME/ndk/21.4.7075529
+          ./gradlew -i nativeBuild
 
       - name: Deploy Snapshot
         if: github.ref == 'refs/heads/master'
