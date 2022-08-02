@@ -90,6 +90,7 @@ public class Util {
                         ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
                         if (clipboard != null) {
                             ClipData data = clipboard.getPrimaryClip();
+                            if (data == null) return;
                             ClipData.Item item = data.getItemAt(0);
                             if (item != null && item.getText() != null) {
                                 if (debug) {
