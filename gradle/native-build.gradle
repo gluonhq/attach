@@ -356,6 +356,11 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         def toolchainHome = "$ndk/toolchains/llvm"
         def compilerHome = "$toolchainHome/prebuilt/${host}-x86_64"
         def compiler = file("$compilerHome/bin/clang").getAbsolutePath()
+        exec {
+            executable compiler
+            args "--version"
+            workingDir compileOutput
+        }
         def linker = file("$compilerHome/bin/llvm-ar").getAbsolutePath()
 
         osIncludeFlags = ["-I$JAVAHOME/include/$host",
