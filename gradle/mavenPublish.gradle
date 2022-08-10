@@ -1,11 +1,8 @@
 apply from: rootProject.file("gradle/native-build.gradle")
 
-import java.time.Duration
-
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: 'de.marcphilipp.nexus-publish'
 
 jar {
     exclude "**/impl/Desktop**", "**/impl/IOS**", "**/impl/Android**", "META-INF/substrate"
@@ -88,13 +85,4 @@ publishing {
 signing {
     sign publishing.publications.maven
     required = { gradle.taskGraph.hasTask(publish) && !version.endsWith("SNAPSHOT") }
-}
-
-nexusPublishing {
-    repositories {
-        sonatype()
-    }
-    // credentials are shared from staging plugin
-    clientTimeout = Duration.ofMinutes(5)
-    connectTimeout = Duration.ofMinutes(5)
 }

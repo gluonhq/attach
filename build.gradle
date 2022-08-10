@@ -1,8 +1,9 @@
+import java.time.Duration
+
 plugins {
     id 'java-library'
-    id 'io.codearte.nexus-staging' version '0.21.1'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id "org.openjfx.javafxplugin" version "0.0.10" apply false
-    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
 if (System.getProperty('os.name').toLowerCase().contains("mac")) {
@@ -35,12 +36,20 @@ subprojects {
     }
 }
 
-nexusStaging {
+nexusPublishing {
     packageGroup = 'com.gluonhq'
-    username = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : ''
-    password = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''
-    numberOfRetries = 30
-    delayBetweenRetriesInMillis = 5000
+    repositories {
+        sonatype {
+            username = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : ''
+            password = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''
+        }
+    }
+    clientTimeout = Duration.ofMinutes(5)
+    connectTimeout = Duration.ofMinutes(5)
+    transitionCheckOptions {
+        maxRetries.set(30)
+        delayBetween.set(Duration.ofMillis(5000))
+    }
 }
 
 task copyModuleSources {
