@@ -28,6 +28,7 @@
 package com.gluonhq.attach.barcodescan;
 
 import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 import java.util.Optional;
 
@@ -99,11 +100,8 @@ public interface BarcodeScanService {
      * Starts up the scanner functionality (commonly provided via the camera), and then parsed by Attach to
      * determine the string the barcode represents.
      *
-     * @return Returns an Optional containing the parsed string. The Optional may
-     *         be empty if the String fails to be parsed for any reason, or if the
-     *         user cancels the operation.
      */
-    Optional<String> scan();
+    void scan();
 
     /**
      * Starts up the scanner functionality (commonly provided via the camera),
@@ -116,11 +114,10 @@ public interface BarcodeScanService {
      * @param resultText The text to display when the scan ends successfully, before
      *                   the scanned text. If empty or null, the result won't be shown.
      *
-     * @return Returns an Optional containing the parsed string. The Optional may
-     *         be empty if the String fails to be parsed for any reason, or if the
-     *         user cancels the operation.
      * @since 3.8.0
      */
-    Optional<String> scan(String title, String legend, String resultText);
+    void scan(String title, String legend, String resultText);
+
+    ReadOnlyStringProperty resultProperty();
 
 }
