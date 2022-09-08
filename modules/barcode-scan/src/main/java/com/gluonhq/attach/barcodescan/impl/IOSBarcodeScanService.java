@@ -88,7 +88,7 @@ public class IOSBarcodeScanService implements BarcodeScanService {
     // callback
     
     public static void setResult(String v) {
-        if(enteredLoop) {
+        if (enteredLoop) {
             enteredLoop = false;
             result.set(v);
             Platform.runLater(() -> {

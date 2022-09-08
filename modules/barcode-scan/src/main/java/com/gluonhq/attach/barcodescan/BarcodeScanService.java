@@ -105,12 +105,14 @@ public interface BarcodeScanService {
     void asyncScan();
 
     /**
-     * Starts up the scanner functionality (commonly provided via the camera), and then parsed by Attach to
-     * determine the string the barcode represents.
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
+     * and then parsed by Attach to determine the string the barcode represents.
      *
      * @return Returns an Optional containing the parsed string. The Optional may
      *         be empty if the String fails to be parsed for any reason, or if the
      *         user cancels the operation.
+     *
+     * @deprecated This method has been deprecated in favour of {@link #asyncScan()}.
      */
     @Deprecated
     Optional<String> scan();
@@ -131,7 +133,7 @@ public interface BarcodeScanService {
     void asyncScan(String title, String legend, String resultText);
 
     /**
-     * Starts up the scanner functionality (commonly provided via the camera),
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
      * and then parsed by Attach to determine the string the barcode represents.
      *
      * @param title The title of the scan view. If null or empty nothing will be
@@ -145,6 +147,8 @@ public interface BarcodeScanService {
      *         be empty if the String fails to be parsed for any reason, or if the
      *         user cancels the operation.
      * @since 3.8.0
+     *
+     * @deprecated This method has been deprecated in favour of {@link #asyncScan(String, String, String)}.
      */
     @Deprecated
     Optional<String> scan(String title, String legend, String resultText);
