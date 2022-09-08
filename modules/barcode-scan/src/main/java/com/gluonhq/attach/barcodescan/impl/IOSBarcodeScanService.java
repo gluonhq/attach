@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ import com.gluonhq.attach.barcodescan.BarcodeScanService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 
 import java.util.Optional;
 
@@ -39,14 +41,16 @@ import java.util.Optional;
  * the plist file in order to use this service
  */
 public class IOSBarcodeScanService implements BarcodeScanService {
-    
+
     static {
         System.loadLibrary("BarcodeScan");
         initBarcodeScan();
     }
     
+    private static final ReadOnlyStringWrapper scanResult = new ReadOnlyStringWrapper();
     private static StringProperty result;
-        
+    private static boolean enteredLoop;
+
     @Override
     public Optional<String> scan() {
         return scan("", "", "");
@@ -57,24 +61,46 @@ public class IOSBarcodeScanService implements BarcodeScanService {
         result = new SimpleStringProperty();
         startBarcodeScan(title != null ? title : "", legend != null ? legend : "", resultText != null ? resultText : "");
         try {
+            enteredLoop = true;
             Platform.enterNestedEventLoop(result);
         } catch (Exception e) {
             System.out.println("ScanActivity: enterNestedEventLoop failed: " + e);
         }
         return Optional.ofNullable(result.get());
     }
+
+    @Override
+    public void asyncScan() {
+        asyncScan("", "", "");
+    }
     
+    @Override
+    public void asyncScan(String title, String legend, String resultText) {
+        scanResult.set(null);
+        startBarcodeScan(title != null ? title : "", legend != null ? legend : "", resultText != null ? resultText : "");
+    }
+
+    @Override
+    public ReadOnlyStringProperty resultProperty() {
+        return scanResult.getReadOnlyProperty();
+    }
+
     // callback
     
     public static void setResult(String v) {
-        result.set(v);
-        Platform.runLater(() -> {
-            try {
-                Platform.exitNestedEventLoop(result, null);
-            } catch (Exception e) {
-                System.out.println("ScanActivity: exitNestedEventLoop failed: " + e);
-            }
-        });
+        if (enteredLoop) {
+            enteredLoop = false;
+            result.set(v);
+            Platform.runLater(() -> {
+                try {
+                    Platform.exitNestedEventLoop(result, null);
+                } catch (Exception e) {
+                    System.out.println("ScanActivity: exitNestedEventLoop failed: " + e);
+                }
+            });
+            return;
+        }
+        Platform.runLater(() -> scanResult.set(v));
     }
     
     // native

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 package com.gluonhq.attach.barcodescan;
 
 import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 import java.util.Optional;
 
@@ -40,8 +41,9 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code BarcodeScanService.create().ifPresent(service -> {
- *      Optional<String> barcode = barcodeScanService.scan();
- *      barcode.ifPresent(barcodeValue -> System.out.println("Scanned Bar Code: " + barcodeValue));
+ *      service.resultProperty().addListener((obs, ov, nv) ->
+ *          System.out.printf("Scanned result: %s", nv.getResult()));
+ *      barcodeScanService.asyncScan();
  *  });}</pre>
  *
  * <p><b>Requirements</b></p>
@@ -99,10 +101,21 @@ public interface BarcodeScanService {
      * Starts up the scanner functionality (commonly provided via the camera), and then parsed by Attach to
      * determine the string the barcode represents.
      *
+     * @since 4.0.16
+     */
+    void asyncScan();
+
+    /**
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
+     * and then parsed by Attach to determine the string the barcode represents.
+     *
      * @return Returns an Optional containing the parsed string. The Optional may
      *         be empty if the String fails to be parsed for any reason, or if the
      *         user cancels the operation.
+     *
+     * @deprecated This method has been deprecated in favour of {@link #asyncScan()}.
      */
+    @Deprecated
     Optional<String> scan();
 
     /**
@@ -116,11 +129,31 @@ public interface BarcodeScanService {
      * @param resultText The text to display when the scan ends successfully, before
      *                   the scanned text. If empty or null, the result won't be shown.
      *
+     * @since 4.0.16
+     */
+    void asyncScan(String title, String legend, String resultText);
+
+    /**
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
+     * and then parsed by Attach to determine the string the barcode represents.
+     *
+     * @param title The title of the scan view. If null or empty nothing will be
+     *              displayed.
+     * @param legend An explanatory message displayed in the scan view. If null or
+     *               empty nothing will be displayed.
+     * @param resultText The text to display when the scan ends successfully, before
+     *                   the scanned text. If empty or null, the result won't be shown.
+     *
      * @return Returns an Optional containing the parsed string. The Optional may
      *         be empty if the String fails to be parsed for any reason, or if the
      *         user cancels the operation.
      * @since 3.8.0
+     *
+     * @deprecated This method has been deprecated in favour of {@link #asyncScan(String, String, String)}.
      */
+    @Deprecated
     Optional<String> scan(String title, String legend, String resultText);
+
+    ReadOnlyStringProperty resultProperty();
 
 }
