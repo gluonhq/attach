@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,20 @@ public interface BarcodeScanService {
      * Starts up the scanner functionality (commonly provided via the camera), and then parsed by Attach to
      * determine the string the barcode represents.
      *
+     * @since 4.0.16
      */
-    void scan();
+    void asyncScan();
+
+    /**
+     * Starts up the scanner functionality (commonly provided via the camera), and then parsed by Attach to
+     * determine the string the barcode represents.
+     *
+     * @return Returns an Optional containing the parsed string. The Optional may
+     *         be empty if the String fails to be parsed for any reason, or if the
+     *         user cancels the operation.
+     */
+    @Deprecated
+    Optional<String> scan();
 
     /**
      * Starts up the scanner functionality (commonly provided via the camera),
@@ -114,9 +126,28 @@ public interface BarcodeScanService {
      * @param resultText The text to display when the scan ends successfully, before
      *                   the scanned text. If empty or null, the result won't be shown.
      *
+     * @since 4.0.16
+     */
+    void asyncScan(String title, String legend, String resultText);
+
+    /**
+     * Starts up the scanner functionality (commonly provided via the camera),
+     * and then parsed by Attach to determine the string the barcode represents.
+     *
+     * @param title The title of the scan view. If null or empty nothing will be
+     *              displayed.
+     * @param legend An explanatory message displayed in the scan view. If null or
+     *               empty nothing will be displayed.
+     * @param resultText The text to display when the scan ends successfully, before
+     *                   the scanned text. If empty or null, the result won't be shown.
+     *
+     * @return Returns an Optional containing the parsed string. The Optional may
+     *         be empty if the String fails to be parsed for any reason, or if the
+     *         user cancels the operation.
      * @since 3.8.0
      */
-    void scan(String title, String legend, String resultText);
+    @Deprecated
+    Optional<String> scan(String title, String legend, String resultText);
 
     ReadOnlyStringProperty resultProperty();
 

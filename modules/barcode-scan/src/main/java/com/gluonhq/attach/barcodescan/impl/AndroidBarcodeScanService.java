@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,12 @@ package com.gluonhq.attach.barcodescan.impl;
 
 import com.gluonhq.attach.barcodescan.BarcodeScanService;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+
+import java.util.Optional;
 
 /**
  * Requires this permission: android.permission.CAMERA
@@ -60,14 +64,34 @@ public class AndroidBarcodeScanService implements BarcodeScanService {
     }
 
     private static final ReadOnlyStringWrapper scanResult = new ReadOnlyStringWrapper();
+    private static StringProperty result;
+    private static boolean enteredLoop;
 
     @Override
-    public void scan() {
-        scan("", "", "");
+    public Optional<String> scan() {
+        return scan("", "", "");
     }
     
     @Override
-    public void scan(String title, String legend, String resultText) {
+    public Optional<String> scan(String title, String legend, String resultText) {
+        result = new SimpleStringProperty();
+        startBarcodeScan(title != null ? title : "", legend != null ? legend : "", resultText != null ? resultText : "");
+        try {
+            enteredLoop = true;
+            Platform.enterNestedEventLoop(result);
+        } catch (Exception e) {
+            System.out.println("ScanActivity: enterNestedEventLoop failed: " + e);
+        }
+        return Optional.ofNullable(result.get());
+    }
+
+    @Override
+    public void asyncScan() {
+        asyncScan("", "", "");
+    }
+    
+    @Override
+    public void asyncScan(String title, String legend, String resultText) {
         scanResult.set(null);
         startBarcodeScan(title != null ? title : "", legend != null ? legend : "", resultText != null ? resultText : "");
     }
@@ -82,6 +106,18 @@ public class AndroidBarcodeScanService implements BarcodeScanService {
 
     // callback
     public static void setResult(String v) {
+        if(enteredLoop) {
+            enteredLoop = false;
+            result.set(v);
+            Platform.runLater(() -> {
+                try {
+                    Platform.exitNestedEventLoop(result, null);
+                } catch (Exception e) {
+                    System.out.println("ScanActivity: exitNestedEventLoop failed: " + e);
+                }
+            });
+            return;
+        }
         Platform.runLater(() -> scanResult.set(v));
     }
 }
