@@ -41,8 +41,9 @@ import java.util.Optional;
  * <p><b>Example</b></p>
  * <pre>
  * {@code BarcodeScanService.create().ifPresent(service -> {
- *      Optional<String> barcode = barcodeScanService.scan();
- *      barcode.ifPresent(barcodeValue -> System.out.println("Scanned Bar Code: " + barcodeValue));
+ *      service.resultProperty().addListener((obs, ov, nv) ->
+ *          System.out.printf("Scanned result: %s", nv.getResult()));
+ *      barcodeScanService.asyncScan();
  *  });}</pre>
  *
  * <p><b>Requirements</b></p>
