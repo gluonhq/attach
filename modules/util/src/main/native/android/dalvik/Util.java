@@ -41,6 +41,7 @@ public class Util {
     public static final String TAG = "GluonAttach";
 
     private static Activity activity;
+    private static ClipboardManager clipboard;
     private static IntentHandler intentHandler;
     private static LifecycleEventHandler lifecycleEventHandler;
     private static boolean debug = false;
@@ -48,7 +49,10 @@ public class Util {
     public Util(Activity activity) {
         this.activity = activity;
         Log.v(TAG, "Util <init>");
-        syncClipboardFromOS();
+        if (activity != null) {
+            clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+            syncClipboardFromOS();
+        }
     }
 
     private static void enableDebug() {
@@ -76,7 +80,7 @@ public class Util {
     }
 
     private static void syncClipboardFromOS() {
-        if (activity == null) {
+        if (Util.activity == null) {
             return;
         }
         Util.activity.runOnUiThread(new Runnable() {
@@ -87,7 +91,6 @@ public class Util {
 
                     @Override
                     public void run() {
-                        ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
                         if (clipboard != null) {
                             ClipData data = clipboard.getPrimaryClip();
                             if (data != null) {
@@ -107,7 +110,7 @@ public class Util {
     }
 
     private static void syncClipboardToOS() {
-        if (activity == null) {
+        if (Util.activity == null) {
             return;
         }
         final String text = nativeSyncClipboardToOS();
@@ -116,7 +119,6 @@ public class Util {
 
                 @Override
                 public void run() {
-                    ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
                     if (clipboard != null) {
                         if (debug) {
                             Log.v(TAG, "Util::clipboardToOS set text");
