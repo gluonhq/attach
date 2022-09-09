@@ -43,7 +43,7 @@ import java.util.Optional;
  * {@code BarcodeScanService.create().ifPresent(service -> {
  *      service.resultProperty().addListener((obs, ov, nv) ->
  *          System.out.printf("Scanned result: %s", nv.getResult()));
- *      barcodeScanService.asyncScan();
+ *      service.asyncScan();
  *  });}</pre>
  *
  * <p><b>Requirements</b></p>
