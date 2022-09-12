@@ -41,14 +41,18 @@ public class Util {
     public static final String TAG = "GluonAttach";
 
     private static Activity activity;
+    private static ClipboardManager clipboard;
     private static IntentHandler intentHandler;
     private static LifecycleEventHandler lifecycleEventHandler;
     private static boolean debug = false;
 
     public Util(Activity activity) {
-        this.activity = activity;
+        Util.activity = activity;
         Log.v(TAG, "Util <init>");
-        syncClipboardFromOS();
+        if (activity != null) {
+            Util.clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+            syncClipboardFromOS();
+        }
     }
 
     private static void enableDebug() {
@@ -76,20 +80,19 @@ public class Util {
     }
 
     private static void syncClipboardFromOS() {
-        if (activity == null) {
+        if (Util.activity == null) {
             return;
         }
         Util.activity.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                new Handler().postDelayed(new Runnable() {
+                new Handler(Util.activity.getMainLooper()).postDelayed(new Runnable() {
 
                     @Override
                     public void run() {
-                        ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                        if (clipboard != null) {
-                            ClipData data = clipboard.getPrimaryClip();
+                        if (Util.clipboard != null) {
+                            ClipData data = Util.clipboard.getPrimaryClip();
                             if (data != null) {
                                 ClipData.Item item = data.getItemAt(0);
                                 if (item != null && item.getText() != null) {
@@ -107,7 +110,7 @@ public class Util {
     }
 
     private static void syncClipboardToOS() {
-        if (activity == null) {
+        if (Util.activity == null) {
             return;
         }
         final String text = nativeSyncClipboardToOS();
@@ -116,12 +119,11 @@ public class Util {
 
                 @Override
                 public void run() {
-                    ClipboardManager clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                    if (clipboard != null) {
+                    if (Util.clipboard != null) {
                         if (debug) {
                             Log.v(TAG, "Util::clipboardToOS set text");
                         }
-                        clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
+                        Util.clipboard.setPrimaryClip(ClipData.newPlainText(text, text));
                     }
                 }
             });
