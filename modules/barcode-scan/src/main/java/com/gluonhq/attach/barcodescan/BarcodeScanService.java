@@ -43,7 +43,7 @@ import java.util.Optional;
  * {@code BarcodeScanService.create().ifPresent(service -> {
  *      service.resultProperty().addListener((obs, ov, nv) ->
  *          System.out.printf("Scanned result: %s", nv.getResult()));
- *      barcodeScanService.asyncScan();
+ *      service.asyncScan();
  *  });}</pre>
  *
  * <p><b>Requirements</b></p>
@@ -106,7 +106,7 @@ public interface BarcodeScanService {
     void asyncScan();
 
     /**
-     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way,
      * and then parsed by Attach to determine the string the barcode represents.
      *
      * @return Returns an Optional containing the parsed string. The Optional may
@@ -134,7 +134,7 @@ public interface BarcodeScanService {
     void asyncScan(String title, String legend, String resultText);
 
     /**
-     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way
+     * Starts up the scanner functionality (commonly provided via the camera), in a blocking way,
      * and then parsed by Attach to determine the string the barcode represents.
      *
      * @param title The title of the scan view. If null or empty nothing will be
@@ -154,6 +154,13 @@ public interface BarcodeScanService {
     @Deprecated
     Optional<String> scan(String title, String legend, String resultText);
 
+    /**
+     * A read-only property containing the result of the scan.
+     *
+     * @return a read-only object property containing a string with the barcode or QR code scan
+     *
+     * @since 4.0.16
+     */
     ReadOnlyStringProperty resultProperty();
 
 }

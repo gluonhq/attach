@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ package com.gluonhq.attach.pictures.impl;
 import com.gluonhq.attach.pictures.PicturesService;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
@@ -90,21 +92,27 @@ public class AndroidPicturesService implements PicturesService {
     }
 
     private static final ObjectProperty<File> imageFile = new SimpleObjectProperty<>();
+    private static final ReadOnlyObjectWrapper<Image> imageProperty = new ReadOnlyObjectWrapper<>();
     private static ObjectProperty<Image> result;
-
-    public AndroidPicturesService() {
-    }
+    private static boolean enteredLoop;
 
     @Override
     public Optional<Image> takePhoto(boolean savePhoto) {
         result = new SimpleObjectProperty<>();
         takePicture(savePhoto);
         try {
+            enteredLoop = true;
             Platform.enterNestedEventLoop(result);
         } catch (Exception e) {
             LOG.severe("GalleryActivity: enterNestedEventLoop failed: " + e);
         }
         return Optional.ofNullable(result.get());
+    }
+
+    @Override
+    public void asyncTakePhoto(boolean savePhoto) {
+        imageProperty.setValue(null);
+        takePicture(savePhoto);
     }
 
     @Override
@@ -112,6 +120,7 @@ public class AndroidPicturesService implements PicturesService {
         result = new SimpleObjectProperty<>();
         selectPicture();
         try {
+            enteredLoop = true;
             Platform.enterNestedEventLoop(result);
         } catch (Exception e) {
             LOG.severe("GalleryActivity: enterNestedEventLoop failed: " + e);
@@ -120,8 +129,19 @@ public class AndroidPicturesService implements PicturesService {
     }
 
     @Override
+    public void asyncLoadImageFromGallery() {
+        imageProperty.setValue(null);
+        selectPicture();
+    }
+
+    @Override
     public Optional<File> getImageFile() {
         return Optional.ofNullable(imageFile.get());
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Image> imageProperty() {
+        return imageProperty.getReadOnlyProperty();
     }
 
     // native
@@ -139,18 +159,28 @@ public class AndroidPicturesService implements PicturesService {
         } catch (FileNotFoundException e) {
             LOG.severe("GalleryActivity: file not found: " + e);
         }
-        if (initialImage == null || rotate == 0) {
+        if (enteredLoop && (initialImage == null || rotate == 0)) {
             result.set(initialImage);
         }
         final Image finalImage = initialImage;
         Platform.runLater(() -> {
             if (finalImage != null && rotate != 0) {
-                result.set(rotateImage(finalImage, rotate));
+                Image image = rotateImage(finalImage, rotate);
+                if (enteredLoop) {
+                    result.set(image);
+                } else {
+                    imageProperty.setValue(image);
+                }
+            } else {
+                imageProperty.setValue(finalImage);
             }
-            try {
-                Platform.exitNestedEventLoop(result, null);
-            } catch (Exception e) {
-                LOG.severe("GalleryActivity: exitNestedEventLoop failed: " + e);
+            if (enteredLoop) {
+                enteredLoop = false;
+                try {
+                    Platform.exitNestedEventLoop(result, null);
+                } catch (Exception e) {
+                    LOG.severe("GalleryActivity: exitNestedEventLoop failed: " + e);
+                }
             }
         });
     }
