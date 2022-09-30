@@ -1,15 +1,18 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+
+    namespace 'com.gluonhq.helloandroid'
+
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
 
     dependencies {
-        provided fileTree(dir: '../libs', include: '*.jar')
+        compileOnly fileTree(dir: '../libs', include: '*.jar')
         implementation 'com.google.zxing:core:3.4.1'
     }
 

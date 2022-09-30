@@ -1,11 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+
+    namespace 'com.gluonhq.helloandroid'
+
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
 
     compileOptions {
@@ -14,7 +17,7 @@ android {
     }
 
     dependencies {
-        provided fileTree(dir: '../libs', include: '*.jar')
+        compileOnly fileTree(dir: '../libs', include: '*.jar')
         implementation 'com.google.ar:core:1.20.0'
         implementation 'de.javagl:obj:0.3.0'
     }
