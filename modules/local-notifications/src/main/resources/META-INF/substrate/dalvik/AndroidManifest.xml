@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="com.gluonhq.helloandroid">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <uses-sdk android:minSdkVersion="21" />
     <application>
         <activity android:name='com.gluonhq.helloandroid.MainActivity'
+                  android:exported="true"
                   android:configChanges="orientation|keyboardHidden"
                   android:launchMode="singleTop">
             <intent-filter>
@@ -11,10 +12,12 @@
             </intent-filter>
         </activity>
         <activity android:name="com.gluonhq.helloandroid.NotificationActivity"
-            android:parentActivityName="com.gluonhq.helloandroid.MainActivity">
+                  android:parentActivityName="com.gluonhq.helloandroid.MainActivity"
+                  android:exported="true">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gluonhq.helloandroid.MainActivity"/>
         </activity>
-        <receiver android:name="com.gluonhq.helloandroid.AlarmReceiver" />
+        <receiver android:name="com.gluonhq.helloandroid.AlarmReceiver"
+                  android:exported="true"/>
     </application>
 </manifest>

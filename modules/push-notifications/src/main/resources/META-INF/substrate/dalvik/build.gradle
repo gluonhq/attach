@@ -1,11 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+
+    namespace 'com.gluonhq.helloandroid'
+
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
 
     afterEvaluate {
@@ -19,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    provided fileTree(dir: '../libs', include: '*.jar')
+    compileOnly fileTree(dir: '../libs', include: '*.jar')
     implementation 'com.google.gms:google-services:4.3.3'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
 }
