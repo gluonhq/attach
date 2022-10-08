@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2021, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,10 @@ public class AndroidPushNotificationsService implements PushNotificationsService
                     getErrorString(resultCode) +
                     "\n\nPush notifications won't work until this error is fixed");
         }
+    }
+
+    public void setAppIconBadgeNumber(int badgeNumber) {
+       // Needs implementation
     }
 
     private GoogleServicesConfiguration readGoogleServicesConfiguration() {
