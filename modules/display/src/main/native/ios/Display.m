@@ -273,4 +273,33 @@ NSString * GetDeviceModel(void)
     sendNotch();
 }
 
+JNIEXPORT jintArray JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_safeAreaInsets
+(JNIEnv *env, jclass jClass)
+{
+    jintArray output = (*env)->NewIntArray(env, 2);
+    if (output == NULL) {
+        return NULL;
+    }
+
+    if (@available(iOS 11.0, *)) {
+        UIWindow* window = [UIApplication sharedApplication].keyWindow;
+        if(!window)
+        {
+           AttachLog(@"key window was nil");
+           return NULL;
+        }
+        CGFloat topPadding = window.safeAreaInsets.top;
+        CGFloat bottomPadding = window.safeAreaInsets.bottom;
+
+        jint res[] = {topPadding, bottomPadding};
+        (*env)->SetIntArrayRegion(env, output, 0, 2, res);
+        return output;
+
+    }
+    jint res[]={0,0};
+    (*env)->SetIntArrayRegion(env, output, 0, 2, res);
+    return output;
+}
+
+
 @end

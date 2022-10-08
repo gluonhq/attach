@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,11 @@ public class IOSDisplayService implements DisplayService {
     }
 
     @Override
+    public int getHomeIndicatorHeight() {
+       return getSafeAreaInsets()[1];
+    }
+
+    @Override
     public float getScreenScale() {
         return screenScale();
     }
@@ -100,6 +105,11 @@ public class IOSDisplayService implements DisplayService {
         return notch.getReadOnlyProperty();
     }
 
+    private int [] getSafeAreaInsets() {
+       return safeAreaInsets();
+    }
+
+
     // native
     private static native void initDisplay();
 
@@ -108,6 +118,7 @@ public class IOSDisplayService implements DisplayService {
     private native static double[] screenBounds();
     private native static float screenScale();
     private native static boolean isNotchFound();
+    private native static int[] safeAreaInsets();
 
     private static native void startObserver();
     private static native void stopObserver();
