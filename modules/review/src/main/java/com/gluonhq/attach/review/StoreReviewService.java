@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Gluon
+ * Copyright (c) 2017, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,47 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.statusbar;
+package com.gluonhq.attach.review;
 
 import com.gluonhq.attach.util.Services;
-import javafx.scene.paint.Color;
 
 import java.util.Optional;
 
 /**
- * The status bar service provides access to the native status bar of the underlying platform.
- * At the moment, it's only possible to change the color of the status bar.
+ *
+ * The StoreReviewService provides a way to request Store ratings and reviews
+ * from users.
  *
  * <p><b>Example</b></p>
  * <pre>
- * {@code StatusBarService.create().ifPresent(service -> {
- *      service.setColor(Color.GOLD);
+ * {@code StoreReviewService.create().ifPresent(service -> {
+ *      service.requestReview();
  *  });}</pre>
  *
- * <p><b>Android Configuration</b>: none</p>
- * <p><b>iOS Configuration</b>: none</p>
- *
- * @since 3.0.0
+ * @since 4.0.12
  */
-public interface StatusBarService {
+public interface StoreReviewService {
 
     /**
-     * Returns an instance of {@link StatusBarService}.
-     * @return An instance of {@link StatusBarService}.
+     * Returns an instance of {@link StoreReviewService}.
+     * @return An instance of {@link StoreReviewService}.
      */
-    static Optional<StatusBarService> create() {
-        return Services.get(StatusBarService.class);
+    static Optional<StoreReviewService> create() {
+        return Services.get(StoreReviewService.class);
     }
 
     /**
-     * Sets the color of the status bar to the specified color.
-     * @param color The color to set the status bar to.
+     * Allows developer to request Store ratings and reviews from users 
+     *
      */
-    void setColor(Color color);
+    void requestReview();
 
-    /**
-     * Returns the height of the status bar
-     * @return The height of the status bar
-     */
-    int getBarHeight();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Gluon
+ * Copyright (c) 2020, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,47 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.attach.statusbar;
+package com.gluonhq.helloandroid;
 
-import com.gluonhq.attach.util.Services;
-import javafx.scene.paint.Color;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
-import java.util.Optional;
+public class DalvikReviewService  {
 
-/**
- * The status bar service provides access to the native status bar of the underlying platform.
- * At the moment, it's only possible to change the color of the status bar.
- *
- * <p><b>Example</b></p>
- * <pre>
- * {@code StatusBarService.create().ifPresent(service -> {
- *      service.setColor(Color.GOLD);
- *  });}</pre>
- *
- * <p><b>Android Configuration</b>: none</p>
- * <p><b>iOS Configuration</b>: none</p>
- *
- * @since 3.0.0
- */
-public interface StatusBarService {
+    private static final String TAG = Util.TAG;
 
-    /**
-     * Returns an instance of {@link StatusBarService}.
-     * @return An instance of {@link StatusBarService}.
-     */
-    static Optional<StatusBarService> create() {
-        return Services.get(StatusBarService.class);
+    private final Activity activity;
+    private final String authority;
+    private final boolean debug;
+
+    public DalvikReviewService(Activity activity) {
+        this.activity = activity;
+        authority = activity.getPackageName() + ".fileprovider";
+        debug = Util.isDebug();
     }
 
-    /**
-     * Sets the color of the status bar to the specified color.
-     * @param color The color to set the status bar to.
-     */
-    void setColor(Color color);
+    private void requestReview() {
+       // needs implementation
+    }
 
-    /**
-     * Returns the height of the status bar
-     * @return The height of the status bar
-     */
-    int getBarHeight();
 }
