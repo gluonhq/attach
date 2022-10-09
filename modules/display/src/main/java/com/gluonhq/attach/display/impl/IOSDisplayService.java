@@ -38,7 +38,7 @@ import javafx.geometry.Dimension2D;
 public class IOSDisplayService implements DisplayService {
 
     static {
-        System.loadLibrary("Display");
+        Platform.runLater(()->System.loadLibrary("Display"));
         initDisplay();
     }
 
