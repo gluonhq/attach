@@ -49,6 +49,7 @@ jobs:
         if: steps.deploy.outputs.exit_code == 0
         run: |
           TAG=${GITHUB_REF/refs\/tags\//}
+          ./gradlew javadoc
           aws s3 cp --recursive build/docs/javadoc/ $AWS_S3_BUCKET_DOCS/attach/javadoc/$TAG/ --acl public-read --region us-east-1
           # Update /latest with release version
           aws s3 sync $AWS_S3_BUCKET_DOCS/attach/javadoc/$TAG/ $AWS_S3_BUCKET_DOCS/attach/javadoc/latest/ --acl public-read --region us-east-1
