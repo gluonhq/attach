@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,4 +97,14 @@ public class IOSPushNotificationsService implements PushNotificationsService {
         }
         Platform.runLater(() -> TOKEN.setValue(token));
     }
+
+    @Override
+    public void setAppIconBadgeNumber(int badgeNumber) {
+        setApplicationIconBadgeNumber(badgeNumber);
+    }
+
+
+    // native
+    private static native void setApplicationIconBadgeNumber(int badgeNumber);
+
 }

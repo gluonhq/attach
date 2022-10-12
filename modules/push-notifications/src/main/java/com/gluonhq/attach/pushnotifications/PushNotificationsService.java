@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,4 +134,12 @@ public interface PushNotificationsService {
      */
     @Deprecated
     void register(String authorizedEntity);
+
+    /**
+     * Set the number showing as the badge of the app icon on the Home screen.
+     * Set number to 0 (zero) to hide the badge number.
+     * @param badgeNumber the number in the app icon badge.
+     */
+    void setAppIconBadgeNumber(int badgeNumber);
+
 }

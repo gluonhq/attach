@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,6 +161,10 @@ public class AndroidPushNotificationsService implements PushNotificationsService
 
     private static void processRuntimeArgs(String key, String value) {
         RuntimeArgsService.create().ifPresent(ra -> ra.fire(key, value));
+    }
+
+    public void setAppIconBadgeNumber(int badgeNumber) {
+       // Not implemented yet
     }
 
 }

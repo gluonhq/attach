@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
 
         #pragma clang diagnostic pop
     }
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNotificationsService_setApplicationIconBadgeNumber
+(JNIEnv *env, jclass jClass, jint badgeNumber)
+{
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
 }
 
 @implementation GlassApplication (NotificationsAdditions)
