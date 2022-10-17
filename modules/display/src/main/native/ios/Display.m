@@ -188,6 +188,7 @@ NSString * GetDeviceModel(void)
             @"iPhone12,1", @"iPhone12,3", @"iPhone12,5", // iPhone 11, 11 Pro, 11 Pro Max
             @"iPhone13,1", @"iPhone13,2", @"iPhone13,3", @"iPhone13,4", // iPhone 12 Mini, 12, 12 Pro, 12 Pro Max
             @"iPhone14,2", @"iPhone14,3", @"iPhone14,4", @"iPhone14,5", // iPhone 13 Pro, 13 Pro Max, 13 Mini, 13
+            @"iPhone14,7", @"iPhone14,8", @"iPhone15,2", @"iPhone15,3", // iPhone 14, 14 Plus, 14 Pro, 14 Pro Max
         ];
 
     if ([modelsWithNotch containsObject:GetDeviceModel()]) {
