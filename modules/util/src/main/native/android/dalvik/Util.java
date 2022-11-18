@@ -87,6 +87,9 @@ public class Util {
 
             @Override
             public void run() {
+                if (Util.activity == null) {
+                    return;
+                }
                 new Handler(Util.activity.getMainLooper()).postDelayed(new Runnable() {
 
                     @Override
