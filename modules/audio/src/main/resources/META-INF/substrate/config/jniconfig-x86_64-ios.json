@@ -1,0 +1,14 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audio.impl.IOSAudioService",
+    "methods":[
+      {"name":"loadSoundImpl","parameterTypes":["java.lang.String"] },
+      {"name":"setLooping","parameterTypes":["long", "boolean"] },
+      {"name":"setVolume","parameterTypes":["long", "double"] },
+      {"name":"play","parameterTypes":["long", "boolean"] },
+      {"name":"pause","parameterTypes":["long"] },
+      {"name":"stop","parameterTypes":["long"] },
+      {"name":"dispose","parameterTypes":["long"] }
+    ]
+  }
+]
