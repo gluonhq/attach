@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2023 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,131 +43,215 @@ JNI_OnLoad_Audio(JavaVM *vm, void *reserved)
 #endif
 }
 
-static int audioInited = 0;
+static bool audioInited = false;
 
-// Audio
-jclass mat_jAudioServiceClass;
-jmethodID mat_jAudioService_loadSoundImpl = 0;
-jmethodID mat_jAudioService_setLooping = 0;
-jmethodID mat_jAudioService_setVolume = 0;
-jmethodID mat_jAudioService_play = 0;
-jmethodID mat_jAudioService_pause = 0;
-jmethodID mat_jAudioService_stop = 0;
-jmethodID mat_jAudioService_dispose = 0;
-Audio *_audio;
+AudioService *audioService; // Singleton instance of the native AudioService
+NSMutableArray *audios; // Singleton array that will hold the different audios. The index will be used as identifier of each Audio instance for the java IOSAudioService.
 
+/***********************************************************************************************************************
+****************************** JNI methods that just call the native AudioService **************************************
+***********************************************************************************************************************/
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_initAudio
 (JNIEnv *env, jclass jClass)
 {
-    if (audioInited)
-    {
-        return;
+    // Note: there is no need for callbacks from native to Java
+    if (!audioInited) {
+        audioService = [[AudioService alloc] init];
+        audios = [[NSMutableArray alloc] init];
+        audioInited = true;
     }
-    audioInited = 1;
-
-    mat_jAudioServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/audio/impl/IOSAudioService"));
-    mat_jAudioService_loadSoundImpl = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)J");
-    mat_jAudioService_setLooping = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "setLooping", "(JZ)V");
-    mat_jAudioService_setVolume = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "setVolume", "(JD)V");
-    mat_jAudioService_play = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "play", "(JZ)V");
-    mat_jAudioService_pause = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "pause", "(J)V");
-    mat_jAudioService_stop = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "stop", "(J)V");
-    mat_jAudioService_stop = (*env)->GetStaticMethodID(env, mat_jAudioServiceClass, "dispose", "(J)V");
-
-    _audio = [[Audio alloc] init];
 }
 
-JNIEXPORT AVAudioPlayer * JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_loadSoundImpl
-(JNIEnv *env, jclass jClass, jstring jUrl)
+JNIEXPORT int JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_loadSoundImpl
+(JNIEnv *env, jclass jClass, jstring jUrl, bool music)
 {
     const jchar *urlChars = (*env)->GetStringChars(env, jUrl, NULL);
     NSString *url = [NSString stringWithCharacters:(UniChar *)urlChars length:(*env)->GetStringLength(env, jUrl)];
     (*env)->ReleaseStringChars(env, jUrl, urlChars);
 
-    AVAudioPlayer *audioPlayer = [_audio loadSoundImpl:url];
-    return audioPlayer;
+    return [audioService loadSoundImpl:url music:music];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_setLooping
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer, bool looping)
+(JNIEnv *env, jclass jClass, int index, bool looping)
 {
-    [_audio setLooping:audioPlayer looping:looping];
-    return;
+    [audioService setLooping:index looping:looping];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_setVolume
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer, double volume)
+(JNIEnv *env, jclass jClass, int index, double volume)
 {
-    [_audio setVolume:audioPlayer volume:volume];
-    return;
+    [audioService setVolume:index volume:volume];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_play
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer, bool music)
+(JNIEnv *env, jclass jClass, int index)
 {
-    [_audio play:audioPlayer music:music];
-    return;
+    [audioService play:index];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_pause
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer)
+(JNIEnv *env, jclass jClass, int index)
 {
-    [_audio pause:audioPlayer];
-    return;
+    [audioService pause:index];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_stop
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer)
+(JNIEnv *env, jclass jClass, int index)
 {
-    [_audio stop:audioPlayer];
-    return;
+    [audioService stop:index];
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispose
-(JNIEnv *env, jclass jClass, AVAudioPlayer *audioPlayer)
+(JNIEnv *env, jclass jClass, int index)
 {
-    [_audio dispose:audioPlayer];
-    return;
+    [audioService dispose:index];
 }
+
+
+/***********************************************************************************************************************
+******************************** Implementation of the native AudioService  ********************************************
+***********************************************************************************************************************/
 
 @implementation Audio
+@synthesize musicPlayer;
+@synthesize soundBuffer;
+@synthesize soundPlayers;
+-(void)dealloc {
+    [musicPlayer release]; musicPlayer = Nil;
+    [soundBuffer release]; soundBuffer = Nil;
+    [soundPlayers release]; soundPlayers = Nil;
+    [super dealloc];
+}
+@end
 
-- (AVAudioPlayer *)loadSoundImpl:(NSString *)url {
-    NSURL *nsurl = [NSURL fileURLWithPath:url];
-    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:nsurl error:NULL];
-    return audioPlayer;
+@implementation AudioService
+
+- (int)loadSoundImpl:(NSString *)url music:(bool)music {
+    NSURL *audioUrl = [NSURL URLWithString:url]; // Note: AVAudioPlayer supports only URL to local files
+    // Creating a new audio object and filling its properties
+    Audio *audio = [[Audio alloc] init];
+    NSError *error = Nil;
+    if (music) { // music = true for long files (JavaFX equivalent = Media)
+        audio.musicPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:audioUrl error:&error];
+        audio.soundBuffer = Nil;
+        audio.soundPlayers = Nil;
+    } else { // music = false for short sounds (JavaFX equivalent = AudioClip -> can be played multiple times simultaneously)
+        audio.musicPlayer = Nil;
+        // We load the sound in memory for better performance (otherwise play takes much longer)
+        audio.soundBuffer = [NSData dataWithContentsOfURL:audioUrl];
+        // We create the list of sound players
+        audio.soundPlayers = [[NSMutableArray alloc] init];
+        // and populate it with a first instance (which will also act as a reference for settings such as volume and
+        // numberOfLoops when creating new ones in multiple play)
+        AVAudioPlayer *soundPlayer = [[AVAudioPlayer alloc]initWithData:audio.soundBuffer error:&error];
+        [audio.soundPlayers addObject:soundPlayer];
+    }
+    // If there was an error during the creation, we release the audio object and return -1 as a value to report the problem.
+    if (error != Nil) {
+        [audio release];
+        return -1;
+    }
+    // Everything went well, we just need now to store the audio object in the mutable array.
+    // Note: we can't remove a row in that array as this would change the indexes of Audios (we can't do that as this
+    // index identifies each Audio instance in the IOSAudioService.java). So when an audio is disposed, we just set its
+    // row to null (see dispose method).
+    // So we try first to recycle the slots that may have been disposed (to prevent the array to grow if possible)
+    for (int i = 0; i < [audios count]; i++) {
+        if ([audios objectAtIndex: i] == (id)[NSNull null]) {
+            [audios replaceObjectAtIndex:i withObject:audio];
+            return i; // In that case, we can reuse that index for a new Audio
+        }
+    }
+    // Otherwise, we add the audio object at the end of the mutable array and return that position
+    [audios addObject: audio];
+    return [audios count] - 1;
 }
 
-- (void)setLooping:(AVAudioPlayer *)audioPlayer looping:(bool)looping {
-    if (looping)
-        audioPlayer.numberOfLoops = -1;
-    else
-        audioPlayer.numberOfLoops = 0;
+- (void)setLooping:(int)index looping:(bool)looping {
+    Audio *audio = [audios objectAtIndex:index];
+    int numberOfLoops = looping ? -1 : 0;
+    if (audio.musicPlayer != Nil) // music
+        audio.musicPlayer.numberOfLoops = numberOfLoops;
+    else // sound
+        for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
+            ((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]).numberOfLoops = numberOfLoops;
 }
 
-- (void)setVolume:(AVAudioPlayer *)audioPlayer volume:(double)volume {
-    audioPlayer.volume = volume;
+- (void)setVolume:(int)index volume:(double)volume {
+    Audio *audio = [audios objectAtIndex:index];
+    if (audio.musicPlayer != Nil) // music
+        audio.musicPlayer.volume = volume;
+    else // sound
+        for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
+            ((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]).volume = volume;
 }
 
-- (void)play:(AVAudioPlayer *)audioPlayer music:(bool)music {
-    if (!music && [audioPlayer isPlaying]) {
-        audioPlayer.currentTime = 0;
-    } else {
-        [audioPlayer play];
+- (void)play:(int)index {
+    Audio *audio = [audios objectAtIndex:index];
+    if (audio.musicPlayer != Nil) { // music
+        [audio.musicPlayer play];
+    } else { // sound
+        // We first iterate the sound players to see if one finished playing, and in that case, we play it again
+        AVAudioPlayer *oldestPlayer = Nil; // will be used if all players are busy
+        for (int i = 0; i < [audio.soundPlayers count]; i++) {
+            AVAudioPlayer *soundPlayer = [audio.soundPlayers objectAtIndex: i];
+            if (![soundPlayer isPlaying]) { // If one is not playing
+                [soundPlayer play]; // we play it again
+                return; // and that's it
+            }
+            if (oldestPlayer == Nil || soundPlayer.currentTime > oldestPlayer.currentTime)
+                oldestPlayer = soundPlayer;
+        }
+        // We reach that point when all players created so far are busy playing.
+        // We limit the number of multiple players to 4 (without a limit, performance problems have been observed)
+        if ([audio.soundPlayers count] >= 4) // it probably doesn't make sense anyway to have more than 4 players for the same sound
+            oldestPlayer.currentTime = 0; // So in that case, we reset the currentTime of the oldest player instead of creating a new one
+        else { // if we haven't reached to limit of 4 players yet, we can create a new player for this sound
+            NSError *error = Nil;
+            AVAudioPlayer *soundPlayer = [[AVAudioPlayer alloc]initWithData:audio.soundBuffer error:&error];
+            if (error == Nil) { // Creation was ok
+                // We apply the same settings as the first player
+                AVAudioPlayer *refPlayer = [audio.soundPlayers objectAtIndex: 0];
+                soundPlayer.volume = refPlayer.volume;
+                soundPlayer.numberOfLoops = refPlayer.numberOfLoops;
+                // We add it to the list
+                [audio.soundPlayers addObject:soundPlayer];
+                // And we play it
+                [soundPlayer play];
+            }
+        }
     }
 }
 
-- (void)pause:(AVAudioPlayer *)audioPlayer {
-    [audioPlayer pause];
+- (void)pause:(int)index {
+    Audio *audio = [audios objectAtIndex:index];
+    if (audio.musicPlayer) // music
+        [audio.musicPlayer pause];
+    else // sound
+        for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
+            [((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]) pause];
 }
 
-- (void)stop:(AVAudioPlayer *)audioPlayer {
-    [audioPlayer stop];
+- (void)stop:(int)index {
+    Audio *audio = [audios objectAtIndex:index];
+    if (audio.musicPlayer) { // music
+        [audio.musicPlayer stop];
+        audio.musicPlayer.currentTime = 0; // Behaving like JavaFX mediaPlayer.stop() -> doc says: This operation resets playback to startTime, and resets currentCount to zero
+    } else // sound
+        for (int i = 0; i < [audio.soundPlayers count]; i++) { // There is always at least one element
+            AVAudioPlayer * soundPlayer = [audio.soundPlayers objectAtIndex: i];
+            [soundPlayer stop];
+            soundPlayer.currentTime = 0; // Behaving like JavaFX mediaPlayer.stop() -> doc says: This operation resets playback to startTime, and resets currentCount to zero
+        }
 }
 
-- (void)dispose:(AVAudioPlayer *)audioPlayer {
-    [audioPlayer release];
+- (void)dispose:(int)index {
+    // We release the audio object at the specified index
+    [[audios objectAtIndex:index] release];
+    // And mark the slot as free in the array for possible reuse
+    [audios replaceObjectAtIndex:index withObject:[NSNull null]];
 }
 
 @end

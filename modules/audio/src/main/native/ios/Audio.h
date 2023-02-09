@@ -32,12 +32,25 @@
 #include "jni.h"
 #include "AttachMacros.h"
 
-@interface Audio : UIViewController <UIApplicationDelegate> {}
- - (AVAudioPlayer *) loadSoundImpl:(NSString *)url;
- - (void) setLooping:(AVAudioPlayer *)audioPlayer looping:(bool)looping;
- - (void) setVolume:(AVAudioPlayer *)audioPlayer volume:(double)volume;
- - (void) play:(AVAudioPlayer *)audioPlayer music:(bool)music;
- - (void) pause:(AVAudioPlayer *)audioPlayer;
- - (void) stop:(AVAudioPlayer *)audioPlayer;
- - (void) dispose:(AVAudioPlayer *)audioPlayer;
+@interface Audio : NSObject {
+AVAudioPlayer *musicPlayer; // Used for music only (not sounds)
+NSData *soundBuffer; // Used for sound only (not music)
+NSMutableArray *soundPlayers; // Sounds may be played multiple times simultaneously
+}
+
+@property(nonatomic, retain) AVAudioPlayer *musicPlayer;
+@property(nonatomic, retain) NSData *soundBuffer;
+@property(nonatomic, retain) NSMutableArray *soundPlayers;
+
+@end
+
+
+@interface AudioService : UIViewController <UIApplicationDelegate> {}
+ - (int) loadSoundImpl:(NSString *)url music:(bool)music;
+ - (void) setLooping:(int)index looping:(bool)looping;
+ - (void) setVolume:(int)index volume:(double)volume;
+ - (void) play:(int)index;
+ - (void) pause:(int)index;
+ - (void) stop:(int)index;
+ - (void) dispose:(int)index;
 @end

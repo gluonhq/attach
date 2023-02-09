@@ -37,9 +37,9 @@ public class IOSAudioService implements AudioService {
         try {
             String fileLocation = copyToPrivateStorageIfNeeded(url);
             if (!fileLocation.isEmpty()) {
-                long ref = loadSoundImpl(fileLocation);
-                if (ref != 0)
-                    return Optional.of(new IOSAudio(ref, music));
+                int id = loadSoundImpl(fileLocation, music);
+                if (id >= 0)
+                    return Optional.of(new IOSAudio(id));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,85 +49,99 @@ public class IOSAudioService implements AudioService {
 
 
     private static native void initAudio(); // init IDs for java callbacks from native
-    private static native long loadSoundImpl(String url);
-    private static native void setLooping(long ref, boolean looping);
-    private static native void setVolume(long ref, double volume);
-    private static native void play(long ref, boolean music);
-    private static native void pause(long ref);
-    private static native void stop(long ref);
-    private static native void dispose(long ref);
+    private static native int loadSoundImpl(String url, boolean music);
+    private static native void setLooping(int id, boolean looping);
+    private static native void setVolume(int id, double volume);
+    private static native void play(int id);
+    private static native void pause(int id);
+    private static native void stop(int id);
+    private static native void dispose(int id);
 
     private File privateStorage;
 
     private String copyToPrivateStorageIfNeeded(URL url) throws Exception {
-        if (privateStorage == null) {
-            privateStorage = StorageService.create()
-                    .flatMap(StorageService::getPrivateStorage)
-                    .orElseThrow(() -> new RuntimeException("Error accessing Private Storage folder"));
-        }
-
         String extForm = url.toExternalForm();
-        String fileName = extForm.substring(extForm.lastIndexOf("/") + 1);
+        // iOS only supports audio local files, it doesn't support http streaming for example. So when it's not a local
+        // file, we need to copy it first to the private storage before being able to play it.
+        if (!extForm.startsWith("file:")) { // Note: this also applies for "resource:" as GraalVM resources can't be directly accessed by iOS
 
-        Path file = privateStorage.toPath()
-                .resolve("assets")
-                .resolve("audio")
-                .resolve(fileName);
+            String fileName = extForm.substring(extForm.lastIndexOf("/") + 1);
 
-        if (!Files.exists(file)) {
-            if (!Files.exists(file.getParent())) {
-                Files.createDirectories(file.getParent());
+            if (privateStorage == null) {
+                privateStorage = StorageService.create()
+                        .flatMap(StorageService::getPrivateStorage)
+                        .orElseThrow(() -> new RuntimeException("Error accessing Private Storage folder"));
             }
 
-            try (InputStream input = url.openStream()) {
-                Files.copy(input, file);
+            Path file = privateStorage.toPath()
+                    .resolve("assets")
+                    .resolve("audio")
+                    .resolve(fileName);
+
+            if (!Files.exists(file)) {
+                if (!Files.exists(file.getParent())) {
+                    Files.createDirectories(file.getParent());
+                }
+
+                try (InputStream input = url.openStream()) {
+                    Files.copy(input, file);
+                }
             }
+
+            extForm = file.toUri().toString();
         }
 
-        return file.toAbsolutePath().toString();
+        return extForm;
     }
 
+    // All native calls are executed in a background thread to not hold the caller thread (which is probably the UI
+    // thread). In particular the call to the play() method has been observed to take between 20ms and 50ms which is
+    // noticeable in apps like games with 60 FPS (where time between frames = 16ms).
     private final static ScheduledExecutorService nativeExecutor = Executors.newSingleThreadScheduledExecutor();
 
     private static class IOSAudio implements Audio {
 
-        private final long ref;
-        private final boolean music;
+        private final int id;
         private boolean disposed;
 
-        public IOSAudio(long ref, boolean music) {
-            this.ref = ref;
-            this.music = music;
+        public IOSAudio(int id) {
+            this.id = id;
         }
 
         @Override
         public void setLooping(boolean looping) {
-            nativeExecutor.execute(() -> IOSAudioService.setLooping(ref, looping));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.setLooping(id, looping));
         }
 
         @Override
         public void setVolume(double volume) {
-            nativeExecutor.execute(() -> IOSAudioService.setVolume(ref, volume));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.setVolume(id, volume));
         }
 
         @Override
         public void play() {
-            nativeExecutor.execute(() -> IOSAudioService.play(ref, music));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.play(id));
         }
 
         @Override
         public void pause() {
-            nativeExecutor.execute(() -> IOSAudioService.pause(ref));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.pause(id));
         }
 
         @Override
         public void stop() {
-            nativeExecutor.execute(() -> IOSAudioService.stop(ref));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.stop(id));
         }
 
         @Override
         public void dispose() {
-            nativeExecutor.execute(() -> IOSAudioService.dispose(ref));
+            if (!disposed)
+                nativeExecutor.execute(() -> IOSAudioService.dispose(id));
             disposed = true;
         }
 
