@@ -73,7 +73,7 @@ public class IOSAudioService implements AudioService {
                         return Optional.of(new IOSAudio(id));
                 }
             } catch (Exception e) {
-                LOG.fine("Error during loading audio: " + e);
+                LOG.fine("Error while loading audio " + url + ": " + e);
             }
         }
         return Optional.empty();

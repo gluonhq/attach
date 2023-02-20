@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Gluon
+ * Copyright (c) 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@
 #include "AttachMacros.h"
 
 @interface Audio : NSObject {
-AVAudioPlayer *musicPlayer; // Used for music only (not sounds)
-NSData *soundBuffer; // Used for sound only (not music)
-NSMutableArray *soundPlayers; // Sounds may be played multiple times simultaneously
+    AVAudioPlayer *musicPlayer; // Used for music only (not sounds)
+    NSData *soundBuffer; // Used for sound only (not music)
+    NSMutableArray *soundPlayers; // Sounds may be played multiple times simultaneously
 }
 
 @property(nonatomic, retain) AVAudioPlayer *musicPlayer;
@@ -46,11 +46,12 @@ NSMutableArray *soundPlayers; // Sounds may be played multiple times simultaneou
 
 
 @interface AudioService : UIViewController <UIApplicationDelegate> {}
- - (int) loadSoundImpl:(NSString *)url music:(bool)music;
- - (void) setLooping:(int)index looping:(bool)looping;
- - (void) setVolume:(int)index volume:(double)volume;
- - (void) play:(int)index;
- - (void) pause:(int)index;
- - (void) stop:(int)index;
- - (void) dispose:(int)index;
+    - (int) loadSoundImpl:(NSString *)url music:(bool)music;
+    - (void) setLooping:(int)index looping:(bool)looping;
+    - (void) setVolume:(int)index volume:(double)volume;
+    - (void) play:(int)index;
+    - (void) pause:(int)index;
+    - (void) stop:(int)index;
+    - (void) dispose:(int)index;
+    - (void) logMessage:(NSString *)format, ...;
 @end
