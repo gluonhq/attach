@@ -134,7 +134,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispos
     Audio *audio = [[Audio alloc] init];
     NSError *error = Nil;
     if (music) { // music = true for long files (JavaFX equivalent = Media)
-        audio.musicPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:audioUrl error:&error];
+        audio.musicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:audioUrl error:&error];
         audio.soundBuffer = Nil;
         audio.soundPlayers = Nil;
     } else { // music = false for short sounds (JavaFX equivalent = AudioClip -> can be played multiple times simultaneously)
@@ -145,7 +145,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispos
         audio.soundPlayers = [[NSMutableArray alloc] init];
         // and populate it with a first instance (which will also act as a reference for settings such as volume and
         // numberOfLoops when creating new ones in multiple play)
-        AVAudioPlayer *soundPlayer = [[AVAudioPlayer alloc]initWithData:audio.soundBuffer error:&error];
+        AVAudioPlayer *soundPlayer = [[AVAudioPlayer alloc] initWithData:audio.soundBuffer error:&error];
         [audio.soundPlayers addObject:soundPlayer];
     }
     // If there was an error during the creation, we release the audio object and return -1 as a value to report the problem.
@@ -174,18 +174,20 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispos
     int numberOfLoops = looping ? -1 : 0;
     if (audio.musicPlayer != Nil) // music
         audio.musicPlayer.numberOfLoops = numberOfLoops;
-    else // sound
+    else { // sound
         for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
             ((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]).numberOfLoops = numberOfLoops;
+    }
 }
 
 - (void)setVolume:(int)index volume:(double)volume {
     Audio *audio = [audios objectAtIndex:index];
     if (audio.musicPlayer != Nil) // music
         audio.musicPlayer.volume = volume;
-    else // sound
+    else { // sound
         for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
             ((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]).volume = volume;
+    }
 }
 
 - (void)play:(int)index {
@@ -229,9 +231,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispos
     Audio *audio = [audios objectAtIndex:index];
     if (audio.musicPlayer) // music
         [audio.musicPlayer pause];
-    else // sound
+    else { // sound
         for (int i = 0; i < [audio.soundPlayers count]; i++) // There is always at least one element
             [((AVAudioPlayer *)[audio.soundPlayers objectAtIndex: i]) pause];
+    }
 }
 
 - (void)stop:(int)index {
@@ -239,12 +242,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_IOSAudioService_dispos
     if (audio.musicPlayer) { // music
         [audio.musicPlayer stop];
         audio.musicPlayer.currentTime = 0; // Behaving like JavaFX mediaPlayer.stop() -> doc says: This operation resets playback to startTime, and resets currentCount to zero
-    } else // sound
+    } else { // sound
         for (int i = 0; i < [audio.soundPlayers count]; i++) { // There is always at least one element
             AVAudioPlayer * soundPlayer = [audio.soundPlayers objectAtIndex: i];
             [soundPlayer stop];
             soundPlayer.currentTime = 0; // Behaving like JavaFX mediaPlayer.stop() -> doc says: This operation resets playback to startTime, and resets currentCount to zero
         }
+    }
 }
 
 - (void)dispose:(int)index {
