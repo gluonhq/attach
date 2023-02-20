@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.audio.impl.IOSAudioService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
