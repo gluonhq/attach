@@ -129,9 +129,11 @@ public class AndroidAudioService implements AudioService {
 
     private static class AndroidAudio implements Audio {
 
+        private final int id;
         private boolean isDisposed = false;
         private boolean pendingPlay = false; // flag used by play() to alleviate the Audio flow in extreme situations
-        private final int id;
+        private boolean skipPause = true; // flag used to skip unnecessary calls to pause(), because calling pause() before play() prevents the music to be played (Android issue)
+        private boolean skipStop = true;  // flag used to skip unnecessary calls to stop(), because calling stop() before play() prevents the music to be played (Android issue)
 
         AndroidAudio(int id) {
             this.id = id;
@@ -170,22 +172,25 @@ public class AndroidAudioService implements AudioService {
                 AndroidAudioService.play(id);
                 pendingPlay = false;
             });
+            skipPause = skipStop = false;
         }
 
         @Override
         public void pause() {
-            if (isDisposed)
+            if (isDisposed || skipPause)
                 return;
 
             nativeExecutor.execute(() -> AndroidAudioService.pause(id));
+            skipPause = true;
         }
 
         @Override
         public void stop() {
-            if (isDisposed)
+            if (isDisposed || skipStop)
                 return;
 
             nativeExecutor.execute(() -> AndroidAudioService.stop(id));
+            skipPause = skipStop = true;
         }
 
         @Override
