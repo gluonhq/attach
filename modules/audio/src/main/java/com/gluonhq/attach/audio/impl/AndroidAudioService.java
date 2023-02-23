@@ -37,6 +37,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -121,6 +123,10 @@ public class AndroidAudioService implements AudioService {
         return file.toAbsolutePath().toString();
     }
 
+    // All native calls are executed in a background thread to not hold the caller thread (which is probably the UI
+    // thread). This prevents games using many sounds to be slowed down by audio calls.
+    private final static ScheduledExecutorService nativeExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private static class AndroidAudio implements Audio {
 
         private boolean isDisposed = false;
@@ -135,7 +141,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.setLooping(id, looping);
+            nativeExecutor.execute(() -> AndroidAudioService.setLooping(id, looping));
         }
 
         @Override
@@ -143,7 +149,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.setVolume(id, volume);
+            nativeExecutor.execute(() -> AndroidAudioService.setVolume(id, volume));
         }
 
         @Override
@@ -151,7 +157,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.play(id);
+            nativeExecutor.execute(() -> AndroidAudioService.play(id));
         }
 
         @Override
@@ -159,7 +165,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.pause(id);
+            nativeExecutor.execute(() -> AndroidAudioService.pause(id));
         }
 
         @Override
@@ -167,7 +173,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.stop(id);
+            nativeExecutor.execute(() -> AndroidAudioService.stop(id));
         }
 
         @Override
@@ -176,7 +182,7 @@ public class AndroidAudioService implements AudioService {
                 return;
 
             isDisposed = true;
-            AndroidAudioService.dispose(id);
+            nativeExecutor.execute(() -> AndroidAudioService.dispose(id));
         }
 
         @Override
