@@ -109,7 +109,7 @@ public class DalvikAudioService {
         return new SoundPool.Builder()
                 .setAudioAttributes(audioAttributes)
                 // this is arbitrary, but it should be a reasonable amount
-                .setMaxStreams(5)
+                .setMaxStreams(20)
                 .build();
     }
 
