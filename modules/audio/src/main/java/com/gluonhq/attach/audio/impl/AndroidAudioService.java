@@ -130,6 +130,7 @@ public class AndroidAudioService implements AudioService {
     private static class AndroidAudio implements Audio {
 
         private boolean isDisposed = false;
+        private boolean pendingPlay = false; // flag used by play() to alleviate the Audio flow in extreme situations
         private final int id;
 
         AndroidAudio(int id) {
@@ -154,10 +155,21 @@ public class AndroidAudioService implements AudioService {
 
         @Override
         public void play() {
-            if (isDisposed)
+            // We set pendingPlay to true before the native play() call, and then back to false after that call.
+            // In extreme situations (like observed with SpaceFX with many simultaneous explosions sounds), it can
+            // happen that the game calls play() again even before the previous call has been executed. In that case,
+            // we just drop that second call, as it doesn't make sense to start the same sound twice so closely. And
+            // most important, this improves the performance (the game was noticeably slower when the native iOS sound
+            // system was not alleviate in this way).
+
+            if (isDisposed || pendingPlay)
                 return;
 
-            nativeExecutor.execute(() -> AndroidAudioService.play(id));
+            pendingPlay = true;
+            nativeExecutor.execute(() -> {
+                AndroidAudioService.play(id);
+                pendingPlay = false;
+            });
         }
 
         @Override
