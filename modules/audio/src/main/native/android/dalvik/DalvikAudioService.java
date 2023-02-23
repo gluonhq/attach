@@ -27,6 +27,7 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.app.Activity;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -42,8 +43,8 @@ public class DalvikAudioService {
 
     private SoundPool pool = null;
 
-    public DalvikAudioService() {
-
+    public DalvikAudioService(Activity activity) {
+        activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     /**
