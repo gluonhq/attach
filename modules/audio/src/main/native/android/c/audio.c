@@ -29,6 +29,9 @@
 
 static jclass jAudioServiceClass;
 static jobject jDalvikAudioService;
+static jmethodID jAudioServiceOnVolumeUpKeyPressMethod;
+static jmethodID jAudioServiceOnVolumeDownKeyPressMethod;
+static jmethodID jAudioServiceOnVolumeMuteKeyPressMethod;
 static jmethodID jAudioServiceLoadSoundMethod;
 static jmethodID jAudioServiceLoadMusicMethod;
 static jmethodID jAudioServiceSetLoopingMethod;
@@ -42,6 +45,10 @@ static void initializeAudioDalvikHandles() {
     jAudioServiceClass = GET_REGISTER_DALVIK_CLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
     ATTACH_DALVIK();
     jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "(Landroid/app/Activity;)V");
+
+    jAudioServiceOnVolumeUpKeyPressMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "onVolumeUpKeyPressed", "()V");
+    jAudioServiceOnVolumeDownKeyPressMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "onVolumeDownKeyPressed", "()V");
+    jAudioServiceOnVolumeMuteKeyPressMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "onVolumeMuteKeyPressed", "()V");
 
     jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)I");
     jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)I");
@@ -81,6 +88,30 @@ JNI_OnLoad_audio(JavaVM *vm, void *reserved)
 }
 
 // from Java to Android
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_onVolumeUpKeyPressed
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceOnVolumeUpKeyPressMethod);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_onVolumeDownKeyPressed
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceOnVolumeDownKeyPressMethod);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_onVolumeMuteKeyPressed
+(JNIEnv *env, jclass jClass)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAudioService, jAudioServiceOnVolumeMuteKeyPressMethod);
+    DETACH_DALVIK();
+}
 
 JNIEXPORT jint JNICALL Java_com_gluonhq_attach_audio_impl_AndroidAudioService_loadSoundImpl
 (JNIEnv *env, jclass jClass, jstring jURL)

@@ -28,6 +28,7 @@
 package com.gluonhq.helloandroid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -39,12 +40,43 @@ import java.util.Arrays;
 
 public class DalvikAudioService {
 
+    private final AudioManager audioManager;
+    private int preMuteVolume;
+
     private DalvikAudio[] cache = new DalvikAudio[10];
 
     private SoundPool pool = null;
 
     public DalvikAudioService(Activity activity) {
         activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    private void onVolumeUpKeyPressed() {
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                (currentVolume + 1) <= maxVolume ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+
+    }
+
+    private void onVolumeDownKeyPressed() {
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                (currentVolume - 1) >= 0 ? AudioManager.ADJUST_LOWER : AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+    }
+
+    private void onVolumeMuteKeyPressed() {
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (currentVolume > 0) {
+            preMuteVolume = currentVolume;
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME,
+                    AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE | AudioManager.FLAG_SHOW_UI);
+        } else {
+            preMuteVolume = 0;
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, preMuteVolume, AudioManager.FLAG_SHOW_UI);
+        }
     }
 
     /**
