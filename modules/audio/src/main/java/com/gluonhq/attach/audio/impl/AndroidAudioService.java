@@ -30,10 +30,6 @@ package com.gluonhq.attach.audio.impl;
 import com.gluonhq.attach.audio.Audio;
 import com.gluonhq.attach.audio.AudioService;
 import com.gluonhq.attach.storage.StorageService;
-import javafx.collections.ListChangeListener;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.File;
 import java.io.InputStream;
@@ -45,7 +41,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.List;
 
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
@@ -56,37 +51,6 @@ public class AndroidAudioService implements AudioService {
 
     static {
         System.loadLibrary("audio");
-        // Installing an event filter on all present and future stages to dispatch the volume key events
-        installVolumeKeysFilterOnStages(Window.getWindows());
-        Window.getWindows().addListener((ListChangeListener<Window>) change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    installVolumeKeysFilterOnStages(change.getAddedSubList());
-                }
-            }
-        });
-    }
-
-    private static void installVolumeKeysFilterOnStages(List<? extends Window> windows) {
-        // We add an event filter on all stages that intercepts when a volume key is pressed, and dispatches this to the native service
-        windows.stream().filter(Stage.class::isInstance).map(Stage.class::cast).forEach(stage ->
-                stage.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                    switch (e.getCode()) {
-                        case VOLUME_UP:
-                            onVolumeUpKeyPressed();
-                            e.consume();
-                            break;
-                        case VOLUME_DOWN:
-                            onVolumeDownKeyPressed();
-                            e.consume();
-                            break;
-                        case MUTE:
-                            onVolumeMuteKeyPressed();
-                            e.consume();
-                            break;
-                    }
-                })
-        );
     }
 
     private File privateStorage;
@@ -244,10 +208,6 @@ public class AndroidAudioService implements AudioService {
         }
     }
 
-    private native static void onVolumeUpKeyPressed();
-    private native static void onVolumeDownKeyPressed();
-    private native static void onVolumeMuteKeyPressed();
-    // native
     private native static int loadSoundImpl(String fullName);
     private native static int loadMusicImpl(String fullName);
 
