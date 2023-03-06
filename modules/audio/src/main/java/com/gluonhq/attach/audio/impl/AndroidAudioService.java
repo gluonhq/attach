@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -121,10 +123,17 @@ public class AndroidAudioService implements AudioService {
         return file.toAbsolutePath().toString();
     }
 
+    // All native calls are executed in a background thread to not hold the caller thread (which is probably the UI
+    // thread). This prevents games using many sounds to be slowed down by audio calls.
+    private final static ScheduledExecutorService nativeExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private static class AndroidAudio implements Audio {
 
-        private boolean isDisposed = false;
         private final int id;
+        private boolean isDisposed = false;
+        private boolean pendingPlay = false; // flag used by play() to alleviate the Audio flow in extreme situations
+        private boolean skipPause = true; // flag used to skip unnecessary calls to pause(), because calling pause() before play() prevents the music to be played (Android issue)
+        private boolean skipStop = true;  // flag used to skip unnecessary calls to stop(), because calling stop() before play() prevents the music to be played (Android issue)
 
         AndroidAudio(int id) {
             this.id = id;
@@ -135,7 +144,7 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.setLooping(id, looping);
+            nativeExecutor.execute(() -> AndroidAudioService.setLooping(id, looping));
         }
 
         @Override
@@ -143,31 +152,45 @@ public class AndroidAudioService implements AudioService {
             if (isDisposed)
                 return;
 
-            AndroidAudioService.setVolume(id, volume);
+            nativeExecutor.execute(() -> AndroidAudioService.setVolume(id, volume));
         }
 
         @Override
         public void play() {
-            if (isDisposed)
+            // We set pendingPlay to true before the native play() call, and then back to false after that call.
+            // In extreme situations (like observed with SpaceFX with many simultaneous explosions sounds), it can
+            // happen that the game calls play() again even before the previous call has been executed. In that case,
+            // we just drop that second call, as it doesn't make sense to start the same sound twice so closely. And
+            // most important, this improves the performance (the game was noticeably slower when the native iOS sound
+            // system was not alleviate in this way).
+
+            if (isDisposed || pendingPlay)
                 return;
 
-            AndroidAudioService.play(id);
+            pendingPlay = true;
+            nativeExecutor.execute(() -> {
+                AndroidAudioService.play(id);
+                pendingPlay = false;
+            });
+            skipPause = skipStop = false;
         }
 
         @Override
         public void pause() {
-            if (isDisposed)
+            if (isDisposed || skipPause)
                 return;
 
-            AndroidAudioService.pause(id);
+            nativeExecutor.execute(() -> AndroidAudioService.pause(id));
+            skipPause = true;
         }
 
         @Override
         public void stop() {
-            if (isDisposed)
+            if (isDisposed || skipStop)
                 return;
 
-            AndroidAudioService.stop(id);
+            nativeExecutor.execute(() -> AndroidAudioService.stop(id));
+            skipPause = skipStop = true;
         }
 
         @Override
@@ -176,7 +199,7 @@ public class AndroidAudioService implements AudioService {
                 return;
 
             isDisposed = true;
-            AndroidAudioService.dispose(id);
+            nativeExecutor.execute(() -> AndroidAudioService.dispose(id));
         }
 
         @Override
@@ -185,7 +208,6 @@ public class AndroidAudioService implements AudioService {
         }
     }
 
-    // native
     private native static int loadSoundImpl(String fullName);
     private native static int loadMusicImpl(String fullName);
 

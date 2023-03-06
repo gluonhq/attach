@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.app.Activity;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -39,11 +41,10 @@ import java.util.Arrays;
 public class DalvikAudioService {
 
     private DalvikAudio[] cache = new DalvikAudio[10];
-
     private SoundPool pool = null;
 
-    public DalvikAudioService() {
-
+    public DalvikAudioService(Activity activity) {
+        activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     /**
@@ -108,7 +109,7 @@ public class DalvikAudioService {
         return new SoundPool.Builder()
                 .setAudioAttributes(audioAttributes)
                 // this is arbitrary, but it should be a reasonable amount
-                .setMaxStreams(5)
+                .setMaxStreams(20)
                 .build();
     }
 

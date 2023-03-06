@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ static jmethodID jAudioServiceDisposeMethod;
 static void initializeAudioDalvikHandles() {
     jAudioServiceClass = GET_REGISTER_DALVIK_CLASS(jAudioServiceClass, "com/gluonhq/helloandroid/DalvikAudioService");
     ATTACH_DALVIK();
-    jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "()V");
+    jmethodID jAudioServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jAudioServiceLoadSoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadSoundImpl", "(Ljava/lang/String;)I");
     jAudioServiceLoadMusicMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "loadMusicImpl", "(Ljava/lang/String;)I");
@@ -53,7 +53,8 @@ static void initializeAudioDalvikHandles() {
     jAudioServiceStopMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "stop", "(I)V");
     jAudioServiceDisposeMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAudioServiceClass, "dispose", "(I)V");
 
-    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAudioServiceClass, jAudioServiceInitMethod);
+    jobject jActivity = substrateGetActivity();
+    jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAudioServiceClass, jAudioServiceInitMethod, jActivity);
     jDalvikAudioService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jObj);
 
     DETACH_DALVIK();
