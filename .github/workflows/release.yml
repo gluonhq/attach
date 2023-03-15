@@ -70,4 +70,4 @@ jobs:
           git commit gradle.properties -m "Prepare development of $newVersion"
           git push https://gluon-bot:$PAT@github.com/$GITHUB_REPOSITORY HEAD:master
         env:
-          PAT: ${{ secrets.PAT }}
+          PAT: ${{ secrets.GITHUB_TOKEN }}
