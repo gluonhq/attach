@@ -90,6 +90,12 @@ public class DalvikBleService  {
         if (!fineloc) {
             Log.v(TAG, "No permission to get fine location");
         }
+        boolean scanperm = Util.verifyPermissions(new String[]{"android.permission.BLUETOOTH_SCAN"});
+        if (!scanperm) {
+           Log.v("GluonAttach", "DalvikBle No permission to SCAN BLUETOOH");
+        }
+
+        
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (!adapter.isEnabled()) {
             Log.v(TAG, "DalvikBle, init, adapter not enabled");
