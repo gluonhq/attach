@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,11 @@ public class DalvikLocalNotificationsService {
         notificationIntent.setData(getData(id));
         notificationIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, id);
         notificationIntent.putExtra(AlarmReceiver.NOTIFICATION, getNotification(title, text, id, imagePath));
-        return PendingIntent.getBroadcast(activity, AlarmReceiver.REQUEST_CODE, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int flag = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flag |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return PendingIntent.getBroadcast(activity, AlarmReceiver.REQUEST_CODE, notificationIntent, flag);
     }
 
     private Notification getNotification(String title, String text, String id, String imagePath) {
@@ -94,8 +98,12 @@ public class DalvikLocalNotificationsService {
         resultIntent.putExtra(NotificationActivity.ID, id);
         resultIntent.putExtra(NotificationActivity.PACKAGE_NAME, activity.getPackageName());
 
+        int flag = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flag |= PendingIntent.FLAG_IMMUTABLE;
+        }
         PendingIntent resultPendingIntent = PendingIntent.getActivity(activity, AlarmReceiver.REQUEST_CODE,
-                resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                resultIntent, flag);
 
         Notification.Builder builder = new Notification.Builder(activity);
         if (title != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,9 +165,13 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         resultIntent.setData(getData(id));
         resultIntent.putExtra(PushNotificationActivity.MESSAGE, jsonPrintMap(payload));
         resultIntent.putExtra(PushNotificationActivity.PACKAGE_NAME, application.getPackageName());
-        
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(application, requestCode, 
-                resultIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+
+        int flag = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flag |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(application, requestCode,
+                resultIntent, flag);
 
         android.app.Notification.Builder builder = new android.app.Notification.Builder(application);
         if (title != null) {
