@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseCallback;
 
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -89,6 +90,13 @@ public class DalvikBleService  {
         boolean fineloc = Util.verifyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
         if (!fineloc) {
             Log.v(TAG, "No permission to get fine location");
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            boolean btPermissions = Util.verifyPermissions(new String[]{
+                    "android.permission.BLUETOOTH_SCAN", "android.permission.BLUETOOTH_ADVERTISE", "android.permission.BLUETOOTH_CONNECT"});
+            if (!btPermissions) {
+                Log.v(TAG, "No permission to scan and/or be discovered by and/or connect to Bluetooth devices");
+            }
         }
         final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (!adapter.isEnabled()) {
