@@ -50,8 +50,8 @@ public class DalvikBrowserService {
             return false;
         }
 
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            Log.e(TAG, "Invalid URL: url should start with http:// or https://");
+        if (!(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("sms:") || url.startsWith("smsto:"))) {
+            Log.e(TAG, "Invalid URL: url should start with http://, https://, sms:, or smsto:");
             return false;
         }
 
