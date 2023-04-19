@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@ public class DalvikBrowserService {
             return false;
         }
 
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            Log.e(TAG, "Invalid URL: url should start with http:// or https://");
+        if (!(url.startsWith("http://") || url.startsWith("https://") || url.startsWith("sms:") || url.startsWith("smsto:"))) {
+            Log.e(TAG, "Invalid URL: url should start with http://, https://, sms:, or smsto:");
             return false;
         }
 
