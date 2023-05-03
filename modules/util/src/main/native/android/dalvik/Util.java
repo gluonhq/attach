@@ -50,8 +50,17 @@ public class Util {
         Util.activity = activity;
         Log.v(TAG, "Util <init>");
         if (activity != null) {
-            Util.clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            syncClipboardFromOS();
+            new Handler(activity.getMainLooper()).postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (debug) {
+                        Log.v(TAG, "Util init clipboard");
+                    }
+                    Util.clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    syncClipboardFromOS();
+                }
+            }, 0);
         }
     }
 
