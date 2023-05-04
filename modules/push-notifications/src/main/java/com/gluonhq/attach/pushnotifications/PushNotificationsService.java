@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,4 +134,22 @@ public interface PushNotificationsService {
      */
     @Deprecated
     void register(String authorizedEntity);
+
+    /**
+     * On iOS, set the number showing as the badge of the app icon on the Home screen.
+     * Set number to 0 to hide the badge number.
+     * On Android, override the default number of notifications displayed in the popup
+     * that can be shown from the app icon. Set 0 to use the default notification
+     * counter.
+     *
+     * Important notes:
+     * - there is no track of the current badge number that the icon might have
+     * - when the push notification is read, there is no automatic handling of
+     *   decreasing the badge number
+     * So it is up to the developer to handle this number properly.
+     *
+     * @param badgeNumber the number that will show up in the app icon badge,
+     *                    or 0 to hide it. The default value is 0.
+     */
+    void setAppIconBadgeNumber(int badgeNumber);
 }

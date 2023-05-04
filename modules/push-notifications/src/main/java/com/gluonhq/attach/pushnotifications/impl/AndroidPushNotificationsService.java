@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,6 +91,11 @@ public class AndroidPushNotificationsService implements PushNotificationsService
         }
     }
 
+    @Override
+    public void setAppIconBadgeNumber(int badgeNumber) {
+        setApplicationIconBadgeNumber(badgeNumber);
+    }
+
     private GoogleServicesConfiguration readGoogleServicesConfiguration() {
         GoogleServicesConfiguration configuration = new GoogleServicesConfiguration();
 
@@ -147,6 +152,7 @@ public class AndroidPushNotificationsService implements PushNotificationsService
     private native int isGooglePlayServicesAvailable();
     private native String getErrorString(int resultCode);
     private native void initializeFirebase(String applicationId, String projectNumber, String projectId, String apiKey);
+    private native void setApplicationIconBadgeNumber(int badgeNumber);
 
     // callback
     private static void setToken(String token) {
