@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2022, Gluon
+ * Copyright (c) 2020, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,17 @@ public class Util {
         Util.activity = activity;
         Log.v(TAG, "Util <init>");
         if (activity != null) {
-            Util.clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            syncClipboardFromOS();
+            new Handler(Util.activity.getMainLooper()).postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (debug) {
+                        Log.v(TAG, "Util init clipboard");
+                    }
+                    Util.clipboard = (ClipboardManager) Util.activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    syncClipboardFromOS();
+                }
+            }, 0);
         }
     }
 
