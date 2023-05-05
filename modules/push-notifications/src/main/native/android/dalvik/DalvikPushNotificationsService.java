@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ public class DalvikPushNotificationsService {
     private static final boolean debug = Util.isDebug();
 
     private static Activity activity;
+    static int badgeNumber = 0;
 
     public DalvikPushNotificationsService(Activity activity) {
         DalvikPushNotificationsService.this.activity = activity;
@@ -113,6 +114,10 @@ public class DalvikPushNotificationsService {
 
         // retrieve token, as it might have been updated
         PushFcmMessagingService.retrieveToken();
+    }
+
+    public void setBadgeNumber(int number) {
+        DalvikPushNotificationsService.badgeNumber = number;
     }
 
     static void sendRuntimeArgs(String value) {

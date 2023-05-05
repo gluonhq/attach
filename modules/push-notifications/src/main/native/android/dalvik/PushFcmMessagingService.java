@@ -137,7 +137,7 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         if (debug) {
             Log.v(TAG, "Sending push notification with payload: " + jsonPrintMap(payload));
         }
-	int requestCode = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+        int requestCode = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
         notificationManager.notify(requestCode, getNotification(requestCode, payload));
     }
 
@@ -179,7 +179,14 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
         }
         builder.setContentText(body);
         builder.setSmallIcon(application.getApplicationInfo().icon);
-        builder.setPriority(android.app.Notification.PRIORITY_MAX); 
+        builder.setPriority(android.app.Notification.PRIORITY_MAX);
+        int number = DalvikPushNotificationsService.badgeNumber;
+        if (number > 0) {
+            if (debug) {
+                Log.v(TAG, "Set badge number to: " + number);
+            }
+            builder.setNumber(number);
+        }
         builder.setContentIntent(resultPendingIntent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setCategory(android.app.Notification.CATEGORY_EVENT);
