@@ -16,10 +16,10 @@ jobs:
           persist-credentials: false
 
       - name: Setup Java
-        uses: oracle-actions/setup-java@v1
+        uses: oracle-actions/setup-java@v1.3.1
         with:
           website: jdk.java.net
-          release: 17.0.8
+          release: 17
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
