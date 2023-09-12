@@ -23,7 +23,7 @@ jobs:
         uses: oracle-actions/setup-java@v1
         with:
           website: jdk.java.net
-          release: 17
+          release: 17.0.8
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
