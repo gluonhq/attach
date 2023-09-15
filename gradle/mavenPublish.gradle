@@ -69,15 +69,6 @@ publishing {
                     url = 'https://github.com/gluonhq/attach'
                 }
             }
-
-            pom.withXml {
-                Node pomNode = asNode()
-                pomNode.dependencies.'*'.findAll() {
-                    it.groupId.text() == 'org.openjfx'
-                }.each {
-                    it.parent().remove(it)
-                }
-            }
         }
     }
 }
