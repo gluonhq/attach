@@ -4,11 +4,11 @@ android {
 
     namespace 'com.gluonhq.helloandroid'
 
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
     }
 
     compileOptions {
@@ -22,7 +22,8 @@ android {
         implementation 'de.javagl:obj:0.3.0'
     }
 
-    afterEvaluate {
-        generateDebugBuildConfig.enabled = false
+    buildFeatures {
+        buildConfig = false
+        resValues = false
     }
 }
