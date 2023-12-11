@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022 Gluon
+ * Copyright (c) 2016, 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,6 +189,7 @@ NSString * GetDeviceModel(void)
             @"iPhone13,1", @"iPhone13,2", @"iPhone13,3", @"iPhone13,4", // iPhone 12 Mini, 12, 12 Pro, 12 Pro Max
             @"iPhone14,2", @"iPhone14,3", @"iPhone14,4", @"iPhone14,5", // iPhone 13 Pro, 13 Pro Max, 13 Mini, 13
             @"iPhone14,7", @"iPhone14,8", @"iPhone15,2", @"iPhone15,3", // iPhone 14, 14 Plus, 14 Pro, 14 Pro Max
+            @"iPhone15,4", @"iPhone15,5", @"iPhone16,1", @"iPhone16,2", // iPhone 15, 15 Plus, 15 Pro, 15 Pro Max
         ];
 
     if ([modelsWithNotch containsObject:GetDeviceModel()]) {
