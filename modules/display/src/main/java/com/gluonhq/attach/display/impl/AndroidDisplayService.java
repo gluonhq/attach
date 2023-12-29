@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Gluon
+ * Copyright (c) 2016, 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,12 @@ public class AndroidDisplayService implements DisplayService {
             LOG.log(Level.INFO, "Screen scale: " + scale);
         }
         return scale;
+    }
+
+    @Override
+    public int getHomeIndicatorHeight() {
+        // Not Implemented Yet
+        return 0;
     }
 
     @Override
