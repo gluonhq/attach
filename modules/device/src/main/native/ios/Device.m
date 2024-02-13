@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_device_impl_IOSDeviceService_init
     deviceInited = 1;
     
     mat_jDeviceServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/device/impl/IOSDeviceService"));
-    mat_jDeviceService_sendDevice = (*env)->GetStaticMethodID(env, mat_jDeviceServiceClass, "sendDeviceData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    mat_jDeviceService_sendDevice = (*env)->GetStaticMethodID(env, mat_jDeviceServiceClass, "sendDeviceData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
     UIDevice* currentDevice = [UIDevice currentDevice];
 
@@ -81,9 +81,15 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_device_impl_IOSDeviceService_init
     const char *versionChars = [deviceVersion UTF8String];
     jstring argVersion = (*env)->NewStringUTF(env, versionChars);
 
-    (*env)->CallStaticVoidMethod(env, mat_jDeviceServiceClass, mat_jDeviceService_sendDevice, argModel, argId, argPlatform, argVersion);
+    NSLocale *locale = [NSLocale currentLocale];
+    NSString *localeFormat = [NSString stringWithFormat:@"%@_%@", [locale objectForKey:NSLocaleLanguageCode], [locale objectForKey:NSLocaleCountryCode]];
+    const char *localeChars = [localeFormat UTF8String];
+    jstring argLocale = (*env)->NewStringUTF(env, localeChars);
+
+    (*env)->CallStaticVoidMethod(env, mat_jDeviceServiceClass, mat_jDeviceService_sendDevice, argModel, argId, argPlatform, argVersion, argLocale);
     (*env)->DeleteLocalRef(env, argModel);
     (*env)->DeleteLocalRef(env, argId);
     (*env)->DeleteLocalRef(env, argPlatform);
     (*env)->DeleteLocalRef(env, argVersion);
+    (*env)->DeleteLocalRef(env, argLocale);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,4 +91,11 @@ public interface DeviceService {
      * @since 3.3.0
      */
     boolean isWearable();
+
+    /**
+     * Returns the string representation of the current locale of the device
+     * @return the device locale
+     * @since 4.0.20
+     */
+    String getLocale();
 }

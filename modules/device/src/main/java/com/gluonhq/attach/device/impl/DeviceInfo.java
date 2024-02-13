@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,20 +26,24 @@
  */
 package com.gluonhq.attach.device.impl;
 
+import java.util.Locale;
+
 public class DeviceInfo {
 
-    private String model;
-    private String uuid;
-    private String platform;
-    private String version;
-    private boolean wearable;
+    private final String model;
+    private final String uuid;
+    private final String platform;
+    private final String version;
+    private final boolean wearable;
+    private final String locale;
 
-    public DeviceInfo(String model, String uuid, String platform, String version, boolean wearable) {
+    public DeviceInfo(String model, String uuid, String platform, String version, boolean wearable, String locale) {
         this.model = model;
         this.uuid = uuid;
         this.platform = platform;
         this.version = version;
         this.wearable = wearable;
+        this.locale = locale;
     }
 
     public String getModel() {
@@ -60,5 +64,9 @@ public class DeviceInfo {
 
     public boolean isWearable() {
         return wearable;
+    }
+
+    public String getLocale() {
+        return locale;
     }
 }
