@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,11 @@ static jmethodID jDeviceServiceGetUuid;
 static jmethodID jDeviceServiceGetPlatform;
 static jmethodID jDeviceServiceGetVersion;
 static jmethodID jDeviceServiceIsWearable;
+static jmethodID jDeviceServiceGetLocale;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalDeviceInfoClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/device/impl/DeviceInfo"));
-    jGraalDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V");
+    jGraalDeviceInfoInitMethod = (*env)->GetMethodID(env, jGraalDeviceInfoClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;)V");
 }
 
 static void initializeDeviceDalvikHandles() {
@@ -53,6 +54,7 @@ static void initializeDeviceDalvikHandles() {
     jDeviceServiceGetPlatform = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getPlatform", "()Ljava/lang/String;");
     jDeviceServiceGetVersion = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getVersion", "()Ljava/lang/String;");
     jDeviceServiceIsWearable = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "isWearable", "()Z");
+    jDeviceServiceGetLocale = (*dalvikEnv)->GetMethodID(dalvikEnv, jDeviceServiceClass, "getLocale", "()Ljava/lang/String;");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jDeviceServiceClass, jDeviceServiceInitMethod, jActivity);
@@ -101,20 +103,23 @@ JNIEXPORT jobject JNICALL Java_com_gluonhq_attach_device_impl_AndroidDeviceServi
     const char *responsePlatformChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, platform, 0);
     jstring version = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceGetVersion);
     const char *responseVersionChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, version, 0);
+    jstring locale = (*dalvikEnv)->CallObjectMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceGetLocale);
+    const char *responseLocaleChars = (*dalvikEnv)->GetStringUTFChars(dalvikEnv, locale, 0);
     jboolean wearable = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDeviceService, jDeviceServiceIsWearable);
     DETACH_DALVIK();
 
     if (isDebugAttach()) {
-        ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, wearable=%d\n",
-                responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, wearable);
+        ATTACH_LOG_FINE("Retrieved DeviceInfo: model=%s, uuid=%s, platform=%s, version=%s, wearable=%d, locale=%s\n",
+                responseModelChars, responseUuidChars, responsePlatformChars, responseVersionChars, wearable, responseLocaleChars);
     }
 
     jstring responseModelString = (*env)->NewStringUTF(env, responseModelChars);
     jstring responseUuidString = (*env)->NewStringUTF(env, responseUuidChars);
     jstring responsePlatformString = (*env)->NewStringUTF(env, responsePlatformChars);
     jstring responseVersionString = (*env)->NewStringUTF(env, responseVersionChars);
+    jstring responseLocaleString = (*env)->NewStringUTF(env, responseLocaleChars);
     jobject jtmpobj = (*env)->NewObject(env, jGraalDeviceInfoClass, jGraalDeviceInfoInitMethod,
             responseModelString, responseUuidString, responsePlatformString, responseVersionString,
-            wearable);
+            wearable, responseLocaleString);
     return (*env)->NewGlobalRef(env, jtmpobj);
 }

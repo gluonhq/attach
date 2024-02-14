@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public class DalvikDeviceService {
@@ -82,5 +83,18 @@ public class DalvikDeviceService {
 
     public boolean isWearable() {
         return activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH);
+    }
+
+    public String getLocale() {
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = activity.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = activity.getResources().getConfiguration().locale;
+        }
+        if (debug) {
+            Log.v(TAG, String.format("Current locale: %s", locale.toString()));
+        }
+        return locale.toString();
     }
 }

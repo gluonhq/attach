@@ -1,6 +1,6 @@
 [
   {
     "name" : "com.gluonhq.attach.device.impl.IOSDeviceService",
-    "methods":[{"name":"sendDeviceData","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }]
+    "methods":[{"name":"sendDeviceData","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }]
   }
 ]

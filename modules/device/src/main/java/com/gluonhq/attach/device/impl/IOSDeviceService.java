@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,12 @@ public class IOSDeviceService implements DeviceService {
         System.loadLibrary("Device");
         initDevice();
     }
-    
+
     private static String model;
     private static String uuid;
     private static String platform;
     private static String version;
+    private static String locale;
 
     @Override
     public String getModel() {
@@ -66,16 +67,22 @@ public class IOSDeviceService implements DeviceService {
         // TODO: Find out if iOS device is wearable
         return false; 
     }
-    
+
+    @Override
+    public String getLocale() {
+        return locale;
+    }
+
     // native
     private native static void initDevice();
     
     // callback
-    private static void sendDeviceData(String model, String uuid, String platform, String version) {
+    private static void sendDeviceData(String model, String uuid, String platform, String version, String locale) {
         IOSDeviceService.model = model;
         IOSDeviceService.uuid = uuid;
         IOSDeviceService.platform = platform;
         IOSDeviceService.version = version;
+        IOSDeviceService.locale = locale;
     }
     
 }
