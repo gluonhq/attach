@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ads.impl.AndroidAdsService",
+    "methods":[{"name":"<init>","parameterTypes":[] }]
+  }
+]
