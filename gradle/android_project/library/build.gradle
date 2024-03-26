@@ -4,18 +4,19 @@ android {
 
     namespace 'com.gluonhq.helloandroid'
 
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
     }
 
     dependencies {
         compileOnly fileTree(dir: '../libs', include: '*.jar')
     }
 
-    afterEvaluate {
-        generateDebugBuildConfig.enabled = false
+    buildFeatures {
+        buildConfig = false
+        resValues = false
     }
 }

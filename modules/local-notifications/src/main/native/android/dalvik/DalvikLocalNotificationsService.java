@@ -27,6 +27,7 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -40,6 +41,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 public class DalvikLocalNotificationsService {
 
@@ -50,6 +52,13 @@ public class DalvikLocalNotificationsService {
 
     public DalvikLocalNotificationsService(Activity activity) {
         DalvikLocalNotificationsService.this.activity = activity;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            boolean notificationsEnabled = Util.verifyPermissions(Manifest.permission.POST_NOTIFICATIONS);
+            if (!notificationsEnabled) {
+                Log.v(TAG, "Post notifications disabled. POST_NOTIFICATIONS permission is required");
+            }
+        }
     }
 
     static Activity getActivity() {

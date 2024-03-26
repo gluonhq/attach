@@ -27,6 +27,7 @@
  */
 package com.gluonhq.helloandroid;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -51,6 +52,13 @@ public class DalvikPushNotificationsService {
 
     public DalvikPushNotificationsService(Activity activity) {
         DalvikPushNotificationsService.this.activity = activity;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            boolean notificationsEnabled = Util.verifyPermissions(Manifest.permission.POST_NOTIFICATIONS);
+            if (!notificationsEnabled) {
+                Log.v(TAG, "Post notifications disabled. POST_NOTIFICATIONS permission is required");
+            }
+        }
     }
 
     static Activity getActivity() {
