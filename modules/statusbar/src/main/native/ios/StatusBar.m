@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,4 +82,24 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_IOSStatusBarServic
             statusBar.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:opacity];
         }
     }
+}
+
+JNIEXPORT jint JNICALL Java_com_gluonhq_attach_statusbar_impl_IOSStatusBarService_barHeight
+(JNIEnv *env, jclass jClass)
+{
+
+   if (@available(iOS 13.0, *)) {
+        UIWindow* window = [UIApplication sharedApplication].keyWindow;
+        if(!window)
+        {
+            AttachLog(@"key window was nil");
+            return -1;
+        }
+        CGRect statusBarFrame = window.windowScene.statusBarManager.statusBarFrame;
+        return statusBarFrame.size.height;
+   }
+   else {
+        CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
+        return statusBarFrame.size.height;
+   }
 }
