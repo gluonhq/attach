@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ public class Util {
     private static boolean debug = false;
 
     public Util(Activity activity) {
-        Util.activity = activity;
         Log.v(TAG, "Util <init>");
         if (activity != null) {
+            Util.activity = activity;
             new Handler(Util.activity.getMainLooper()).postDelayed(new Runnable() {
 
                 @Override
@@ -97,6 +97,9 @@ public class Util {
             @Override
             public void run() {
                 if (Util.activity == null) {
+                    if (debug) {
+                        Log.v(TAG, "Util::syncClipboardFromOS failed, no activity");
+                    }
                     return;
                 }
                 new Handler(Util.activity.getMainLooper()).postDelayed(new Runnable() {
@@ -123,6 +126,9 @@ public class Util {
 
     private static void syncClipboardToOS() {
         if (Util.activity == null) {
+            if (debug) {
+                Log.v(TAG, "Util::syncClipboardToOS failed, no activity");
+            }
             return;
         }
         final String text = nativeSyncClipboardToOS();
