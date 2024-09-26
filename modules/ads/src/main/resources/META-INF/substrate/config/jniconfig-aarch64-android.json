@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.ads.impl.AndroidAdsService",
+    "methods":[{"name":"invokeCallback","parameterTypes":["long", "java.lang.String", "java.lang.String", "java.lang.String[]"] }]
+  }
+]
