@@ -24,6 +24,6 @@ repositories {
 
 dependencies {
     compileOnly fileTree(dir: '../libs', include: '*.jar')
-    implementation 'com.google.gms:google-services:4.3.3'
-    implementation 'com.google.firebase:firebase-messaging:20.3.0'
+    implementation 'com.google.gms:google-services:4.4.1'
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'
 }
