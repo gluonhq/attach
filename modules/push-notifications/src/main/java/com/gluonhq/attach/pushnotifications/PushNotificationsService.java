@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023, Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,13 @@ import java.util.Optional;
  *            <meta-data android:name="android.support.PARENT_ACTIVITY"
  *                       android:value="com.gluonhq.helloandroid.MainActivity"/>
  *      </activity>
+ *      <receiver android:name="com.gluonhq.helloandroid.FirebaseBroadcastReceiver"
+ *                android:exported="true"
+ *                android:permission="com.google.android.c2dm.permission.SEND">
+ *             <intent-filter>
+ *                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+ *             </intent-filter>
+ *      </receiver>
  *    </application>
  *  </manifest>}</pre>
  *

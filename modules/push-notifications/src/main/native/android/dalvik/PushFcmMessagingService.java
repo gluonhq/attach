@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Gluon
+ * Copyright (c) 2018, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,13 @@ public class PushFcmMessagingService extends FirebaseMessagingService {
     private static final String TAG = Util.TAG;
     private static final boolean debug = Util.isDebug();
 
+    /**
+     * This is only called when app is in foreground. It needs data payload
+     * and not only notification payload.
+     * From Firebase Console: if only Notification Title/Notification Text are
+     * set, it won't call onMessageReceived(). It needs also Custom data fields set
+     * with title/body/id/silent
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (debug) {

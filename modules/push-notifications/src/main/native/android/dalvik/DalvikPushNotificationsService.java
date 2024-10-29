@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023, Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ public class DalvikPushNotificationsService {
     private static final boolean debug = Util.isDebug();
 
     private static Activity activity;
+    private static boolean active;
     static int badgeNumber = 0;
 
     public DalvikPushNotificationsService(Activity activity) {
@@ -59,10 +60,33 @@ public class DalvikPushNotificationsService {
                 Log.v(TAG, "Post notifications disabled. POST_NOTIFICATIONS permission is required");
             }
         }
+
+        active = true;
+        Util.setLifecycleEventHandler(new LifecycleEventHandler() {
+            @Override
+            public void lifecycleEvent(String event) {
+                if (event != null && !event.isEmpty()) {
+                    switch (event) {
+                        case "pause":
+                            active = false;
+                            break;
+                        case "resume":
+                            active = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     static Activity getActivity() {
         return activity;
+    }
+
+    static boolean isActive() {
+        return active;
     }
 
     public String getPackageName() {
