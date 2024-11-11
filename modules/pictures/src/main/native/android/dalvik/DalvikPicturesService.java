@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,16 @@ public class DalvikPicturesService  {
 
     private boolean verifyPermissions() {
         if (!verified) {
-            verified = Util.verifyPermissions(Manifest.permission.CAMERA,
-                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (Build.VERSION.SDK_INT >= 33) {
+                verified = Util.verifyPermissions(Manifest.permission.CAMERA,
+                        Manifest.permission.READ_MEDIA_AUDIO,
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO);
+            } else {
+                verified = Util.verifyPermissions(Manifest.permission.CAMERA,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
         }
         return verified;
     }
