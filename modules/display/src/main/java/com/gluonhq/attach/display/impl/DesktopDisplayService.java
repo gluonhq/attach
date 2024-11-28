@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2022 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,11 @@ public class DesktopDisplayService implements DisplayService {
     @Override
     public float getScreenScale() {
         return (float) Math.min(Screen.getPrimary().getOutputScaleX(), Screen.getPrimary().getOutputScaleY());
+    }
+
+    @Override
+    public int getHomeIndicatorHeight() {
+        return 0;
     }
 
     @Override
