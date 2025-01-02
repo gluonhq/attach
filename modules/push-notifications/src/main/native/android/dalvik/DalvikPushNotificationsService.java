@@ -29,6 +29,7 @@ package com.gluonhq.helloandroid;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -150,6 +151,12 @@ public class DalvikPushNotificationsService {
 
     public void setBadgeNumber(int number) {
         DalvikPushNotificationsService.badgeNumber = number;
+    }
+
+    public void removeAllNotifications() {
+        NotificationManager notificationManager =
+                (NotificationManager) activity.getSystemService(Activity.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     static void sendRuntimeArgs(String value) {

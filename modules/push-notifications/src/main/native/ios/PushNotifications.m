@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023, Gluon
+ * Copyright (c) 2016, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,33 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNot
     if (debugAttach) {
         AttachLog(@"Set badge number to %d", badgeNumber);
     }
-    [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+    setBadgeCount(badgeNumber);
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_IOSPushNotificationsService_removeAllDeliveredNotifications
+(JNIEnv *env, jclass jClass)
+{
+    if (debugAttach) {
+        AttachLog(@"Remove all delivered notifications");
+    }
+    if (@available(iOS 10.0, *))
+    {
+        [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+    } else
+    {
+        [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    }
+    setBadgeCount(0);
+}
+
+void setBadgeCount(NSInteger badgeNumber) {
+    if (@available(iOS 16.0, *))
+    {
+        [[UNUserNotificationCenter currentNotificationCenter] setBadgeCount:badgeNumber withCompletionHandler:nil];
+    } else
+    {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
+    }
 }
 
 @implementation GlassApplication (NotificationsAdditions)

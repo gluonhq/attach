@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023, Gluon
+ * Copyright (c) 2020, 2024, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ jmethodID jDalvikPushNotificationsServiceIsGooglePlayServicesAvailable;
 jmethodID jDalvikPushNotificationsServiceGetErrorString;
 jmethodID jDalvikPushNotificationsServiceInitializeFirebase;
 jmethodID jDalvikPushNotificationsServiceSetBadgeNumber;
+jmethodID jDalvikPushNotificationsServiceRemoveAllNotifications;
 
 static void initializeGraalHandles(JNIEnv* env) {
     jGraalPushNotificationsClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/pushnotifications/impl/AndroidPushNotificationsService"));
@@ -56,6 +57,7 @@ static void initializePushNotificationsDalvikHandles() {
     jDalvikPushNotificationsServiceGetErrorString = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "getErrorString", "(I)Ljava/lang/String;");
     jDalvikPushNotificationsServiceInitializeFirebase = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "initializeFirebase", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     jDalvikPushNotificationsServiceSetBadgeNumber = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "setBadgeNumber", "(I)V");
+    jDalvikPushNotificationsServiceRemoveAllNotifications = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "removeAllNotifications", "()V");
 
     jmethodID jPushNotificationsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jPushNotificationsServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jthrowable t = (*dalvikEnv)->ExceptionOccurred(dalvikEnv);
@@ -164,6 +166,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_AndroidPus
     }
     ATTACH_DALVIK();
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikPushNotificationsService, jDalvikPushNotificationsServiceSetBadgeNumber, badgeNumber);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_pushnotifications_impl_AndroidPushNotificationsService_removeAllDeliveredNotifications
+(JNIEnv *env, jclass jClass)
+{
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Remove all delivered notifications");
+    }
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikPushNotificationsService, jDalvikPushNotificationsServiceRemoveAllNotifications);
     DETACH_DALVIK();
 }
 
