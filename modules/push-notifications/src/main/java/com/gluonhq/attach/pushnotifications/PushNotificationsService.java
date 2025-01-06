@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2024, Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,4 +159,13 @@ public interface PushNotificationsService {
      *                    or 0 to hide it. The default value is 0.
      */
     void setAppIconBadgeNumber(int badgeNumber);
+
+    /**
+     * Removes all delivered notifications that haven't been read yet.
+     * This can be used to remove pending notifications, when the user doesn't tap on
+     * the notification to open the app, but directly opens it.
+     * It also resets the badge number.
+     * @since 4.0.22
+     */
+    void removeAllNotifications();
 }
