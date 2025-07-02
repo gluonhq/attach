@@ -13,7 +13,7 @@ def sdkPath(String platform) {
     return "/Applications/Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/${platform}${IOS_VERSION}.sdk";
 }
 
-def AndroidPlatform = 34
+def AndroidPlatform = 35
 
 task androidBuild {
     group = "native"
