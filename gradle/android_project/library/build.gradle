@@ -4,11 +4,10 @@ android {
 
     namespace 'com.gluonhq.helloandroid'
 
-    compileSdkVersion 34
-
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        compileSdk 35
+        targetSdkVersion 35
     }
 
     dependencies {
