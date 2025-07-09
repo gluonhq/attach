@@ -1,23 +1,9 @@
 <?xml version='1.0' encoding="utf-8"?>
 <manifest xmlns:android='http://schemas.android.com/apk/res/android' xmlns:tools="http://schemas.android.com/tools">
     <uses-sdk android:minSdkVersion="21" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <application>
-        <activity android:name="com.gluonhq.helloandroid.zxing.CaptureActivity"
-                  android:exported="true"
-                  android:screenOrientation="sensorLandscape"
-                  android:clearTaskOnLaunch="true" android:stateNotNeeded="true"
-                  android:windowSoftInputMode="stateAlwaysHidden">
-            <intent-filter>
-                <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-    </application>
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
     </queries>
 </manifest>
-
