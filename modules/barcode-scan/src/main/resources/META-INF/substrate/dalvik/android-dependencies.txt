@@ -1,1 +1,2 @@
-implementation 'com.google.zxing:core:3.4.1'
+implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
+implementation 'androidx.fragment:fragment:1.8.8'

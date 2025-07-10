@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,70 +29,57 @@ package com.gluonhq.helloandroid;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
-import com.gluonhq.helloandroid.zxing.Intents.Scan;
+import com.google.mlkit.common.MlKitException;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 
 public class DalvikBarcodeScanService {
 
     private static final String TAG = Util.TAG;
-    private static final int SCAN_CODE = 10002;
-    public static final String SCAN_VIEW_TITLE = "ScanViewTitle";
-    public static final String SCAN_VIEW_LEGEND = "ScanViewLegend";
-    public static final String SCAN_VIEW_RESULT = "ScanViewResult";
 
     private final Activity activity;
-    private final Intent scanIntent;
 
     public DalvikBarcodeScanService(Activity activity) {
         this.activity = activity;
-        scanIntent = new Intent(Scan.ACTION);
-        scanIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        scanIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        scanIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
     }
 
     private void scan(String title, String legend, String resultText) {
-        if (title != null && !title.isEmpty()) {
-            scanIntent.putExtra(SCAN_VIEW_TITLE, title);
-        }
+        GmsBarcodeScannerOptions options = new GmsBarcodeScannerOptions.Builder()
+                .enableAutoZoom()
+                .build();
 
-        if (legend != null && !legend.isEmpty()) {
-            scanIntent.putExtra(SCAN_VIEW_LEGEND, legend);
-        }
-
-        if (resultText != null && !resultText.isEmpty()) {
-            scanIntent.putExtra(SCAN_VIEW_RESULT, resultText);
-        }
-
-        if (!Util.verifyPermissions(Manifest.permission.CAMERA)) {
-            Log.e(TAG, "Camera is disabled");
-            return;
-        }
-
-        IntentHandler intentHandler = new IntentHandler() {
-            @Override
-            public void gotActivityResult(int requestCode, int resultCode, Intent intent) {
-                if (requestCode == SCAN_CODE && resultCode == Activity.RESULT_OK) {
-                    String result = (String) intent.getExtras().get("SCAN_RESULT");
-                    // a barcode was scanned
+        GmsBarcodeScanner scanner = GmsBarcodeScanning.getClient(activity, options);
+        scanner.startScan()
+                .addOnSuccessListener(barcode -> {
                     if (Util.isDebug()) {
-                        Log.v(TAG, "Current barcodescan result: " + result);
+                        Log.v(TAG, "Barcodescan succeeded with result: " + barcode.getRawValue() + " and format " + barcode.getFormat());
                     }
-                    nativeBarcodeScanResult(result);
-                }
+                    nativeBarcodeScanResult(barcode.getRawValue());
+                })
+                .addOnCanceledListener(() -> {
+                    if (Util.isDebug()) {
+                        Log.v(TAG, "Barcodescan was cancelled");
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Barcodescan failed with error: " + getErrorMessage(e)));
+    }
+
+    private String getErrorMessage(Exception e) {
+        if (e instanceof MlKitException) {
+            switch (((MlKitException) e).getErrorCode()) {
+                case MlKitException.CODE_SCANNER_CAMERA_PERMISSION_NOT_GRANTED:
+                    return "Camera permission not granted";
+                case MlKitException.CODE_SCANNER_APP_NAME_UNAVAILABLE:
+                    return "app name unavailable";
+                default:
+                    return e.getMessage();
             }
-        };
-
-        if (activity == null) {
-            Log.e(TAG, "Activity not found. This service is not allowed when "
-                    + "running in background mode or from wearable");
-            return;
+        } else {
+            return e.getMessage();
         }
-
-        Util.setOnActivityResultHandler(intentHandler);
-
-        activity.startActivityForResult(scanIntent, SCAN_CODE);
     }
 
     private native void nativeBarcodeScanResult(String result);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,29 +54,7 @@ import java.util.Optional;
  * when used.</p>
  *
  * <p><b>Android Configuration</b></p>
- * <p>The permission <code>android.permission.CAMERA</code> needs to be added together
- * with the following <code>activity</code> configuration that handles the SCAN intent
- * of the BarcodeScanService.</p>
- *
- * <pre>
- * {@code <manifest ...>
- *    <uses-permission android:name="android.permission.CAMERA"/>
- *    ...
- *    <application ...>
- *      ...
- *      <activity android:name="com.gluonhq.helloandroid.zxing.CaptureActivity"
- *                android:screenOrientation="sensorLandscape"
- *                android:clearTaskOnLaunch="true"
- *                android:stateNotNeeded="true"
- *                android:windowSoftInputMode="stateAlwaysHidden">
- *        <intent-filter>
- *          <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
- *          <category android:name="android.intent.category.DEFAULT"/>
- *        </intent-filter>
- *      </activity>
- *      <activity android:name="com.gluonhq.impl.attach.plugins.android.PermissionRequestActivity" />
- *    </application>
- *  </manifest>}</pre>
+ * <p>None</p>
  *
  * <p><b>iOS Configuration</b></p>
  *

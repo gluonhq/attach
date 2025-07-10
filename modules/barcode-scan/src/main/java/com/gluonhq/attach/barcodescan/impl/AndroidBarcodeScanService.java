@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,27 +36,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 
 import java.util.Optional;
 
-/**
- * Requires this permission: android.permission.CAMERA
- *
- * And this activity added to the AndroidManifest.xml:
- *
- * <pre>
- * {@code
- *  <activity android:name="com.gluonhq.helloandroid.zxing.CaptureActivity"
- *        android:screenOrientation="sensorLandscape"
- *        android:clearTaskOnLaunch="true"
- *       android:stateNotNeeded="true"
- *        android:windowSoftInputMode="stateAlwaysHidden">
- *         <intent-filter>
- *             <action android:name="com.gluonhq.attach.barcodescan.android.SCAN"/>
- *            <category android:name="android.intent.category.DEFAULT"/>
- *          </intent-filter>
- *    </activity>
- *    <activity android:name="com.gluonhq.helloandroid.PermissionRequestActivity" />
- *    }
- * </pre>
- */
 public class AndroidBarcodeScanService implements BarcodeScanService {
     
     static {
