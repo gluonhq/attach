@@ -58,12 +58,31 @@ import java.util.Optional;
  */
 public interface VibrationService {
 
+
     /**
      * Returns an instance of {@link VibrationService}.
+     *
      * @return An instance of {@link VibrationService}.
      */
     static Optional<VibrationService> create() {
         return Services.get(VibrationService.class);
+    }
+
+    /**
+     * Haptic Feedback Styles: Light, Medium, Heavy.
+     */
+    enum HapticFeedbackStyle {
+        LIGHT(1), MEDIUM(2), HEAVY(3);
+
+        private int style;
+
+        HapticFeedbackStyle(int style) {
+            this.style = style;
+        }
+
+        public int getStyle() {
+            return this.style;
+        }
     }
 
     /**
@@ -90,11 +109,18 @@ public interface VibrationService {
      *     <li>Wait for 2 seconds</li>
      *     <li>Vibrate for 3 seconds</li>
      * </ul>
-     *
-     * Note: the availability of this functionality is platform-restricted, and at present only Android supports it. 
+     * <p>
+     * Note: the availability of this functionality is platform-restricted, and at present only Android supports it.
      * Calling this method on iOS will result in the same vibration as calling {@link #vibrate()}
      *
      * @param pattern The pattern of durations to play the vibration for (with wait periods in between).
      */
     void vibrate(long... pattern);
+
+    /**
+     * Call Haptic Feedback.
+     *
+     * @param hapticFeedbackStyle Feedback Style {@link HapticFeedbackStyle}
+     */
+    void hapticFeedback(HapticFeedbackStyle hapticFeedbackStyle);
 }
