@@ -27,6 +27,8 @@
  */
 module com.gluonhq.attach.audio {
 
+    requires javafx.media;
+
     requires com.gluonhq.attach.storage;
     requires com.gluonhq.attach.util;
 
