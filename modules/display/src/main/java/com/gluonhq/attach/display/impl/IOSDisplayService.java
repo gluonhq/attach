@@ -39,7 +39,7 @@ public class IOSDisplayService implements DisplayService {
 
     static {
         System.loadLibrary("Display");
-        initDisplay();
+        Platform.runLater(() -> initDisplay());
     }
 
     private static ReadOnlyObjectWrapper<DisplayService.Notch> notch;
