@@ -39,6 +39,8 @@ jobs:
         run: |
           export ANDROID_SDK=$ANDROID_HOME
           ./gradlew -i nativeBuild
+        env:
+          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Deploy Snapshot
         if: github.ref == 'refs/heads/master'
@@ -48,3 +50,4 @@ jobs:
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
