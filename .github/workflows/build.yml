@@ -25,6 +25,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r28c
+          add-to-path: false
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
