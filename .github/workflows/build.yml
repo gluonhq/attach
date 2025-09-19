@@ -25,6 +25,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r28c
+          add-to-path: false
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -32,6 +39,8 @@ jobs:
         run: |
           export ANDROID_SDK=$ANDROID_HOME
           ./gradlew -i nativeBuild
+        env:
+          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Deploy Snapshot
         if: github.ref == 'refs/heads/master'
@@ -41,3 +50,4 @@ jobs:
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}

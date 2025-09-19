@@ -21,6 +21,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r28c
+          add-to-path: false
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -45,6 +52,7 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_KEYNAME: ${{ secrets.GPG_KEYNAME }}
+          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Release Javadocs to S3
         if: steps.deploy.outputs.exit_code == 0
