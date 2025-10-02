@@ -80,7 +80,7 @@ public class DalvikStatusBarService {
     }
 
     private void setSystemBarsColor(final int statusBarColor, final int navigationBarColor) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // < 34
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // < 34
             Log.e(TAG, "setSystemBarsColor is not supported for the current Android version. " +
                     "Use setColor instead");
             return;
