@@ -30,10 +30,12 @@ package com.gluonhq.helloandroid;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 public class DalvikStatusBarService {
@@ -48,7 +50,11 @@ public class DalvikStatusBarService {
 
     private void setColor(final int color) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // < 21
-            Log.e(TAG, "StatusBar service is not supported for the current Android version");
+            Log.e(TAG, "setColor is not supported for the current Android version");
+            return;
+        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // > 34
+            Log.e(TAG, "setColor is not supported for the current Android version. " +
+                    "Use setSystemBarsColor instead");
             return;
         }
         if (activity == null) {
@@ -64,29 +70,66 @@ public class DalvikStatusBarService {
             @Override
             public void run() {
                 Window window = activity.getWindow();
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // <= 34
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    // make status bar transparent
-                    window.setStatusBarColor(0x00000000);
-                    // paint window
-                    window.setBackgroundDrawable(new ColorDrawable(color));
-                } else { // >= 35
-                    View decorView = window.getDecorView();
-
-                    // Get insets, before applying the color, as it will reset them
-                    int top = decorView.getPaddingTop();
-                    int right = decorView.getPaddingRight();
-                    int bottom = decorView.getPaddingBottom();
-                    int left = decorView.getPaddingLeft();
-
-                    // Apply color
-                    decorView.setBackground(new ColorDrawable(color));
-
-                    // Restore insets
-                    decorView.setPadding(left, top, right, bottom);
-                }
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                // make status bar transparent
+                window.setStatusBarColor(0x00000000);
+                // paint window
+                window.setBackgroundDrawable(new ColorDrawable(color));
             }
         });
+    }
+
+    private void setSystemBarsColor(final int statusBarColor, final int navigationBarColor) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // < 34
+            Log.e(TAG, "setSystemBarsColor is not supported for the current Android version. " +
+                    "Use setColor instead");
+            return;
+        }
+        if (activity == null) {
+            Log.e(TAG, "FXActivity not found. This service is not allowed when "
+                    + "running in background mode or from wearable");
+            return;
+        }
+
+        if (Util.isDebug()) {
+            Log.v(TAG, "Set SystemBars color, values: " + statusBarColor + ", " + navigationBarColor);
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Window window = activity.getWindow();
+                View decorView = window.getDecorView();
+
+                // Get insets, before applying the color, as it will reset them
+                int top = decorView.getPaddingTop();
+                int right = decorView.getPaddingRight();
+                int bottom = decorView.getPaddingBottom();
+                int left = decorView.getPaddingLeft();
+
+                WindowInsetsController windowInsetsController = decorView.getWindowInsetsController();
+                if (windowInsetsController != null) {
+                    // background light color requires dark icons, dark light color, white icons
+                    int bitset = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+                    windowInsetsController.setSystemBarsAppearance(getLuma(statusBarColor) > 128 ?
+                                    bitset : 0, bitset);
+                }
+
+                // Apply colors
+                decorView.setBackground(new GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        new int[]{statusBarColor, navigationBarColor}));
+
+                // Restore insets
+                decorView.setPadding(left, top, right, bottom);
+            }
+        });
+    }
+
+    private static double getLuma(int color) {
+        int r = (color >> 16) & 0xff;
+        int g = (color >>  8) & 0xff;
+        int b = (color >>  0) & 0xff;
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b; // 0 darkest - 255 lightest
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,12 +30,14 @@
 static jclass jStatusBarServiceClass;
 static jobject jDalvikStatusBarService;
 static jmethodID jStatusBarServiceColorMethod;
+static jmethodID jSystemBarsServiceColorMethod;
 
 static void initializeStatusBarDalvikHandles() {
     jStatusBarServiceClass = GET_REGISTER_DALVIK_CLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
     ATTACH_DALVIK();
     jmethodID jStatusBarServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jStatusBarServiceColorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setColor", "(I)V");
+    jSystemBarsServiceColorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setSystemBarsColor", "(II)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jStatusBarServiceClass, jStatusBarServiceInitMethod, jActivity);
@@ -76,5 +78,16 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarSe
         ATTACH_LOG_FINE("Set native color, value: %d", color);
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jStatusBarServiceColorMethod, color);
+    DETACH_DALVIK();
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarService_setNativeSystemBarsColor
+(JNIEnv *env, jclass jClass, jint statusBarColor, jint navigationBarColor)
+{
+    ATTACH_DALVIK();
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Set native system bars color, values: %d %d", statusBarColor, navigationBarColor);
+    }
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jSystemBarsServiceColorMethod, statusBarColor, navigationBarColor);
     DETACH_DALVIK();
 }
