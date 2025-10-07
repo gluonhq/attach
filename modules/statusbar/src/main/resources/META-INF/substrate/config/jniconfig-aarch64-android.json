@@ -1,6 +1,0 @@
-[
-  {
-    "name" : "com.gluonhq.attach.statusbar.impl.AndroidStatusBarService",
-    "methods":[{"name":"notifySafeArea","parameterTypes":["int", "int", "int", "int"] }]
-  }
-]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,13 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class DalvikDisplayService {
 
@@ -53,6 +59,16 @@ public class DalvikDisplayService {
         float yInches = metrics.heightPixels / metrics.ydpi;
         float xInches = metrics.widthPixels / metrics.xdpi;
         diagonalInches = Math.sqrt(xInches * xInches + yInches * yInches);
+
+        Window window = activity.getWindow();
+        View decorView = window.getDecorView();
+        ViewCompat.setOnApplyWindowInsetsListener(decorView, (v, insets) -> {
+            notifyInsets(insets, metrics.density);
+            return insets;
+        });
+        // Get initial insets
+        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(decorView);
+        notifyInsets(insets, metrics.density);
     }
 
     private boolean isPhoneFactor() {
@@ -73,4 +89,15 @@ public class DalvikDisplayService {
         }
         return activity.getResources().getConfiguration().isScreenRound();
     }
+
+    private void notifyInsets(WindowInsetsCompat insets, double density) {
+        Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+        if (Util.isDebug()) {
+            Log.v(TAG, "Display got new insets: " + systemBars);
+        }
+        notifyInsets(systemBars.top / density, systemBars.right / density,
+                systemBars.bottom / density, systemBars.left / density);
+    }
+
+    private native void notifyInsets(double top, double right, double bottom, double left);
 }

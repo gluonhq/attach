@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ package com.gluonhq.attach.display;
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 
 import java.util.Optional;
 
@@ -162,4 +163,15 @@ public interface DisplayService {
      * @since 3.8.0
      */
     ReadOnlyObjectProperty<Notch> notchProperty();
+
+    /**
+     * Property that contains the insets of the system bars (typically
+     * the status bar at the top and the navigation bar at the bottom).
+     * These insets can be used to add the necessary padding so the application
+     * doesn't get underneath the content shown at the system bars.
+     *
+     * @return A read only property with the insets of the system bars
+     */
+    ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty();
+
 }

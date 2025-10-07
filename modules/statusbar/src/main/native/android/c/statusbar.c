@@ -32,10 +32,6 @@ static jobject jDalvikStatusBarService;
 static jmethodID jStatusBarServiceColorMethod;
 static jmethodID jSystemBarsServiceColorMethod;
 
-// Graal handles
-static jclass jGraalStatusBarClass;
-static jmethodID jGraalNotifySafeAreaMethod;
-
 static void initializeStatusBarDalvikHandles() {
     jStatusBarServiceClass = GET_REGISTER_DALVIK_CLASS(jStatusBarServiceClass, "com/gluonhq/helloandroid/DalvikStatusBarService");
     ATTACH_DALVIK();
@@ -47,11 +43,6 @@ static void initializeStatusBarDalvikHandles() {
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jStatusBarServiceClass, jStatusBarServiceInitMethod, jActivity);
     jDalvikStatusBarService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
     DETACH_DALVIK();
-}
-
-static void initializeGraalHandles(JNIEnv* env) {
-    jGraalStatusBarClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/statusbar/impl/AndroidStatusBarService"));
-    jGraalNotifySafeAreaMethod = (*env)->GetStaticMethodID(env, jGraalStatusBarClass, "notifySafeArea", "(IIII)V");
 }
 
 //////////////////////////
@@ -71,7 +62,6 @@ JNI_OnLoad_statusbar(JavaVM *vm, void *reserved)
     }
     ATTACH_LOG_FINE("[StatusBar Service] Initializing native StatusBar from OnLoad");
     initializeStatusBarDalvikHandles();
-    initializeGraalHandles(graalEnv);
     return JNI_VERSION_1_8;
 #else
     #error Error: Java 8+ SDK is required to compile Attach
@@ -100,18 +90,4 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarSe
     }
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jSystemBarsServiceColorMethod, statusBarColor, navigationBarColor);
     DETACH_DALVIK();
-}
-
-///////////////////////////
-// From Dalvik to native //
-///////////////////////////
-
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikStatusBarService_nativeSafeArea(
-    JNIEnv *env, jobject service, jint top, jint right, jint bottom, jint left) {
-     if (isDebugAttach()) {
-        ATTACH_LOG_FINE("Native layer got new safe area: %d,%d,%d,%d\n", top, right, bottom, left);
-    }
-    ATTACH_GRAAL();
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalStatusBarClass, jGraalNotifySafeAreaMethod, top, right, bottom, left);
-    DETACH_GRAAL();
 }
