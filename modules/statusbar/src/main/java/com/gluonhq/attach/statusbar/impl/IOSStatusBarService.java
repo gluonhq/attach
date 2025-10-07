@@ -28,10 +28,16 @@
 package com.gluonhq.attach.statusbar.impl;
 
 import com.gluonhq.attach.statusbar.StatusBarService;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
+
+import java.util.Optional;
 
 public class IOSStatusBarService implements StatusBarService {
 
+    private static final ReadOnlyObjectWrapper<Rectangle2D> safeArea = new ReadOnlyObjectWrapper<>();
     static {
         System.loadLibrary("StatusBar");
     }
@@ -44,6 +50,16 @@ public class IOSStatusBarService implements StatusBarService {
     @Override
     public void setSystemBarsColor(Color statusBarColor, Color navigationBarColor) {
         // to-do
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Rectangle2D> systemBarSafeAreaProperty() {
+        return safeArea.getReadOnlyProperty();
+    }
+
+    @Override
+    public Optional<Rectangle2D> getSystemBarSafeArea() {
+        return Optional.empty();
     }
 
     private native void setNativeColor(double red, double green, double blue, double opacity);

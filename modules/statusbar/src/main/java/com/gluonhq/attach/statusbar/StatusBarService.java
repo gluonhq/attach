@@ -28,6 +28,8 @@
 package com.gluonhq.attach.statusbar;
 
 import com.gluonhq.attach.util.Services;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 
 import java.util.Optional;
@@ -70,4 +72,8 @@ public interface StatusBarService {
      * @param navigationBarColor The color to set the navigation bar to.
      */
     void setSystemBarsColor(Color statusBarColor, Color navigationBarColor);
+
+    ReadOnlyObjectProperty<Rectangle2D> systemBarSafeAreaProperty();
+
+    Optional<Rectangle2D> getSystemBarSafeArea();
 }

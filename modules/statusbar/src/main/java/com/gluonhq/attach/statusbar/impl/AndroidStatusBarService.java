@@ -28,10 +28,17 @@
 package com.gluonhq.attach.statusbar.impl;
 
 import com.gluonhq.attach.statusbar.StatusBarService;
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
+
+import java.util.Optional;
 
 public class AndroidStatusBarService implements StatusBarService {
 
+    private static final ReadOnlyObjectWrapper<Rectangle2D> safeArea = new ReadOnlyObjectWrapper<>();
     static {
         System.loadLibrary("statusbar");
     }
@@ -44,6 +51,16 @@ public class AndroidStatusBarService implements StatusBarService {
     @Override
     public void setSystemBarsColor(Color statusBarColor, Color navigationBarColor) {
         setNativeSystemBarsColor(getIntColor(statusBarColor), getIntColor(navigationBarColor));
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Rectangle2D> systemBarSafeAreaProperty() {
+        return safeArea.getReadOnlyProperty();
+    }
+
+    @Override
+    public Optional<Rectangle2D> getSystemBarSafeArea() {
+        return Optional.empty();
     }
 
     private static int getIntColor(Color color) {
@@ -61,4 +78,8 @@ public class AndroidStatusBarService implements StatusBarService {
     private native void setNativeColor(int color);
     private native void setNativeSystemBarsColor(int statusBarColor, int navigationBarColor);
 
+    // callback
+    private static void notifySafeArea(int top, int right, int bottom, int left) {
+        Platform.runLater(() -> safeArea.set(new Rectangle2D(top, right, bottom, left)));
+    }
 }

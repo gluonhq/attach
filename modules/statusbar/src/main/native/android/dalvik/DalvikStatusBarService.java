@@ -38,6 +38,10 @@ import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class DalvikStatusBarService {
 
     private static final String TAG = Util.TAG;
@@ -46,6 +50,17 @@ public class DalvikStatusBarService {
 
     public DalvikStatusBarService(Activity activity) {
         this.activity = activity;
+
+        Window window = activity.getWindow();
+        View decorView = window.getDecorView();
+        ViewCompat.setOnApplyWindowInsetsListener(decorView, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            if (Util.isDebug()) {
+                Log.v(TAG, "StatusBar got new insets: " + systemBars);
+            }
+            notifySafeArea(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 
     private void setColor(final int color) {
@@ -132,4 +147,5 @@ public class DalvikStatusBarService {
         return 0.2126 * r + 0.7152 * g + 0.0722 * b; // 0 darkest - 255 lightest
     }
 
+    private native void notifySafeArea(int top, int right, int bottom, int left);
 }
