@@ -28,8 +28,6 @@
 package com.gluonhq.attach.statusbar.impl;
 
 import com.gluonhq.attach.statusbar.StatusBarService;
-import javafx.application.Platform;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 
 public class AndroidStatusBarService implements StatusBarService {
