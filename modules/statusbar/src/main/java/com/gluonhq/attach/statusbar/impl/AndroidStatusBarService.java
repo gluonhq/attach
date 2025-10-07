@@ -60,4 +60,5 @@ public class AndroidStatusBarService implements StatusBarService {
 
     private native void setNativeColor(int color);
     private native void setNativeSystemBarsColor(int statusBarColor, int navigationBarColor);
+
 }
