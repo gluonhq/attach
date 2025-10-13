@@ -1,9 +1,6 @@
 [
   {
     "name" : "com.gluonhq.attach.display.impl.AndroidDisplayService",
-    "methods":[
-      {"name":"<init>","parameterTypes":[] },
-      {"name":"notifyInsets","parameterTypes":["double", "double", "double", "double"] }
-    ]
+    "methods":[{"name":"<init>","parameterTypes":[] }]
   }
 ]

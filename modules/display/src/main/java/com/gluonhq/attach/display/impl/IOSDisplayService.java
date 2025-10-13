@@ -127,4 +127,8 @@ public class IOSDisplayService implements DisplayService {
             Platform.runLater(() -> notch.setValue(d));
         }
     }
+
+    private static void notifyInsets(double top, double right, double bottom, double left) {
+        Platform.runLater(() -> insetsProperty.set(new Insets(top, right, bottom, left)));
+    }
 }
