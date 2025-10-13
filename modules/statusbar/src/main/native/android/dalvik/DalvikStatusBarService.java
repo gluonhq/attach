@@ -36,6 +36,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.core.view.WindowCompat;
+
 public class DalvikStatusBarService {
 
     private static final String TAG = Util.TAG;
@@ -73,18 +75,33 @@ public class DalvikStatusBarService {
                 } else { // >= 35
                     View decorView = window.getDecorView();
 
-                    // Get insets, before applying the color, as it will reset them
-                    int top = decorView.getPaddingTop();
-                    int right = decorView.getPaddingRight();
-                    int bottom = decorView.getPaddingBottom();
-                    int left = decorView.getPaddingLeft();
-
                     // Apply color
                     decorView.setBackground(new ColorDrawable(color));
-
-                    // Restore insets
-                    decorView.setPadding(left, top, right, bottom);
                 }
+            }
+        });
+    }
+
+    private void setDarkAppearance(final boolean dark) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // < 21
+            Log.e(TAG, "StatusBar service is not supported for the current Android version");
+            return;
+        }
+        if (activity == null) {
+            Log.e(TAG, "FXActivity not found. This service is not allowed when "
+                    + "running in background mode or from wearable");
+            return;
+        }
+
+        if (Util.isDebug()) {
+            Log.v(TAG, "Set StatusBar dark appearance, value: " + (dark ? "dark" : "light"));
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Window window = activity.getWindow();
+                View decorView = window.getDecorView();
+                WindowCompat.getInsetsController(window, decorView).setAppearanceLightStatusBars(dark);
             }
         });
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020, Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,11 @@ public class AndroidStatusBarService implements StatusBarService {
         setNativeColor(getIntColor(color));
     }
 
+    @Override
+    public void setStatusBarAppearance(APPEARANCE appearance) {
+        setNativeDarkAppearance(appearance == APPEARANCE.DARK);
+    }
+
     private static int getIntColor(Color color) {
         if (color == null) {
             return 0xff000000; // Black
@@ -54,4 +59,5 @@ public class AndroidStatusBarService implements StatusBarService {
     }
 
     private native void setNativeColor(int color);
+    private native void setNativeDarkAppearance(boolean dark);
 }

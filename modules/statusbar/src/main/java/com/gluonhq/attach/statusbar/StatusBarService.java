@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,11 @@ import java.util.Optional;
  */
 public interface StatusBarService {
 
+    enum APPEARANCE {
+        LIGHT,
+        DARK
+    }
+
     /**
      * Returns an instance of {@link StatusBarService}.
      * @return An instance of {@link StatusBarService}.
@@ -62,4 +67,13 @@ public interface StatusBarService {
      * @param color The color to set the status bar to.
      */
     void setColor(Color color);
+
+
+    /**
+     * Sets the appearance of the icons of the Status Bar to light or dark,
+     * so these have enough contrast and can be easily read
+     * Only applies to Android.
+     * @param appearance
+     */
+    void setStatusBarAppearance(APPEARANCE appearance);
 }
