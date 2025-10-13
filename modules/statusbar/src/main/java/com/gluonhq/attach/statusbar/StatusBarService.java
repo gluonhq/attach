@@ -70,10 +70,11 @@ public interface StatusBarService {
 
 
     /**
-     * Sets the appearance of the icons of the Status Bar to light or dark,
+     * Sets the appearance of the icons of the system bars to light or dark,
      * so these have enough contrast and can be easily read
      * Only applies to Android.
-     * @param appearance
+     * @param statusBarAppearance the light or dark appearance of the status bar
+     * @param navigationBarAppearance the light or dark appearance of the navigation bar
      */
-    void setStatusBarAppearance(APPEARANCE appearance);
+    void setSystemBarsAppearance(APPEARANCE statusBarAppearance, APPEARANCE navigationBarAppearance);
 }

@@ -37,7 +37,7 @@ static void initializeStatusBarDalvikHandles() {
     ATTACH_DALVIK();
     jmethodID jStatusBarServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jStatusBarServiceColorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setColor", "(I)V");
-    jStatusBarServiceDarkAppearanceMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setDarkAppearance", "(Z)V");
+    jStatusBarServiceDarkAppearanceMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jStatusBarServiceClass, "setSystemBarsAppearance", "(ZZ)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jStatusBarServiceClass, jStatusBarServiceInitMethod, jActivity);
@@ -81,13 +81,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarSe
     DETACH_DALVIK();
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarService_setNativeDarkAppearance
-(JNIEnv *env, jclass jClass, jboolean dark)
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_statusbar_impl_AndroidStatusBarService_setNativeSystemBarsAppearance
+(JNIEnv *env, jclass jClass, jboolean darkStatusBar, jboolean darkNavigationBar)
 {
     ATTACH_DALVIK();
     if (isDebugAttach()) {
-        ATTACH_LOG_FINE("Set native dark appearance, value: %s", dark ? "true" : "false");
+        ATTACH_LOG_FINE("Set native status bar appearance dark: %s, navigation bar appearance dark: %s, ",
+                darkStatusBar ? "true" : "false", darkNavigationBar ? "true" : "false");
     }
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jStatusBarServiceDarkAppearanceMethod, dark);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikStatusBarService, jStatusBarServiceDarkAppearanceMethod, darkStatusBar, darkNavigationBar);
     DETACH_DALVIK();
 }

@@ -82,7 +82,7 @@ public class DalvikStatusBarService {
         });
     }
 
-    private void setDarkAppearance(final boolean dark) {
+    private void setSystemBarsAppearance(final boolean darkStatusBar, final boolean darkNavigationBar) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // < 21
             Log.e(TAG, "StatusBar service is not supported for the current Android version");
             return;
@@ -94,14 +94,15 @@ public class DalvikStatusBarService {
         }
 
         if (Util.isDebug()) {
-            Log.v(TAG, "Set StatusBar dark appearance, value: " + (dark ? "dark" : "light"));
+            Log.v(TAG, "Set StatusBar appearance: " + (darkStatusBar ? "dark" : "light") + ", NavigationBar appearance: " + (darkNavigationBar ? "dark" : "light"));
         }
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Window window = activity.getWindow();
                 View decorView = window.getDecorView();
-                WindowCompat.getInsetsController(window, decorView).setAppearanceLightStatusBars(dark);
+                WindowCompat.getInsetsController(window, decorView).setAppearanceLightStatusBars(darkStatusBar);
+                WindowCompat.getInsetsController(window, decorView).setAppearanceLightNavigationBars(darkNavigationBar);
             }
         });
     }

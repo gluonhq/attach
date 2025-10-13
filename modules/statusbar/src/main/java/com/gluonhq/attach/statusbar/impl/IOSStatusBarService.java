@@ -42,7 +42,7 @@ public class IOSStatusBarService implements StatusBarService {
     }
 
     @Override
-    public void setStatusBarAppearance(APPEARANCE appearance) {
+    public void setSystemBarsAppearance(APPEARANCE statusBarAppearance, APPEARANCE navigationBarAppearance) {
         // no-op
     }
 
