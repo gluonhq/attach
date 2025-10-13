@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2019 Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,15 +59,7 @@ public interface StatusBarService {
 
     /**
      * Sets the color of the status bar to the specified color.
-     * Up until Android 14
      * @param color The color to set the status bar to.
      */
     void setColor(Color color);
-
-    /**
-     * Sets the color of the status bar to the specified color, on Android 15+
-     * @param statusBarColor The color to set the status bar to.
-     * @param navigationBarColor The color to set the navigation bar to.
-     */
-    void setSystemBarsColor(Color statusBarColor, Color navigationBarColor);
 }
