@@ -42,8 +42,8 @@ public class AndroidStatusBarService implements StatusBarService {
     }
 
     @Override
-    public void setSystemBarsColor(Color statusBarColor, Color navigationBarColor) {
-        setNativeSystemBarsColor(getIntColor(statusBarColor), getIntColor(navigationBarColor));
+    public void setSystemBarsAppearance(APPEARANCE statusBarAppearance, APPEARANCE navigationBarAppearance) {
+        setNativeSystemBarsAppearance(statusBarAppearance == APPEARANCE.DARK, navigationBarAppearance == APPEARANCE.DARK);
     }
 
     private static int getIntColor(Color color) {
@@ -59,6 +59,5 @@ public class AndroidStatusBarService implements StatusBarService {
     }
 
     private native void setNativeColor(int color);
-    private native void setNativeSystemBarsColor(int statusBarColor, int navigationBarColor);
-
+    private native void setNativeSystemBarsAppearance(boolean darkStatusBar, boolean darkNavigationBar);
 }

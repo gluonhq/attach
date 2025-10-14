@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2019, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ public class IOSStatusBarService implements StatusBarService {
     }
 
     @Override
-    public void setSystemBarsColor(Color statusBarColor, Color navigationBarColor) {
-        // to-do
+    public void setSystemBarsAppearance(APPEARANCE statusBarAppearance, APPEARANCE navigationBarAppearance) {
+        // no-op
     }
 
     private native void setNativeColor(double red, double green, double blue, double opacity);

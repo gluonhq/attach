@@ -49,6 +49,11 @@ import java.util.Optional;
  */
 public interface StatusBarService {
 
+    enum APPEARANCE {
+        LIGHT,
+        DARK
+    }
+
     /**
      * Returns an instance of {@link StatusBarService}.
      * @return An instance of {@link StatusBarService}.
@@ -59,15 +64,17 @@ public interface StatusBarService {
 
     /**
      * Sets the color of the status bar to the specified color.
-     * Up until Android 14
      * @param color The color to set the status bar to.
      */
     void setColor(Color color);
 
+
     /**
-     * Sets the color of the status bar to the specified color, on Android 15+
-     * @param statusBarColor The color to set the status bar to.
-     * @param navigationBarColor The color to set the navigation bar to.
+     * Sets the appearance of the icons of the system bars to light or dark,
+     * so these have enough contrast and can be easily read
+     * Only applies to Android.
+     * @param statusBarAppearance the light or dark appearance of the status bar
+     * @param navigationBarAppearance the light or dark appearance of the navigation bar
      */
-    void setSystemBarsColor(Color statusBarColor, Color navigationBarColor);
+    void setSystemBarsAppearance(APPEARANCE statusBarAppearance, APPEARANCE navigationBarAppearance);
 }
