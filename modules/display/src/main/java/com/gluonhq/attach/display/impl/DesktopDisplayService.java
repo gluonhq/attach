@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import com.gluonhq.attach.display.DisplayService;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 
@@ -40,6 +41,8 @@ import java.util.logging.Logger;
 public class DesktopDisplayService implements DisplayService {
 
     private static final Logger LOG = Logger.getLogger(DesktopDisplayService.class.getName());
+
+    private static final ReadOnlyObjectWrapper<Insets> insetsProperty = new ReadOnlyObjectWrapper<>();
 
     private final Dimension2D dimensions;
 
@@ -99,6 +102,11 @@ public class DesktopDisplayService implements DisplayService {
     @Override
     public ReadOnlyObjectProperty<Notch> notchProperty() {
         return new ReadOnlyObjectWrapper<>(Notch.UNKNOWN).getReadOnlyProperty();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty() {
+        return insetsProperty.getReadOnlyProperty();
     }
 
     private static void log(String message, Throwable cause) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,11 @@ package com.gluonhq.attach.display.impl;
 
 import com.gluonhq.attach.display.DisplayService;
 import com.gluonhq.attach.util.Util;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 
@@ -41,6 +43,8 @@ import java.util.logging.Logger;
 public class AndroidDisplayService implements DisplayService {
 
     private static final Logger LOG = Logger.getLogger(AndroidDisplayService.class.getName());
+
+    private static final ReadOnlyObjectWrapper<Insets> insetsProperty = new ReadOnlyObjectWrapper<>();
 
     private static final boolean debug = Util.DEBUG;
 
@@ -118,8 +122,18 @@ public class AndroidDisplayService implements DisplayService {
         return new ReadOnlyObjectWrapper<>(Notch.UNKNOWN).getReadOnlyProperty();
     }
 
+    @Override
+    public ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty() {
+        return insetsProperty.getReadOnlyProperty();
+    }
+
     // native
     private native static boolean isPhoneFactor();
     private native static double[] screenSize();
     private native static boolean screenRound();
+
+    // callback
+    private static void notifyInsets(double top, double right, double bottom, double left) {
+        Platform.runLater(() -> insetsProperty.set(new Insets(top, right, bottom, left)));
+    }
 }

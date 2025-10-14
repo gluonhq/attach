@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 
 public class IOSDisplayService implements DisplayService {
 
@@ -43,6 +44,8 @@ public class IOSDisplayService implements DisplayService {
     }
 
     private static ReadOnlyObjectWrapper<DisplayService.Notch> notch;
+
+    private static final ReadOnlyObjectWrapper<Insets> insetsProperty = new ReadOnlyObjectWrapper<>();
 
     public IOSDisplayService() {
         notch = new ReadOnlyObjectWrapper<>(Notch.UNKNOWN);
@@ -100,6 +103,11 @@ public class IOSDisplayService implements DisplayService {
         return notch.getReadOnlyProperty();
     }
 
+    @Override
+    public ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty() {
+        return insetsProperty.getReadOnlyProperty();
+    }
+
     // native
     private static native void initDisplay();
 
@@ -118,5 +126,9 @@ public class IOSDisplayService implements DisplayService {
         if (! notch.get().equals(d)) {
             Platform.runLater(() -> notch.setValue(d));
         }
+    }
+
+    private static void notifyInsets(double top, double right, double bottom, double left) {
+        Platform.runLater(() -> insetsProperty.set(new Insets(top, right, bottom, left)));
     }
 }

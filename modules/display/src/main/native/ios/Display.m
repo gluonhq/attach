@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2023, Gluon
+ * Copyright (c) 2016, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ static int DisplayInited = 0;
 // Display
 jclass mat_jDisplayServiceClass;
 jmethodID mat_jDisplayService_notifyDisplay = 0;
+jmethodID mat_jDisplayService_notifyInsets = 0;
 Display *_display;
 
 bool iPhoneX;
@@ -63,6 +64,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_in
 
     mat_jDisplayServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/display/impl/IOSDisplayService"));
     mat_jDisplayService_notifyDisplay = (*env)->GetStaticMethodID(env, mat_jDisplayServiceClass, "notifyDisplay", "(Ljava/lang/String;)V");
+    mat_jDisplayService_notifyInsets = (*env)->GetStaticMethodID(env, mat_jDisplayServiceClass, "notifyInsets", "(DDDD)V");
 
     _display = [[Display alloc] init];
     [_display isIPhoneX];
@@ -155,6 +157,13 @@ void sendNotch() {
     (*env)->DeleteLocalRef(env, arg);
 }
 
+void sendInsets(UIEdgeInsets insets) {
+    if (debugAttach) {
+        AttachLog(@"Insets are %.3f %.3f %.3f %.3f", insets.top, insets.right, insets.bottom, insets.left);
+    }
+    (*env)->CallStaticVoidMethod(env, mat_jDisplayServiceClass, mat_jDisplayService_notifyInsets, insets.top, insets.right, insets.bottom, insets.left);
+}
+
 @implementation Display
 
 NSString * GetDeviceModel(void)
@@ -190,7 +199,8 @@ NSString * GetDeviceModel(void)
             @"iPhone14,2", @"iPhone14,3", @"iPhone14,4", @"iPhone14,5", // iPhone 13 Pro, 13 Pro Max, 13 Mini, 13
             @"iPhone14,7", @"iPhone14,8", @"iPhone15,2", @"iPhone15,3", // iPhone 14, 14 Plus, 14 Pro, 14 Pro Max
             @"iPhone15,4", @"iPhone15,5", @"iPhone16,1", @"iPhone16,2", // iPhone 15, 15 Plus, 15 Pro, 15 Pro Max
-            @"iPhone17,3", @"iPhone17,4", @"iPhone17,1", @"iPhone17,2", // iPhone 16, 16 Plus, 16 Pro, 16 Pro Max
+            @"iPhone17,3", @"iPhone17,4", @"iPhone17,1", @"iPhone17,2", @"iPhone17,5", // iPhone 16, 16 Plus, 16 Pro, 16 Pro Max, 16e
+            @"iPhone18,3", @"iPhone18,1", @"iPhone18,2", @"iPhone18,4", // iPhone 17, 17 Pro, 17 Pro Max, 17 Pro Air
         ];
 
     if ([modelsWithNotch containsObject:GetDeviceModel()]) {
@@ -234,19 +244,17 @@ NSString * GetDeviceModel(void)
 
 - (void) startObserver
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    sendInsets([self getInsets]);
     if (iPhoneX)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(OrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
         sendNotch();
     }
 }
 
 - (void) stopObserver
 {
-    if (iPhoneX)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (NSString*) getNotch
@@ -271,9 +279,26 @@ NSString * GetDeviceModel(void)
     return value;
 }
 
+- (UIEdgeInsets) getInsets
+{
+    if (@available(iOS 11.0, *)) {
+        UIWindow *window = UIApplication.sharedApplication.keyWindow;
+        if (!window) {
+            AttachLog(@"key window was nil");
+            return UIEdgeInsetsMake(0, 0, 0, 0);
+        }
+        return window.safeAreaInsets;
+    }
+    return UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
 -(void)OrientationDidChange:(NSNotification*)notification
 {
-    sendNotch();
+    sendInsets([self getInsets]);
+    if (iPhoneX)
+    {
+        sendNotch();
+    }
 }
 
 @end

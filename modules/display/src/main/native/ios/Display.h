@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2022 Gluon
+ * Copyright (c) 2018, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
     - (void) startObserver;
     - (void) stopObserver;
     - (NSString*) getNotch;
+    - (UIEdgeInsets) getInsets;
 @end
 
 void sendNotch();
+void sendInsets(UIEdgeInsets insets);

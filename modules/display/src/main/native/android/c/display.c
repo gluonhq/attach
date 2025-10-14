@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2025, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,10 @@ static jmethodID jDisplayServiceHeightMethod;
 static jmethodID jDisplayServiceFactorMethod;
 static jmethodID jDisplayServiceRoundMethod;
 
+// Graal handles
+static jclass jGraalDisplayClass;
+static jmethodID jGraalNotifyInsetsMethod;
+
 static void initializeDisplayDalvikHandles() {
     jDisplayServiceClass = GET_REGISTER_DALVIK_CLASS(jDisplayServiceClass, "com/gluonhq/helloandroid/DalvikDisplayService");
     ATTACH_DALVIK();
@@ -47,6 +51,11 @@ static void initializeDisplayDalvikHandles() {
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jDisplayServiceClass, jDisplayServiceInitMethod, jActivity);
     jDalvikDisplayService = (*dalvikEnv)->NewGlobalRef(dalvikEnv, jtmpobj);
     DETACH_DALVIK();
+}
+
+static void initializeGraalHandles(JNIEnv* env) {
+    jGraalDisplayClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/display/impl/AndroidDisplayService"));
+    jGraalNotifyInsetsMethod = (*env)->GetStaticMethodID(env, jGraalDisplayClass, "notifyInsets", "(DDDD)V");
 }
 
 //////////////////////////
@@ -65,6 +74,7 @@ JNI_OnLoad_display(JavaVM *vm, void *reserved)
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("[Display Service] Initializing native Display from OnLoad");
+    initializeGraalHandles(graalEnv);
     initializeDisplayDalvikHandles();
     return JNI_VERSION_1_8;
 #else
@@ -108,4 +118,18 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplaySe
     jboolean answer = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceRoundMethod);
     DETACH_DALVIK();
     return answer;
+}
+
+///////////////////////////
+// From Dalvik to native //
+///////////////////////////
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikDisplayService_notifyInsets(
+    JNIEnv *env, jobject service, jdouble top, jdouble right, jdouble bottom, jdouble left) {
+     if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Native layer got new inset: %.1f,%.1f,%.1f,%.1f\n", top, right, bottom, left);
+    }
+    ATTACH_GRAAL();
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalDisplayClass, jGraalNotifyInsetsMethod, top, right, bottom, left);
+    DETACH_GRAAL();
 }
