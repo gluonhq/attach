@@ -33,7 +33,7 @@ subprojects {
 
     javafx {
         version = "20.0.2"
-        modules 'javafx.graphics'
+        modules = [ 'javafx.graphics', 'javafx.media']
     }
 }
 
