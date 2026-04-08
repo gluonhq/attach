@@ -57,20 +57,18 @@ public class AndroidDisplayService implements DisplayService {
     }
 
     public AndroidDisplayService() {
-        LifecycleService.create().ifPresent(l ->
+        LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, () -> {
                 if (screenAlwaysOn) {
                     setScreenAlwaysOnNative(false);
                 }
-            })
-        );
-        LifecycleService.create().ifPresent(l ->
+            });
             l.addListener(LifecycleEvent.RESUME, () -> {
                 if (screenAlwaysOn) {
                     setScreenAlwaysOnNative(true);
                 }
-            })
-        );
+            });
+        });
     }
 
     @Override
