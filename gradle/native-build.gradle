@@ -151,7 +151,7 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
             def javaSources = [sourcesUtilDir.listFiles()].flatten()
             def javac = "$JAVAHOME/bin/javac"
             def javacArgs = ["-d", file("$tempDir/classes").getAbsolutePath(),
-                             "-source", "1.8", "-target", "1.8",
+                             "-source", "1.7", "-target", "1.7",
                              "-bootclasspath", androidJar,
                              javaSources].flatten()
             exec {
