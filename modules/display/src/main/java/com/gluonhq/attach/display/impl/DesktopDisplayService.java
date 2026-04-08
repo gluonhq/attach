@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,6 +107,11 @@ public class DesktopDisplayService implements DisplayService {
     @Override
     public ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty() {
         return insetsProperty.getReadOnlyProperty();
+    }
+
+    @Override
+    public void setScreenAlwaysOn(boolean alwaysOn) {
+        // no-op
     }
 
     private static void log(String message, Throwable cause) {

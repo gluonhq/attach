@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,6 +144,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_st
 {
     [_display stopObserver];
     return;
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_IOSDisplayService_setScreenAlwaysOnNative
+(JNIEnv *env, jclass jClass, jboolean alwaysOn)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (debugAttach) {
+            AttachLog(@"Setting idleTimerDisabled to %s", alwaysOn ? "YES" : "NO");
+        }
+        [UIApplication sharedApplication].idleTimerDisabled = alwaysOn ? YES : NO;
+    });
 }
 
 void sendNotch() {
