@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ package com.gluonhq.attach.keyboard;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyFloatProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -85,4 +86,51 @@ public interface KeyboardService {
      * @return A ReadOnlyFloatProperty with the height of the soft keyboard
      */
     ReadOnlyFloatProperty visibleHeightProperty();
+
+
+    /**
+     * Sets the type of keyboard to display when a text input control
+     * receives focus.
+     *
+     * <p>For example, use {@link KeyboardType#NUMBER_PAD} to show a
+     * numeric-only keypad.</p>
+     *
+     * <p>Note: the change takes effect the next time the keyboard is shown.
+     * If the keyboard is currently visible, it will be hidden and re-shown
+     * to apply the new type.</p>
+     *
+     * @param type the {@link KeyboardType} to use
+     * @since 4.0.25
+     */
+    void setKeyboardType(KeyboardType type);
+
+    /**
+     * Sets the id of the JavaFX {@link Node} that currently has keyboard
+     * focus.  The native layer uses this id to tag composing text so that
+     * {@link #textProperty(String)} updates the correct property when
+     * multiple text controls are present.
+     *
+     * <p>Call this every time a different text control gains focus,
+     * <em>before</em> the software keyboard opens.</p>
+     *
+     * @param id the {@link Node#getId() node id} of the focused text control;
+     *           must not be {@code null}
+     * @since 4.0.25
+     */
+    void setActiveNodeId(String id);
+
+    /**
+     * Returns a read-only property that reflects the current text of the
+     * text control identified by {@code id}, as reported by the native
+     * IME composing/commit cycle.
+     *
+     * <p>Each unique {@code id} gets its own independent property instance.
+     * Callers typically pass the value of {@link Node#getId()} that was
+     * previously registered with {@link #setActiveNodeId(String)}.</p>
+     *
+     * @param id the {@link Node#getId() node id} of the text control
+     * @return A ReadOnlyStringProperty with the text for the given id
+     * @since 4.0.25
+     */
+    ReadOnlyStringProperty textProperty(String id);
 }

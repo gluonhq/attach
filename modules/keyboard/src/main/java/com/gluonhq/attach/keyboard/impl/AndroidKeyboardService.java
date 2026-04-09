@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2022, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,16 +28,22 @@
 package com.gluonhq.attach.keyboard.impl;
 
 import com.gluonhq.attach.keyboard.KeyboardService;
+import com.gluonhq.attach.keyboard.KeyboardType;
 import com.gluonhq.attach.util.Util;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.util.Duration;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +51,7 @@ public class AndroidKeyboardService implements KeyboardService {
 
     private static final Logger LOG = Logger.getLogger(AndroidKeyboardService.class.getName());
     private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
+    private static final Map<String, ReadOnlyStringWrapper> TEXT_MAP = new HashMap<>();
     private static final boolean debug = Util.DEBUG;
 
     static {
@@ -67,6 +74,31 @@ public class AndroidKeyboardService implements KeyboardService {
     @Override
     public ReadOnlyFloatProperty visibleHeightProperty() {
         return VISIBLE_HEIGHT.getReadOnlyProperty();
+    }
+
+    @Override
+    public void setKeyboardType(KeyboardType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("KeyboardType must not be null");
+        }
+        nativeSetKeyboardType(type.getValue());
+    }
+
+    @Override
+    public void setActiveNodeId(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Node id must not be null");
+        }
+        nativeSetActiveNodeId(id);
+    }
+
+    @Override
+    public ReadOnlyStringProperty textProperty(String id) {
+        return getOrCreateWrapper(id).getReadOnlyProperty();
+    }
+
+    private static ReadOnlyStringWrapper getOrCreateWrapper(String id) {
+        return TEXT_MAP.computeIfAbsent(id, k -> new ReadOnlyStringWrapper(""));
     }
 
     private static void adjustPosition(Node node, Parent parent, double kh) {
@@ -94,10 +126,25 @@ public class AndroidKeyboardService implements KeyboardService {
         }
     }
 
-    // callback
+    // native
+    private static native void nativeSetKeyboardType(int keyboardTypeValue);
+    private static native void nativeSetActiveNodeId(String id);
+
+    // callbacks
     private static void notifyVisibleHeight(float height) {
         if (VISIBLE_HEIGHT.get() != height) {
             Platform.runLater(() -> VISIBLE_HEIGHT.set(height));
+        }
+    }
+
+    /**
+     * Called from keyboard.c when the native layer receives composing text
+     * tagged with a node id.
+     */
+    private static void notifyComposingText(String id, String text) {
+        ReadOnlyStringWrapper wrapper = getOrCreateWrapper(id);
+        if (!Objects.equals(wrapper.get(), text)) {
+            Platform.runLater(() -> wrapper.set(text));
         }
     }
 

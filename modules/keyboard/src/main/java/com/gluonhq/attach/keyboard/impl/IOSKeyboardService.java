@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2022, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 package com.gluonhq.attach.keyboard.impl;
 
 import com.gluonhq.attach.keyboard.KeyboardService;
+import com.gluonhq.attach.keyboard.KeyboardType;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.util.Util;
@@ -36,6 +37,8 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.util.Duration;
@@ -82,6 +85,24 @@ public class IOSKeyboardService implements KeyboardService {
         return VISIBLE_HEIGHT.getReadOnlyProperty();
     }
 
+    @Override
+    public void setKeyboardType(KeyboardType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("KeyboardType must not be null");
+        }
+        nativeSetKeyboardType(type.getValue());
+    }
+
+    @Override
+    public void setActiveNodeId(String id) {
+        // no-op on iOS for now
+    }
+
+    @Override
+    public ReadOnlyStringProperty textProperty(String id) {
+        return new ReadOnlyStringWrapper().getReadOnlyProperty();
+    }
+
     private static void adjustPosition(Node node, Parent parent, double kh) {
         if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {
             return;
@@ -110,6 +131,7 @@ public class IOSKeyboardService implements KeyboardService {
     // native
     private static native void startObserver();
     private static native void stopObserver();
+    private static native void nativeSetKeyboardType(int type);
 
     // callback
     private static void notifyVisibleHeight(float height) {

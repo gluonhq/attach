@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2022, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,11 @@
 
 static jclass jKeyboardServiceClass;
 static jclass jAttachKeyboardClass;
+static jclass jActivityClass;
 static jmethodID jAttach_notifyHeightMethod;
+static jmethodID jAttach_notifyComposingTextMethod;
+static jmethodID jActivity_setKeyboardTypeMethod;
+static jmethodID jActivity_setActiveNodeIdMethod;
 
 void initKeyboard();
 static jfloat density;
@@ -49,6 +53,7 @@ JNI_OnLoad_keyboard(JavaVM *vm, void *reserved)
     ATTACH_LOG_FINE("Initializing native Keyboard from OnLoad");
     jAttachKeyboardClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/AndroidKeyboardService"));
     jAttach_notifyHeightMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyVisibleHeight", "(F)V");
+    jAttach_notifyComposingTextMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyComposingText", "(Ljava/lang/String;Ljava/lang/String;)V");
     initKeyboard();
     ATTACH_LOG_FINE("Initializing native Keyboard done");
     return JNI_VERSION_1_8;
@@ -75,6 +80,8 @@ void initKeyboard()
     ATTACH_DALVIK();
     jmethodID jKeyboardServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jKeyboardServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jobject keyboardservice = (*dalvikEnv)->NewObject(dalvikEnv, jKeyboardServiceClass, jKeyboardServiceInitMethod, jActivity);
+    jActivity_setKeyboardTypeMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jActivityClass, "setKeyboardType", "(I)V");
+    jActivity_setActiveNodeIdMethod = (*dalvikEnv)->GetStaticMethodID(dalvikEnv, jActivityClass, "setActiveNodeId", "(Ljava/lang/String;)V");
     density = android_getDensity(dalvikEnv);
     DETACH_DALVIK();
 
@@ -91,4 +98,50 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_KeyboardService_nativeDispa
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight / density);
     DETACH_GRAAL();
     ATTACH_LOG_FINE("called Attach method from native Keyboard done");
+}
+
+void attach_setComposingText(const char *id, const char *text)
+{
+    ATTACH_LOG_FINE("attach_setComposingText: forwarding to Graal: id=%s, text=%s", id, text);
+    ATTACH_GRAAL();
+    jstring graalId = (*graalEnv)->NewStringUTF(graalEnv, id);
+    jstring graalText = (*graalEnv)->NewStringUTF(graalEnv, text);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyComposingTextMethod, graalId, graalText);
+    (*graalEnv)->DeleteLocalRef(graalEnv, graalText);
+    (*graalEnv)->DeleteLocalRef(graalEnv, graalId);
+    DETACH_GRAAL();
+    ATTACH_LOG_FINE("attach_setComposingText done");
+}
+
+void attach_setActiveNodeId(const char *id)
+{
+    ATTACH_LOG_FINE("attach_setActiveNodeId: forwarding to Dalvik: %s", id);
+    ATTACH_DALVIK();
+    jstring dalvikId = (*dalvikEnv)->NewStringUTF(dalvikEnv, id);
+    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jActivityClass, jActivity_setActiveNodeIdMethod, dalvikId);
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikId);
+    DETACH_DALVIK();
+    ATTACH_LOG_FINE("attach_setActiveNodeId done");
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_nativeSetKeyboardType(JNIEnv *env, jclass cls, jint keyboardTypeValue)
+{
+    ATTACH_LOG_FINE("nativeSetKeyboardType: keyboardTypeValue = %d", keyboardTypeValue);
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jActivityClass, jActivity_setKeyboardTypeMethod, keyboardTypeValue);
+    DETACH_DALVIK();
+    ATTACH_LOG_FINE("nativeSetKeyboardType done");
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_nativeSetActiveNodeId(JNIEnv *env, jclass cls, jstring id)
+{
+    const char *idChars = (*env)->GetStringUTFChars(env, id, NULL);
+    ATTACH_LOG_FINE("nativeSetActiveNodeId: id = %s", idChars);
+    ATTACH_DALVIK();
+    jstring dalvikId = (*dalvikEnv)->NewStringUTF(dalvikEnv, idChars);
+    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jActivityClass, jActivity_setActiveNodeIdMethod, dalvikId);
+    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikId);
+    DETACH_DALVIK();
+    (*env)->ReleaseStringUTFChars(env, id, idChars);
+    ATTACH_LOG_FINE("nativeSetActiveNodeId done");
 }
