@@ -73,7 +73,7 @@ void initKeyboard()
     KeyboardInited = 1;
 
     ATTACH_LOG_FINE("Init AndroidKeyboardService");
-    jclass activityClass = substrateGetActivityClass();
+    jActivityClass = substrateGetActivityClass();
     jobject jActivity = substrateGetActivity();
     jKeyboardServiceClass = GET_REGISTER_DALVIK_CLASS(jKeyboardServiceClass, "com/gluonhq/helloandroid/KeyboardService");
 
