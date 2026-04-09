@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2025, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,26 @@ public class DalvikDisplayService {
         }
         notifyInsets(systemBars.top / density, systemBars.right / density,
                 systemBars.bottom / density, systemBars.left / density);
+    }
+
+    private void setScreenAlwaysOn(final boolean alwaysOn) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Window window = activity.getWindow();
+                if (alwaysOn) {
+                    if (Util.isDebug()) {
+                        Log.v(TAG, "Setting screen always on");
+                    }
+                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                } else {
+                    if (Util.isDebug()) {
+                        Log.v(TAG, "Clearing screen always on");
+                    }
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        });
     }
 
     private native void notifyInsets(double top, double right, double bottom, double left);

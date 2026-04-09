@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,5 +173,18 @@ public interface DisplayService {
      * @return A read only property with the insets of the system bars
      */
     ReadOnlyObjectProperty<Insets> systemBarsInsetsProperty();
+
+    /**
+     * Sets whether the device screen should remain always on, preventing the
+     * device from going to sleep or dimming the display.
+     *
+     * <p>The default value is {@code false}. When the application is closed
+     * or paused, the screen will revert to its default behavior.</p>
+     *
+     * @param alwaysOn if {@code true}, the screen will stay on; if {@code false},
+     *                 the default screen timeout behavior is restored
+     * @since 4.0.25
+     */
+    void setScreenAlwaysOn(boolean alwaysOn);
 
 }

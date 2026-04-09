@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 package com.gluonhq.attach.display.impl;
 
 import com.gluonhq.attach.display.DisplayService;
+import com.gluonhq.attach.lifecycle.LifecycleEvent;
+import com.gluonhq.attach.lifecycle.LifecycleService;
 import com.gluonhq.attach.util.Util;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -48,11 +50,25 @@ public class AndroidDisplayService implements DisplayService {
 
     private static final boolean debug = Util.DEBUG;
 
+    private boolean screenAlwaysOn;
+
     static {
         System.loadLibrary("display");
     }
 
     public AndroidDisplayService() {
+        LifecycleService.create().ifPresent(l -> {
+            l.addListener(LifecycleEvent.PAUSE, () -> {
+                if (screenAlwaysOn) {
+                    setScreenAlwaysOnNative(false);
+                }
+            });
+            l.addListener(LifecycleEvent.RESUME, () -> {
+                if (screenAlwaysOn) {
+                    setScreenAlwaysOnNative(true);
+                }
+            });
+        });
     }
 
     @Override
@@ -127,10 +143,17 @@ public class AndroidDisplayService implements DisplayService {
         return insetsProperty.getReadOnlyProperty();
     }
 
+    @Override
+    public void setScreenAlwaysOn(boolean alwaysOn) {
+        this.screenAlwaysOn = alwaysOn;
+        setScreenAlwaysOnNative(alwaysOn);
+    }
+
     // native
     private native static boolean isPhoneFactor();
     private native static double[] screenSize();
     private native static boolean screenRound();
+    private native static void setScreenAlwaysOnNative(boolean alwaysOn);
 
     // callback
     private static void notifyInsets(double top, double right, double bottom, double left) {

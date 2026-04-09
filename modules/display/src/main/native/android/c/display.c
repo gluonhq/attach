@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2025, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ static jmethodID jDisplayServiceWidthMethod;
 static jmethodID jDisplayServiceHeightMethod;
 static jmethodID jDisplayServiceFactorMethod;
 static jmethodID jDisplayServiceRoundMethod;
+static jmethodID jDisplayServiceScreenAlwaysOnMethod;
 
 // Graal handles
 static jclass jGraalDisplayClass;
@@ -46,6 +47,7 @@ static void initializeDisplayDalvikHandles() {
     jDisplayServiceHeightMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "screenHeight", "()D");
     jDisplayServiceFactorMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "isPhoneFactor", "()Z");
     jDisplayServiceRoundMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "isScreenRound", "()Z");
+    jDisplayServiceScreenAlwaysOnMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jDisplayServiceClass, "setScreenAlwaysOn", "(Z)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jDisplayServiceClass, jDisplayServiceInitMethod, jActivity);
@@ -118,6 +120,14 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplaySe
     jboolean answer = (*dalvikEnv)->CallBooleanMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceRoundMethod);
     DETACH_DALVIK();
     return answer;
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_display_impl_AndroidDisplayService_setScreenAlwaysOnNative
+(JNIEnv *env, jclass jClass, jboolean alwaysOn)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikDisplayService, jDisplayServiceScreenAlwaysOnMethod, alwaysOn);
+    DETACH_DALVIK();
 }
 
 ///////////////////////////

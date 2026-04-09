@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2025, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,11 +47,23 @@ public class IOSDisplayService implements DisplayService {
 
     private static final ReadOnlyObjectWrapper<Insets> insetsProperty = new ReadOnlyObjectWrapper<>();
 
+    private boolean screenAlwaysOn;
+
     public IOSDisplayService() {
         notch = new ReadOnlyObjectWrapper<>(Notch.UNKNOWN);
         LifecycleService.create().ifPresent(l -> {
-                l.addListener(LifecycleEvent.PAUSE, IOSDisplayService::stopObserver);
-                l.addListener(LifecycleEvent.RESUME, IOSDisplayService::startObserver);
+                l.addListener(LifecycleEvent.PAUSE, () -> {
+                    stopObserver();
+                    if (screenAlwaysOn) {
+                        setScreenAlwaysOnNative(false);
+                    }
+                });
+                l.addListener(LifecycleEvent.RESUME, () -> {
+                    startObserver();
+                    if (screenAlwaysOn) {
+                        setScreenAlwaysOnNative(true);
+                    }
+                });
             });
         startObserver();
     }
@@ -108,6 +120,12 @@ public class IOSDisplayService implements DisplayService {
         return insetsProperty.getReadOnlyProperty();
     }
 
+    @Override
+    public void setScreenAlwaysOn(boolean alwaysOn) {
+        this.screenAlwaysOn = alwaysOn;
+        setScreenAlwaysOnNative(alwaysOn);
+    }
+
     // native
     private static native void initDisplay();
 
@@ -119,6 +137,7 @@ public class IOSDisplayService implements DisplayService {
 
     private static native void startObserver();
     private static native void stopObserver();
+    private static native void setScreenAlwaysOnNative(boolean alwaysOn);
 
     // callback
     private static void notifyDisplay(String o) {
