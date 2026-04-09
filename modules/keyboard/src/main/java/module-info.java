@@ -28,6 +28,7 @@
 module com.gluonhq.attach.keyboard {
 
     requires javafx.graphics;
+    requires javafx.controls;
     requires com.gluonhq.attach.util;
     requires com.gluonhq.attach.lifecycle;
 

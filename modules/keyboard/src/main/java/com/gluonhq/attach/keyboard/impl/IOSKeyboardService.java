@@ -27,30 +27,16 @@
  */
 package com.gluonhq.attach.keyboard.impl;
 
-import com.gluonhq.attach.keyboard.KeyboardService;
-import com.gluonhq.attach.keyboard.KeyboardType;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
-import com.gluonhq.attach.util.Util;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.util.Duration;
+import javafx.scene.control.TextInputControl;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class IOSKeyboardService implements KeyboardService {
-
-    private static final Logger LOG = Logger.getLogger(IOSKeyboardService.class.getName());
-    private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
-    private static boolean debug;
+public class IOSKeyboardService extends BaseKeyboardService {
 
     static {
         if (Platform.isFxApplicationThread()) {
@@ -61,8 +47,6 @@ public class IOSKeyboardService implements KeyboardService {
     }
 
     public IOSKeyboardService() {
-        debug = Util.DEBUG;
-
         LifecycleService.create().ifPresent(l -> {
             l.addListener(LifecycleEvent.PAUSE, IOSKeyboardService::stopObserver);
             l.addListener(LifecycleEvent.RESUME, IOSKeyboardService::startObserver);
@@ -86,46 +70,21 @@ public class IOSKeyboardService implements KeyboardService {
     }
 
     @Override
-    public void setKeyboardType(KeyboardType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("KeyboardType must not be null");
-        }
-        nativeSetKeyboardType(type.getValue());
+    protected void applyKeyboardType(int nativeValue) {
+        nativeSetKeyboardType(nativeValue);
     }
 
     @Override
-    public void setActiveNodeId(String id) {
-        // no-op on iOS for now
+    public ReadOnlyStringProperty textPropertyForNode(Node node) {
+        if (node instanceof TextInputControl) {
+            return ((TextInputControl) node).textProperty();
+        }
+        return super.textPropertyForNode(node);
     }
 
     @Override
-    public ReadOnlyStringProperty textProperty(String id) {
-        return new ReadOnlyStringWrapper().getReadOnlyProperty();
-    }
-
-    private static void adjustPosition(Node node, Parent parent, double kh) {
-        if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {
-            return;
-        }
-        double tTot = node.getScene().getHeight();
-        double ty = node.getLocalToSceneTransform().getTy() + node.getBoundsInParent().getHeight() + 2;
-        double y = 1;
-        Parent root = parent == null ? node.getScene().getRoot() : parent;
-        if (ty > tTot - kh) {
-            y = tTot - ty - kh;
-        } else if (kh == 0 && root.getTranslateY() != 0) {
-            y = 0;
-        }
-        if (y <= 0) {
-            if (debug) {
-                LOG.log(Level.INFO, String.format("Moving %s %.2f pixels", root, y));
-            }
-            final TranslateTransition transition = new TranslateTransition(Duration.millis(50), root);
-            transition.setFromY(root.getTranslateY());
-            transition.setToY(y);
-            transition.setInterpolator(Interpolator.EASE_OUT);
-            transition.playFromStart();
-        }
+    protected void applyActiveNodeId(String id) {
+        // no-op: iOS does not track active node, so no need to inform native layer
     }
 
     // native

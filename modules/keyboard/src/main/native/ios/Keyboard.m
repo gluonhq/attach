@@ -53,8 +53,9 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 // Keyboard
 Keyboard *_keyboard;
 CGFloat currentKeyboardHeight = 0.0f;
-static UIKeyboardType currentKeyboardType = UIKeyboardTypeDefault;
+static UIKeyboardType currentKeyboardType = UIKeyboardTypeASCIICapable;
 static BOOL keyboardTypeSwizzled = NO;
+static BOOL isReloading = NO;
 
 // Swizzled keyboardType implementation that returns our custom type
 static UIKeyboardType swizzled_keyboardType(id self, SEL _cmd) {
@@ -107,10 +108,12 @@ static void reloadKeyboard() {
     UIView *firstResponder = findFirstResponder(keyWindow);
     if (firstResponder) {
         AttachLog(@"Reloading keyboard by cycling first responder");
+        isReloading = YES;
         [firstResponder resignFirstResponder];
         // Small delay to let UIKit finish dismissing before re-showing
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
                        dispatch_get_main_queue(), ^{
+            isReloading = NO;
             [firstResponder becomeFirstResponder];
         });
     }
@@ -149,6 +152,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_nativeSetKeyboardType
 (JNIEnv *env, jclass jClass, jint type)
 {
+    if (keyboardTypeSwizzled && (UIKeyboardType)type == currentKeyboardType) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         setGlassKeyboardType((int)type);
         reloadKeyboard();
@@ -159,7 +165,7 @@ void sendVisibleHeight() {
     (*env)->CallStaticVoidMethod(env, jAttachKeyboardClass, jAttachKeyboardMethod_notifyVisibleHeight, currentKeyboardHeight);
 }
 
-@implementation Keyboard 
+@implementation Keyboard
 
 - (void) startObserver 
 {   
@@ -184,6 +190,10 @@ void sendVisibleHeight() {
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
+    if (isReloading) {
+        [self logMessage:@"Keyboard will hide (suppressed – reload in progress)"];
+        return;
+    }
     currentKeyboardHeight = 0.0f;
     [self logMessage:@"Keyboard will hide"];
     sendVisibleHeight();

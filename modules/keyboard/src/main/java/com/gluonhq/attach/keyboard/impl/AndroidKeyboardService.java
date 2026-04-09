@@ -27,32 +27,12 @@
  */
 package com.gluonhq.attach.keyboard.impl;
 
-import com.gluonhq.attach.keyboard.KeyboardService;
-import com.gluonhq.attach.keyboard.KeyboardType;
-import com.gluonhq.attach.util.Util;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyFloatWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.util.Duration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class AndroidKeyboardService implements KeyboardService {
-
-    private static final Logger LOG = Logger.getLogger(AndroidKeyboardService.class.getName());
-    private static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
-    private static final Map<String, ReadOnlyStringWrapper> TEXT_MAP = new HashMap<>();
-    private static final boolean debug = Util.DEBUG;
+public class AndroidKeyboardService extends BaseKeyboardService {
 
     static {
         System.loadLibrary("keyboard");
@@ -77,53 +57,13 @@ public class AndroidKeyboardService implements KeyboardService {
     }
 
     @Override
-    public void setKeyboardType(KeyboardType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("KeyboardType must not be null");
-        }
-        nativeSetKeyboardType(type.getValue());
+    protected void applyKeyboardType(int nativeValue) {
+        nativeSetKeyboardType(nativeValue);
     }
 
     @Override
-    public void setActiveNodeId(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Node id must not be null");
-        }
+    protected void applyActiveNodeId(String id) {
         nativeSetActiveNodeId(id);
-    }
-
-    @Override
-    public ReadOnlyStringProperty textProperty(String id) {
-        return getOrCreateWrapper(id).getReadOnlyProperty();
-    }
-
-    private static ReadOnlyStringWrapper getOrCreateWrapper(String id) {
-        return TEXT_MAP.computeIfAbsent(id, k -> new ReadOnlyStringWrapper(""));
-    }
-
-    private static void adjustPosition(Node node, Parent parent, double kh) {
-        if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {
-            return;
-        }
-        double tTot = node.getScene().getHeight();
-        double ty = node.getLocalToSceneTransform().getTy() + node.getBoundsInParent().getHeight() + 2;
-        double y = 1;
-        Parent root = parent == null ? node.getScene().getRoot() : parent;
-        if (ty > tTot - kh) {
-            y = tTot - ty - kh;
-        } else if (kh == 0 && root.getTranslateY() != 0) {
-            y = 0;
-        }
-        if (y <= 0) {
-            if (debug) {
-                LOG.log(Level.INFO, String.format("Moving %s %.2f pixels", root, y));
-            }
-            final TranslateTransition transition = new TranslateTransition(Duration.millis(50), root);
-            transition.setFromY(root.getTranslateY());
-            transition.setToY(y);
-            transition.setInterpolator(Interpolator.EASE_OUT);
-            transition.playFromStart();
-        }
     }
 
     // native
@@ -142,10 +82,7 @@ public class AndroidKeyboardService implements KeyboardService {
      * tagged with a node id.
      */
     private static void notifyComposingText(String id, String text) {
-        ReadOnlyStringWrapper wrapper = getOrCreateWrapper(id);
-        if (!Objects.equals(wrapper.get(), text)) {
-            Platform.runLater(() -> wrapper.set(text));
-        }
+        updateTextForId(id, text);
     }
 
 }

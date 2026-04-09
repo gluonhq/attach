@@ -87,50 +87,31 @@ public interface KeyboardService {
      */
     ReadOnlyFloatProperty visibleHeightProperty();
 
-
     /**
-     * Sets the type of keyboard to display when a text input control
-     * receives focus.
+     * Assigns a keyboard type to a specific node. When the node gains focus,
+     * the keyboard type is applied automatically. When it loses focus, the
+     * keyboard reverts to {@link KeyboardType#ASCII}.
      *
-     * <p>For example, use {@link KeyboardType#NUMBER_PAD} to show a
-     * numeric-only keypad.</p>
+     * <p>Nodes that have not been registered default to
+     * {@link KeyboardType#ASCII}.</p>
      *
-     * <p>Note: the change takes effect the next time the keyboard is shown.
-     * If the keyboard is currently visible, it will be hidden and re-shown
-     * to apply the new type.</p>
-     *
-     * @param type the {@link KeyboardType} to use
+     * @param node the node (typically a text input control) to configure
+     * @param type the {@link KeyboardType} to use when this node has focus
      * @since 4.0.25
      */
-    void setKeyboardType(KeyboardType type);
+    void setKeyboardTypeForNode(Node node, KeyboardType type);
 
     /**
-     * Sets the id of the JavaFX {@link Node} that currently has keyboard
-     * focus.  The native layer uses this id to tag composing text so that
-     * {@link #textProperty(String)} updates the correct property when
-     * multiple text controls are present.
+     * Returns a read-only property that reflects the current composing /
+     * committed text for the given node, as reported by the native IME.
      *
-     * <p>Call this every time a different text control gains focus,
-     * <em>before</em> the software keyboard opens.</p>
+     * <p>Internally, focus changes on the node are tracked so the native
+     * layer knows which control is active.</p>
      *
-     * @param id the {@link Node#getId() node id} of the focused text control;
-     *           must not be {@code null}
+     * @param node the node whose text to observe
+     * @return a ReadOnlyStringProperty with the text for the given node
      * @since 4.0.25
      */
-    void setActiveNodeId(String id);
+    ReadOnlyStringProperty textPropertyForNode(Node node);
 
-    /**
-     * Returns a read-only property that reflects the current text of the
-     * text control identified by {@code id}, as reported by the native
-     * IME composing/commit cycle.
-     *
-     * <p>Each unique {@code id} gets its own independent property instance.
-     * Callers typically pass the value of {@link Node#getId()} that was
-     * previously registered with {@link #setActiveNodeId(String)}.</p>
-     *
-     * @param id the {@link Node#getId() node id} of the text control
-     * @return A ReadOnlyStringProperty with the text for the given id
-     * @since 4.0.25
-     */
-    ReadOnlyStringProperty textProperty(String id);
 }
