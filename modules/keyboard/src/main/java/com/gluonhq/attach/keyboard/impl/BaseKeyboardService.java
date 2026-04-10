@@ -57,13 +57,13 @@ public abstract class BaseKeyboardService implements KeyboardService {
     protected static final ReadOnlyFloatWrapper VISIBLE_HEIGHT = new ReadOnlyFloatWrapper();
     protected static final boolean debug = Util.DEBUG;
 
-    /** Per-node keyboard type registrations. */
+    /** Map of nodes and keyboard types. */
     private final Map<Node, KeyboardType> nodeKeyboardTypes = new WeakHashMap<>();
 
-    /** Per-node text properties keyed by Node. */
+    /** Map of nodes and text properties. */
     private static final Map<Node, ReadOnlyStringWrapper> nodeTextProperties = new WeakHashMap<>();
 
-    /** Reverse map: synthetic string id → Node, for native callback dispatch. */
+    /** Map of ids and nodes. */
     private static final Map<String, Node> idToNode = new HashMap<>();
 
     BaseKeyboardService() {
@@ -108,9 +108,8 @@ public abstract class BaseKeyboardService implements KeyboardService {
     }
 
     /**
-     * Generates a stable string id for a node.  Uses the node's own
-     * {@link Node#getId() id} if set, otherwise falls back to a
-     * synthetic id based on identity hash code.
+     * Uses the node's own {@link Node#getId() id} if set, otherwise falls back to an
+     * id based on its identity hash code.
      */
     protected static String syntheticId(Node node) {
         String id = node.getId();
@@ -164,8 +163,8 @@ public abstract class BaseKeyboardService implements KeyboardService {
     protected abstract void applyKeyboardType(int nativeValue);
 
     /**
-     * Tell the native layer which node id is currently active.
-     * @param id the string id of the focused node
+     * Pass to the native layer the id of the currently active node.
+     * @param id the string id of the active node
      */
     protected abstract void applyActiveNodeId(String id);
 }
