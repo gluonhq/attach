@@ -76,8 +76,8 @@ public abstract class BaseKeyboardService implements KeyboardService {
                 if (debug) {
                     LOG.info("Keyboard hidden, reset default type");
                 }
-                applyKeyboardType(KeyboardType.ASCII.getValue());
                 applyActiveNodeId(""); // reset active node
+                applyKeyboardType(KeyboardType.ASCII.getValue());
             }
         });
     }
@@ -104,7 +104,7 @@ public abstract class BaseKeyboardService implements KeyboardService {
         node.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             KeyboardType type = nodeKeyboardTypes.getOrDefault(node, KeyboardType.ASCII);
             if (debug) {
-                LOG.info(String.format("Focused keyboard type: %s for id %s", type, syntheticId(node)));
+                LOG.info(String.format("Active keyboard type: %s for id %s", type, syntheticId(node)));
             }
             applyActiveNodeId(syntheticId(node));
             applyKeyboardType(type.getValue());

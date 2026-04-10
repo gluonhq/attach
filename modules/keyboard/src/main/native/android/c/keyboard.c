@@ -91,38 +91,7 @@ void initKeyboard()
     ATTACH_LOG_FINE("Dalvik KeyboardService init was called");
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_KeyboardService_nativeDispatchKeyboardHeight(JNIEnv *env, jobject activity, jfloat jheight)
-{
-    ATTACH_LOG_FINE("Dispatching keyboard height from native Dalvik layer: %.3f", jheight / density);
-    ATTACH_GRAAL();
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight / density);
-    DETACH_GRAAL();
-    ATTACH_LOG_FINE("called Attach method from native Keyboard done");
-}
-
-void attach_setComposingText(const char *id, const char *text)
-{
-    ATTACH_LOG_FINE("attach_setComposingText: forwarding to Graal: id=%s, text=%s", id, text);
-    ATTACH_GRAAL();
-    jstring graalId = (*graalEnv)->NewStringUTF(graalEnv, id);
-    jstring graalText = (*graalEnv)->NewStringUTF(graalEnv, text);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyComposingTextMethod, graalId, graalText);
-    (*graalEnv)->DeleteLocalRef(graalEnv, graalText);
-    (*graalEnv)->DeleteLocalRef(graalEnv, graalId);
-    DETACH_GRAAL();
-    ATTACH_LOG_FINE("attach_setComposingText done");
-}
-
-void attach_setActiveNodeId(const char *id)
-{
-    ATTACH_LOG_FINE("attach_setActiveNodeId: forwarding to Dalvik: %s", id);
-    ATTACH_DALVIK();
-    jstring dalvikId = (*dalvikEnv)->NewStringUTF(dalvikEnv, id);
-    (*dalvikEnv)->CallStaticVoidMethod(dalvikEnv, jActivityClass, jActivity_setActiveNodeIdMethod, dalvikId);
-    (*dalvikEnv)->DeleteLocalRef(dalvikEnv, dalvikId);
-    DETACH_DALVIK();
-    ATTACH_LOG_FINE("attach_setActiveNodeId done");
-}
+// from Java to Android
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardService_nativeSetKeyboardType(JNIEnv *env, jclass cls, jint keyboardTypeValue)
 {
@@ -144,4 +113,34 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardServ
     DETACH_DALVIK();
     (*env)->ReleaseStringUTFChars(env, id, idChars);
     ATTACH_LOG_FINE("nativeSetActiveNodeId done");
+}
+
+//////////////////////////////////
+// native (Substrate) to Java   //
+//////////////////////////////////
+
+void attach_setComposingText(const char *id, const char *text)
+{
+    ATTACH_LOG_FINE("attach_setComposingText: forwarding to Graal: id=%s, text=%s", id, text);
+    ATTACH_GRAAL();
+    jstring graalId = (*graalEnv)->NewStringUTF(graalEnv, id);
+    jstring graalText = (*graalEnv)->NewStringUTF(graalEnv, text);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyComposingTextMethod, graalId, graalText);
+    (*graalEnv)->DeleteLocalRef(graalEnv, graalText);
+    (*graalEnv)->DeleteLocalRef(graalEnv, graalId);
+    DETACH_GRAAL();
+    ATTACH_LOG_FINE("attach_setComposingText done");
+}
+
+///////////////////////////
+// From Dalvik to native //
+///////////////////////////
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_KeyboardService_nativeDispatchKeyboardHeight(JNIEnv *env, jobject activity, jfloat jheight)
+{
+    ATTACH_LOG_FINE("Dispatching keyboard height from native Dalvik layer: %.3f", jheight / density);
+    ATTACH_GRAAL();
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyHeightMethod, jheight / density);
+    DETACH_GRAAL();
+    ATTACH_LOG_FINE("called Attach method from native Keyboard done");
 }

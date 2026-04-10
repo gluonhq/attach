@@ -59,7 +59,7 @@ public enum KeyboardType {
     URL(3),
 
     /**
-     * A numeric keypad designed for PIN entry (digits 0-9 only).
+     * A numeric keypad designed for PIN entry (locale digits 0-9).
      */
     NUMBER_PAD(4),
 
@@ -94,7 +94,12 @@ public enum KeyboardType {
     /**
      * A keyboard optimized for web search terms and URL entry.
      */
-    WEB_SEARCH(10);
+    WEB_SEARCH(10),
+
+    /**
+     * A numeric keypad that outputs only ASCII digits
+     */
+    ASCII_NUMBER_PAD(11);
 
     private final int value;
 
