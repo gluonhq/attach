@@ -49,11 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Base class that provides per-node keyboard-type tracking and per-node
- * text properties with automatic focus management.
- *
- * <p>Subclasses only need to implement the three {@code apply*} hooks
- * that bridge to the native layer.</p>
+ * Base class that provides common functionality for iOS and Android implementations.
  */
 public abstract class BaseKeyboardService implements KeyboardService {
 
