@@ -88,28 +88,28 @@ public interface KeyboardService {
     ReadOnlyFloatProperty visibleHeightProperty();
 
     /**
-     * Assigns a keyboard type to a specific node. When the node gains focus,
-     * the keyboard type is applied automatically. When it loses focus, the
-     * keyboard reverts to {@link KeyboardType#ASCII}.
+     * Assigns a keyboard type to a specific node (typically a {@link javafx.scene.control.TextInputControl}).
+     * When the node gains gets activated, the keyboard type is applied automatically.
+     * When the keyboard hides, the keyboard type reverts to {@link KeyboardType#ASCII}.
      *
-     * <p>Nodes that have not been registered default to
-     * {@link KeyboardType#ASCII}.</p>
+     * <p>If nodes are registered, they default to {@link KeyboardType#ASCII}.</p>
      *
      * @param node the node (typically a text input control) to configure
-     * @param type the {@link KeyboardType} to use when this node has focus
+     * @param type the {@link KeyboardType} to use when this node is active
      * @since 4.0.25
      */
     void setKeyboardTypeForNode(Node node, KeyboardType type);
 
     /**
-     * Returns a read-only property that reflects the current composing /
-     * committed text for the given node, as reported by the native IME.
+     * Returns a read-only property that reflects the current composing text for the given node
+     * (typically a {@link javafx.scene.control.TextInputControl}), as reported by the native IME.
      *
-     * <p>Internally, focus changes on the node are tracked so the native
-     * layer knows which control is active.</p>
-     *
+     * <p>Note that the JavaFX text input control default {@code textProperty()} will still
+     * catch all the internals of the text composition when predictive text is enabled (that could show
+     * partial text being removed and added back again while the user is typing)</p>
+     * 
      * @param node the node whose text to observe
-     * @return a ReadOnlyStringProperty with the text for the given node
+     * @return a ReadOnlyStringProperty with the composed text for the given node
      * @since 4.0.25
      */
     ReadOnlyStringProperty textPropertyForNode(Node node);
