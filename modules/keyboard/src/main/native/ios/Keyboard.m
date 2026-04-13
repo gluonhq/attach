@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,77 @@ JNI_OnLoad_Keyboard(JavaVM *vm, void *reserved)
 // Keyboard
 Keyboard *_keyboard;
 CGFloat currentKeyboardHeight = 0.0f;
+static UIKeyboardType currentKeyboardType = UIKeyboardTypeASCIICapable;
+static BOOL keyboardTypeSwizzled = NO;
+static BOOL isReloading = NO;
+
+// Swizzled keyboardType implementation that returns our custom type
+static UIKeyboardType swizzled_keyboardType(id self, SEL _cmd) {
+    return currentKeyboardType;
+}
+
+static void ensureSwizzled() {
+    Class glassWindowClass = objc_getClass("GlassWindow");
+    if (!glassWindowClass) {
+        AttachLog(@"GlassWindow class not found, cannot override UITextInputTraits");
+        return;
+    }
+
+    if (!keyboardTypeSwizzled) {
+        class_replaceMethod(glassWindowClass,
+                            @selector(keyboardType),
+                            (IMP)swizzled_keyboardType,
+                            "I@:");
+        keyboardTypeSwizzled = YES;
+        AttachLog(@"Successfully swizzled keyboardType on GlassWindow");
+    }
+}
+
+// Force the keyboard to reload with the new type by resigning and
+// re-becoming first responder on the current first responder.
+static UIView *findFirstResponder(UIView *view) {
+    if ([view isFirstResponder]) {
+        return view;
+    }
+    for (UIView *subview in view.subviews) {
+        UIView *found = findFirstResponder(subview);
+        if (found) {
+            return found;
+        }
+    }
+    return nil;
+}
+
+static void reloadKeyboard() {
+    UIWindow *keyWindow = nil;
+    for (UIWindow *window in [UIApplication sharedApplication].windows) {
+        if (window.isKeyWindow) {
+            keyWindow = window;
+            break;
+        }
+    }
+    if (!keyWindow) {
+        return;
+    }
+    UIView *firstResponder = findFirstResponder(keyWindow);
+    if (firstResponder) {
+        AttachLog(@"Reloading keyboard by cycling first responder");
+        isReloading = YES;
+        [firstResponder resignFirstResponder];
+        // Small delay to let UIKit finish dismissing before re-showing
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+                       dispatch_get_main_queue(), ^{
+            isReloading = NO;
+            [firstResponder becomeFirstResponder];
+        });
+    }
+}
+
+void setGlassKeyboardType(int type) {
+    currentKeyboardType = (UIKeyboardType)type;
+    ensureSwizzled();
+    AttachLog(@"Keyboard type set to %d", type);
+}
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_startObserver
 (JNIEnv *env, jclass jClass)
@@ -78,11 +149,23 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_
     return;   
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_nativeSetKeyboardType
+(JNIEnv *env, jclass jClass, jint type)
+{
+    if (keyboardTypeSwizzled && (UIKeyboardType)type == currentKeyboardType) {
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        setGlassKeyboardType((int)type);
+        reloadKeyboard();
+    });
+}
+
 void sendVisibleHeight() {
     (*env)->CallStaticVoidMethod(env, jAttachKeyboardClass, jAttachKeyboardMethod_notifyVisibleHeight, currentKeyboardHeight);
 }
 
-@implementation Keyboard 
+@implementation Keyboard
 
 - (void) startObserver 
 {   
@@ -107,6 +190,10 @@ void sendVisibleHeight() {
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
+    if (isReloading) {
+        [self logMessage:@"Keyboard will hide (suppressed – reload in progress)"];
+        return;
+    }
     currentKeyboardHeight = 0.0f;
     [self logMessage:@"Keyboard will hide"];
     sendVisibleHeight();
