@@ -38,7 +38,7 @@ static jmethodID jPicturesServiceSelectPictureMethod;
 
 void initializePicturesGraalHandles(JNIEnv *graalEnv) {
     jGraalPicturesClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/pictures/impl/AndroidPicturesService"));
-    jGraalSendPhotoFileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalPicturesClass, "setResult", "(Ljava/lang/String;)V");
+    jGraalSendPhotoFileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalPicturesClass, "setResult", "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 void initializePicturesDalvikHandles() {
@@ -101,14 +101,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesServ
 // From Dalvik to native //
 ///////////////////////////
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring path) {
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring originalPath, jstring processedPath) {
     if (isDebugAttach()) {
         ATTACH_LOG_FINE("Send Photo File\n");
     }
-    const char *pathChars = (*env)->GetStringUTFChars(env, path, NULL);
+    const char *originalChars = (*env)->GetStringUTFChars(env, originalPath, NULL);
+    const char *processedChars = (*env)->GetStringUTFChars(env, processedPath, NULL);
     ATTACH_GRAAL();
-    jstring jpath = (*graalEnv)->NewStringUTF(graalEnv, pathChars);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, jpath);
+    jstring jOriginal = (*graalEnv)->NewStringUTF(graalEnv, originalChars);
+    jstring jProcessed = (*graalEnv)->NewStringUTF(graalEnv, processedChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, jOriginal, jProcessed);
     DETACH_GRAAL();
-    (*env)->ReleaseStringUTFChars(env, path, pathChars);
+    (*env)->ReleaseStringUTFChars(env, originalPath, originalChars);
+    (*env)->ReleaseStringUTFChars(env, processedPath, processedChars);
 }

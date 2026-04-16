@@ -142,6 +142,8 @@ public class DalvikPicturesService  {
                             Log.v(TAG, "Image file located at " + photoFile.getAbsolutePath() + " with rotation: " + imageRotation);
                         }
 
+                        String originalPath = photoFile.getAbsolutePath();
+
                         if (savePhoto) {
                             // Saved photos: keep the original file untouched in
                             // DIRECTORY_PICTURES, scan it into the gallery, and
@@ -150,7 +152,7 @@ public class DalvikPicturesService  {
                             photoFile = copyToCache(photoFile);
                         }
                         preprocessImage(photoFile, imageRotation);
-                        sendPhotoFile(photoFile.getAbsolutePath());
+                        sendPhotoFile(originalPath, photoFile.getAbsolutePath());
                     } else {
                         Log.e(TAG, "Picture file doesn't exist for: " + photoFile.getAbsolutePath());
                     }
@@ -208,8 +210,9 @@ public class DalvikPicturesService  {
                             if (debug) {
                                 Log.v(TAG, "Image file located at " + cachePhotoFile.getAbsolutePath() + " with rotation: " + imageRotation);
                             }
+                            String originalPath = cachePhotoFile.getAbsolutePath();
                             preprocessImage(cachePhotoFile, imageRotation);
-                            sendPhotoFile(cachePhotoFile.getAbsolutePath());
+                            sendPhotoFile(originalPath, cachePhotoFile.getAbsolutePath());
                         }
                     }
                 }
@@ -388,6 +391,6 @@ public class DalvikPicturesService  {
     }
 
     // native
-    private native void sendPhotoFile(String filePath);
+    private native void sendPhotoFile(String originalFilePath, String processedFilePath);
 
 }

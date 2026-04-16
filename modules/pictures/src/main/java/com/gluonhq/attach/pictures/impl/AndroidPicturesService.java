@@ -146,17 +146,24 @@ public class AndroidPicturesService implements PicturesService {
     public static native void selectPicture();
 
     // callback
-    public static void setResult(String filePath) {
-        LOG.fine("Got photo file at: " + filePath);
-        File photoFile = new File(filePath);
-        imageFile.set(photoFile);
+    /**
+     * Called from native code with two file paths:
+     * @param originalFilePath  the full-resolution original file (for {@link #getImageFile()})
+     * @param processedFilePath the preprocessed (scaled+rotated) file (for {@link Image} loading)
+     */
+    public static void setResult(String originalFilePath, String processedFilePath) {
+        LOG.fine("Got photo file at: " + originalFilePath + " (processed: " + processedFilePath + ")");
+        File originalFile = new File(originalFilePath);
+        File processedFile = new File(processedFilePath);
+        imageFile.set(originalFile);
 
         // Release the old image reference and try to free resources
         imageProperty.setValue(null);
+        // ugly, but effective preventing vram pool from growing when taking many pictures
         System.gc();
 
         Image image = null;
-        try (FileInputStream fis = new FileInputStream(photoFile)) {
+        try (FileInputStream fis = new FileInputStream(processedFile)) {
             image = new Image(fis, MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION, true, true);
         } catch (Exception e) {
             LOG.severe("GalleryActivity: error loading image: " + e);
