@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2024, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -41,6 +44,7 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,6 +67,10 @@ public class DalvikPicturesService  {
 
     private final String authority;
     private String photoPath;
+
+    private static final int TARGET_SIZE = 1280;
+    private static final int JPEG_QUALITY = 85;
+    private static final byte[] DECODE_BUFFER = new byte[16 * 1024];
 
     public DalvikPicturesService(Activity activity) {
         this.activity = activity;
@@ -92,6 +100,7 @@ public class DalvikPicturesService  {
             Log.v(TAG, "Permission verification failed: Camera disabled");
             return;
         }
+        clearCache();
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -132,12 +141,16 @@ public class DalvikPicturesService  {
                         if (debug) {
                             Log.v(TAG, "Image file located at " + photoFile.getAbsolutePath() + " with rotation: " + imageRotation);
                         }
-                        sendPhotoFile(photoFile.getAbsolutePath(), imageRotation);
 
                         if (savePhoto) {
-                            // media scanner to rescan DIRECTORY_PICTURES after an image is saved/deleted
+                            // Saved photos: keep the original file untouched in
+                            // DIRECTORY_PICTURES, scan it into the gallery, and
+                            // send a preprocessed cache copy for display.
                             MediaScannerConnection.scanFile(activity, new String[]{photoFile.toString()}, null, null);
+                            photoFile = copyToCache(photoFile);
                         }
+                        preprocessImage(photoFile, imageRotation);
+                        sendPhotoFile(photoFile.getAbsolutePath());
                     } else {
                         Log.e(TAG, "Picture file doesn't exist for: " + photoFile.getAbsolutePath());
                     }
@@ -162,6 +175,8 @@ public class DalvikPicturesService  {
     }
 
     private void selectPicture() {
+        clearCache();
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setType("image/*");
@@ -193,7 +208,8 @@ public class DalvikPicturesService  {
                             if (debug) {
                                 Log.v(TAG, "Image file located at " + cachePhotoFile.getAbsolutePath() + " with rotation: " + imageRotation);
                             }
-                            sendPhotoFile(cachePhotoFile.getAbsolutePath(), imageRotation);
+                            preprocessImage(cachePhotoFile, imageRotation);
+                            sendPhotoFile(cachePhotoFile.getAbsolutePath());
                         }
                     }
                 }
@@ -232,7 +248,9 @@ public class DalvikPicturesService  {
         try {
             ExifInterface ei;
             if (Build.VERSION.SDK_INT > 23) {
-                ei = new ExifInterface(activity.getContentResolver().openInputStream(uri));
+                try (InputStream is = activity.getContentResolver().openInputStream(uri)) {
+                    ei = new ExifInterface(is);
+                }
             } else {
                 ei = new ExifInterface(uri.getPath());
             }
@@ -258,7 +276,7 @@ public class DalvikPicturesService  {
         File selectedFile = new File(activity.getCacheDir(), getImageName(uri));
         try (InputStream is = activity.getContentResolver().openInputStream(uri);
              OutputStream os = new FileOutputStream(selectedFile)) {
-            byte[] buffer = new byte[8 * 1024];
+            byte[] buffer = new byte[32 * 1024];
             int bytesRead;
             while ((bytesRead = is.read(buffer)) != -1) {
                 os.write(buffer, 0, bytesRead);
@@ -271,7 +289,105 @@ public class DalvikPicturesService  {
         return selectedFile;
     }
 
+    private File copyToCache(File source) {
+        File dest = new File(activity.getCacheDir(), "display_" + source.getName());
+        try (InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest)) {
+            byte[] buffer = new byte[32 * 1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException ex) {
+            Log.e(TAG, "copyToCache failed: " + ex.getMessage());
+            return source; // fall back to original
+        }
+        return dest;
+    }
+
+    /**
+     * Scales and rotates the image file in place, with sub sampling and lower jpg quality,
+     * to reduce memory footprint
+     */
+    private void preprocessImage(File imageFile, int rotation) {
+        try {
+            // 1. Read dimensions only
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            opts.inTempStorage = DECODE_BUFFER;
+            BitmapFactory.decodeFile(imageFile.getAbsolutePath(), opts);
+
+            // 2. Calculate inSampleSize
+            int srcW = opts.outWidth;
+            int srcH = opts.outHeight;
+            if (rotation == 90 || rotation == 270) {
+                srcW = opts.outHeight;
+                srcH = opts.outWidth;
+            }
+            opts.inSampleSize = calculateInSampleSize(srcW, srcH, TARGET_SIZE);
+            opts.inJustDecodeBounds = false;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            opts.inTempStorage = DECODE_BUFFER;
+
+            // 3. Load sub-sampled bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), opts);
+            if (bitmap == null) {
+                Log.e(TAG, "preprocessImage: failed to decode bitmap");
+                return;
+            }
+
+            try {
+                // 4. Build a single Matrix for scale + rotate combined
+                Matrix matrix = new Matrix();
+                float scale = Math.min(
+                        (float) TARGET_SIZE / bitmap.getWidth(),
+                        (float) TARGET_SIZE / bitmap.getHeight());
+                if (scale < 1.0f) {
+                    matrix.postScale(scale, scale);
+                }
+                if (rotation != 0) {
+                    // Rotate around the center of the image
+                    float cx = bitmap.getWidth() * Math.max(scale, 1.0f) / 2f;
+                    float cy = bitmap.getHeight() * Math.max(scale, 1.0f) / 2f;
+                    matrix.postRotate(rotation, cx, cy);
+                }
+
+                // 5. Apply combined transform
+                if (!matrix.isIdentity()) {
+                    Bitmap transformed = Bitmap.createBitmap(bitmap, 0, 0,
+                            bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    bitmap.recycle();
+                    bitmap = transformed;
+                }
+
+                // 6. Write processed image back to file
+                try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, fos);
+                }
+                if (debug) {
+                    Log.v(TAG, "preprocessImage: wrote " + bitmap.getWidth() + "x" + bitmap.getHeight()
+                            + " (rotation=" + rotation + ") to " + imageFile.getName());
+                }
+            } finally {
+                bitmap.recycle();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "preprocessImage failed, falling back to original: " + e.getMessage());
+        }
+    }
+
+    private static int calculateInSampleSize(int width, int height, int targetSize) {
+        int inSampleSize = 1;
+        if (height > targetSize || width > targetSize) {
+            int halfH = height / 2;
+            int halfW = width / 2;
+            while ((halfH / inSampleSize) >= targetSize && (halfW / inSampleSize) >= targetSize) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
+
     // native
-    private native void sendPhotoFile(String filePath, int rotate);
+    private native void sendPhotoFile(String filePath);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ static jmethodID jPicturesServiceSelectPictureMethod;
 
 void initializePicturesGraalHandles(JNIEnv *graalEnv) {
     jGraalPicturesClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/pictures/impl/AndroidPicturesService"));
-    jGraalSendPhotoFileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalPicturesClass, "setResult", "(Ljava/lang/String;I)V");
+    jGraalSendPhotoFileMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalPicturesClass, "setResult", "(Ljava/lang/String;)V");
 }
 
 void initializePicturesDalvikHandles() {
@@ -101,14 +101,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_pictures_impl_AndroidPicturesServ
 // From Dalvik to native //
 ///////////////////////////
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring path, jint rotate) {
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendPhotoFile(JNIEnv *env, jobject service, jstring path) {
     if (isDebugAttach()) {
         ATTACH_LOG_FINE("Send Photo File\n");
     }
     const char *pathChars = (*env)->GetStringUTFChars(env, path, NULL);
     ATTACH_GRAAL();
     jstring jpath = (*graalEnv)->NewStringUTF(graalEnv, pathChars);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, jpath, rotate);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, jpath);
     DETACH_GRAAL();
-    // (*env)->ReleaseStringUTFChars(env, jpath, jpathChars);
+    (*env)->ReleaseStringUTFChars(env, path, pathChars);
 }
