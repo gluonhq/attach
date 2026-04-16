@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,14 +33,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -93,6 +89,7 @@ public class AndroidPicturesService implements PicturesService {
 
     private static final ObjectProperty<File> imageFile = new SimpleObjectProperty<>();
     private static final ReadOnlyObjectWrapper<Image> imageProperty = new ReadOnlyObjectWrapper<>();
+    private static final int MAX_IMAGE_DIMENSION = 1280;
     private static ObjectProperty<Image> result;
     private static boolean enteredLoop;
 
@@ -149,31 +146,35 @@ public class AndroidPicturesService implements PicturesService {
     public static native void selectPicture();
 
     // callback
-    public static void setResult(String filePath, int rotate) {
-        LOG.fine("Got photo file at: " + filePath);
-        File photoFile = new File(filePath);
-        imageFile.set(photoFile);
-        Image initialImage = null;
-        try {
-            initialImage = new Image(new FileInputStream(photoFile));
-        } catch (FileNotFoundException e) {
-            LOG.severe("GalleryActivity: file not found: " + e);
+    /**
+     * Called from native code with two file paths:
+     * @param originalFilePath  the full-resolution original file (for {@link #getImageFile()})
+     * @param processedFilePath the preprocessed (scaled+rotated) file (for {@link Image} loading)
+     */
+    public static void setResult(String originalFilePath, String processedFilePath) {
+        LOG.fine("Got photo file at: " + originalFilePath + " (processed: " + processedFilePath + ")");
+        File originalFile = new File(originalFilePath);
+        File processedFile = new File(processedFilePath);
+        imageFile.set(originalFile);
+
+        // Release the old image reference and try to free resources
+        imageProperty.setValue(null);
+        // ugly, but effective preventing vram pool from growing when taking many pictures
+        System.gc();
+
+        Image image = null;
+        try (FileInputStream fis = new FileInputStream(processedFile)) {
+            image = new Image(fis, MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION, true, true);
+        } catch (Exception e) {
+            LOG.severe("GalleryActivity: error loading image: " + e);
         }
-        if (enteredLoop && (initialImage == null || rotate == 0)) {
-            result.set(initialImage);
+
+        final Image finalImage = image;
+        if (enteredLoop) {
+            result.set(finalImage);
         }
-        final Image finalImage = initialImage;
         Platform.runLater(() -> {
-            if (finalImage != null && rotate != 0) {
-                Image image = rotateImage(finalImage, rotate);
-                if (enteredLoop) {
-                    result.set(image);
-                } else {
-                    imageProperty.setValue(image);
-                }
-            } else {
-                imageProperty.setValue(finalImage);
-            }
+            imageProperty.setValue(finalImage);
             if (enteredLoop) {
                 enteredLoop = false;
                 try {
@@ -183,19 +184,5 @@ public class AndroidPicturesService implements PicturesService {
                 }
             }
         });
-    }
-
-    private static Image rotateImage(Image image, int rotate) {
-        if (image == null || rotate == 0) {
-            return image;
-        }
-        ImageView iv = new ImageView(image);
-        iv.setFitWidth(1280);
-        iv.setFitHeight(1280);
-        iv.setPreserveRatio(true);
-        iv.setRotate(rotate);
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        return iv.snapshot(params, null);
     }
 }
