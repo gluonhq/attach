@@ -33,9 +33,11 @@ import com.gluonhq.attach.util.Util;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
@@ -66,6 +68,9 @@ public abstract class BaseKeyboardService implements KeyboardService {
     /** Map of ids and nodes. */
     private static final Map<String, Node> idToNode = new HashMap<>();
 
+    /** Map of nodes to their visibility listeners. */
+    private final Map<Node, ChangeListener<Number>> visibilityListeners = new WeakHashMap<>();
+
     BaseKeyboardService() {
         VISIBLE_HEIGHT.addListener((obs, ov, nv) -> {
             if (nv != null && nv.doubleValue() <= 0) {
@@ -76,6 +81,34 @@ public abstract class BaseKeyboardService implements KeyboardService {
                 applyKeyboardType(KeyboardType.ASCII.getValue());
             }
         });
+    }
+
+    @Override
+    public void keepVisibilityForNode(Node node) {
+        keepVisibilityForNode(node, null);
+    }
+
+    @Override
+    public void keepVisibilityForNode(Node node, Parent parent) {
+        Objects.requireNonNull(node, "node must not be null");
+        releaseVisibilityForNode(node);
+        ChangeListener<Number> listener = (obs, ov, nv) -> adjustPosition(node, parent, nv.doubleValue());
+        visibilityListeners.put(node, listener);
+        VISIBLE_HEIGHT.addListener(listener);
+    }
+
+    @Override
+    public void releaseVisibilityForNode(Node node) {
+        Objects.requireNonNull(node, "node must not be null");
+        ChangeListener<Number> listener = visibilityListeners.remove(node);
+        if (listener != null) {
+            VISIBLE_HEIGHT.removeListener(listener);
+        }
+    }
+
+    @Override
+    public ReadOnlyFloatProperty visibleHeightProperty() {
+        return VISIBLE_HEIGHT.getReadOnlyProperty();
     }
 
     @Override

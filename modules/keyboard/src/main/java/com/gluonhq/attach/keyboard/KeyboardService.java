@@ -80,6 +80,16 @@ public interface KeyboardService {
     void keepVisibilityForNode(Node node, Parent parent);
 
     /**
+     * Stops adjusting the node when the software keyboard shows up,
+     * removing the listener previously registered via
+     * {@link #keepVisibilityForNode(Node)} or {@link #keepVisibilityForNode(Node, Parent)}.
+     *
+     * @param node the Node that was previously registered
+     * @since 4.0.25
+     */
+    void releaseVisibilityForNode(Node node);
+
+    /**
      * Gets the visible height of the Keyboard, so scene or views can adjusted
      * to prevent some of their content from being covered by the keyboard.
      *
