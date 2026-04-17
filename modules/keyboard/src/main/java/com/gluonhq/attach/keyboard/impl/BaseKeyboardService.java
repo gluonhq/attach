@@ -35,6 +35,7 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
@@ -58,6 +59,8 @@ public abstract class BaseKeyboardService implements KeyboardService {
     /** Map of nodes and keyboard types. */
     private final Map<Node, KeyboardType> nodeKeyboardTypes = new WeakHashMap<>();
 
+    /** Map of nodes to their installed event filters. */
+    private final Map<Node, EventHandler<? super MouseEvent>> nodeEventFilters = new WeakHashMap<>();
 
     /** Map of nodes to their visibility listeners. */
     private final Map<Node, ChangeListener<Number>> visibilityListeners = new WeakHashMap<>();
@@ -110,15 +113,35 @@ public abstract class BaseKeyboardService implements KeyboardService {
         installEventFilter(node);
     }
 
+    @Override
+    public void removeKeyboardTypeForNode(Node node) {
+        Objects.requireNonNull(node, "node must not be null");
+        nodeKeyboardTypes.remove(node);
+        uninstallEventFilter(node);
+    }
+
     private void installEventFilter(Node node) {
-        node.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+        if (nodeEventFilters.containsKey(node)) {
+            return;
+        }
+        EventHandler<? super MouseEvent> handler = e -> {
             KeyboardType type = nodeKeyboardTypes.getOrDefault(node, KeyboardType.ASCII);
+            String id = syntheticId(node);
             if (debug) {
-                LOG.info(String.format("Active keyboard type: %s for id %s", type, syntheticId(node)));
+                LOG.info(String.format("Active keyboard type: %s for id %s", type, id));
             }
-            applyActiveNodeId(syntheticId(node));
+            applyActiveNodeId(id);
             applyKeyboardType(type.getValue());
-        });
+        };
+        nodeEventFilters.put(node, handler);
+        node.addEventFilter(MouseEvent.MOUSE_CLICKED, handler);
+    }
+
+    private void uninstallEventFilter(Node node) {
+        EventHandler<? super MouseEvent> handler = nodeEventFilters.remove(node);
+        if (handler != null) {
+            node.removeEventFilter(MouseEvent.MOUSE_CLICKED, handler);
+        }
     }
 
     /**
@@ -129,7 +152,6 @@ public abstract class BaseKeyboardService implements KeyboardService {
         String id = node.getId();
         return id != null ? id : "attach-kb-" + System.identityHashCode(node);
     }
-
 
     protected static void adjustPosition(Node node, Parent parent, double kh) {
         if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {

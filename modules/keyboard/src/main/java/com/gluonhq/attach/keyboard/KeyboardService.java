@@ -109,4 +109,14 @@ public interface KeyboardService {
      */
     void setKeyboardTypeForNode(Node node, KeyboardType type);
 
+    /**
+     * Removes the keyboard type assignment and event filter previously installed via
+     * {@link #setKeyboardTypeForNode(Node, KeyboardType)}. After this call the node
+     * will simply use the default keyboard type.
+     *
+     * @param node the node to unregister
+     * @since 4.0.25
+     */
+    void removeKeyboardTypeForNode(Node node);
+
 }
