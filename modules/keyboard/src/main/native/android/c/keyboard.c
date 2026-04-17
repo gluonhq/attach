@@ -53,7 +53,6 @@ JNI_OnLoad_keyboard(JavaVM *vm, void *reserved)
     ATTACH_LOG_FINE("Initializing native Keyboard from OnLoad");
     jAttachKeyboardClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/keyboard/impl/AndroidKeyboardService"));
     jAttach_notifyHeightMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyVisibleHeight", "(F)V");
-    jAttach_notifyComposingTextMethod = (*env)->GetStaticMethodID(env, jAttachKeyboardClass, "notifyComposingText", "(Ljava/lang/String;Ljava/lang/String;)V");
     initKeyboard();
     ATTACH_LOG_FINE("Initializing native Keyboard done");
     return JNI_VERSION_1_8;
@@ -113,23 +112,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_AndroidKeyboardServ
     DETACH_DALVIK();
     (*env)->ReleaseStringUTFChars(env, id, idChars);
     ATTACH_LOG_FINE("nativeSetActiveNodeId done");
-}
-
-//////////////////////////////////
-// native (Substrate) to Java   //
-//////////////////////////////////
-
-void attach_setComposingText(const char *id, const char *text)
-{
-    ATTACH_LOG_FINE("attach_setComposingText: forwarding to Graal: id=%s, text=%s", id, text);
-    ATTACH_GRAAL();
-    jstring graalId = (*graalEnv)->NewStringUTF(graalEnv, id);
-    jstring graalText = (*graalEnv)->NewStringUTF(graalEnv, text);
-    (*graalEnv)->CallStaticVoidMethod(graalEnv, jAttachKeyboardClass, jAttach_notifyComposingTextMethod, graalId, graalText);
-    (*graalEnv)->DeleteLocalRef(graalEnv, graalText);
-    (*graalEnv)->DeleteLocalRef(graalEnv, graalId);
-    DETACH_GRAAL();
-    ATTACH_LOG_FINE("attach_setComposingText done");
 }
 
 ///////////////////////////

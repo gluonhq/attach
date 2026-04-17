@@ -32,18 +32,14 @@ import com.gluonhq.attach.keyboard.KeyboardType;
 import com.gluonhq.attach.util.Util;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -62,11 +58,6 @@ public abstract class BaseKeyboardService implements KeyboardService {
     /** Map of nodes and keyboard types. */
     private final Map<Node, KeyboardType> nodeKeyboardTypes = new WeakHashMap<>();
 
-    /** Map of nodes and text properties. */
-    private static final Map<Node, ReadOnlyStringWrapper> nodeTextProperties = new WeakHashMap<>();
-
-    /** Map of ids and nodes. */
-    private static final Map<String, Node> idToNode = new HashMap<>();
 
     /** Map of nodes to their visibility listeners. */
     private final Map<Node, ChangeListener<Number>> visibilityListeners = new WeakHashMap<>();
@@ -119,16 +110,6 @@ public abstract class BaseKeyboardService implements KeyboardService {
         installEventFilter(node);
     }
 
-    @Override
-    public ReadOnlyStringProperty textPropertyForNode(Node node) {
-        Objects.requireNonNull(node, "node must not be null");
-        installEventFilter(node);
-        return nodeTextProperties.computeIfAbsent(node, n -> {
-            idToNode.put(syntheticId(n), n);
-            return new ReadOnlyStringWrapper("");
-        }).getReadOnlyProperty();
-    }
-
     private void installEventFilter(Node node) {
         node.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             KeyboardType type = nodeKeyboardTypes.getOrDefault(node, KeyboardType.ASCII);
@@ -149,20 +130,6 @@ public abstract class BaseKeyboardService implements KeyboardService {
         return id != null ? id : "attach-kb-" + System.identityHashCode(node);
     }
 
-    /**
-     * Called from the native callback to update the text property for the
-     * node identified by {@code id}.
-     */
-    protected static void updateTextForId(String id, String text) {
-        Node node = idToNode.get(id);
-        if (node == null) {
-            return;
-        }
-        ReadOnlyStringWrapper wrapper = nodeTextProperties.get(node);
-        if (wrapper != null && !Objects.equals(wrapper.get(), text)) {
-            Platform.runLater(() -> wrapper.set(text));
-        }
-    }
 
     protected static void adjustPosition(Node node, Parent parent, double kh) {
         if (node == null || node.getScene() == null || node.getScene().getWindow() == null) {

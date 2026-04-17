@@ -30,9 +30,6 @@ package com.gluonhq.attach.keyboard.impl;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.scene.Node;
-import javafx.scene.control.TextInputControl;
 
 public class IOSKeyboardService extends BaseKeyboardService {
 
@@ -56,14 +53,6 @@ public class IOSKeyboardService extends BaseKeyboardService {
     @Override
     protected void applyKeyboardType(int nativeValue) {
         nativeSetKeyboardType(nativeValue);
-    }
-
-    @Override
-    public ReadOnlyStringProperty textPropertyForNode(Node node) {
-        if (node instanceof TextInputControl) {
-            return ((TextInputControl) node).textProperty();
-        }
-        return super.textPropertyForNode(node);
     }
 
     @Override

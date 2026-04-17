@@ -60,12 +60,4 @@ public class AndroidKeyboardService extends BaseKeyboardService {
         }
     }
 
-    /**
-     * Called from keyboard.c when the native layer receives composing text
-     * tagged with a node id.
-     */
-    private static void notifyComposingText(String id, String text) {
-        updateTextForId(id, text);
-    }
-
 }

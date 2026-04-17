@@ -29,7 +29,6 @@ package com.gluonhq.attach.keyboard;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -109,19 +108,5 @@ public interface KeyboardService {
      * @since 4.0.25
      */
     void setKeyboardTypeForNode(Node node, KeyboardType type);
-
-    /**
-     * Returns a read-only property that reflects the current composing text for the given node
-     * (typically a {@link javafx.scene.control.TextInputControl}), as reported by the native IME.
-     *
-     * <p>Note that the JavaFX text input control default {@code textProperty()} will still
-     * catch all the internals of the text composition when predictive text is enabled (that could show
-     * partial text being removed and added back again while the user is typing)</p>
-     *
-     * @param node the node whose text to observe
-     * @return a ReadOnlyStringProperty with the composed text for the given node
-     * @since 4.0.25
-     */
-    ReadOnlyStringProperty textPropertyForNode(Node node);
 
 }

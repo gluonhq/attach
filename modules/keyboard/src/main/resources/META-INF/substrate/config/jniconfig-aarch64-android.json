@@ -2,8 +2,7 @@
   {
     "name" : "com.gluonhq.attach.keyboard.impl.AndroidKeyboardService",
     "methods":[
-      {"name":"notifyVisibleHeight","parameterTypes":["float"]},
-      {"name":"notifyComposingText","parameterTypes":["java.lang.String","java.lang.String"]}
+      {"name":"notifyVisibleHeight","parameterTypes":["float"]}
     ]
   }
 ]
