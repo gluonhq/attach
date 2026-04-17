@@ -35,14 +35,16 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.Scene;
 import javafx.util.Duration;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,22 +61,13 @@ public abstract class BaseKeyboardService implements KeyboardService {
     /** Map of nodes and keyboard types. */
     private final Map<Node, KeyboardType> nodeKeyboardTypes = new WeakHashMap<>();
 
-    /** Map of nodes to their installed event filters. */
-    private final Map<Node, EventHandler<? super MouseEvent>> nodeEventFilters = new WeakHashMap<>();
-
     /** Map of nodes to their visibility listeners. */
     private final Map<Node, ChangeListener<Number>> visibilityListeners = new WeakHashMap<>();
 
+    /** Scenes for which a focusOwner listener has already been installed. */
+    private final Set<Scene> trackedScenes = Collections.newSetFromMap(new WeakHashMap<>());
+
     BaseKeyboardService() {
-        VISIBLE_HEIGHT.addListener((obs, ov, nv) -> {
-            if (nv != null && nv.doubleValue() <= 0) {
-                if (debug) {
-                    LOG.info("Keyboard hidden, reset default type");
-                }
-                applyActiveNodeId(""); // reset active node
-                applyKeyboardType(KeyboardType.ASCII.getValue());
-            }
-        });
     }
 
     @Override
@@ -110,38 +103,75 @@ public abstract class BaseKeyboardService implements KeyboardService {
         Objects.requireNonNull(node, "node must not be null");
         Objects.requireNonNull(type, "type must not be null");
         nodeKeyboardTypes.put(node, type);
-        installEventFilter(node);
+        attachFocusTracker(node);
     }
 
     @Override
     public void removeKeyboardTypeForNode(Node node) {
         Objects.requireNonNull(node, "node must not be null");
         nodeKeyboardTypes.remove(node);
-        uninstallEventFilter(node);
     }
 
-    private void installEventFilter(Node node) {
-        if (nodeEventFilters.containsKey(node)) {
+    /**
+     * Ensures a single focusOwner listener is installed on the scene that
+     * contains {@code node}. The listener drives the native keyboard type for
+     * every focus change in that scene, whether the newly focused node was
+     * explicitly registered via {@link #setKeyboardTypeForNode} or not.
+     * If {@code node} is not yet in a scene, the installation is deferred
+     * until it is.
+     */
+    private void attachFocusTracker(Node node) {
+        Scene scene = node.getScene();
+        if (scene != null) {
+            trackScene(scene);
+            // If this node is already the focus owner, apply its type now
+            if (scene.getFocusOwner() == node) {
+                applyTypeFor(node);
+            }
             return;
         }
-        EventHandler<? super MouseEvent> handler = e -> {
-            KeyboardType type = nodeKeyboardTypes.getOrDefault(node, KeyboardType.ASCII);
-            String id = syntheticId(node);
-            if (debug) {
-                LOG.info(String.format("Active keyboard type: %s for id %s", type, id));
+        node.sceneProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> obs, Scene ov, Scene nv) {
+                if (nv != null) {
+                    trackScene(nv);
+                    if (nv.getFocusOwner() == node) {
+                        applyTypeFor(node);
+                    }
+                    obs.removeListener(this);
+                }
             }
-            applyActiveNodeId(id);
-            applyKeyboardType(type.getValue());
-        };
-        nodeEventFilters.put(node, handler);
-        node.addEventFilter(MouseEvent.MOUSE_CLICKED, handler);
+        });
     }
 
-    private void uninstallEventFilter(Node node) {
-        EventHandler<? super MouseEvent> handler = nodeEventFilters.remove(node);
-        if (handler != null) {
-            node.removeEventFilter(MouseEvent.MOUSE_CLICKED, handler);
+    private void trackScene(Scene scene) {
+        if (!trackedScenes.add(scene)) {
+            return;
         }
+        scene.focusOwnerProperty().addListener((obs, ov, newNode) -> applyTypeFor(newNode));
+    }
+
+    /**
+     * Pushes the id and keyboard type for {@code focused} down to the native
+     * layer. Registered nodes use their stored {@link KeyboardType}; any other
+     * focus owner (including {@code null}) falls back to {@link KeyboardType#ASCII}.
+     */
+    private void applyTypeFor(Node focused) {
+        if (focused == null) {
+            if (debug) {
+                LOG.info("Focus cleared, applying default ASCII keyboard");
+            }
+            applyActiveNodeId("");
+            applyKeyboardType(KeyboardType.ASCII.getValue());
+            return;
+        }
+        KeyboardType type = nodeKeyboardTypes.getOrDefault(focused, KeyboardType.ASCII);
+        String id = syntheticId(focused);
+        if (debug) {
+            LOG.info(String.format("Active keyboard type: %s for id %s", type, id));
+        }
+        applyActiveNodeId(id);
+        applyKeyboardType(type.getValue());
     }
 
     /**
