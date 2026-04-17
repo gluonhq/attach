@@ -30,11 +30,6 @@ package com.gluonhq.attach.keyboard.impl;
 import com.gluonhq.attach.lifecycle.LifecycleEvent;
 import com.gluonhq.attach.lifecycle.LifecycleService;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.TextInputControl;
 
 public class IOSKeyboardService extends BaseKeyboardService {
 
@@ -54,32 +49,10 @@ public class IOSKeyboardService extends BaseKeyboardService {
         startObserver();
     }
 
-    @Override
-    public void keepVisibilityForNode(Node node) {
-        keepVisibilityForNode(node, null);
-    }
-
-    @Override
-    public void keepVisibilityForNode(Node node, Parent parent) {
-        VISIBLE_HEIGHT.addListener((obs, ov, nv) -> adjustPosition(node, parent, nv.doubleValue()));
-    }
-
-    @Override
-    public ReadOnlyFloatProperty visibleHeightProperty() {
-        return VISIBLE_HEIGHT.getReadOnlyProperty();
-    }
 
     @Override
     protected void applyKeyboardType(int nativeValue) {
         nativeSetKeyboardType(nativeValue);
-    }
-
-    @Override
-    public ReadOnlyStringProperty textPropertyForNode(Node node) {
-        if (node instanceof TextInputControl) {
-            return ((TextInputControl) node).textProperty();
-        }
-        return super.textPropertyForNode(node);
     }
 
     @Override

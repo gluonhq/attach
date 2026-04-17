@@ -28,9 +28,6 @@
 package com.gluonhq.attach.keyboard.impl;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 
 public class AndroidKeyboardService extends BaseKeyboardService {
 
@@ -41,20 +38,6 @@ public class AndroidKeyboardService extends BaseKeyboardService {
     public AndroidKeyboardService() {
     }
 
-    @Override
-    public void keepVisibilityForNode(Node node) {
-        keepVisibilityForNode(node, null);
-    }
-
-    @Override
-    public void keepVisibilityForNode(Node node, Parent parent) {
-        VISIBLE_HEIGHT.addListener((obs, ov, nv) -> adjustPosition(node, parent, nv.doubleValue()));
-    }
-
-    @Override
-    public ReadOnlyFloatProperty visibleHeightProperty() {
-        return VISIBLE_HEIGHT.getReadOnlyProperty();
-    }
 
     @Override
     protected void applyKeyboardType(int nativeValue) {
@@ -75,14 +58,6 @@ public class AndroidKeyboardService extends BaseKeyboardService {
         if (VISIBLE_HEIGHT.get() != height) {
             Platform.runLater(() -> VISIBLE_HEIGHT.set(height));
         }
-    }
-
-    /**
-     * Called from keyboard.c when the native layer receives composing text
-     * tagged with a node id.
-     */
-    private static void notifyComposingText(String id, String text) {
-        updateTextForId(id, text);
     }
 
 }

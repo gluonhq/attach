@@ -29,7 +29,6 @@ package com.gluonhq.attach.keyboard;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -80,6 +79,16 @@ public interface KeyboardService {
     void keepVisibilityForNode(Node node, Parent parent);
 
     /**
+     * Stops adjusting the node when the software keyboard shows up,
+     * removing the listener previously registered via
+     * {@link #keepVisibilityForNode(Node)} or {@link #keepVisibilityForNode(Node, Parent)}.
+     *
+     * @param node the Node that was previously registered
+     * @since 4.0.25
+     */
+    void releaseVisibilityForNode(Node node);
+
+    /**
      * Gets the visible height of the Keyboard, so scene or views can adjusted
      * to prevent some of their content from being covered by the keyboard.
      *
@@ -101,17 +110,13 @@ public interface KeyboardService {
     void setKeyboardTypeForNode(Node node, KeyboardType type);
 
     /**
-     * Returns a read-only property that reflects the current composing text for the given node
-     * (typically a {@link javafx.scene.control.TextInputControl}), as reported by the native IME.
+     * Removes the keyboard type assignment and event filter previously installed via
+     * {@link #setKeyboardTypeForNode(Node, KeyboardType)}. After this call the node
+     * will simply use the default keyboard type.
      *
-     * <p>Note that the JavaFX text input control default {@code textProperty()} will still
-     * catch all the internals of the text composition when predictive text is enabled (that could show
-     * partial text being removed and added back again while the user is typing)</p>
-     *
-     * @param node the node whose text to observe
-     * @return a ReadOnlyStringProperty with the composed text for the given node
+     * @param node the node to unregister
      * @since 4.0.25
      */
-    ReadOnlyStringProperty textPropertyForNode(Node node);
+    void removeKeyboardTypeForNode(Node node);
 
 }
