@@ -31,7 +31,6 @@ static jclass jKeyboardServiceClass;
 static jclass jAttachKeyboardClass;
 static jclass jActivityClass;
 static jmethodID jAttach_notifyHeightMethod;
-static jmethodID jAttach_notifyComposingTextMethod;
 static jmethodID jActivity_setKeyboardTypeMethod;
 static jmethodID jActivity_setActiveNodeIdMethod;
 
