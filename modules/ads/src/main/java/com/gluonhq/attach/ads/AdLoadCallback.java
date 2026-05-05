@@ -41,7 +41,7 @@ public abstract class AdLoadCallback<T> {
      * @param <T> the exact type of the ad that is received when
      *            it is successfully loaded
      */
-    static class Handler<T> implements AdRegistry.CallbackHandler {
+    static class Adapter<T> implements AdRegistry.CallbackAdapter {
 
         /**
          * Match the callback from native code to a method defined
@@ -54,7 +54,7 @@ public abstract class AdLoadCallback<T> {
          */
         @SuppressWarnings("unchecked")
         @Override
-        public void handle(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
+        public void invoke(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
             AdLoadCallback<T> c = (AdLoadCallback<T>) callback;
 
             switch (callbackMethod) {
@@ -68,6 +68,7 @@ public abstract class AdLoadCallback<T> {
      * Called when an ad fails to load.
      */
     public void onAdFailedToLoad() {
+        // empty
     }
 
     /**
@@ -76,5 +77,6 @@ public abstract class AdLoadCallback<T> {
      * @param ad the loaded ad
      */
     public void onAdLoaded(T ad) {
+        // empty
     }
 }

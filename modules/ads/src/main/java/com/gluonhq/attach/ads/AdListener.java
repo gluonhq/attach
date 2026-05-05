@@ -37,7 +37,7 @@ public abstract class AdListener {
     /**
      * Invokes callbacks that are received from the native code.
      */
-    static class Handler implements AdRegistry.CallbackHandler {
+    static class Adapter implements AdRegistry.CallbackAdapter {
 
         /**
          * Match the callback from native code to a method defined
@@ -49,7 +49,7 @@ public abstract class AdListener {
          * @param params the params for the callback method
          */
         @Override
-        public void handle(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
+        public void invoke(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
             AdListener c = (AdListener) callback;
 
             switch (callbackMethod) {
@@ -68,6 +68,7 @@ public abstract class AdListener {
      * Called when a click is recorded for an ad.
      */
     public void onAdClicked() {
+        // empty
     }
 
     /**
@@ -75,35 +76,41 @@ public abstract class AdListener {
      * after clicking on an ad.
      */
     public void onAdClosed() {
+        // empty
     }
 
     /**
      * Called when an ad request failed.
      */
     public void onAdFailedToLoad() {
+        // empty
     }
 
     /**
      * Called when an impression is recorded for an ad.
      */
     public void onAdImpression() {
+        // empty
     }
 
     /**
      * Called when an ad is received.
      */
     public void onAdLoaded() {
+        // empty
     }
 
     /**
      * Called when an ad opens an overlay that covers the screen.
      */
     public void onAdOpened() {
+        // empty
     }
 
     /**
      * Called when a swipe gesture on an ad is recorded as a click.
      */
     public void onAdSwipeGestureClicked() {
+        // empty
     }
 }

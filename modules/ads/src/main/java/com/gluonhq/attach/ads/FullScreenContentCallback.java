@@ -37,7 +37,7 @@ public abstract class FullScreenContentCallback {
     /**
      * Invokes callbacks that are received from the native code.
      */
-    static class Handler implements AdRegistry.CallbackHandler {
+    static class Adapter implements AdRegistry.CallbackAdapter {
 
         /**
          * Match the callback from native code to a method defined
@@ -49,7 +49,7 @@ public abstract class FullScreenContentCallback {
          * @param params the params for the callback method
          */
         @Override
-        public void handle(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
+        public void invoke(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
             FullScreenContentCallback c = (FullScreenContentCallback) callback;
 
             switch (callbackMethod) {

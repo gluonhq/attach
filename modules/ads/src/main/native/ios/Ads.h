@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2025 Gluon
+ * Copyright (c) 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,43 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gluonhq.attach.ads;
+#import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
-/**
- * Interface definition for a callback to be invoked when the user
- * earned a reward.
- */
-public interface OnUserEarnedRewardListener {
+#include "jni.h"
+#include "AttachMacros.h"
 
-    /**
-     * Invokes callbacks that are received from the native code.
-     */
-    class Adapter implements AdRegistry.CallbackAdapter {
+@interface AdsService : NSObject
 
-        /**
-         * Match the callback from native code to a method defined
-         * in this class.
-         *
-         * @param ad the ad the callback is intended for
-         * @param callback the class the callback method belongs to
-         * @param callbackMethod the callback method to call
-         * @param params the params for the callback method
-         */
-        @Override
-        public void invoke(Ad<?> ad, Object callback, String callbackMethod, String[] params) {
-            OnUserEarnedRewardListener c = (OnUserEarnedRewardListener) callback;
+@property(nonatomic, strong) UIViewController *rootVC;
+@property(nonatomic, strong) NSMutableDictionary<NSNumber*, id> *registry;
+@property(nonatomic, strong) NSMutableDictionary<NSNumber*, UIView*> *bannerViews;
 
-            if (callbackMethod.equals("onUserEarnedReward")) {
-                c.onUserEarnedReward(params[0], Integer.parseInt(params[1]));
-            }
-        }
-    }
+@end
 
-    /**
-     * Called when the user earned a reward.
-     *
-     * @param type the type of the reward
-     * @param amount the amount of the reward
-     */
-    void onUserEarnedReward(String type, int amount);
-}
+
+@interface AudioService : UIViewController <UIApplicationDelegate> {}
+    - (int) loadSoundImpl:(NSString *)url music:(bool)music;
+    - (void) setLooping:(int)index looping:(bool)looping;
+    - (void) setVolume:(int)index volume:(double)volume;
+    - (void) play:(int)index;
+    - (void) pause:(int)index;
+    - (void) stop:(int)index;
+    - (void) dispose:(int)index;
+    - (void) logMessage:(NSString *)format, ...;
+@end

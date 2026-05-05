@@ -184,19 +184,25 @@ public class BannerAd extends Ad<BannerAd.Service> {
     /**
      * Show the ad.
      */
-    public void show() { service.show(this); }
+    public void show() {
+        service.show(this);
+    }
 
     /**
      * Hide the ad.
      */
-    public void hide() { service.hide(this); }
+    public void hide() {
+        service.hide(this);
+    }
 
     /**
      * Set the layout.
      *
      * @param layout the layout of the ad
      */
-    public void setLayout(Layout layout) { service.setLayout(this, layout); }
+    public void setLayout(Layout layout) {
+        service.setLayout(this, layout);
+    }
 
     /**
      * Set the size.

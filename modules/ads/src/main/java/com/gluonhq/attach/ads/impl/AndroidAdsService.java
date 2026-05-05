@@ -78,9 +78,9 @@ public class AndroidAdsService implements AdsService, BannerAd.Service, Intersti
      */
     @Override
     public BannerAd newBannerAd() {
-        BannerAd ad = new BannerAd(registry.getId(), this);
-        registry.addAd(ad);
+        BannerAd ad = new BannerAd(registry.nextId(), this);
 
+        registry.addAd(ad);
         nativeBannerAdNew(ad.getId());
 
         return ad;
@@ -95,7 +95,8 @@ public class AndroidAdsService implements AdsService, BannerAd.Service, Intersti
      */
     @Override
     public void loadInterstitialAd(String adUnitId, AdRequest adRequest, InterstitialAdLoadCallback callback) {
-        InterstitialAd ad = new InterstitialAd(registry.getId(), this);
+        InterstitialAd ad = new InterstitialAd(registry.nextId(), this);
+
         registry.addAd(ad);
         registry.addCallback(ad.getId(), callback);
 
@@ -111,7 +112,7 @@ public class AndroidAdsService implements AdsService, BannerAd.Service, Intersti
      */
     @Override
     public void loadRewardedAd(String adUnitId, AdRequest adRequest, RewardedAdLoadCallback callback) {
-        RewardedAd ad = new RewardedAd(registry.getId(), this);
+        RewardedAd ad = new RewardedAd(registry.nextId(), this);
         registry.addAd(ad);
         registry.addCallback(ad.getId(), callback);
 

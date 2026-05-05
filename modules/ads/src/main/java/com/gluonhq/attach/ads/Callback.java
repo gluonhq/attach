@@ -88,9 +88,4 @@ public class Callback {
     public Object getCallback() {
         return callback;
     }
-
-    @Override
-    public String toString() {
-        return "{name=" + name + ", callback=" + callback + "}";
-    }
 }

@@ -28,12 +28,7 @@
 
 package com.gluonhq.attach.ads;
 
-import com.gluonhq.attach.ads.impl.AndroidAdsService;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Stores all ads with their unique ids.
@@ -41,16 +36,10 @@ import java.util.logging.Logger;
 public class AdRegistry {
 
     /**
-     * Logger used for logging.
-     */
-    private static final Logger LOG = Logger.getLogger(AdRegistry.class.getName());
-
-
-    /**
      * Handles the conversion from a callback from the native code
-     * to a method from the java side.
+     * to a method from the Java side.
      */
-    public interface CallbackHandler {
+    public interface CallbackAdapter {
 
         /**
          * Converts a callback from native code to java.
@@ -61,7 +50,7 @@ public class AdRegistry {
          *                       callback class
          * @param params the parameters for the method call
          */
-        void handle(Ad<?> ad, Object callback, String callbackMethod, String[] params);
+        void invoke(Ad<?> ad, Object callback, String callbackMethod, String[] params);
     }
 
     /**
@@ -73,7 +62,7 @@ public class AdRegistry {
     /**
      * Contains the callback handlers for the ads.
      */
-    private final Map<String, CallbackHandler> handlers;
+    private final Map<String, CallbackAdapter> handlers;
 
     /**
      * Contains all ads accessible by their ids.
@@ -90,18 +79,15 @@ public class AdRegistry {
      * handlers.
      */
     public AdRegistry() {
-        handlers = new HashMap<>() {{
-            put(AdListener.class.getSimpleName(), new AdListener.Handler());
-            put(InterstitialAdLoadCallback.class.getSimpleName(), new AdLoadCallback.Handler<InterstitialAd>());
-            put(RewardedAdLoadCallback.class.getSimpleName(), new AdLoadCallback.Handler<RewardedAd>());
-            put(OnUserEarnedRewardListener.class.getSimpleName(), new OnUserEarnedRewardListener.Handler());
-            put(FullScreenContentCallback.class.getSimpleName(), new FullScreenContentCallback.Handler());
-        }};
-
+        handlers = new HashMap<>();
         ads = new HashMap<>();
         callbacks = new HashMap<>();
 
-        LOG.log(Level.INFO, "AdRegistry(): " + this);
+        handlers.put(AdListener.class.getSimpleName(), new AdListener.Adapter());
+        handlers.put(InterstitialAdLoadCallback.class.getSimpleName(), new AdLoadCallback.Adapter<InterstitialAd>());
+        handlers.put(RewardedAdLoadCallback.class.getSimpleName(), new AdLoadCallback.Adapter<RewardedAd>());
+        handlers.put(OnUserEarnedRewardListener.class.getSimpleName(), new OnUserEarnedRewardListener.Adapter());
+        handlers.put(FullScreenContentCallback.class.getSimpleName(), new FullScreenContentCallback.Adapter());
     }
 
     /**
@@ -115,7 +101,6 @@ public class AdRegistry {
         }
 
         ads.put(ad.getId(), ad);
-        LOG.log(Level.INFO, "addAd(): " + this);
     }
 
     /**
@@ -126,7 +111,6 @@ public class AdRegistry {
     public void removeAd(long id) {
         ads.remove(id);
         callbacks.remove(id);
-        LOG.log(Level.INFO, "removeAd(): " + this);
     }
 
     /**
@@ -158,10 +142,8 @@ public class AdRegistry {
             callbacks.put(id, callbackList);
         }
 
-        // remove same callbacks, then add
         callbackList.removeIf(c -> c.getName().equals(callback.getName()));
         callbackList.add(callback);
-        LOG.log(Level.INFO, "addCallback(): " + this);
     }
 
     /**
@@ -173,17 +155,14 @@ public class AdRegistry {
      * @param params the params for the callback method
      */
     public void invokeCallback(long id, String callbackClass, String callbackMethod, String[] params) {
-        LOG.log(Level.INFO, "Registry invokeCallback");
-        CallbackHandler handler = handlers.get(callbackClass);
-        Callback callback = callbacks.get(id).stream()
+        CallbackAdapter handler = handlers.get(callbackClass);
+        Callback callback = callbacks.get(id)
+                .stream()
                 .filter(c -> c.getName().equals(callbackClass))
                 .findFirst()
                 .orElseThrow();
 
-        LOG.log(Level.INFO, "c: " + callback);
-
-        handler.handle(getAd(id), callback.getCallback(), callbackMethod, params);
-        LOG.log(Level.INFO, "invokeCallback(): " + this);
+        handler.invoke(getAd(id), callback.getCallback(), callbackMethod, params);
     }
 
     /**
@@ -191,12 +170,7 @@ public class AdRegistry {
      *
      * @return the next unique id
      */
-    public long getId() {
+    public long nextId() {
         return id++;
-    }
-
-    @Override
-    public String toString() {
-        return "{id=" + id + ", handlers=" + handlers + ", ads=" + ads + ", callbacks:" + callbacks + "}";
     }
 }

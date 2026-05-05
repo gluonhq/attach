@@ -33,6 +33,89 @@ import com.gluonhq.attach.ads.*;
 /**
  * IOS ads service.
  */
-public abstract class IOSAdsService implements AdsService {
-    // TODO: implementation
+public class IOSAdsService implements AdsService, BannerAd.Service, InterstitialAd.Service, RewardedAd.Service {
+
+    static {
+        System.loadLibrary("Ads");
+    }
+
+    @Override
+    public void initialize(OnInitializationCompleteListener listener) {
+
+    }
+
+    @Override
+    public BannerAd newBannerAd() {
+        return null;
+    }
+
+    @Override
+    public void loadInterstitialAd(String adUnitId, AdRequest adRequest, InterstitialAdLoadCallback callback) {
+
+    }
+
+    @Override
+    public void loadRewardedAd(String adUnitId, AdRequest adRequest, RewardedAdLoadCallback callback) {
+
+    }
+
+    @Override
+    public void setRequestConfiguration(RequestConfiguration requestConfiguration) {
+
+    }
+
+    @Override
+    public void load(BannerAd ad, AdRequest adRequest) {
+
+    }
+
+    @Override
+    public void show(BannerAd ad) {
+
+    }
+
+    @Override
+    public void hide(BannerAd ad) {
+
+    }
+
+    @Override
+    public void setLayout(BannerAd ad, BannerAd.Layout layout) {
+
+    }
+
+    @Override
+    public void setAdSize(BannerAd ad, BannerAd.Size size) {
+
+    }
+
+    @Override
+    public void setAdUnitId(BannerAd ad, String adUnitId) {
+
+    }
+
+    @Override
+    public void setAdListener(BannerAd ad, AdListener listener) {
+
+    }
+
+    @Override
+    public void show(InterstitialAd ad) {
+
+    }
+
+    @Override
+    public void setFullScreenContentCallback(InterstitialAd ad, FullScreenContentCallback callback) {
+
+    }
+
+    @Override
+    public void show(RewardedAd ad, OnUserEarnedRewardListener listener) {
+
+    }
+
+    @Override
+    public void setFullScreenContentCallback(RewardedAd ad, FullScreenContentCallback callback) {
+
+    }
 }

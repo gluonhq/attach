@@ -210,6 +210,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdClicked()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdClicked");
             }
 
@@ -218,6 +219,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdClosed()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdClosed");
             }
 
@@ -226,6 +228,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
                 }
+
                 invokeCallback(id, "AdListener", "onAdFailedToLoad");
             }
 
@@ -234,6 +237,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdImpression()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdImpression");
             }
 
@@ -242,6 +246,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdLoaded()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdLoaded");
             }
 
@@ -250,6 +255,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdOpened()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdOpened");
             }
 
@@ -258,6 +264,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "BannerAd with id: " + id + " onAdSwipeGestureClicked()");
                 }
+
                 invokeCallback(id, "AdListener", "onAdSwipeGestureClicked");
             }
         }));
@@ -274,6 +281,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
                 }
+
                 invokeCallback(id, "InterstitialAdLoadCallback", "onAdFailedToLoad");
             }
 
@@ -309,6 +317,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdClicked()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
             }
 
@@ -317,6 +326,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdDismissedFullScreenContent()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
             }
 
@@ -325,6 +335,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdFailedToShowFullScreenContent() with error: " + adError.getMessage());
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
             }
 
@@ -333,6 +344,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdImpression()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
             }
 
@@ -341,6 +353,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "InterstitialAd with id: " + id + " onAdShowedFullScreenContent()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
             }
         }));
@@ -357,6 +370,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
                 }
+
                 invokeCallback(id, "RewardedAdLoadCallback", "onAdFailedToLoad");
             }
 
@@ -383,6 +397,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onUserEarnedReward() with item: { type: " + rewardItem.getType() + ", amount: " + rewardItem.getAmount() + " }");
                 }
+
                 invokeCallback(id, "OnUserEarnedRewardListener", "onUserEarnedReward", new String[] { rewardItem.getType(), String.valueOf(rewardItem.getAmount()) });
             }
         }));
@@ -399,6 +414,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdClicked()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
             }
 
@@ -407,6 +423,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdDismissedFullScreenContent()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
             }
 
@@ -415,6 +432,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdFailedToShowFullScreenContent() with error: " + adError.getMessage());
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
             }
 
@@ -423,6 +441,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdImpression()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
             }
 
@@ -431,6 +450,7 @@ public class DalvikAdsService {
                 if (debug) {
                     Log.d(TAG, "RewardedAd with id: " + id + " onAdShowedFullScreenContent()");
                 }
+
                 invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
             }
         }));

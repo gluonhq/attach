@@ -63,5 +63,7 @@ public class AdRequest {
     /**
      * Default constructor.
      */
-    private AdRequest() {}
+    private AdRequest() {
+        // empty
+    }
 }
