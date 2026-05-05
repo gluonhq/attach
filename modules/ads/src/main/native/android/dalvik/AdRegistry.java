@@ -42,6 +42,10 @@ public class AdRegistry {
         ads.put(id, ad);
     }
 
+    public Object remove(long id) {
+        return ads.remove(id);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T get(long id) {
         return (T) ads.get(id);

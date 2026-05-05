@@ -34,24 +34,24 @@ static jclass jAdsServiceClass;
 static jobject jDalvikAdsService;
 static jmethodID jAdsServiceInitialize;
 static jmethodID jAdsServiceSetRequestConfiguration;
+static jmethodID jAdsServiceRemoveAd;
 static jmethodID jAdsServiceBannerAdNew;
 static jmethodID jAdsServiceBannerAdLoad;
 static jmethodID jAdsServiceBannerAdShow;
 static jmethodID jAdsServiceBannerAdHide;
-static jmethodID jAdsServiceBannerAdSetLayout;
+static jmethodID jAdsServiceBannerAdSetAdLayout;
 static jmethodID jAdsServiceBannerAdSetAdSize;
 static jmethodID jAdsServiceBannerAdSetAdUnitId;
-static jmethodID jAdsServiceBannerAdSetAdListener;
 static jmethodID jAdsServiceInterstitialAdLoad;
 static jmethodID jAdsServiceInterstitialAdShow;
-static jmethodID jAdsServiceInterstitialAdSetFullScreenContentCallback;
 static jmethodID jAdsServiceRewardedAdLoad;
 static jmethodID jAdsServiceRewardedAdShow;
-static jmethodID jAdsServiceRewardedAdSetFullScreenContentCallback;
 
 void initializeGraalHandles(JNIEnv *graalEnv) {
-    jGraalAdsClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/ads/impl/AndroidAdsService"));
+    jGraalAdsClass = (*graalEnv)->NewGlobalRef(graalEnv, (*graalEnv)->FindClass(graalEnv, "com/gluonhq/attach/ads/impl/DefaultAdsService"));
     jGraalInvokeCallbackMethod = (*graalEnv)->GetStaticMethodID(graalEnv, jGraalAdsClass, "invokeCallback", "(JLjava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V");
+
+    ATTACH_LOG_INFO("initializeGraalHandles %ld %ld", (long) jGraalAdsClass, (long) jGraalInvokeCallbackMethod);
 }
 
 void initializeAdsDalvikHandles() {
@@ -61,20 +61,18 @@ void initializeAdsDalvikHandles() {
 
     jAdsServiceInitialize = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "initialize", "()V");
     jAdsServiceSetRequestConfiguration = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "setRequestConfiguration", "(IILjava/lang/String;[Ljava/lang/String;)V");
+    jAdsServiceRemoveAd = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "removeAd", "(J)V");
     jAdsServiceBannerAdNew = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdNew", "(J)V");
     jAdsServiceBannerAdLoad = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdLoad", "(J)V");
     jAdsServiceBannerAdShow =(*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdShow", "(J)V");
     jAdsServiceBannerAdHide =(*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdHide", "(J)V");
-    jAdsServiceBannerAdSetLayout = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdSetLayout", "(JLjava/lang/String;)V");
+    jAdsServiceBannerAdSetAdLayout = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdSetAdLayout", "(JLjava/lang/String;)V");
     jAdsServiceBannerAdSetAdSize = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdSetAdSize", "(JLjava/lang/String;)V");
     jAdsServiceBannerAdSetAdUnitId = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdSetAdUnitId", "(JLjava/lang/String;)V");
-    jAdsServiceBannerAdSetAdListener = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdSetAdListener", "(J)V");
     jAdsServiceInterstitialAdLoad = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "interstitialAdLoad", "(JLjava/lang/String;)V");
     jAdsServiceInterstitialAdShow = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "interstitialAdShow", "(J)V");
-    jAdsServiceInterstitialAdSetFullScreenContentCallback = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "interstitialAdSetFullScreenContentCallback", "(J)V");
     jAdsServiceRewardedAdLoad = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "rewardedAdLoad", "(JLjava/lang/String;)V");
     jAdsServiceRewardedAdShow = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "rewardedAdShow", "(J)V");
-    jAdsServiceRewardedAdSetFullScreenContentCallback = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "rewardedAdSetFullScreenContentCallback", "(J)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jObj = (*dalvikEnv)->NewObject(dalvikEnv, jAdsServiceClass, jAdsServiceInitMethod, jActivity);
@@ -136,6 +134,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
     DETACH_DALVIK();
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeRemoveAd
+(JNIEnv *env, jclass jClass, jlong jid)
+{
+    ATTACH_DALVIK();
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceRemoveAd, jid);
+    DETACH_DALVIK();
+}
+
 // banner ad
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeBannerAdNew
@@ -170,14 +176,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
     DETACH_DALVIK();
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeBannerAdSetLayout
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeBannerAdSetAdLayout
 (JNIEnv *env, jclass jClass, jlong jid, jstring jlayout)
 {
     const char *layoutChars = (*env)->GetStringUTFChars(env, jlayout, NULL);
 
     ATTACH_DALVIK();
     jstring layout = (*dalvikEnv)->NewStringUTF(dalvikEnv, layoutChars);
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceBannerAdSetLayout, jid, layout);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceBannerAdSetAdLayout, jid, layout);
     DETACH_DALVIK();
 }
 
@@ -203,14 +209,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
     DETACH_DALVIK();
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeBannerAdSetAdListener
-(JNIEnv *env, jclass jClass, jlong jid)
-{
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceBannerAdSetAdListener, jid);
-    DETACH_DALVIK();
-}
-
 // interstitial ad
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeInterstitialAdLoad
@@ -229,14 +227,6 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
 {
     ATTACH_DALVIK();
     (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceInterstitialAdShow, jid);
-    DETACH_DALVIK();
-}
-
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeInterstitialAdSetFullScreenContentCallback
-(JNIEnv *env, jclass jClass, jlong jid)
-{
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceInterstitialAdSetFullScreenContentCallback, jid);
     DETACH_DALVIK();
 }
 
@@ -261,17 +251,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
     DETACH_DALVIK();
 }
 
-JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeRewardedAdSetFullScreenContentCallback
-(JNIEnv *env, jclass jClass, jlong jid)
-{
-    ATTACH_DALVIK();
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceRewardedAdSetFullScreenContentCallback, jid);
-    DETACH_DALVIK();
-}
-
 // from Dalvik to native
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAdsService_invokeCallback
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAdsService_nativeInvokeCallback
 (JNIEnv *env, jobject service, jlong id, jstring callbackClass, jstring callbackMethod, jobjectArray params)
 {
     const char *callbackClassChars = (*env)->GetStringUTFChars(env, callbackClass, NULL);
