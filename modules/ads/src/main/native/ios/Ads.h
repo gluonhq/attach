@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2025 Gluon
+ * Copyright (c) 2023, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,10 +25,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-module com.gluonhq.attach.ads {
 
-    requires com.gluonhq.attach.util;
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+// #import <GoogleMobileAds/GoogleMobileAds.h>
 
-    exports com.gluonhq.attach.ads;
-    exports com.gluonhq.attach.ads.impl to com.gluonhq.attach.util;
-}
+#include "jni.h"
+#include "AttachMacros.h"
+
+@interface AdsService : NSObject
+
+    - (void) initialize;
+    - (void) setRequestConfiguration:(int)tagForChildDirectedTreatment tagForUnderAgeOfConsent:(int)tagForUnderAgeOfConsent maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices;
+
+    // banner
+    - (void) bannerAdNew:(long)adId;
+    - (void) bannerAdShow:(long)adId;
+    - (void) bannerAdHide:(long)adId;
+    - (void) bannerAdLoad:(long)adId;
+    - (void) bannerAdSetAdLayout:(long)adId layout:(NSString*)layout;
+    - (void) bannerAdSetAdSize:(long)adId size:(NSString*)size;
+    - (void) bannerAdSetAdUnitId:(long)adId adUnitId:(NSString*)unitId;
+
+    // interstitial
+    - (void) interstitialAdLoad:(long)adId adUnitId:(NSString*)unitId;
+    - (void) interstitialAdShow:(long)adId;
+
+    // rewarded
+    - (void) rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId;
+    - (void) rewardedAdShow:(long)adId;
+
+@end
