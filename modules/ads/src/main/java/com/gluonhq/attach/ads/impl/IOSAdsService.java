@@ -1,121 +1,53 @@
-/*
- * Copyright (c) 2025 Gluon
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL GLUON BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package com.gluonhq.attach.ads.impl;
 
-import com.gluonhq.attach.ads.*;
-
-/**
- * IOS ads service.
- */
-public class IOSAdsService implements AdsService, BannerAd.Service, InterstitialAd.Service, RewardedAd.Service {
+public class IOSAdsService extends DefaultAdsService {
 
     static {
         System.loadLibrary("Ads");
     }
 
     @Override
-    public void initialize(OnInitializationCompleteListener listener) {
-
-    }
+    protected native void nativeInitialize();
 
     @Override
-    public BannerAd newBannerAd() {
-        return null;
-    }
+    protected native void nativeSetRequestConfiguration(int tagForChildDirectedTreatment, int tagForUnderAgeOfConsent, String maxAdContentRating, String[] testDeviceIds);
 
     @Override
-    public void loadInterstitialAd(String adUnitId, AdRequest adRequest, InterstitialAdLoadCallback callback) {
-
-    }
+    protected native void nativeRemoveAd(long id);
 
     @Override
-    public void loadRewardedAd(String adUnitId, AdRequest adRequest, RewardedAdLoadCallback callback) {
-
-    }
+    protected native void nativeBannerAdNew(long id);
 
     @Override
-    public void setRequestConfiguration(RequestConfiguration requestConfiguration) {
-
-    }
+    protected native void nativeBannerAdLoad(long id);
 
     @Override
-    public void load(BannerAd ad, AdRequest adRequest) {
-
-    }
+    protected native void nativeBannerAdShow(long id);
 
     @Override
-    public void show(BannerAd ad) {
-
-    }
+    protected native void nativeBannerAdHide(long id);
 
     @Override
-    public void hide(BannerAd ad) {
-
-    }
+    protected native void nativeBannerAdSetLayout(long id, String layout);
 
     @Override
-    public void setLayout(BannerAd ad, BannerAd.Layout layout) {
-
-    }
+    protected native void nativeBannerAdSetAdSize(long id, String size);
 
     @Override
-    public void setAdSize(BannerAd ad, BannerAd.Size size) {
-
-    }
+    protected native void nativeBannerAdSetAdUnitId(long id, String adUnitId);
 
     @Override
-    public void setAdUnitId(BannerAd ad, String adUnitId) {
-
-    }
+    protected native void nativeBannerAdSetAdListener(long id);
 
     @Override
-    public void setAdListener(BannerAd ad, AdListener listener) {
-
-    }
+    protected native void nativeInterstitialAdLoad(long id, String adUnitId);
 
     @Override
-    public void show(InterstitialAd ad) {
-
-    }
+    protected native void nativeInterstitialAdShow(long id);
 
     @Override
-    public void setFullScreenContentCallback(InterstitialAd ad, FullScreenContentCallback callback) {
-
-    }
+    protected native void nativeRewardedAdLoad(long id, String adUnitId);
 
     @Override
-    public void show(RewardedAd ad, OnUserEarnedRewardListener listener) {
-
-    }
-
-    @Override
-    public void setFullScreenContentCallback(RewardedAd ad, FullScreenContentCallback callback) {
-
-    }
+    protected native void nativeRewardedAdShow(long id);
 }
