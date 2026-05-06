@@ -58,6 +58,7 @@ import java.util.Map;
 public class DalvikAdsService {
 
     private static final String TAG = Util.TAG;
+
     private static final boolean debug = Util.isDebug();
 
     private final Activity activity;
@@ -76,10 +77,10 @@ public class DalvikAdsService {
     }
 
     private void initialize() {
-        Log.v(TAG, "Initializing MobileAds...");
+        Log.v(TAG, "Initializing Google Mobile Ads...");
 
         MobileAds.initialize(activity, initializationStatus -> {
-            Log.v(TAG, "Initialization of MobileAds completed");
+            Log.v(TAG, "Initialization of Google Mobile Ads completed");
             invokeCallback(-1, "", "");
         });
     }
@@ -94,6 +95,10 @@ public class DalvikAdsService {
     }
 
     private void bannerAdNew(long id) {
+        if (debug) {
+            Log.d(TAG, "bannerAdNew(" + id + ")");
+        }
+
         AdView adView = new AdView(activity);
         FrameLayout layout = new FrameLayout(activity);
 
@@ -104,15 +109,11 @@ public class DalvikAdsService {
 
         registry.add(id, adView);
         bannerAdLayouts.put(id, layout);
-
-        if (debug) {
-            Log.d(TAG, "Created new BannerAd with id: " + id);
-        }
     }
 
     private void bannerAdShow(long id) {
         if (debug) {
-            Log.d(TAG, "Showing BannerAd with id: " + id);
+            Log.d(TAG, "bannerAdShow(" + id + ")");
         }
 
         activity.runOnUiThread(() -> {
@@ -125,7 +126,7 @@ public class DalvikAdsService {
 
     private void bannerAdHide(long id) {
         if (debug) {
-            Log.d(TAG, "Hiding BannerAd with id: " + id);
+            Log.d(TAG, "bannerAdHide(" + id + ")");
         }
 
         activity.runOnUiThread(() -> {
@@ -138,7 +139,7 @@ public class DalvikAdsService {
 
     private void bannerAdLoad(long id) {
         if (debug) {
-            Log.d(TAG, "Loading BannerAd with id: " + id);
+            Log.d(TAG, "bannerAdLoad(" + id + ")");
         }
 
         activity.runOnUiThread(() ->
@@ -147,7 +148,7 @@ public class DalvikAdsService {
 
     private void bannerAdSetLayout(long id, String layout) {
         if (debug) {
-            Log.d(TAG, "Setting layout of BannerAd with id: " + id + " to " + layout);
+            Log.d(TAG, "bannerAdSetLayout(" + id + ", " + layout + ")");
         }
 
         int gravity;
@@ -168,7 +169,7 @@ public class DalvikAdsService {
 
     private void bannerAdSetAdSize(long id, String size) {
         if (debug) {
-            Log.d(TAG, "Setting AdSize of BannerAd with id: " + id + " to " + size);
+            Log.d(TAG, "bannerAdSetAdSize(" + id + ", " + size + ")");
         }
 
         AdSize adSize;
@@ -192,7 +193,7 @@ public class DalvikAdsService {
 
     private void bannerAdSetAdUnitId(long id, String adUnitId) {
         if (debug) {
-            Log.d(TAG, "Setting AdUnitId of BannerAd with id: " + id + " to " + adUnitId);
+            Log.d(TAG, "bannerAdSetAdUnitId(" + id + ", " + adUnitId + ")");
         }
 
         activity.runOnUiThread(() ->
@@ -201,70 +202,42 @@ public class DalvikAdsService {
 
     private void bannerAdSetAdListener(long id) {
         if (debug) {
-            Log.d(TAG, "Setting AdListener of BannerAd with id: " + id);
+            Log.d(TAG, "bannerAdSetAdListener(" + id + ")");
         }
 
         activity.runOnUiThread(() -> registry.<AdView>get(id).setAdListener(new AdListener() {
             @Override
             public void onAdClicked() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdClicked()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdClicked");
             }
 
             @Override
             public void onAdClosed() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdClosed()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdClosed");
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
-                }
-
                 invokeCallback(id, "AdListener", "onAdFailedToLoad");
             }
 
             @Override
             public void onAdImpression() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdImpression()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdImpression");
             }
 
             @Override
             public void onAdLoaded() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdLoaded()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdLoaded");
             }
 
             @Override
             public void onAdOpened() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdOpened()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdOpened");
             }
 
             @Override
             public void onAdSwipeGestureClicked() {
-                if (debug) {
-                    Log.d(TAG, "BannerAd with id: " + id + " onAdSwipeGestureClicked()");
-                }
-
                 invokeCallback(id, "AdListener", "onAdSwipeGestureClicked");
             }
         }));
@@ -272,25 +245,17 @@ public class DalvikAdsService {
 
     private void interstitialAdLoad(long id, String adUnitId) {
         if (debug) {
-            Log.d(TAG, "Loading InterstitialAd with id: " + id);
+            Log.d(TAG, "interstitialAdLoad(" + id + ", " + adUnitId + ")");
         }
 
         activity.runOnUiThread(() -> InterstitialAd.load(activity, adUnitId, new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
-                }
-
                 invokeCallback(id, "InterstitialAdLoadCallback", "onAdFailedToLoad");
             }
 
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdLoaded()");
-                }
-
                 registry.add(id, interstitialAd);
                 invokeCallback(id, "InterstitialAdLoadCallback", "onAdLoaded");
             }
@@ -299,7 +264,7 @@ public class DalvikAdsService {
 
     private void interstitialAdShow(long id) {
         if (debug) {
-            Log.d(TAG, "Showing InterstitialAd with id: " + id);
+            Log.d(TAG, "interstitialAdShow(" + id + ")");
         }
 
         activity.runOnUiThread(() ->
@@ -308,52 +273,32 @@ public class DalvikAdsService {
 
     private void interstitialAdSetFullScreenContentCallback(long id) {
         if (debug) {
-            Log.d(TAG, "Setting FullScreenContentCallback of InterstitialAd with id: " + id);
+            Log.d(TAG, "interstitialAdSetFullScreenContentCallback(" + id + ")");
         }
 
         activity.runOnUiThread(() -> registry.<InterstitialAd>get(id).setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
             public void onAdClicked() {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdClicked()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
             }
 
             @Override
             public void onAdDismissedFullScreenContent() {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdDismissedFullScreenContent()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
             }
 
             @Override
             public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdFailedToShowFullScreenContent() with error: " + adError.getMessage());
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
             }
 
             @Override
             public void onAdImpression() {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdImpression()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
             }
 
             @Override
             public void onAdShowedFullScreenContent() {
-                if (debug) {
-                    Log.d(TAG, "InterstitialAd with id: " + id + " onAdShowedFullScreenContent()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
             }
         }));
@@ -361,25 +306,17 @@ public class DalvikAdsService {
 
     private void rewardedAdLoad(long id, String adUnitId) {
         if (debug) {
-            Log.d(TAG, "Loading RewardedAd with id: " + id);
+            Log.d(TAG, "rewardedAdLoad(" + id + ", " + adUnitId + ")");
         }
 
         activity.runOnUiThread(() -> RewardedAd.load(activity, adUnitId, new AdRequest.Builder().build(), new RewardedAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdFailedToLoad() with error: " + loadAdError.getMessage());
-                }
-
                 invokeCallback(id, "RewardedAdLoadCallback", "onAdFailedToLoad");
             }
 
             @Override
             public void onAdLoaded(@NonNull RewardedAd interstitialAd) {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdLoaded()");
-                }
-
                 registry.add(id, interstitialAd);
                 invokeCallback(id, "RewardedAdLoadCallback", "onAdLoaded");
             }
@@ -388,16 +325,12 @@ public class DalvikAdsService {
 
     private void rewardedAdShow(long id) {
         if (debug) {
-            Log.d(TAG, "Showing RewardedAd with id: " + id);
+            Log.d(TAG, "rewardedAdShow(" + id + ")");
         }
         
         activity.runOnUiThread(() -> registry.<RewardedAd>get(id).show(activity, new OnUserEarnedRewardListener() {
             @Override
             public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onUserEarnedReward() with item: { type: " + rewardItem.getType() + ", amount: " + rewardItem.getAmount() + " }");
-                }
-
                 invokeCallback(id, "OnUserEarnedRewardListener", "onUserEarnedReward", new String[] { rewardItem.getType(), String.valueOf(rewardItem.getAmount()) });
             }
         }));
@@ -405,60 +338,48 @@ public class DalvikAdsService {
 
     private void rewardedAdSetFullScreenContentCallback(long id) {
         if (debug) {
-            Log.d(TAG, "Setting FullScreenContentCallback of RewardedAd with id: " + id);
+            Log.d(TAG, "rewardedAdSetFullScreenContentCallback(" + id + ")");
         }
 
         activity.runOnUiThread(() -> registry.<RewardedAd>get(id).setFullScreenContentCallback(new FullScreenContentCallback() {
             @Override
             public void onAdClicked() {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdClicked()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
             }
 
             @Override
             public void onAdDismissedFullScreenContent() {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdDismissedFullScreenContent()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
             }
 
             @Override
             public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdFailedToShowFullScreenContent() with error: " + adError.getMessage());
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
             }
 
             @Override
             public void onAdImpression() {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdImpression()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
             }
 
             @Override
             public void onAdShowedFullScreenContent() {
-                if (debug) {
-                    Log.d(TAG, "RewardedAd with id: " + id + " onAdShowedFullScreenContent()");
-                }
-
                 invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
             }
         }));
     }
 
-    private void invokeCallback(long id, String callbackClass, String callbackMethod) {
-        invokeCallback(id, callbackClass, callbackMethod, new String[0]);
+    private void invokeCallback(long id, String callback, String method) {
+        invokeCallback(id, callback, method, new String[0]);
     }
 
-    private native void invokeCallback(long id, String callbackClass, String callbackMethod, String[] params);
+    private void invokeCallback(long id, String callback, String method, String[] params) {
+        if (debug) {
+            Log.d(TAG, "invokeCallback(" + id + ", " + callback + ", " + method + ", " + params + ")");
+        }
+
+        nativeInvokeCallback(id, callback, method, params);
+    }
+
+    private native void nativeInvokeCallback(long id, String callback, String method, String[] params);
 }

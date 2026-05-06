@@ -26,28 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
-
-#include "jni.h"
-#include "AttachMacros.h"
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 @interface AdsService : NSObject
 
-@property(nonatomic, strong) UIViewController *rootVC;
-@property(nonatomic, strong) NSMutableDictionary<NSNumber*, id> *registry;
-@property(nonatomic, strong) NSMutableDictionary<NSNumber*, UIView*> *bannerViews;
++ (instancetype)shared;
 
-@end
+- (void)initialize;
+- (void)setRequestConfiguration:(int)tagForChildDirectedTreatment
+      tagForUnderAgeOfConsent:(int)tagForUnderAgeOfConsent
+      maxAdContentRating:(NSString*)rating
+      testDeviceIds:(NSArray<NSString*>*)testDevices;
 
+// Banner
+- (void)bannerAdNew:(long)adId;
+- (void)bannerAdShow:(long)adId;
+- (void)bannerAdHide:(long)adId;
+- (void)bannerAdLoad:(long)adId;
+- (void)bannerAdSetLayout:(long)adId layout:(NSString*)layout;
+- (void)bannerAdSetAdSize:(long)adId size:(NSString*)size;
+- (void)bannerAdSetAdUnitId:(long)adId adUnitId:(NSString*)unitId;
 
-@interface AudioService : UIViewController <UIApplicationDelegate> {}
-    - (int) loadSoundImpl:(NSString *)url music:(bool)music;
-    - (void) setLooping:(int)index looping:(bool)looping;
-    - (void) setVolume:(int)index volume:(double)volume;
-    - (void) play:(int)index;
-    - (void) pause:(int)index;
-    - (void) stop:(int)index;
-    - (void) dispose:(int)index;
-    - (void) logMessage:(NSString *)format, ...;
+// Interstitial
+- (void)interstitialAdLoad:(long)adId adUnitId:(NSString*)unitId;
+- (void)interstitialAdShow:(long)adId;
+
+// Rewarded
+- (void)rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId;
+- (void)rewardedAdShow:(long)adId;
+
 @end

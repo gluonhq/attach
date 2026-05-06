@@ -1,144 +1,153 @@
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-@import GoogleMobileAds;
+#import "AdsService.h"
+
+@interface AdsService ()
+@property NSMutableDictionary<NSNumber*, id> *registry;
+@property NSMutableDictionary<NSNumber*, UIView*> *bannerContainers;
+@end
 
 @implementation AdsService
 
-#pragma mark - Init
-
-- (instancetype)initWithViewController:(UIViewController*)vc {
-    self = [super init];
-    self.rootVC = vc;
-    self.registry = [NSMutableDictionary dictionary];
-    self.bannerViews = [NSMutableDictionary dictionary];
-    return self;
++ (instancetype)shared {
+    static AdsService *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[AdsService alloc] init];
+        sharedInstance.registry = [NSMutableDictionary dictionary];
+        sharedInstance.bannerContainers = [NSMutableDictionary dictionary];
+    });
+    return sharedInstance;
 }
-
-#pragma mark - Native callback bridge (same as Android)
-
-- (void)invokeCallback:(long)adId :(NSString*)clazz :(NSString*)method {
-    [self invokeCallback:adId :clazz :method :@[]];
-}
-
-- (void)invokeCallback:(long)adId :(NSString*)clazz :(NSString*)method :(NSArray*)params {
-    // JNI bridge implemented elsewhere
-}
-
-#pragma mark - MobileAds init
 
 - (void)initialize {
     [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
-        [self invokeCallback:-1 :@"MobileAds" :@"onInitialized"];
+        [self invokeCallback:-1 callback:@"Init" method:@"onInitialized" params:@[]];
     }];
 }
 
-#pragma mark =========================================================
-#pragma mark BANNER ADS
-#pragma mark =========================================================
+- (void)setRequestConfiguration:(int)tagForChildDirectedTreatment
+      tagForUnderAgeOfConsent:(int)tagForUnderAgeOfConsent
+      maxAdContentRating:(NSString*)rating
+      testDeviceIds:(NSArray<NSString*>*)testDevices {
+
+    GADRequestConfiguration *config = GADMobileAds.sharedInstance.requestConfiguration;
+    config.tagForChildDirectedTreatment = tagForChildDirectedTreatment;
+    config.tagForUnderAgeOfConsent = tagForUnderAgeOfConsent;
+    config.maxAdContentRating = rating;
+    config.testDeviceIdentifiers = testDevices;
+}
 
 - (void)bannerAdNew:(long)adId {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        GADBannerView *banner = [[GADBannerView alloc] initWithAdSize:GADAdSizeBanner];
-        banner.rootViewController = self.rootVC;
 
-        UIView *container = [[UIView alloc] initWithFrame:CGRectZero];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        GADBannerView *banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
+
+        UIView *container = [[UIView alloc] init];
         [container addSubview:banner];
 
+        banner.rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+
         self.registry[@(adId)] = banner;
-        self.bannerViews[@(adId)] = container;
+        self.bannerContainers[@(adId)] = container;
     });
 }
 
-- (void)bannerAdSetAdUnitId:(long)adId :(NSString*)unitId {
+- (void)bannerAdShow:(long)adId {
     dispatch_async(dispatch_get_main_queue(), ^{
-        GADBannerView *banner = self.registry[@(adId)];
-        banner.adUnitID = unitId;
+        UIView *container = self.bannerContainers[@(adId)];
+        UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
+        [root.view addSubview:container];
+
+        CGRect frame = container.frame;
+        frame.origin.y = root.view.frame.size.height - 50;
+        frame.origin.x = (root.view.frame.size.width - 320) / 2;
+        container.frame = frame;
+    });
+}
+
+- (void)bannerAdHide:(long)adId {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIView *container = self.bannerContainers[@(adId)];
+        [container removeFromSuperview];
     });
 }
 
 - (void)bannerAdLoad:(long)adId {
     dispatch_async(dispatch_get_main_queue(), ^{
         GADBannerView *banner = self.registry[@(adId)];
-        [banner loadRequest:[GADRequest request]];
+        GADRequest *request = [GADRequest request];
+        [banner loadRequest:request];
     });
 }
 
-- (void)bannerAdShow:(long)adId {
+- (void)bannerAdSetAdUnitId:(long)adId adUnitId:(NSString*)unitId {
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIView *view = self.bannerViews[@(adId)];
-        view.frame = CGRectMake(0,
-                                self.rootVC.view.bounds.size.height - 50,
-                                self.rootVC.view.bounds.size.width,
-                                50);
-        [self.rootVC.view addSubview:view];
+        GADBannerView *banner = self.registry[@(adId)];
+        banner.adUnitID = unitId;
     });
 }
 
-- (void)bannerAdHide:(long)adId {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIView *view = self.bannerViews[@(adId)];
-        [view removeFromSuperview];
-    });
-}
+- (void)interstitialAdLoad:(long)adId adUnitId:(NSString*)unitId {
 
-#pragma mark =========================================================
-#pragma mark INTERSTITIAL ADS
-#pragma mark =========================================================
-
-- (void)interstitialAdLoad:(long)adId :(NSString*)unitId {
     [GADInterstitialAd loadWithAdUnitID:unitId
                                 request:[GADRequest request]
                       completionHandler:^(GADInterstitialAd *ad, NSError *error) {
 
         if (error) {
-            [self invokeCallback:adId :@"InterstitialAdLoadCallback" :@"onAdFailedToLoad"];
+            [self invokeCallback:adId callback:@"InterstitialAd" method:@"onAdFailedToLoad" params:@[]];
             return;
         }
 
         self.registry[@(adId)] = ad;
-        [self invokeCallback:adId :@"InterstitialAdLoadCallback" :@"onAdLoaded"];
+        [self invokeCallback:adId callback:@"InterstitialAd" method:@"onAdLoaded" params:@[]];
     }];
 }
 
 - (void)interstitialAdShow:(long)adId {
     dispatch_async(dispatch_get_main_queue(), ^{
         GADInterstitialAd *ad = self.registry[@(adId)];
-        [ad presentFromRootViewController:self.rootVC];
+        UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
+        [ad presentFromRootViewController:root];
     });
 }
 
-#pragma mark =========================================================
-#pragma mark REWARDED ADS
-#pragma mark =========================================================
+- (void)rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId {
 
-- (void)rewardedAdLoad:(long)adId :(NSString*)unitId {
     [GADRewardedAd loadWithAdUnitID:unitId
                             request:[GADRequest request]
                   completionHandler:^(GADRewardedAd *ad, NSError *error) {
 
         if (error) {
-            [self invokeCallback:adId :@"RewardedAdLoadCallback" :@"onAdFailedToLoad"];
+            [self invokeCallback:adId callback:@"RewardedAd" method:@"onAdFailedToLoad" params:@[]];
             return;
         }
 
         self.registry[@(adId)] = ad;
-        [self invokeCallback:adId :@"RewardedAdLoadCallback" :@"onAdLoaded"];
+        [self invokeCallback:adId callback:@"RewardedAd" method:@"onAdLoaded" params:@[]];
     }];
 }
 
 - (void)rewardedAdShow:(long)adId {
+
     dispatch_async(dispatch_get_main_queue(), ^{
         GADRewardedAd *ad = self.registry[@(adId)];
+        UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
 
-        [ad presentFromRootViewController:self.rootVC
+        [ad presentFromRootViewController:root
                  userDidEarnRewardHandler:^{
             GADAdReward *reward = ad.adReward;
             [self invokeCallback:adId
-                                :@"OnUserEarnedRewardListener"
-                                :@"onUserEarnedReward"
-                                :@[reward.type, [NSString stringWithFormat:@"%ld",(long)reward.amount]]];
+                        callback:@"Rewarded"
+                          method:@"onUserEarnedReward"
+                          params:@[reward.type, [NSString stringWithFormat:@"%ld", (long)reward.amount]]];
         }];
     });
 }
 
-@end
+- (void)invokeCallback:(long)adId
+              callback:(NSString*)callback
+                method:(NSString*)method
+                params:(NSArray<NSString*>*)params {
+
+    // This calls your JNI bridge generated by Gluon Attach
+    // Same concept as nativeInvokeCallback on Android
+}

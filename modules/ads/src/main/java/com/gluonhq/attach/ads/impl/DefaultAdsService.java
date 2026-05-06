@@ -45,9 +45,10 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
     @Override
     public BannerAd newBannerAd() {
         BannerAd ad = new BannerAd(registry.nextId(), this);
-
         registry.addAd(ad);
+
         nativeBannerAdNew(ad.getId());
+        nativeBannerAdSetAdListener(ad.getId());
 
         return ad;
     }
@@ -114,7 +115,6 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
     @Override
     public void setAdListener(BannerAd ad, AdListener listener) {
         registry.setCallback(ad.getId(), AdListener.class, listener);
-        nativeBannerAdSetAdListener(ad.getId());
     }
 
     @Override

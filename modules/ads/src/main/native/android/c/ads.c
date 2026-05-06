@@ -271,7 +271,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
 
 // from Dalvik to native
 
-JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAdsService_invokeCallback
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikAdsService_nativeInvokeCallback
 (JNIEnv *env, jobject service, jlong id, jstring callbackClass, jstring callbackMethod, jobjectArray params)
 {
     const char *callbackClassChars = (*env)->GetStringUTFChars(env, callbackClass, NULL);
