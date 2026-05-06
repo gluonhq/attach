@@ -120,6 +120,10 @@ static void reloadKeyboard() {
 }
 
 void setGlassKeyboardType(int type) {
+    // fall back to an ASCII-capable keyboard as TEXT_NO_SUGGESTIONS = 12 has no iOS equivalent
+    if (type < 0 || type > 11) {
+        type = (int)UIKeyboardTypeASCIICapable;
+    }
     currentKeyboardType = (UIKeyboardType)type;
     ensureSwizzled();
     AttachLog(@"Keyboard type set to %d", type);
