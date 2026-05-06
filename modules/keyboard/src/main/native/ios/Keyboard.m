@@ -152,11 +152,17 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_keyboard_impl_IOSKeyboardService_nativeSetKeyboardType
 (JNIEnv *env, jclass jClass, jint type)
 {
-    if (keyboardTypeSwizzled && (UIKeyboardType)type == currentKeyboardType) {
+    int keyboardType = (int) type;
+    if (keyboardType < 0 || keyboardType > 11) {
+        // fall back to an ASCII-capable keyboard. I.e. TEXT_NO_SUGGESTIONS = 12 has no iOS equivalent
+        keyboardType = (int) UIKeyboardTypeASCIICapable;
+    }
+
+    if (keyboardTypeSwizzled && (UIKeyboardType)keyboardType == currentKeyboardType) {
         return;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        setGlassKeyboardType((int)type);
+        setGlassKeyboardType(keyboardType);
         reloadKeyboard();
     });
 }
