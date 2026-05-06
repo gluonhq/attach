@@ -111,7 +111,16 @@ JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendP
     jstring jOriginal = (*graalEnv)->NewStringUTF(graalEnv, originalChars);
     jstring jProcessed = (*graalEnv)->NewStringUTF(graalEnv, processedChars);
     (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, jOriginal, jProcessed);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jOriginal);
+    (*graalEnv)->DeleteLocalRef(graalEnv, jProcessed);
     DETACH_GRAAL();
     (*env)->ReleaseStringUTFChars(env, originalPath, originalChars);
     (*env)->ReleaseStringUTFChars(env, processedPath, processedChars);
 }
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikPicturesService_sendCancelled(JNIEnv *env, jobject service) {
+    ATTACH_GRAAL();
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalPicturesClass, jGraalSendPhotoFileMethod, NULL, NULL);
+    DETACH_GRAAL();
+}
+
