@@ -306,9 +306,19 @@ final class CameraController {
             @Override
             public void onError(@NonNull ImageCaptureException exception) {
                 Log.e(tag, "Camera capture failed: " + exception.getMessage());
+                cleanupFailedCaptureFile(targetFile);
                 closeCamera(true);
             }
         });
+    }
+
+    private void cleanupFailedCaptureFile(File targetFile) {
+        if (targetFile == null || !targetFile.exists()) {
+            return;
+        }
+        if (!targetFile.delete() && debug) {
+            Log.v(tag, "Failed to delete capture file after error: " + targetFile.getAbsolutePath());
+        }
     }
 
     private void closeCamera(final boolean notifyCancel) {
