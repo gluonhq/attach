@@ -31,8 +31,8 @@ import android.app.Activity;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
-import android.window.OnBackInvokedCallback;
-import android.window.OnBackInvokedDispatcher;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Manages the system back actions, closing the camera overlay
@@ -42,7 +42,7 @@ final class CameraBackHandler {
 
     private final Activity activity;
     private final Runnable onBack;
-    private OnBackInvokedCallback backInvokedCallback;
+    private Object backInvokedCallback;
 
     CameraBackHandler(Activity activity, Runnable onBack) {
         this.activity = activity;
@@ -51,15 +51,7 @@ final class CameraBackHandler {
 
     void attach(View root) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && backInvokedCallback == null) {
-            backInvokedCallback = new OnBackInvokedCallback() {
-                @Override
-                public void onBackInvoked() {
-                    onBack.run();
-                }
-            };
-            activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_OVERLAY,
-                    backInvokedCallback);
+            backInvokedCallback = Api33BackBridge.register(activity, onBack);
         }
 
         if (root != null) {
@@ -80,11 +72,36 @@ final class CameraBackHandler {
 
     void detach(View root) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && backInvokedCallback != null) {
-            activity.getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(backInvokedCallback);
+            Api33BackBridge.unregister(activity, backInvokedCallback);
             backInvokedCallback = null;
         }
         if (root != null) {
             root.setOnKeyListener(null);
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private static final class Api33BackBridge {
+
+        private Api33BackBridge() {
+        }
+
+        private static android.window.OnBackInvokedCallback register(Activity activity, Runnable onBack) {
+            android.window.OnBackInvokedCallback callback = new android.window.OnBackInvokedCallback() {
+                @Override
+                public void onBackInvoked() {
+                    onBack.run();
+                }
+            };
+            activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY,
+                    callback);
+            return callback;
+        }
+
+        private static void unregister(Activity activity, Object callback) {
+            activity.getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+                    (android.window.OnBackInvokedCallback) callback);
         }
     }
 }
