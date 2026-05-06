@@ -106,7 +106,7 @@ public enum KeyboardType {
      * disabled. Useful for fields that should accept raw user input
      * (identifiers, codes, tokens, login input).
      *
-     * <p>On iOS this value fall back to an ASCII-capable keyboard.</p>
+     * <p>On iOS this value falls back to an ASCII-capable keyboard.</p>
      */
     TEXT_NO_SUGGESTIONS(12);
 
