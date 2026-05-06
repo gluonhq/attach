@@ -41,43 +41,19 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
- * the following content that allows access to the external storage or to
- * a temporal cache in case the picture is not saved:</p>
+ * Android implementation of the PicturesService.
  *
- * <pre>
- * {@code
- *    <?xml version="1.0" encoding="utf-8"?>
- *    <paths>
- *        <external-path name="external_files" path="." />
- *        <external-cache-path name="external_cache_files" path="." />
- *    </paths>
- * }
- * </pre>
+ * <p>Uses a custom camera implementation via CameraController for taking photos
+ * and the system gallery for selecting existing images.</p>
  *
- * <p>The permission <code>android.permission.CAMERA</code> needs to be added as well as the permissions
- * <code>android.permission.READ_EXTERNAL_STORAGE</code> and <code>android.permission.WRITE_EXTERNAL_STORAGE</code>
- * to be able to read and write images. Also a {@code provider} is required:</p>
- * <pre>
- * {@code <manifest package="${application.package.name}" ...>
- *    <uses-permission android:name="android.permission.CAMERA"/>
- *    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
- *    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
- *    <application ...>
- *       ...
- *       <activity android:name="com.gluonhq.helloandroid.PermissionRequestActivity" />
- *       <provider
- *           android:name="com.gluonhq.helloandroid.FileProvider"
- *           android:authorities="${application.package.name}.fileprovider"
- *           android:exported="false"
- *           android:grantUriPermissions="true">
- *           <meta-data
- *               android:name="android.support.FILE_PROVIDER_PATHS"
- *               android:resource="@xml/file_provider_paths" />
- *       </provider>
- *   </application>
- * </manifest>}
- * </pre>
+ * <p>Required permissions are automatically declared in AndroidManifest.xml:</p>
+ * <ul>
+ *     <li><code>android.permission.CAMERA</code></li>
+ *     <li><code>android.permission.READ_MEDIA_IMAGES</code> (Android 13+)</li>
+ *     <li><code>android.permission.READ_MEDIA_AUDIO</code> (Android 13+)</li>
+ *     <li><code>android.permission.READ_MEDIA_VIDEO</code> (Android 13+)</li>
+ *     <li><code>android.permission.READ_EXTERNAL_STORAGE</code> (Android 12 and below)</li>
+ * </ul>
  */
 public class AndroidPicturesService implements PicturesService {
 
@@ -152,6 +128,25 @@ public class AndroidPicturesService implements PicturesService {
      * @param processedFilePath the preprocessed (scaled+rotated) file (for {@link Image} loading)
      */
     public static void setResult(String originalFilePath, String processedFilePath) {
+        if (originalFilePath == null || originalFilePath.isEmpty()
+                || processedFilePath == null || processedFilePath.isEmpty()) {
+            LOG.fine("Picture request cancelled");
+            imageFile.set(null);
+            imageProperty.setValue(null);
+            if (enteredLoop) {
+                result.set(null);
+                Platform.runLater(() -> {
+                    enteredLoop = false;
+                    try {
+                        Platform.exitNestedEventLoop(result, null);
+                    } catch (Exception e) {
+                        LOG.severe("GalleryActivity: exitNestedEventLoop failed: " + e);
+                    }
+                });
+            }
+            return;
+        }
+
         LOG.fine("Got photo file at: " + originalFilePath + " (processed: " + processedFilePath + ")");
         File originalFile = new File(originalFilePath);
         File processedFile = new File(processedFilePath);

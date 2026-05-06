@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import com.gluonhq.attach.util.Services;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.scene.image.Image;
 
 /**
@@ -78,41 +77,14 @@ import javafx.scene.image.Image;
  *
  * <p><b>Android Configuration</b></p>
  *
- * <p>Create the file {@code /src/android/res/xml/file_provider_paths.xml} with
- * the following content that allows access to the external storage:</p>
- * <pre>
- * {@code
- *    <?xml version="1.0" encoding="utf-8"?>
- *    <paths>
- *        <external-path name="external_files" path="." />
- *    </paths>
- * }
- * </pre>
- *
- * <p>The permission <code>android.permission.CAMERA</code> needs to be added as well as the permissions
- * <code>android.permission.READ_EXTERNAL_STORAGE</code> and <code>android.permission.WRITE_EXTERNAL_STORAGE</code>
- * to be able to read and write images. Also a {@code provider} is required:</p>
- *
- * <pre>
- * {@code <manifest package="${application.package.name}" ...>
- *    <uses-permission android:name="android.permission.CAMERA"/>
- *    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
- *    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
- *    <application ...>
- *       ...
- *       <activity android:name="com.gluonhq.attach.android.PermissionRequestActivity" />
- *       <provider
- *           android:name="android.support.v4.content.FileProvider"
- *           android:authorities="${application.package.name}.fileprovider"
- *           android:exported="false"
- *           android:grantUriPermissions="true">
- *           <meta-data
- *               android:name="android.support.FILE_PROVIDER_PATHS"
- *               android:resource="@xml/file_provider_paths" />
- *       </provider>
- *   </application>
- * </manifest>}
- * </pre>
+ * <p>The following permissions are required:</p>
+ * <ul>
+ *     <li><code>android.permission.CAMERA</code> — for taking photos with the device camera</li>
+ *     <li><code>android.permission.READ_MEDIA_IMAGES</code> — for reading images from the gallery (Android 13+)</li>
+ *     <li><code>android.permission.READ_MEDIA_AUDIO</code> — for reading audio files from the gallery (Android 13+)</li>
+ *     <li><code>android.permission.READ_MEDIA_VIDEO</code> — for reading video files from the gallery (Android 13+)</li>
+ *     <li><code>android.permission.READ_EXTERNAL_STORAGE</code> — for reading images from the gallery (Android 12 and below)</li>
+ * </ul>
  *
  *
  * <p><b>iOS Configuration</b></p>

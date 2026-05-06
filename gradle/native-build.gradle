@@ -193,11 +193,11 @@ ext.aarBuild = { buildDir, projectDir, name, os ->
         }
     }
     // use res
-    File res = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/res/xml/file_provider_paths.xml")
-    if (res != null && res.exists()) {
+    File resDir = file("$projectDir/src/main/resources/META-INF/substrate/dalvik/res")
+    if (resDir != null && resDir.exists()) {
         project.copy {
-            from res
-            into file("$tempDir/library/src/main/res/xml/")
+            from resDir
+            into file("$tempDir/library/src/main/res/")
         }
     }
     // use dalvik assets
