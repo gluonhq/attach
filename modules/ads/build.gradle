@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":util")
+}
+
+ext.moduleName = 'com.gluonhq.attach.ads'
+ext.description = 'Common API to access ad features'
