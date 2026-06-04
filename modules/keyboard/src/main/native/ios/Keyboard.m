@@ -28,6 +28,11 @@
 
 #include "Keyboard.h"
 
+@interface NSObject (GlassWindowFocus) // Extension from GlassWindow
+- (void)makeKeyWindow;
+- (BOOL)isKeyWindow;
+@end
+
 static JNIEnv *env;
 static jclass jAttachKeyboardClass;
 static jmethodID jAttachKeyboardMethod_notifyVisibleHeight = 0;
@@ -55,7 +60,6 @@ Keyboard *_keyboard;
 CGFloat currentKeyboardHeight = 0.0f;
 static UIKeyboardType currentKeyboardType = UIKeyboardTypeASCIICapable;
 static BOOL keyboardTypeSwizzled = NO;
-static BOOL isReloading = NO;
 
 // Swizzled keyboardType implementation that returns our custom type
 static UIKeyboardType swizzled_keyboardType(id self, SEL _cmd) {
@@ -79,8 +83,14 @@ static void ensureSwizzled() {
     }
 }
 
-// Force the keyboard to reload with the new type by resigning and
-// re-becoming first responder on the current first responder.
+static UIView *glassMainView() {
+    Class glassWindowClass = objc_getClass("GlassWindow");
+    if (glassWindowClass && [glassWindowClass respondsToSelector:@selector(getMainWindowHost)]) {
+        return [glassWindowClass performSelector:@selector(getMainWindowHost)];
+    }
+    return nil;
+}
+
 static UIView *findFirstResponder(UIView *view) {
     if ([view isFirstResponder]) {
         return view;
@@ -95,28 +105,35 @@ static UIView *findFirstResponder(UIView *view) {
 }
 
 static void reloadKeyboard() {
-    UIWindow *keyWindow = nil;
-    for (UIWindow *window in [UIApplication sharedApplication].windows) {
-        if (window.isKeyWindow) {
-            keyWindow = window;
-            break;
-        }
-    }
-    if (!keyWindow) {
+    UIView *host = glassMainView();
+    if (!host) {
+        AttachLog(@"GlassMainView not found, cannot reload keyboard");
         return;
     }
-    UIView *firstResponder = findFirstResponder(keyWindow);
+    UIView *firstResponder = findFirstResponder(host);
     if (firstResponder) {
-        AttachLog(@"Reloading keyboard by cycling first responder");
-        isReloading = YES;
-        [firstResponder resignFirstResponder];
-        // Small delay to let UIKit finish dismissing before re-showing
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
-                       dispatch_get_main_queue(), ^{
-            isReloading = NO;
-            [firstResponder becomeFirstResponder];
-        });
+        AttachLog(@"Reloading input views to apply new keyboard type");
+        [firstResponder reloadInputViews];
     }
+}
+
+// Restore the focus of GlassWindow, making it the key window.
+static void restoreWindowFocus() {
+    UIView *host = glassMainView();
+    if (!host) {
+        return;
+    }
+    UIView *firstResponder = findFirstResponder(host);
+    if (!firstResponder || ![firstResponder respondsToSelector:@selector(makeKeyWindow)]) {
+        // Not the first responder or not a GlassWindow: nothing to do.
+        return;
+    }
+    if ([firstResponder respondsToSelector:@selector(isKeyWindow)] && [firstResponder isKeyWindow]) {
+        // Already the focus owner: nothing to do.
+        return;
+    }
+    AttachLog(@"Restore GlassWindow focus while keyboard is showing");
+    [firstResponder makeKeyWindow];
 }
 
 void setGlassKeyboardType(int type) {
@@ -191,15 +208,17 @@ void sendVisibleHeight() {
     NSDictionary *info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     currentKeyboardHeight = kbSize.height;
+    // JavaFX drops the window focus a few ms after this notification; start restoring it after some
+    // small delay to ensure we have a first responder, but before the keyboard did show.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(32.0 * NSEC_PER_MSEC)),
+       dispatch_get_main_queue(), ^{
+            restoreWindowFocus();
+        });
     [self logMessage:@"Keyboard will show: %f",kbSize];
     sendVisibleHeight();
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-    if (isReloading) {
-        [self logMessage:@"Keyboard will hide (suppressed – reload in progress)"];
-        return;
-    }
     currentKeyboardHeight = 0.0f;
     [self logMessage:@"Keyboard will hide"];
     sendVisibleHeight();
