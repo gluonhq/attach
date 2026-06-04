@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -210,7 +210,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_video_impl_AndroidVideoService_se
     ATTACH_DALVIK();
     jstring dalignmentH = (*dalvikEnv)->NewStringUTF(dalvikEnv, alignmentHChars);
     jstring dalignmentV = (*dalvikEnv)->NewStringUTF(dalvikEnv, alignmentVChars);
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikVideoService, jVideoPlaylistMethod,
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikVideoService, jVideoPositionMethod,
                    dalignmentH, dalignmentV, jtopPadding, jrightPadding, jbottomPadding, jleftPadding);
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jalignmentH, alignmentHChars);
