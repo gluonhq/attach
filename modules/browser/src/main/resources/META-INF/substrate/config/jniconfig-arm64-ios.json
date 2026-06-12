@@ -1,0 +1,7 @@
+[
+  {
+    "name" : "com.gluonhq.attach.browser.impl.IOSBrowserService",
+    "methods":[{"name":"setAuthResult","parameterTypes":["java.lang.String"] }]
+  }
+]
+

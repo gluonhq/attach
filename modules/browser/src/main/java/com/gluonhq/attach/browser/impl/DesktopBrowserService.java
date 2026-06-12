@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Gluon
+ * Copyright (c) 2021, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,10 @@ import com.gluonhq.attach.browser.BrowserService;
 import com.gluonhq.attach.util.Util;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class DesktopBrowserService implements BrowserService {
@@ -62,5 +64,11 @@ public class DesktopBrowserService implements BrowserService {
         } catch (Exception e) {
             throw new IOException("Error launching url " + url);
         }
+    }
+
+    @Override
+    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
+            throws IOException, URISyntaxException {
+        launchExternalBrowser(url);
     }
 }

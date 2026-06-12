@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ import com.gluonhq.attach.browser.BrowserService;
 import com.gluonhq.attach.util.Util;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class AndroidBrowserService implements BrowserService {
@@ -56,6 +58,12 @@ public class AndroidBrowserService implements BrowserService {
         if (!launchURL(url)) {
             throw new IOException("Error launching url " + url);
         }
+    }
+
+    @Override
+    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
+            throws IOException, URISyntaxException {
+        launchExternalBrowser(url);
     }
 
     // native

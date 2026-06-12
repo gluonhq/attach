@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,21 @@ package com.gluonhq.attach.browser.impl;
 
 
 import com.gluonhq.attach.browser.BrowserService;
+import javafx.application.Platform;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 public class IOSBrowserService implements BrowserService {
 
+    private static final Logger LOG = Logger.getLogger(IOSBrowserService.class.getName());
+
+    private static Consumer<String> authCallback;
+
     static {
         System.loadLibrary("Browser");
+        initBrowser();
     }
 
     @Override
@@ -44,7 +52,33 @@ public class IOSBrowserService implements BrowserService {
             throw new IOException("Error launching url " + url);
         }
     }
-    
+
+    @Override
+    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback) throws IOException {
+        if (url == null || url.isEmpty()) {
+            throw new IOException("Authentication url cannot be null or empty");
+        }
+        if (callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
+            throw new IOException("Callback url scheme cannot be null or empty");
+        }
+        authCallback = callback;
+        startWebAuthentication(url, callbackUrlScheme);
+    }
+
+    // native
     private native boolean launchURL(String url);
-    
+    private static native void initBrowser();
+    private static native void startWebAuthentication(String url, String callbackUrlScheme);
+
+    // callback
+    public static void setAuthResult(String callbackUrl) {
+        final Consumer<String> callback = authCallback;
+        authCallback = null;
+        if (callback == null) {
+            LOG.warning("No callback registered for web authentication result");
+            return;
+        }
+        Platform.runLater(() -> callback.accept(callbackUrl));
+    }
+
 }

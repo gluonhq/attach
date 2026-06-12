@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,15 +32,35 @@ import com.gluonhq.attach.util.Services;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Launches the default browser of the platform as a separate application process. The browser
- * will be opened with the provided URL.
+ * will be opened with the provided URL by means of {@link #launchExternalBrowser(String)}.
  *
  * <p><b>Example</b></p>
  * <pre>
  * {@code BrowserService.create().ifPresent(service -> {
  *      service.launchExternalBrowser("https://gluonhq.com/");
+ *  });}</pre>
+ *
+ * <p>The service can also be used to perform secure user authentication against a web service
+ * (for instance an OAuth 2.0 / OpenID Connect provider), using an embedded browser, by means of
+ * {@link #launchWebAuthentication(String, String, Consumer)}.</p>
+ *
+ * <p><b>Example</b></p>
+ * <pre>
+ * {@code BrowserService.create().ifPresent(service -> {
+ *      service.launchWebAuthentication(
+ *              "https://my-auth-provider.com/authorize?response_type=token&redirect_uri=myapp://callback",
+ *              "myapp",
+ *              callbackUrl -> {
+ *                  if (callbackUrl != null) {
+ *                      System.out.println("Authenticated, callback: " + callbackUrl);
+ *                  } else {
+ *                      System.out.println("Authentication cancelled or failed");
+ *                  }
+ *              });
  *  });}</pre>
  *
  * <p><b>Android Configuration</b>: none</p>
@@ -66,4 +86,46 @@ public interface BrowserService {
      * @throws java.net.URISyntaxException If it is not a valid URL string
      */
     void launchExternalBrowser(String url) throws IOException, URISyntaxException;
+
+    /**
+     * Starts a web authentication session that lets the user authenticate against a web
+     * service, and delivers the redirect (callback) URL back to the app once the
+     * authentication flow completes.
+     *
+     * <p>On <b>iOS</b> this is implemented with a secure, dedicated native web view on top of the app.
+     * When the web service redirects to a URL that matches {@code callbackUrlScheme},
+     * the session is automatically dismissed and the full callback URL with the authorization code is
+     * passed to {@code callback}. The redirect is secure and never travels through the system URL dispatch.</p>
+     *
+     * <p>The {@code callbackUrlScheme} can be provided in two forms:</p>
+     * <ul>
+     *   <li><b>A custom URL scheme</b> (without {@code ://}, e.g. {@code "myapp"}), with a
+     *   redirect like {@code myapp://callback}. No {@code Info.plist} URL scheme registration is
+     *   required, since the session intercepts the redirect on its own.
+     *   </li>
+     *   <li><b>A full HTTPS URL</b> (e.g. {@code "https://example.com/callback"}), with a
+     *   verified Universal Link redirect. This requires iOS 17.4 or higher and an
+     *   {@code apple-app-site-association} file hosted on the domain that associates it with the app.
+     *   </li>
+     * </ul>
+     *
+     * <p>On <b>Android</b> and <b>Desktop</b> the default implementation simply opens the URL in the
+     * external browser (see {@link #launchExternalBrowser(String)}). On Android the redirect is
+     * caught by the system through an HTTPS or custom-scheme intent filter declared in the
+     * {@code AndroidManifest.xml}, and the resulting URL can be read with the
+     * {@code RuntimeArgsService}.</p>
+     *
+     * @param url the authentication URL to load, including the {@code redirect_uri} expected by the
+     *            web service.
+     * @param callbackUrlScheme either a custom URL scheme (without {@code ://}, e.g. {@code "myapp"})
+     *                          or a full HTTPS URL (e.g. {@code "https://example.com/callback"}) that
+     *                          the web service uses for its redirect.
+     * @param callback a consumer that receives the full callback URL on success, or {@code null} if
+     *                 the user canceled the flow or an error occurred.
+     * @throws java.io.IOException If the URL can't be opened
+     * @throws java.net.URISyntaxException If it is not a valid URL string
+     * @since 4.0.25
+     */
+    void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
+            throws IOException, URISyntaxException;
 }
