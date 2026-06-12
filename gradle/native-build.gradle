@@ -314,6 +314,7 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
                     "-framework", "OpenGLES",
                     "-framework", "StoreKit",
                     "-framework", "UserNotifications",
+                    "-framework", "AuthenticationServices",
                     "-arch_only", arch,
                     "-syslibroot", sdkPath(platform),
                     "-L${sdkPath(platform)}/usr/lib",
