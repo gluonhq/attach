@@ -139,6 +139,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserService_st
     (*env)->ReleaseStringChars(env, jScheme, charsScheme);
 
     NSURL *nsUrl = [NSURL URLWithString:url];
+    if (nsUrl == nil) {
+        AttachLog(@"Invalid authentication URL: %@", url);
+        sendAuthResult(nil);
+        return;
+    }
 
     if (@available(iOS 12.0, *)) {
         void (^completionHandler)(NSURL * _Nullable, NSError * _Nullable) =

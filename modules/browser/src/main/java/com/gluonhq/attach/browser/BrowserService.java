@@ -104,10 +104,25 @@ public interface BrowserService {
      *   required, since the session intercepts the redirect on its own.
      *   </li>
      *   <li><b>A full HTTPS URL</b> (e.g. {@code "https://example.com/callback"}), with a
-     *   verified Universal Link redirect. This requires iOS 17.4 or higher and an
-     *   {@code apple-app-site-association} file hosted on the domain that associates it with the app.
+     *   verified HTTPS redirect. This requires iOS 17.4 or higher and the following setup:
+     *     <ul>
+     *       <li>The <b>Associated Domains</b> capability enabled on an explicit App ID (a wildcard
+     *       App ID cannot carry it), and a provisioning profile that grants it.</li>
+     *       <li>The app's entitlements must declare the domain under the {@code webcredentials}
+     *       service type (e.g. {@code webcredentials:example.com}).</li>
+     *       <li>An {@code apple-app-site-association} file hosted at
+     *       {@code https://example.com/.well-known/apple-app-site-association} (served as
+     *       {@code application/json}, no redirects) containing a {@code webcredentials} section that
+     *       lists the app, e.g. {@code {"webcredentials":{"apps":["TEAMID.bundle.id"]}}}.</li>
+     *       <li>For local development with a development-signed build (where the file is not on
+     *       Apple's CDN), append {@code ?mode=developer} to the entitlement domain and enable
+     *       <i>Settings &gt; Developer &gt; Associated Domains Development</i> on the device.</li>
+     *     </ul>
      *   </li>
      * </ul>
+     *
+     * <p><b>iOS Configuration</b>: none for the custom-scheme form; the HTTPS form requires the
+     * Associated Domains capability and {@code webcredentials} entitlement described above.</p>
      *
      * <p>On <b>Android</b> and <b>Desktop</b> the default implementation simply opens the URL in the
      * external browser (see {@link #launchExternalBrowser(String)}). On Android the redirect is
