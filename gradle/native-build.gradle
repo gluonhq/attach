@@ -285,7 +285,7 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
             
             def clangArgs = [
                 "-xobjective-c",
-                "-mios-version-min=11.0",
+                "-mios-version-min=12.0",
                 includeFlags,
                 osIncludeFlags,
                 "-c",
