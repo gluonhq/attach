@@ -52,3 +52,26 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_vibration_impl_IOSVibrationServic
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_vibration_impl_IOSVibrationService_doHapticFeedback
+(JNIEnv *env, jclass jClass,jint style)
+{
+    UIImpactFeedbackStyle feedbackStyle;
+
+    switch (style) {
+        case 1:
+            feedbackStyle = UIImpactFeedbackStyleLight;
+            break;
+        case 2:
+            feedbackStyle = UIImpactFeedbackStyleMedium;
+            break;
+        case 3:
+            feedbackStyle = UIImpactFeedbackStyleHeavy;
+            break;
+        default:
+            feedbackStyle = UIImpactFeedbackStyleMedium;
+            break;
+    }
+
+    UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc]initWithStyle:UIImpactFeedbackStyleMedium];
+    [feedback impactOccurred];
+}
