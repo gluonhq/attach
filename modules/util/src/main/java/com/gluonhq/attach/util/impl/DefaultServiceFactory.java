@@ -58,17 +58,18 @@ public class DefaultServiceFactory<T> implements ServiceFactory<T> {
         return Optional.ofNullable(instance);
     }
 
-    private T createInstance(Platform platform) {
-        String fqn = serviceType.getPackageName() + ".impl." + className(platform);
+    private T createInstance(final Platform platform) {
+    	final String fqn = serviceType.getPackageName() + ".impl." + className(platform);
         try {
-            Class<T> clazz = (Class<T>) Class.forName(fqn);
-            if (clazz != null) {
-                LOGGER.fine("Service class for: " + clazz.getName());
-                return clazz.getDeclaredConstructor().newInstance();
-            }
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+        	@SuppressWarnings("unchecked")
+			final Class<T> clazz = (Class<T>) Class.forName(fqn); // clazz return is NEVER null
+
+        	LOGGER.fine("Service class for: " + clazz.getName());
+            return clazz.getDeclaredConstructor().newInstance();
+
+        } catch (final InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (final ClassNotFoundException ex) {
             // no-op
             LOGGER.log(Level.WARNING, "No new instance for " + serviceType + " and class " + fqn);
         }
