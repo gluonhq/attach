@@ -267,6 +267,9 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
         def linkerOutputs = []
         def lipoOutput = "$buildDir/native/ios/lib${name}.a"
 
+        // resolve third-party .xcframework dependencies, if any
+        def xcframeworkDirs = resolveIosXcframeworks(projectDir, "$rootProject.projectDir")
+
         def buildSystems = ["iPhoneOS+arm64", "iPhoneSimulator+x86_64"]
         buildSystems.each { buildSystem ->
 
@@ -282,12 +285,16 @@ ext.nativeBuildLib = { buildDir, projectDir, name, os ->
             new File(compileOutput).mkdirs()
             def compileOutputs = ["$buildDir/native/ios/$arch/${name}.o"]
             def linkerOutput = "$buildDir/native/ios/$arch/lib${name}.a"
-            
+
+            // third-party .xcframework flags, if any
+            def frameworkFlags = xcframeworkCompileFlags(xcframeworkDirs, platform)
+
             def clangArgs = [
                 "-xobjective-c",
                 "-mios-version-min=11.0",
                 includeFlags,
                 osIncludeFlags,
+                frameworkFlags,
                 "-c",
                 "-fPIC",
                 "-arch", arch,
@@ -421,4 +428,97 @@ private String getServiceName(projectName) {
         return values.inject("") { name, pn -> name + pn.capitalize()  }
     }
     return projectName.capitalize()
+}
+
+// third-party .xcframework support
+
+// Reads a module's META-INF/substrate/ios/ios-frameworks.txt manifest (if any), downloads and
+// caches the declared SDK zip(s) ('sdk-zip <url>' entries), and returns the list of extracted
+// .xcframework directories that the module declares with 'embed <Name>.xcframework'. The download
+// is cached under <rootDir>/.gradle/ios-sdk so it is not re-fetched on every build or 'clean'.
+private List resolveIosXcframeworks(projectDir, rootDir) {
+    File manifest = new File("$projectDir/src/main/resources/META-INF/substrate/ios/ios-frameworks.txt")
+    if (!manifest.exists()) {
+        return []
+    }
+
+    def urls = []
+    def embeds = []
+    manifest.eachLine { rawLine ->
+        def line = rawLine.trim()
+        if (line.isEmpty() || line.startsWith("#")) {
+            return
+        }
+        def tokens = line.split("\\s+", 2)
+        if (tokens.length < 2) {
+            return
+        }
+        if (tokens[0] == "sdk-zip") {
+            urls << tokens[1].trim()
+        } else if (tokens[0] == "embed") {
+            embeds << tokens[1].trim()
+        }
+    }
+    if (urls.isEmpty() || embeds.isEmpty()) {
+        return []
+    }
+
+    File cacheRoot = new File("$rootDir/.gradle/ios-sdk")
+    cacheRoot.mkdirs()
+
+    urls.each { url ->
+        def fileName = url.substring(url.lastIndexOf('/') + 1)
+        File zip = new File(cacheRoot, fileName)
+        File extractDir = new File(cacheRoot, fileName - ~/\.zip$/)
+        File marker = new File(extractDir, ".extracted")
+        if (!marker.exists()) {
+            println "Downloading iOS SDK: $url"
+            ant.get(src: url, dest: zip.absolutePath, skipexisting: true, usetimestamp: true)
+            project.copy {
+                from project.zipTree(zip)
+                into extractDir
+            }
+            marker.createNewFile()
+        }
+    }
+
+    // Locate each declared 'embed' xcframework within the extracted SDK(s).
+    def xcframeworkDirs = []
+    embeds.each { embed ->
+        File found = null
+        cacheRoot.traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 4) { dir ->
+            if (found == null && dir.name == embed) {
+                found = dir
+            }
+        }
+        if (found != null) {
+            xcframeworkDirs << found
+        } else {
+            println "Warning: declared iOS framework $embed not found in downloaded SDK"
+        }
+    }
+    return xcframeworkDirs
+}
+
+// Returns the clang flags needed to compile iOS native sources against the given .xcframework
+// directories. The proper slice is selected (device vs simulator) and added as a framework search
+// path (-F); modules (-fmodules) are enabled so framework umbrella headers can be imported.
+private List xcframeworkCompileFlags(xcframeworkDirs, platform) {
+    def flags = []
+    if (xcframeworkDirs == null || xcframeworkDirs.isEmpty()) {
+        return flags
+    }
+    def slice = platform == "iPhoneSimulator" ? "ios-arm64_x86_64-simulator" : "ios-arm64"
+    xcframeworkDirs.each { xcf ->
+        File sliceDir = new File(xcf, slice)
+        if (sliceDir.exists()) {
+            flags << ("-F" + sliceDir.absolutePath)
+        } else {
+            println "Warning: ${xcf.name} has no slice $slice, skipping for $platform"
+        }
+    }
+    if (!flags.isEmpty()) {
+        flags << "-fmodules"
+    }
+    return flags
 }
