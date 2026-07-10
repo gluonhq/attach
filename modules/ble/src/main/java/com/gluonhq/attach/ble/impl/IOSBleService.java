@@ -84,7 +84,6 @@ public class IOSBleService implements BleService {
     
     private static Consumer<ScanDetection> callback;
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
-    private static final List<String> deviceNames = new LinkedList<>();
     private static final List<String> profileNames = new LinkedList<>();
     private static boolean debug;
 
@@ -155,7 +154,6 @@ public class IOSBleService implements BleService {
     @Override
     public ObservableList<BleDevice> startScanningDevices() {
         devices.clear();
-        deviceNames.clear();
         profileNames.clear();
         startScanningPeripherals();
         return devices;
@@ -221,17 +219,19 @@ public class IOSBleService implements BleService {
         if (device == null) {
             return false;
         }
-        if (device.getName() == null) {
+        String name = device.getName();
+        if (name == null) {
             if (debug) {
                 LOG.log(Level.INFO, "IOSBleService: Device with null name not allowed");
             }
             return false;
         }
-        final boolean check = deviceNames.contains(device.getName());
-        if (debug) {
-            LOG.log(Level.INFO, "IOSBleService: Device with name " + device.getName() + " in device list: " + check);
+        for (BleDevice device2 : devices) {
+            if (name.equals(device2.getName())) {
+                return true;
+            }
         }
-        return check;
+        return false;
     }
 
     // native
@@ -245,26 +245,34 @@ public class IOSBleService implements BleService {
     private static native void doSubscribe(String name, String uuidService, String uuidChar, boolean subscribe);
 
     private static void gotPeripheral(String name, String uuid) {
-        if ((name != null && deviceNames.contains(name)) ||
-                (name == null && uuid != null && deviceNames.contains(uuid))) {
-            return;
-        }
-        if (name != null && uuid != null && deviceNames.contains(uuid)) {
-            deviceNames.remove(uuid);
-            devices.removeIf(d -> uuid.equals(d.getAddress()));
-        }
-
         if (debug) {
             LOG.log(Level.INFO, String.format("IOSBleService got peripheral named %s and uuid: %s", name, uuid));
         }
+        if (uuid == null) return;
+
+        BleDevice existingDevice = null;
+        for (BleDevice d : devices) {
+            if (uuid.equals(d.getAddress())) {
+                existingDevice = d;
+                break;
+            }
+        }
+
+        if (existingDevice != null) {
+            String currentName = existingDevice.getName();
+            if (name != null && !name.equals(currentName)) {
+                final BleDevice target = existingDevice;
+                Platform.runLater(() -> target.setName(name));
+            }
+            return; 
+        }
+
         BleDevice dev = new BleDevice();
         dev.setName(name);
         dev.setAddress(uuid);
         Platform.runLater(() -> devices.add(dev));
-        deviceNames.add(name != null ? name : uuid);
-
     }
-
+    
     private static void gotState(String name, String state) {
         if (debug) {
             LOG.log(Level.INFO, String.format("BLE device %s changed state to %s", name, state));
@@ -406,7 +414,7 @@ public class IOSBleService implements BleService {
     }
 
     private static Optional<BleDevice> getDeviceByName(String name) {
-        if (name == null || !deviceNames.contains(name)) {
+        if (name == null) {
             return Optional.empty();
         }
 
