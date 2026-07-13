@@ -28,7 +28,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-// #import <GoogleMobileAds/GoogleMobileAds.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 #include "jni.h"
 #include "AttachMacros.h"
