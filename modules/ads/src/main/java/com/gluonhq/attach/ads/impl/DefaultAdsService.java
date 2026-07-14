@@ -78,8 +78,7 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
     @Override
     public void setRequestConfiguration(RequestConfiguration requestConfiguration) {
         nativeSetRequestConfiguration(
-                requestConfiguration.getTagForChildDirectedTreatment(),
-                requestConfiguration.getTagForUnderAgeOfConsent(),
+                requestConfiguration.getAgeRestrictedTreatment().toString(),
                 requestConfiguration.getMaxAdContentRating(),
                 requestConfiguration.getTestDeviceIds().toArray(String[]::new));
     }
@@ -152,7 +151,7 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
 
     protected abstract void nativeInitialize();
 
-    protected abstract void nativeSetRequestConfiguration(int tagForChildDirectedTreatment, int tagForUnderAgeOfConsent, String maxAdContentRating, String[] testDeviceIds);
+    protected abstract void nativeSetRequestConfiguration(String ageRestrictedTreatment, String maxAdContentRating, String[] testDeviceIds);
 
     protected abstract void nativeRemoveAd(long id);
 

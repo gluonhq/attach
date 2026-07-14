@@ -36,7 +36,7 @@
 @interface AdsService : NSObject
 
     - (void) initialize;
-    - (void) setRequestConfiguration:(int)tagForChildDirectedTreatment tagForUnderAgeOfConsent:(int)tagForUnderAgeOfConsent maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices;
+    - (void) setRequestConfiguration:(NSString*)ageRestrictedTreatment maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices;
 
     // banner
     - (void) bannerAdNew:(long)adId;
@@ -54,5 +54,12 @@
     // rewarded
     - (void) rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId;
     - (void) rewardedAdShow:(long)adId;
+
+@end
+
+@interface Delegate : NSObject <GADFullScreenContentDelegate>
+
+    @property (nonatomic, assign) long adId;
+    @property (nonatomic, assign) AdsService *service;
 
 @end

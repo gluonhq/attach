@@ -60,7 +60,7 @@ void initializeAdsDalvikHandles() {
     jmethodID jAdsServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "<init>", "(Landroid/app/Activity;)V");
 
     jAdsServiceInitialize = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "initialize", "()V");
-    jAdsServiceSetRequestConfiguration = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "setRequestConfiguration", "(IILjava/lang/String;[Ljava/lang/String;)V");
+    jAdsServiceSetRequestConfiguration = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "setRequestConfiguration", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V");
     jAdsServiceRemoveAd = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "removeAd", "(J)V");
     jAdsServiceBannerAdNew = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdNew", "(J)V");
     jAdsServiceBannerAdLoad = (*dalvikEnv)->GetMethodID(dalvikEnv, jAdsServiceClass, "bannerAdLoad", "(J)V");
@@ -111,12 +111,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_nativeSetRequestConfiguration
-(JNIEnv *env, jclass jClass, jint jtagForChildDirectedTreatment, jint jtagForUnderAgeOfConsent, jstring jmaxAdContentRating, jobjectArray jtestDeviceIds)
+(JNIEnv *env, jclass jClass, jstring jageRestrictedTreatment, jstring jmaxAdContentRating, jobjectArray jtestDeviceIds)
 {
+    const char *ageRestrictedTreatmentChars = (*env)->GetStringUTFChars(env, jageRestrictedTreatment, NULL);
     const char *maxAdContentRatingChars = (*env)->GetStringUTFChars(env, jmaxAdContentRating, NULL);
     int count = (*env)->GetArrayLength(env, jtestDeviceIds);
 
     ATTACH_DALVIK();
+    jstring ageRestrictedTreatment = (*dalvikEnv)->NewStringUTF(dalvikEnv, ageRestrictedTreatmentChars);
     jstring maxAdContentRating = (*dalvikEnv)->NewStringUTF(dalvikEnv, maxAdContentRatingChars);
     jobjectArray result = (jobjectArray) (*dalvikEnv)->NewObjectArray(dalvikEnv, count,
             (*dalvikEnv)->FindClass(dalvikEnv, "java/lang/String"), NULL);
@@ -129,7 +131,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_AndroidAdsService_native
         (*env)->ReleaseStringUTFChars(env, id, idString);
     }
 
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceSetRequestConfiguration, jtagForChildDirectedTreatment, jtagForUnderAgeOfConsent, maxAdContentRating, result);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikAdsService, jAdsServiceSetRequestConfiguration, ageRestrictedTreatment, maxAdContentRating, result);
     (*dalvikEnv)->DeleteLocalRef(dalvikEnv, result);
     DETACH_DALVIK();
 }

@@ -41,10 +41,12 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.AgeRestrictedTreatment;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardItem;
@@ -86,14 +88,23 @@ public class DalvikAdsService {
         });
     }
 
-    private void setRequestConfiguration(int tagForChildDirectedTreatment, int tagForUnderAgeOfConsent, String maxAdContentRating, String[] testDeviceIds) {
+    private void setRequestConfiguration(String ageRestrictedTreatment, String maxAdContentRating, String[] testDeviceIds) {
         if (debug) {
-            Log.d(TAG, "setRequestConfiguration(" + tagForChildDirectedTreatment + ", " + tagForUnderAgeOfConsent + ", " + maxAdContentRating + ", " + testDeviceIds + ")");
+            Log.d(TAG, "setRequestConfiguration(" + ageRestrictedTreatment + ", " + maxAdContentRating + ", " + testDeviceIds + ")");
+        }
+
+        AgeRestrictedTreatment treatment;
+
+        switch (ageRestrictedTreatment) {
+            case "CHILD": treatment = AgeRestrictedTreatment.CHILD; break;
+            case "TEEN": treatment = AgeRestrictedTreatment.TEEN; break;
+            case "UNSPECIFIED": treatment = AgeRestrictedTreatment.UNSPECIFIED; break;
+            default:
+                throw new InvalidParameterException("Age restricted treatment '" + ageRestrictedTreatment + "' is invalid!");
         }
 
         MobileAds.setRequestConfiguration(MobileAds.getRequestConfiguration().toBuilder()
-                .setTagForChildDirectedTreatment(tagForChildDirectedTreatment)
-                .setTagForUnderAgeOfConsent(tagForUnderAgeOfConsent)
+                .setAgeRestrictedTreatment(treatment)
                 .setMaxAdContentRating(maxAdContentRating)
                 .setTestDeviceIds(Arrays.asList(testDeviceIds))
                 .build());
@@ -279,35 +290,9 @@ public class DalvikAdsService {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 registry.add(id, interstitialAd);
-
-                activity.runOnUiThread(() -> interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                    @Override
-                    public void onAdClicked() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
-                    }
-
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
-                    }
-
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
-                    }
-
-                    @Override
-                    public void onAdImpression() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
-                    }
-
-                    @Override
-                    public void onAdShowedFullScreenContent() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
-                    }
-                }));
-
                 invokeCallback(id, "InterstitialAdLoadCallback", "onAdLoaded");
+
+                activity.runOnUiThread(() -> interstitialAd.setFullScreenContentCallback(new Callback(id)));
             }
         }));
     }
@@ -335,35 +320,9 @@ public class DalvikAdsService {
             @Override
             public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
                 registry.add(id, rewardedAd);
-
-                activity.runOnUiThread(() -> rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                    @Override
-                    public void onAdClicked() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
-                    }
-
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
-                    }
-
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
-                    }
-
-                    @Override
-                    public void onAdImpression() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
-                    }
-
-                    @Override
-                    public void onAdShowedFullScreenContent() {
-                        invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
-                    }
-                }));
-
                 invokeCallback(id, "RewardedAdLoadCallback", "onAdLoaded");
+
+                activity.runOnUiThread(() -> rewardedAd.setFullScreenContentCallback(new Callback(id)));
             }
         }));
     }
@@ -394,4 +353,38 @@ public class DalvikAdsService {
     }
 
     private native void nativeInvokeCallback(long id, String callback, String method, String[] params);
+
+    private class Callback extends FullScreenContentCallback {
+
+        final long id;
+
+        public Callback(long id) {
+            this.id = id;
+        }
+
+        @Override
+        public void onAdClicked() {
+            invokeCallback(id, "FullScreenContentCallback", "onAdClicked");
+        }
+
+        @Override
+        public void onAdDismissedFullScreenContent() {
+            invokeCallback(id, "FullScreenContentCallback", "onAdDismissedFullScreenContent");
+        }
+
+        @Override
+        public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+            invokeCallback(id, "FullScreenContentCallback", "onAdFailedToShowFullScreenContent");
+        }
+
+        @Override
+        public void onAdImpression() {
+            invokeCallback(id, "FullScreenContentCallback", "onAdImpression");
+        }
+
+        @Override
+        public void onAdShowedFullScreenContent() {
+            invokeCallback(id, "FullScreenContentCallback", "onAdShowedFullScreenContent");
+        }
+    }
 }

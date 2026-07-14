@@ -10,7 +10,7 @@ public class AndroidAdsService extends DefaultAdsService {
     protected native void nativeInitialize();
 
     @Override
-    protected native void nativeSetRequestConfiguration(int tagForChildDirectedTreatment, int tagForUnderAgeOfConsent, String maxAdContentRating, String[] testDeviceIds);
+    protected native void nativeSetRequestConfiguration(String ageRestrictedTreatment, String maxAdContentRating, String[] testDeviceIds);
 
     @Override
     protected native void nativeRemoveAd(long id);
