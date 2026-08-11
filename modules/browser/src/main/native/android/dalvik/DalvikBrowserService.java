@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,29 @@ package com.gluonhq.helloandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 public class DalvikBrowserService {
 
     private static final String TAG = Util.TAG;
 
+    private static final int WEB_AUTH_REQUEST_CODE = 20126;
+
+    // Public intent extras from androidx.browser Auth Tab
+    private static final String EXTRA_SESSION = "android.support.customtabs.extra.SESSION";
+    private static final String EXTRA_LAUNCH_AUTH_TAB = "androidx.browser.auth.extra.LAUNCH_AUTH_TAB";
+    private static final String EXTRA_REDIRECT_SCHEME = "androidx.browser.auth.extra.REDIRECT_SCHEME";
+    private static final String EXTRA_HTTPS_REDIRECT_HOST = "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
+    private static final String EXTRA_HTTPS_REDIRECT_PATH = "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
+
     private final Activity activity;
     private final boolean debug;
+
+    /** The pending web authentication session, if any, so the redirect can be delivered by
+     * {@link WebAuthCallbackActivity} when the browser falls back to a regular Custom Tab. */
+    private static volatile DalvikBrowserService pendingService;
+    private static volatile String pendingCallbackUrlScheme;
 
     public DalvikBrowserService(Activity activity) {
         this.activity = activity;
@@ -68,4 +83,117 @@ public class DalvikBrowserService {
         activity.startActivity(browserIntent);
         return true;
     }
+
+    private void startWebAuthentication(String url, String callbackUrlScheme) {
+        if (url == null || url.isEmpty() || callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
+            Log.e(TAG, "Invalid web authentication parameters: url and callbackUrlScheme are required");
+            nativeWebAuthResult(null);
+            return;
+        }
+
+        Intent authIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        authIntent.putExtra(EXTRA_LAUNCH_AUTH_TAB, true);
+        // null session so browsers without Auth Tab support treat this as a Custom Tab
+        Bundle sessionBundle = new Bundle();
+        sessionBundle.putBinder(EXTRA_SESSION, null);
+        authIntent.putExtras(sessionBundle);
+
+        if (callbackUrlScheme.startsWith("https://")) {
+            Uri redirectUri = Uri.parse(callbackUrlScheme);
+            String host = redirectUri.getHost();
+            if (host == null || host.isEmpty()) {
+                Log.e(TAG, "Invalid https callback url: " + callbackUrlScheme);
+                nativeWebAuthResult(null);
+                return;
+            }
+            authIntent.putExtra(EXTRA_HTTPS_REDIRECT_HOST, host);
+            String path = redirectUri.getPath();
+            authIntent.putExtra(EXTRA_HTTPS_REDIRECT_PATH, (path == null || path.isEmpty()) ? "/" : path);
+        } else {
+            authIntent.putExtra(EXTRA_REDIRECT_SCHEME, callbackUrlScheme);
+        }
+
+        if (authIntent.resolveActivity(activity.getPackageManager()) == null) {
+            Log.e(TAG, "There is no activity to handle the web authentication intent");
+            nativeWebAuthResult(null);
+            return;
+        }
+
+        Util.setOnActivityResultHandler(new IntentHandler() {
+            @Override
+            public void gotActivityResult(int requestCode, int resultCode, Intent intent) {
+                if (requestCode != WEB_AUTH_REQUEST_CODE) {
+                    return;
+                }
+                Util.setOnActivityResultHandler(null);
+                if (pendingService == null) {
+                    // result already delivered through WebAuthCallbackActivity (Custom Tab fallback)
+                    return;
+                }
+                clearPendingSession();
+                String callbackUrl = null;
+                if (resultCode == Activity.RESULT_OK && intent != null && intent.getData() != null) {
+                    callbackUrl = intent.getData().toString();
+                }
+                if (debug) {
+                    Log.v(TAG, "Web authentication result, code: " + resultCode + ", url: " + callbackUrl);
+                }
+                nativeWebAuthResult(callbackUrl);
+            }
+        });
+        pendingService = this;
+        pendingCallbackUrlScheme = callbackUrlScheme;
+
+        if (debug) {
+            Log.v(TAG, "Launching web authentication with URL: " + url + ", callback scheme: " + callbackUrlScheme);
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.startActivityForResult(authIntent, WEB_AUTH_REQUEST_CODE);
+            }
+        });
+    }
+
+    /**
+     * Called by {@link WebAuthCallbackActivity} when the redirect is dispatched by the system
+     * instead of being captured by the tab (Custom Tab fallback for browsers without Auth Tab
+     * support). Delivers the callback URL to the pending session, if it matches.
+     *
+     * @param uri the redirect URI received by the intent filter
+     * @return true if there was a pending session matching the URI and the result was delivered
+     */
+    static boolean handleWebAuthCallback(Uri uri) {
+        DalvikBrowserService service = pendingService;
+        String scheme = pendingCallbackUrlScheme;
+        if (service == null || scheme == null || uri == null || !matchesCallback(uri, scheme)) {
+            return false;
+        }
+        clearPendingSession();
+        Util.setOnActivityResultHandler(null);
+        if (service.debug) {
+            Log.v(TAG, "Web authentication result from callback activity, url: " + uri);
+        }
+        service.nativeWebAuthResult(uri.toString());
+        return true;
+    }
+
+    private static boolean matchesCallback(Uri uri, String callbackUrlScheme) {
+        if (callbackUrlScheme.startsWith("https://")) {
+            Uri redirectUri = Uri.parse(callbackUrlScheme);
+            String path = redirectUri.getPath();
+            return "https".equals(uri.getScheme())
+                    && redirectUri.getHost() != null && redirectUri.getHost().equals(uri.getHost())
+                    && (path == null || path.isEmpty() || "/".equals(path)
+                        || (uri.getPath() != null && uri.getPath().startsWith(path)));
+        }
+        return callbackUrlScheme.equals(uri.getScheme());
+    }
+
+    private static void clearPendingSession() {
+        pendingService = null;
+        pendingCallbackUrlScheme = null;
+    }
+
+    private native void nativeWebAuthResult(String callbackUrl);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,26 @@
  */
 #include "util.h"
 
+// Graal handles
+static jclass jGraalBrowserClass;
+static jmethodID jGraalSetAuthResultMethod;
 
 static jclass jBrowserServiceClass;
 static jobject jDalvikBrowserService;
 static jmethodID jBrowserServiceLaunchMethod;
+static jmethodID jBrowserServiceStartWebAuthMethod;
+
+static void initializeGraalHandles(JNIEnv* env) {
+    jGraalBrowserClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/browser/impl/AndroidBrowserService"));
+    jGraalSetAuthResultMethod = (*env)->GetStaticMethodID(env, jGraalBrowserClass, "setAuthResult", "(Ljava/lang/String;)V");
+}
 
 static void initializeDalvikHandles() {
     jBrowserServiceClass = GET_REGISTER_DALVIK_CLASS(jBrowserServiceClass, "com/gluonhq/helloandroid/DalvikBrowserService");
     ATTACH_DALVIK();
     jmethodID jBrowserServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBrowserServiceLaunchMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");
+    jBrowserServiceStartWebAuthMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "startWebAuthentication", "(Ljava/lang/String;Ljava/lang/String;)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jBrowserServiceClass, jBrowserServiceInitMethod, jActivity);
@@ -60,6 +70,7 @@ JNI_OnLoad_browser(JavaVM *vm, void *reserved)
         return JNI_FALSE;
     }
     ATTACH_LOG_FINE("[Browser Service] Initializing native Browser from OnLoad");
+    initializeGraalHandles(graalEnv);
     initializeDalvikHandles();
     return JNI_VERSION_1_8;
 #else
@@ -79,4 +90,38 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserSe
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
     return result;
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserService_startWebAuthentication
+(JNIEnv *env, jclass jClass, jstring jurl, jstring jcallbackUrlScheme)
+{
+    const char *urlChars = (*env)->GetStringUTFChars(env, jurl, NULL);
+    const char *schemeChars = (*env)->GetStringUTFChars(env, jcallbackUrlScheme, NULL);
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Browser start web authentication for url %s, callback scheme %s\n", urlChars, schemeChars);
+    }
+    ATTACH_DALVIK();
+    jstring durl = (*dalvikEnv)->NewStringUTF(dalvikEnv, urlChars);
+    jstring dscheme = (*dalvikEnv)->NewStringUTF(dalvikEnv, schemeChars);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikBrowserService, jBrowserServiceStartWebAuthMethod, durl, dscheme);
+    DETACH_DALVIK();
+    // (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
+    // (*env)->ReleaseStringUTFChars(env, jcallbackUrlScheme, schemeChars);
+}
+
+///////////////////////////
+// From Dalvik to native //
+///////////////////////////
+
+JNIEXPORT void JNICALL Java_com_gluonhq_helloandroid_DalvikBrowserService_nativeWebAuthResult(
+    JNIEnv *env, jobject service, jstring jcallbackUrl) {
+    const char *callbackUrlChars = (jcallbackUrl == NULL) ? NULL : (*env)->GetStringUTFChars(env, jcallbackUrl, NULL);
+    if (isDebugAttach()) {
+        ATTACH_LOG_FINE("Web authentication result %s\n", (callbackUrlChars == NULL) ? "null" : callbackUrlChars);
+    }
+    ATTACH_GRAAL();
+    jstring jresult = (callbackUrlChars == NULL) ? NULL : (*graalEnv)->NewStringUTF(graalEnv, callbackUrlChars);
+    (*graalEnv)->CallStaticVoidMethod(graalEnv, jGraalBrowserClass, jGraalSetAuthResultMethod, jresult);
+    DETACH_GRAAL();
+    // if (callbackUrlChars != NULL) (*env)->ReleaseStringUTFChars(env, jcallbackUrl, callbackUrlChars);
 }
