@@ -1,0 +1,6 @@
+[
+  {
+    "name" : "com.gluonhq.attach.browser.impl.AndroidBrowserService",
+    "methods":[{"name":"setAuthResult","parameterTypes":["java.lang.String"] }]
+  }
+]

@@ -124,11 +124,30 @@ public interface BrowserService {
      * <p><b>iOS Configuration</b>: none for the custom-scheme form; the HTTPS form requires the
      * Associated Domains capability and {@code webcredentials} entitlement described above.</p>
      *
-     * <p>On <b>Android</b> and <b>Desktop</b> the default implementation simply opens the URL in the
-     * external browser (see {@link #launchExternalBrowser(String)}). On Android the redirect is
-     * caught by the system through an HTTPS or custom-scheme intent filter declared in the
+     * <p>On <b>Android</b> this is implemented with an
+     * <a href="https://developer.chrome.com/docs/android/custom-tabs/guide-auth-tab">Auth Tab</a>,
+     * a specialized Custom Tab designed for authentication flows, launched on top of the app.
+     * When the web service redirects to a URL that matches {@code callbackUrlScheme}, the tab
+     * is automatically dismissed and the full callback URL is passed to {@code callback},
+     * without going through the system URL dispatch. Both the custom-scheme form (no manifest
+     * setup required) and the HTTPS form (which requires
+     * <a href="https://developers.google.com/digital-asset-links">Digital Asset Links</a>
+     * verification: an {@code assetlinks.json} file hosted at
+     * {@code https://example.com/.well-known/assetlinks.json} listing the app's package name and
+     * signing certificate fingerprint) are supported. Auth Tab requires the default browser to
+     * support it (e.g. Chrome 137+). On devices where it is not supported, the same intent
+     * automatically falls back to a regular
+     * <a href="https://developer.android.com/develop/ui/views/layout/webapps/overview-of-android-custom-tabs">Custom
+     * Tab</a>: in that case the redirect is not captured by the tab but dispatched by the system,
+     * so it requires an HTTPS or custom-scheme intent filter declared in the
      * {@code AndroidManifest.xml}, and the resulting URL can be read with the
-     * {@code RuntimeArgsService}.</p>
+     * {@code RuntimeArgsService}, while {@code callback} receives {@code null} once the tab is
+     * closed.</p>
+     *
+     * <p>On <b>Desktop</b> the default implementation simply opens the URL in the
+     * external browser (see {@link #launchExternalBrowser(String)}), and the redirect has to be
+     * handled by the application itself (for instance with a local HTTP server listening for a
+     * {@code http://localhost} redirect).</p>
      *
      * @param url the authentication URL to load, including the {@code redirect_uri} expected by the
      *            web service.

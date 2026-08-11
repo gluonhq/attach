@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2023, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,21 @@ package com.gluonhq.helloandroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 public class DalvikBrowserService {
 
     private static final String TAG = Util.TAG;
+
+    private static final int WEB_AUTH_REQUEST_CODE = 20126;
+
+    // Public intent extras from androidx.browser Auth Tab
+    private static final String EXTRA_SESSION = "android.support.customtabs.extra.SESSION";
+    private static final String EXTRA_LAUNCH_AUTH_TAB = "androidx.browser.auth.extra.LAUNCH_AUTH_TAB";
+    private static final String EXTRA_REDIRECT_SCHEME = "androidx.browser.auth.extra.REDIRECT_SCHEME";
+    private static final String EXTRA_HTTPS_REDIRECT_HOST = "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
+    private static final String EXTRA_HTTPS_REDIRECT_PATH = "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
 
     private final Activity activity;
     private final boolean debug;
@@ -68,4 +78,70 @@ public class DalvikBrowserService {
         activity.startActivity(browserIntent);
         return true;
     }
+
+    private void startWebAuthentication(String url, String callbackUrlScheme) {
+        if (url == null || url.isEmpty() || callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
+            Log.e(TAG, "Invalid web authentication parameters: url and callbackUrlScheme are required");
+            nativeWebAuthResult(null);
+            return;
+        }
+
+        Intent authIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        authIntent.putExtra(EXTRA_LAUNCH_AUTH_TAB, true);
+        // null session so browsers without Auth Tab support treat this as a Custom Tab
+        Bundle sessionBundle = new Bundle();
+        sessionBundle.putBinder(EXTRA_SESSION, null);
+        authIntent.putExtras(sessionBundle);
+
+        if (callbackUrlScheme.startsWith("https://")) {
+            Uri redirectUri = Uri.parse(callbackUrlScheme);
+            String host = redirectUri.getHost();
+            if (host == null || host.isEmpty()) {
+                Log.e(TAG, "Invalid https callback url: " + callbackUrlScheme);
+                nativeWebAuthResult(null);
+                return;
+            }
+            authIntent.putExtra(EXTRA_HTTPS_REDIRECT_HOST, host);
+            String path = redirectUri.getPath();
+            authIntent.putExtra(EXTRA_HTTPS_REDIRECT_PATH, (path == null || path.isEmpty()) ? "/" : path);
+        } else {
+            authIntent.putExtra(EXTRA_REDIRECT_SCHEME, callbackUrlScheme);
+        }
+
+        if (authIntent.resolveActivity(activity.getPackageManager()) == null) {
+            Log.e(TAG, "There is no activity to handle the web authentication intent");
+            nativeWebAuthResult(null);
+            return;
+        }
+
+        Util.setOnActivityResultHandler(new IntentHandler() {
+            @Override
+            public void gotActivityResult(int requestCode, int resultCode, Intent intent) {
+                if (requestCode != WEB_AUTH_REQUEST_CODE) {
+                    return;
+                }
+                Util.setOnActivityResultHandler(null);
+                String callbackUrl = null;
+                if (resultCode == Activity.RESULT_OK && intent != null && intent.getData() != null) {
+                    callbackUrl = intent.getData().toString();
+                }
+                if (debug) {
+                    Log.v(TAG, "Web authentication result, code: " + resultCode + ", url: " + callbackUrl);
+                }
+                nativeWebAuthResult(callbackUrl);
+            }
+        });
+
+        if (debug) {
+            Log.v(TAG, "Launching web authentication with URL: " + url + ", callback scheme: " + callbackUrlScheme);
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.startActivityForResult(authIntent, WEB_AUTH_REQUEST_CODE);
+            }
+        });
+    }
+
+    private native void nativeWebAuthResult(String callbackUrl);
 }

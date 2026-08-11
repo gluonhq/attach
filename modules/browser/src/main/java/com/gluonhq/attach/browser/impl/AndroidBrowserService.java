@@ -29,6 +29,7 @@ package com.gluonhq.attach.browser.impl;
 
 import com.gluonhq.attach.browser.BrowserService;
 import com.gluonhq.attach.util.Util;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -38,6 +39,8 @@ import java.util.logging.Logger;
 public class AndroidBrowserService implements BrowserService {
 
     private static final Logger LOG = Logger.getLogger(AndroidBrowserService.class.getName());
+
+    private static Consumer<String> authCallback;
 
     static {
         System.loadLibrary("browser");
@@ -63,9 +66,31 @@ public class AndroidBrowserService implements BrowserService {
     @Override
     public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
             throws IOException, URISyntaxException {
-        launchExternalBrowser(url);
+        if (url == null || url.isEmpty()) {
+            throw new IOException("Authentication url cannot be null or empty");
+        }
+        if (callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
+            throw new IOException("Callback url scheme cannot be null or empty");
+        }
+        if (Util.DEBUG) {
+            LOG.info("Launch web authentication URL: " + url + ", callback scheme: " + callbackUrlScheme);
+        }
+        authCallback = callback;
+        startWebAuthentication(url, callbackUrlScheme);
     }
 
     // native
     private native boolean launchURL(String url);
+    private static native void startWebAuthentication(String url, String callbackUrlScheme);
+
+    // callback
+    public static void setAuthResult(String callbackUrl) {
+        final Consumer<String> callback = authCallback;
+        authCallback = null;
+        if (callback == null) {
+            LOG.warning("No callback registered for web authentication result");
+            return;
+        }
+        Platform.runLater(() -> callback.accept(callbackUrl));
+    }
 }
