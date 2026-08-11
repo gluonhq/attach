@@ -155,7 +155,7 @@ public interface BrowserService {
      * </activity>
      * }</pre>
      *
-     * With that in place, the redirect is delivered to {@code callback} exactly as in the
+     * <p>With that in place, the redirect is delivered to {@code callback} exactly as in the
      * Auth Tab case, so the fallback is transparent to the application. Since Auth Tab support
      * depends on the user's default browser at runtime and cannot be known in advance, apps
      * distributed to arbitrary devices should always declare this intent filter: it is harmless
