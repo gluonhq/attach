@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2024, Gluon
+ * Copyright (c) 2016, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public interface DeviceService {
     }
 
     /**
-     * Returns the name of the device's model or product. The value is set by the device
+     * Returns the name of the device's model identifier or product. The value is set by the device
      * manufacturer and may be different across versions of the same product.
      *
      * @return The device model.
