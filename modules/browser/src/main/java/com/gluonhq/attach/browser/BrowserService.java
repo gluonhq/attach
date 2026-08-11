@@ -139,10 +139,28 @@ public interface BrowserService {
      * automatically falls back to a regular
      * <a href="https://developer.android.com/develop/ui/views/layout/webapps/overview-of-android-custom-tabs">Custom
      * Tab</a>: in that case the redirect is not captured by the tab but dispatched by the system,
-     * so it requires an HTTPS or custom-scheme intent filter declared in the
-     * {@code AndroidManifest.xml}, and the resulting URL can be read with the
-     * {@code RuntimeArgsService}, while {@code callback} receives {@code null} once the tab is
-     * closed.</p>
+     * so it requires an intent filter matching the callback URL scheme, declared for the activity
+     * {@code com.gluonhq.helloandroid.WebAuthCallbackActivity} in the {@code AndroidManifest.xml}:
+     *
+     * <pre>{@code
+     * <activity android:name="com.gluonhq.helloandroid.WebAuthCallbackActivity"
+     *         android:exported="true"
+     *         android:configChanges="keyboardHidden|orientation|screenSize">
+     *     <intent-filter>
+     *         <action android:name="android.intent.action.VIEW"/>
+     *         <category android:name="android.intent.category.DEFAULT"/>
+     *         <category android:name="android.intent.category.BROWSABLE"/>
+     *         <data android:scheme="yourScheme"/>
+     *     </intent-filter>
+     * </activity>
+     * }</pre>
+     *
+     * With that in place, the redirect is delivered to {@code callback} exactly as in the
+     * Auth Tab case, so the fallback is transparent to the application. Since Auth Tab support
+     * depends on the user's default browser at runtime and cannot be known in advance, apps
+     * distributed to arbitrary devices should always declare this intent filter: it is harmless
+     * when Auth Tab is available, as the tab intercepts the redirect before it reaches the
+     * system dispatch.</p>
      *
      * <p>On <b>Desktop</b> the default implementation simply opens the URL in the
      * external browser (see {@link #launchExternalBrowser(String)}), and the redirect has to be

@@ -49,6 +49,11 @@ public class DalvikBrowserService {
     private final Activity activity;
     private final boolean debug;
 
+    /** The pending web authentication session, if any, so the redirect can be delivered by
+     * {@link WebAuthCallbackActivity} when the browser falls back to a regular Custom Tab. */
+    private static volatile DalvikBrowserService pendingService;
+    private static volatile String pendingCallbackUrlScheme;
+
     public DalvikBrowserService(Activity activity) {
         this.activity = activity;
         this.debug = Util.isDebug();
@@ -121,6 +126,11 @@ public class DalvikBrowserService {
                     return;
                 }
                 Util.setOnActivityResultHandler(null);
+                if (pendingService == null) {
+                    // result already delivered through WebAuthCallbackActivity (Custom Tab fallback)
+                    return;
+                }
+                clearPendingSession();
                 String callbackUrl = null;
                 if (resultCode == Activity.RESULT_OK && intent != null && intent.getData() != null) {
                     callbackUrl = intent.getData().toString();
@@ -131,6 +141,8 @@ public class DalvikBrowserService {
                 nativeWebAuthResult(callbackUrl);
             }
         });
+        pendingService = this;
+        pendingCallbackUrlScheme = callbackUrlScheme;
 
         if (debug) {
             Log.v(TAG, "Launching web authentication with URL: " + url + ", callback scheme: " + callbackUrlScheme);
@@ -141,6 +153,46 @@ public class DalvikBrowserService {
                 activity.startActivityForResult(authIntent, WEB_AUTH_REQUEST_CODE);
             }
         });
+    }
+
+    /**
+     * Called by {@link WebAuthCallbackActivity} when the redirect is dispatched by the system
+     * instead of being captured by the tab (Custom Tab fallback for browsers without Auth Tab
+     * support). Delivers the callback URL to the pending session, if it matches.
+     *
+     * @param uri the redirect URI received by the intent filter
+     * @return true if there was a pending session matching the URI and the result was delivered
+     */
+    static boolean handleWebAuthCallback(Uri uri) {
+        DalvikBrowserService service = pendingService;
+        String scheme = pendingCallbackUrlScheme;
+        if (service == null || scheme == null || uri == null || !matchesCallback(uri, scheme)) {
+            return false;
+        }
+        clearPendingSession();
+        Util.setOnActivityResultHandler(null);
+        if (service.debug) {
+            Log.v(TAG, "Web authentication result from callback activity, url: " + uri);
+        }
+        service.nativeWebAuthResult(uri.toString());
+        return true;
+    }
+
+    private static boolean matchesCallback(Uri uri, String callbackUrlScheme) {
+        if (callbackUrlScheme.startsWith("https://")) {
+            Uri redirectUri = Uri.parse(callbackUrlScheme);
+            String path = redirectUri.getPath();
+            return "https".equals(uri.getScheme())
+                    && redirectUri.getHost() != null && redirectUri.getHost().equals(uri.getHost())
+                    && (path == null || path.isEmpty() || "/".equals(path)
+                        || (uri.getPath() != null && uri.getPath().startsWith(path)));
+        }
+        return callbackUrlScheme.equals(uri.getScheme());
+    }
+
+    private static void clearPendingSession() {
+        pendingService = null;
+        pendingCallbackUrlScheme = null;
     }
 
     private native void nativeWebAuthResult(String callbackUrl);

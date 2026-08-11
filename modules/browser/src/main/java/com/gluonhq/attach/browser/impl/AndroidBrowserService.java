@@ -81,7 +81,7 @@ public class AndroidBrowserService implements BrowserService {
 
     // native
     private native boolean launchURL(String url);
-    private static native void startWebAuthentication(String url, String callbackUrlScheme);
+    private native void startWebAuthentication(String url, String callbackUrlScheme);
 
     // callback
     public static void setAuthResult(String callbackUrl) {
