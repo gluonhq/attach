@@ -222,6 +222,39 @@ public interface BrowserService {
      * @throws java.net.URISyntaxException If it is not a valid URL string
      * @since 4.0.25
      */
-    void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
-            throws IOException, URISyntaxException;
+    default void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
+            throws IOException, URISyntaxException {
+        launchWebAuthentication(url, callbackUrlScheme, false, callback);
+    }
+
+    /**
+     * Starts a web authentication session, like
+     * {@link #launchWebAuthentication(String, String, Consumer)}, optionally requesting an
+     * ephemeral browsing session.
+     *
+     * <p>When {@code prefersEphemeralSession} is {@code true}, the session is requested to run
+     * in a private/ephemeral browsing mode that does not share cookies or other browsing data
+     * with the browser, and discards them when the session ends. Each authentication then starts
+     * from a clean slate, at the cost of losing single sign-on.</p>
+     *
+     * <p>On Android this enables ephemeral browsing on the Auth Tab (or the Custom Tab
+     * fallback). It is best-effort: it requires the browser to support it (e.g. recent
+     * Chrome versions); browsers without support ignore the request and share browsing
+     * data as usual. On Desktop the flag is ignored.</p>
+     *
+     * @param url the authentication URL to load, including the {@code redirect_uri} expected by the
+     *            web service.
+     * @param callbackUrlScheme either a custom URL scheme (without {@code ://}, e.g. {@code "myapp"})
+     *                          or a full HTTPS URL (e.g. {@code "https://example.com/callback"}) that
+     *                          the web service uses for its redirect.
+     * @param prefersEphemeralSession if {@code true}, requests a private browsing session that does
+     *                                not share or persist cookies and other browsing data.
+     * @param callback a consumer that receives the full callback URL on success, or {@code null} if
+     *                 the user canceled the flow or an error occurred.
+     * @throws java.io.IOException If the URL can't be opened
+     * @throws java.net.URISyntaxException If it is not a valid URL string
+     * @since 4.0.26
+     */
+    void launchWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession,
+            Consumer<String> callback) throws IOException, URISyntaxException;
 }

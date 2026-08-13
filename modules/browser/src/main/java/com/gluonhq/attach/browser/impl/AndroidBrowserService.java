@@ -64,8 +64,8 @@ public class AndroidBrowserService implements BrowserService {
     }
 
     @Override
-    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
-            throws IOException, URISyntaxException {
+    public void launchWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession,
+            Consumer<String> callback) throws IOException, URISyntaxException {
         if (url == null || url.isEmpty()) {
             throw new IOException("Authentication url cannot be null or empty");
         }
@@ -73,15 +73,16 @@ public class AndroidBrowserService implements BrowserService {
             throw new IOException("Callback url scheme cannot be null or empty");
         }
         if (Util.DEBUG) {
-            LOG.info("Launch web authentication URL: " + url + ", callback scheme: " + callbackUrlScheme);
+            LOG.info("Launch web authentication URL: " + url + ", callback scheme: " + callbackUrlScheme
+                    + ", ephemeral: " + prefersEphemeralSession);
         }
         authCallback = callback;
-        startWebAuthentication(url, callbackUrlScheme);
+        startWebAuthentication(url, callbackUrlScheme, prefersEphemeralSession);
     }
 
     // native
     private native boolean launchURL(String url);
-    private native void startWebAuthentication(String url, String callbackUrlScheme);
+    private native void startWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession);
 
     // callback
     public static void setAuthResult(String callbackUrl) {

@@ -45,6 +45,10 @@ public class DalvikBrowserService {
     private static final String EXTRA_REDIRECT_SCHEME = "androidx.browser.auth.extra.REDIRECT_SCHEME";
     private static final String EXTRA_HTTPS_REDIRECT_HOST = "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
     private static final String EXTRA_HTTPS_REDIRECT_PATH = "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
+    private static final String EXTRA_ENABLE_EPHEMERAL_BROWSING = "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING";
+    // Custom Tabs service action and capability categories, from androidx.browser
+    private static final String ACTION_CUSTOM_TABS_SERVICE = "android.support.customtabs.action.CustomTabsService";
+    private static final String CATEGORY_EPHEMERAL_BROWSING = "androidx.browser.customtabs.category.EphemeralBrowsing";
 
     private final Activity activity;
     private final boolean debug;
@@ -84,7 +88,7 @@ public class DalvikBrowserService {
         return true;
     }
 
-    private void startWebAuthentication(String url, String callbackUrlScheme) {
+    private void startWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession) {
         if (url == null || url.isEmpty() || callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
             Log.e(TAG, "Invalid web authentication parameters: url and callbackUrlScheme are required");
             nativeWebAuthResult(null);
@@ -93,6 +97,10 @@ public class DalvikBrowserService {
 
         Intent authIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         authIntent.putExtra(EXTRA_LAUNCH_AUTH_TAB, true);
+        if (prefersEphemeralSession) {
+            // best-effort: browsers without ephemeral browsing support ignore this extra
+            authIntent.putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        }
         // null session so browsers without Auth Tab support treat this as a Custom Tab
         Bundle sessionBundle = new Bundle();
         sessionBundle.putBinder(EXTRA_SESSION, null);
@@ -117,6 +125,15 @@ public class DalvikBrowserService {
             Log.e(TAG, "There is no activity to handle the web authentication intent");
             nativeWebAuthResult(null);
             return;
+        }
+
+        if (prefersEphemeralSession) {
+            String browserPackage = authIntent.resolveActivity(activity.getPackageManager()).getPackageName();
+            if (!supportsEphemeralBrowsing(browserPackage)) {
+                Log.w(TAG, "The browser handling the web authentication (" + browserPackage
+                        + ") does not support ephemeral browsing: the session will share the "
+                        + "browser's cookies and browsing data");
+            }
         }
 
         Util.setOnActivityResultHandler(new IntentHandler() {
@@ -188,6 +205,17 @@ public class DalvikBrowserService {
                         || (uri.getPath() != null && uri.getPath().startsWith(path)));
         }
         return callbackUrlScheme.equals(uri.getScheme());
+    }
+
+    /**
+     * Checks whether the given browser package advertises support for ephemeral browsing in its
+     * Custom Tabs service (equivalent to CustomTabsClient.isEphemeralBrowsingSupported).
+     */
+    private boolean supportsEphemeralBrowsing(String browserPackage) {
+        Intent serviceIntent = new Intent(ACTION_CUSTOM_TABS_SERVICE)
+                .setPackage(browserPackage)
+                .addCategory(CATEGORY_EPHEMERAL_BROWSING);
+        return activity.getPackageManager().resolveService(serviceIntent, 0) != null;
     }
 
     private static void clearPendingSession() {

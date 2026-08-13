@@ -54,7 +54,8 @@ public class IOSBrowserService implements BrowserService {
     }
 
     @Override
-    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback) throws IOException {
+    public void launchWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession,
+            Consumer<String> callback) throws IOException {
         if (url == null || url.isEmpty()) {
             throw new IOException("Authentication url cannot be null or empty");
         }
@@ -62,13 +63,13 @@ public class IOSBrowserService implements BrowserService {
             throw new IOException("Callback url scheme cannot be null or empty");
         }
         authCallback = callback;
-        startWebAuthentication(url, callbackUrlScheme);
+        startWebAuthentication(url, callbackUrlScheme, prefersEphemeralSession);
     }
 
     // native
     private native boolean launchURL(String url);
     private static native void initBrowser();
-    private static native void startWebAuthentication(String url, String callbackUrlScheme);
+    private static native void startWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession);
 
     // callback
     public static void setAuthResult(String callbackUrl) {

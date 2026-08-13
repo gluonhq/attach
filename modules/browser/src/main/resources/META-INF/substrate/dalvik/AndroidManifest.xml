@@ -21,6 +21,11 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="smsto" />
         </intent>
+        <!-- required to query the browser's Custom Tabs service capabilities
+             (e.g. ephemeral browsing support) on Android 11+ -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
     </queries>
 </manifest>
 

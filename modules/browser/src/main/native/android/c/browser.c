@@ -46,7 +46,7 @@ static void initializeDalvikHandles() {
     ATTACH_DALVIK();
     jmethodID jBrowserServiceInitMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "<init>", "(Landroid/app/Activity;)V");
     jBrowserServiceLaunchMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "launchURL", "(Ljava/lang/String;)Z");
-    jBrowserServiceStartWebAuthMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "startWebAuthentication", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jBrowserServiceStartWebAuthMethod = (*dalvikEnv)->GetMethodID(dalvikEnv, jBrowserServiceClass, "startWebAuthentication", "(Ljava/lang/String;Ljava/lang/String;Z)V");
 
     jobject jActivity = substrateGetActivity();
     jobject jtmpobj = (*dalvikEnv)->NewObject(dalvikEnv, jBrowserServiceClass, jBrowserServiceInitMethod, jActivity);
@@ -93,17 +93,18 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserSe
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_browser_impl_AndroidBrowserService_startWebAuthentication
-(JNIEnv *env, jclass jClass, jstring jurl, jstring jcallbackUrlScheme)
+(JNIEnv *env, jclass jClass, jstring jurl, jstring jcallbackUrlScheme, jboolean jprefersEphemeralSession)
 {
     const char *urlChars = (*env)->GetStringUTFChars(env, jurl, NULL);
     const char *schemeChars = (*env)->GetStringUTFChars(env, jcallbackUrlScheme, NULL);
     if (isDebugAttach()) {
-        ATTACH_LOG_FINE("Browser start web authentication for url %s, callback scheme %s\n", urlChars, schemeChars);
+        ATTACH_LOG_FINE("Browser start web authentication for url %s, callback scheme %s, ephemeral %d\n",
+                urlChars, schemeChars, jprefersEphemeralSession);
     }
     ATTACH_DALVIK();
     jstring durl = (*dalvikEnv)->NewStringUTF(dalvikEnv, urlChars);
     jstring dscheme = (*dalvikEnv)->NewStringUTF(dalvikEnv, schemeChars);
-    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikBrowserService, jBrowserServiceStartWebAuthMethod, durl, dscheme);
+    (*dalvikEnv)->CallVoidMethod(dalvikEnv, jDalvikBrowserService, jBrowserServiceStartWebAuthMethod, durl, dscheme, jprefersEphemeralSession);
     DETACH_DALVIK();
     // (*env)->ReleaseStringUTFChars(env, jurl, urlChars);
     // (*env)->ReleaseStringUTFChars(env, jcallbackUrlScheme, schemeChars);
