@@ -46,6 +46,9 @@ public class DalvikBrowserService {
     private static final String EXTRA_HTTPS_REDIRECT_HOST = "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
     private static final String EXTRA_HTTPS_REDIRECT_PATH = "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
     private static final String EXTRA_ENABLE_EPHEMERAL_BROWSING = "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING";
+    // Custom Tabs service action and capability categories, from androidx.browser
+    private static final String ACTION_CUSTOM_TABS_SERVICE = "android.support.customtabs.action.CustomTabsService";
+    private static final String CATEGORY_EPHEMERAL_BROWSING = "androidx.browser.customtabs.category.EphemeralBrowsing";
 
     private final Activity activity;
     private final boolean debug;
@@ -124,6 +127,15 @@ public class DalvikBrowserService {
             return;
         }
 
+        if (prefersEphemeralSession) {
+            String browserPackage = authIntent.resolveActivity(activity.getPackageManager()).getPackageName();
+            if (!supportsEphemeralBrowsing(browserPackage)) {
+                Log.w(TAG, "The browser handling the web authentication (" + browserPackage
+                        + ") does not support ephemeral browsing: the session will share the "
+                        + "browser's cookies and browsing data");
+            }
+        }
+
         Util.setOnActivityResultHandler(new IntentHandler() {
             @Override
             public void gotActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -193,6 +205,17 @@ public class DalvikBrowserService {
                         || (uri.getPath() != null && uri.getPath().startsWith(path)));
         }
         return callbackUrlScheme.equals(uri.getScheme());
+    }
+
+    /**
+     * Checks whether the given browser package advertises support for ephemeral browsing in its
+     * Custom Tabs service (equivalent to CustomTabsClient.isEphemeralBrowsingSupported).
+     */
+    private boolean supportsEphemeralBrowsing(String browserPackage) {
+        Intent serviceIntent = new Intent(ACTION_CUSTOM_TABS_SERVICE)
+                .setPackage(browserPackage)
+                .addCategory(CATEGORY_EPHEMERAL_BROWSING);
+        return activity.getPackageManager().resolveService(serviceIntent, 0) != null;
     }
 
     private static void clearPendingSession() {
