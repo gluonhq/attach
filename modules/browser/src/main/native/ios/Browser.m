@@ -128,7 +128,7 @@ JNIEXPORT jboolean JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserServic
 }
 
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserService_startWebAuthentication
-(JNIEnv *env, jclass jClass, jstring jUrl, jstring jScheme)
+(JNIEnv *env, jclass jClass, jstring jUrl, jstring jScheme, jboolean jPrefersEphemeralSession)
 {
     const jchar *charsUrl = (*env)->GetStringChars(env, jUrl, NULL);
     NSString *url = [NSString stringWithCharacters:(UniChar *)charsUrl length:(*env)->GetStringLength(env, jUrl)];
@@ -189,7 +189,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_browser_impl_IOSBrowserService_st
         if (@available(iOS 13.0, *)) {
             _authContextProvider = [[AttachAuthContextProvider alloc] init];
             _authSession.presentationContextProvider = _authContextProvider;
-            _authSession.prefersEphemeralWebBrowserSession = NO;
+            _authSession.prefersEphemeralWebBrowserSession = (jPrefersEphemeralSession == JNI_TRUE);
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{

@@ -67,8 +67,8 @@ public class DesktopBrowserService implements BrowserService {
     }
 
     @Override
-    public void launchWebAuthentication(String url, String callbackUrlScheme, Consumer<String> callback)
-            throws IOException, URISyntaxException {
+    public void launchWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession,
+            Consumer<String> callback) throws IOException, URISyntaxException {
         launchExternalBrowser(url);
     }
 }

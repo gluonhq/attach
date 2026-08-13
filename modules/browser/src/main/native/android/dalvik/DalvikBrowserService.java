@@ -45,6 +45,7 @@ public class DalvikBrowserService {
     private static final String EXTRA_REDIRECT_SCHEME = "androidx.browser.auth.extra.REDIRECT_SCHEME";
     private static final String EXTRA_HTTPS_REDIRECT_HOST = "androidx.browser.auth.extra.HTTPS_REDIRECT_HOST";
     private static final String EXTRA_HTTPS_REDIRECT_PATH = "androidx.browser.auth.extra.HTTPS_REDIRECT_PATH";
+    private static final String EXTRA_ENABLE_EPHEMERAL_BROWSING = "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING";
 
     private final Activity activity;
     private final boolean debug;
@@ -84,7 +85,7 @@ public class DalvikBrowserService {
         return true;
     }
 
-    private void startWebAuthentication(String url, String callbackUrlScheme) {
+    private void startWebAuthentication(String url, String callbackUrlScheme, boolean prefersEphemeralSession) {
         if (url == null || url.isEmpty() || callbackUrlScheme == null || callbackUrlScheme.isEmpty()) {
             Log.e(TAG, "Invalid web authentication parameters: url and callbackUrlScheme are required");
             nativeWebAuthResult(null);
@@ -93,6 +94,10 @@ public class DalvikBrowserService {
 
         Intent authIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         authIntent.putExtra(EXTRA_LAUNCH_AUTH_TAB, true);
+        if (prefersEphemeralSession) {
+            // best-effort: browsers without ephemeral browsing support ignore this extra
+            authIntent.putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        }
         // null session so browsers without Auth Tab support treat this as a Custom Tab
         Bundle sessionBundle = new Bundle();
         sessionBundle.putBinder(EXTRA_SESSION, null);
