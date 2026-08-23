@@ -35,17 +35,24 @@ public class IOSVibrationService implements VibrationService {
     static {
         System.loadLibrary("Vibration");
     }
-    
+
     @Override
     public void vibrate() {
         doVibrate();
     }
-    
+
     @Override
     public void vibrate(long... pattern) {
         // pattern not supported on iOS
-        vibrate(); 
+        vibrate();
+    }
+
+    @Override
+    public void hapticFeedback(HapticFeedbackStyle hapticFeedbackStyle) {
+        doHapticFeedback(hapticFeedbackStyle.getStyle());
     }
 
     private native static void doVibrate();
+
+    private native static void doHapticFeedback(int style);
 }
