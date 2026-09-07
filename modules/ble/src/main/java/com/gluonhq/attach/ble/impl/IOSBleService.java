@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,7 +84,7 @@ public class IOSBleService implements BleService {
     }
     
     private static Consumer<ScanDetection> callback;
-    private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
+    private static final ObservableList<BleDevice> devices = FXCollections.observableList(new CopyOnWriteArrayList<>());
     private static final List<String> profileNames = new LinkedList<>();
     private static boolean debug;
 
@@ -244,9 +245,9 @@ public class IOSBleService implements BleService {
     private static native void doWrite(String name, String uuidService, String uuidChar, byte[] value);
     private static native void doSubscribe(String name, String uuidService, String uuidChar, boolean subscribe);
 
-    private static void gotPeripheral(String name, String uuid) {
+    private static void gotPeripheral(String name, String uuid, byte[] adData) {
         if (debug) {
-            LOG.log(Level.INFO, String.format("IOSBleService got peripheral named %s and uuid: %s", name, uuid));
+            LOG.log(Level.INFO, String.format("IOSBleService got peripheral named %s, uuid: %s and adData: %s", name, uuid, Arrays.toString(adData)));
         }
         if (uuid == null) return;
 
@@ -262,14 +263,18 @@ public class IOSBleService implements BleService {
             String currentName = existingDevice.getName();
             if (name != null && !name.equals(currentName)) {
                 final BleDevice target = existingDevice;
-                Platform.runLater(() -> target.setName(name));
+                Platform.runLater(() -> {
+                    target.setName(name);
+                    target.setAdvertisingData(adData);
+                });
             }
-            return; 
+            return;
         }
 
         BleDevice dev = new BleDevice();
         dev.setName(name);
         dev.setAddress(uuid);
+        dev.setAdvertisingData(adData);
         Platform.runLater(() -> devices.add(dev));
     }
     
