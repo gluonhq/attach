@@ -89,7 +89,13 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_device_impl_IOSDeviceService_init
     jstring argVersion = (*env)->NewStringUTF(env, versionChars);
 
     NSLocale *locale = [NSLocale currentLocale];
-    NSString *localeFormat = [NSString stringWithFormat:@"%@_%@", [locale objectForKey:NSLocaleLanguageCode], [locale objectForKey:NSLocaleCountryCode]];
+    NSString *country = [locale objectForKey:NSLocaleCountryCode];
+    // currentLocale's language is limited to the app's supported language or CFBundleLocalizations if set, nothing to
+    // do with the device's language, which should be picked from the first preferredLanguage, if set.
+    NSString *preferred = [[NSLocale preferredLanguages] firstObject];
+    NSLocale *langLocale = preferred != nil ? [NSLocale localeWithLocaleIdentifier:preferred] : locale;
+    NSString *language = [langLocale objectForKey:NSLocaleLanguageCode];
+    NSString *localeFormat = [NSString stringWithFormat:@"%@_%@", language, country];
     const char *localeChars = [localeFormat UTF8String];
     jstring argLocale = (*env)->NewStringUTF(env, localeChars);
 
