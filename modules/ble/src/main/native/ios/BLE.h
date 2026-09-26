@@ -57,7 +57,7 @@
 
 void setDetection(CLBeacon *foundBeacon);
 
-void discoveredPeripheral(CBPeripheral *peripheral);
+void discoveredPeripheral(CBPeripheral *peripheral, NSData *adData);
 void stateChanged(CBPeripheral *peripheral);
 void discoveredProfile(CBPeripheral *peripheral, CBService *service);
 void removeProfile(CBPeripheral *peripheral, CBService *service);

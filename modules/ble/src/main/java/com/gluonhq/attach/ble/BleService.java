@@ -30,6 +30,8 @@ package com.gluonhq.attach.ble;
 import com.gluonhq.attach.util.Services;
 import javafx.collections.ObservableList;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
