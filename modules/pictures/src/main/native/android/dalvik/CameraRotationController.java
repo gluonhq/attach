@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.hardware.display.DisplayManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 
@@ -38,8 +39,15 @@ import androidx.camera.view.PreviewView;
 
 /**
  * Tracks display and sensor rotation changes for the camera overlay.
- * It deals with orientation events, maps them to Surface rotations,
- * and reports stable rotation updates back to the controller.
+ *
+ * Two independent sources are reported to the listener:
+ * <ul>
+ *   <li>the display rotation, which the {@code PreviewView} follows by itself, and which
+ *   serves as fallback for the {@code ImageCapture} target rotation;</li>
+ *   <li>the physical device orientation from the sensors, which must drive the
+ *   {@code ImageCapture} target rotation so that captured photos are upright even when
+ *   the display does not (or can not) rotate.</li>
+ * </ul>
  */
 final class CameraRotationController {
 
@@ -48,11 +56,21 @@ final class CameraRotationController {
     }
 
     interface Listener {
-        void onDisplayRotationCommitted();
-        void onStableOrientationChanged(int targetRotation);
+        /**
+         * The display hosting the preview has a new rotation.
+         * @param displayRotation one of the {@link Surface} ROTATION_ constants
+         */
+        void onDisplayRotationChanged(int displayRotation);
+
+        /**
+         * The physical device orientation has settled on a new rotation.
+         * @param targetRotation one of the {@link Surface} ROTATION_ constants
+         */
+        void onDeviceOrientationChanged(int targetRotation);
     }
 
     private static final long ORIENTATION_DEBOUNCE_MS = 150;
+    private static final int ROTATION_UNKNOWN = -1;
 
     private final Activity activity;
     private final DisplayManager displayManager;
@@ -65,6 +83,11 @@ final class CameraRotationController {
     private OrientationEventListener orientationListener;
     private boolean orientationListenerEnabled;
     private Runnable pendingOrientationUpdate;
+    private int pendingDeviceRotation = ROTATION_UNKNOWN;
+    // Last rotation delivered to the listener (debounced).
+    private int lastDeviceRotation = ROTATION_UNKNOWN;
+    // Rotation of the most recent sensor reading (not debounced).
+    private int latestDeviceRotation = ROTATION_UNKNOWN;
 
     private final DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
         @Override
@@ -79,13 +102,9 @@ final class CameraRotationController {
 
         @Override
         public void onDisplayChanged(int displayId) {
-            PreviewView previewView = previewViewProvider.getPreviewView();
-            if (!started || previewView == null || previewView.getDisplay() == null) {
-                return;
-            }
-            if (previewView.getDisplay().getDisplayId() == displayId) {
-                cancelPendingOrientationUpdate();
-                listener.onDisplayRotationCommitted();
+            Display display = getPreviewDisplay();
+            if (display != null && display.getDisplayId() == displayId) {
+                notifyDisplayRotation();
             }
         }
     };
@@ -102,6 +121,8 @@ final class CameraRotationController {
 
     void start() {
         started = true;
+        lastDeviceRotation = ROTATION_UNKNOWN;
+        latestDeviceRotation = ROTATION_UNKNOWN;
         registerDisplayListener();
         registerOrientationListener();
     }
@@ -112,19 +133,44 @@ final class CameraRotationController {
         unregisterOrientationListener();
     }
 
-    int getCurrentTargetRotation() {
+    /**
+     * @return the current rotation of the display hosting the preview, or
+     * {@link Surface#ROTATION_0} if the preview is not attached to a display yet
+     */
+    int getDisplayRotation() {
+        Display display = getPreviewDisplay();
+        return display != null ? display.getRotation() : Surface.ROTATION_0;
+    }
+
+    /**
+     * @return the rotation matching the most recent sensor reading, without debouncing,
+     * or {@code -1} if the sensors haven't reported yet. Use it when the exact current
+     * orientation matters, such as right before a capture.
+     */
+    int getLatestDeviceRotation() {
+        return latestDeviceRotation;
+    }
+
+    private Display getPreviewDisplay() {
         PreviewView previewView = previewViewProvider.getPreviewView();
-        if (previewView != null && previewView.getDisplay() != null) {
-            return previewView.getDisplay().getRotation();
+        return previewView != null ? previewView.getDisplay() : null;
+    }
+
+    private void notifyDisplayRotation() {
+        if (!started) {
+            return;
         }
-        return Surface.ROTATION_0;
+        Display display = getPreviewDisplay();
+        if (display != null) {
+            listener.onDisplayRotationChanged(display.getRotation());
+        }
     }
 
     private void registerDisplayListener() {
         if (displayListenerRegistered || displayManager == null) {
             return;
         }
-        displayManager.registerDisplayListener(displayListener, null);
+        displayManager.registerDisplayListener(displayListener, orientationHandler);
         displayListenerRegistered = true;
     }
 
@@ -148,13 +194,28 @@ final class CameraRotationController {
                         return;
                     }
                     final int targetRotation = mapOrientationToTargetRotation(orientation);
+                    latestDeviceRotation = targetRotation;
+                    if (targetRotation == lastDeviceRotation) {
+                        // Back in (or still in) the delivered quadrant: nothing to report.
+                        cancelPendingOrientationUpdate();
+                        return;
+                    }
+                    if (pendingOrientationUpdate != null && pendingDeviceRotation == targetRotation) {
+                        // An update for this quadrant is already scheduled. The sensor jitters
+                        // by a degree or more between readings on a hand-held device, so the
+                        // timer must not be reset on every reading or it may never fire.
+                        return;
+                    }
                     cancelPendingOrientationUpdate();
+                    pendingDeviceRotation = targetRotation;
                     pendingOrientationUpdate = new Runnable() {
                         @Override
                         public void run() {
                             pendingOrientationUpdate = null;
+                            pendingDeviceRotation = ROTATION_UNKNOWN;
                             if (started) {
-                                listener.onStableOrientationChanged(targetRotation);
+                                lastDeviceRotation = targetRotation;
+                                listener.onDeviceOrientationChanged(targetRotation);
                             }
                         }
                     };
@@ -181,6 +242,7 @@ final class CameraRotationController {
             orientationHandler.removeCallbacks(pendingOrientationUpdate);
             pendingOrientationUpdate = null;
         }
+        pendingDeviceRotation = ROTATION_UNKNOWN;
     }
 
     private int mapOrientationToTargetRotation(int orientation) {
@@ -195,4 +257,3 @@ final class CameraRotationController {
         }
     }
 }
-
