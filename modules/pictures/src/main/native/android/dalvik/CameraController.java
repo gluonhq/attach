@@ -28,6 +28,7 @@
 package com.gluonhq.helloandroid;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.hardware.display.DisplayManager;
 import android.util.Log;
 import android.view.ScaleGestureDetector;
@@ -37,13 +38,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.camera.camera2.Camera2Config;
-import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.core.ZoomState;
+import androidx.camera.core.resolutionselector.AspectRatioStrategy;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -69,6 +71,7 @@ final class CameraController {
 
     private static final int LENS_BACK = 0;
     private static final int LENS_FRONT = 1;
+    private static final int ROTATION_UNKNOWN = -1;
     private final Activity activity;
     private final String tag;
     private final boolean debug;
@@ -86,9 +89,16 @@ final class CameraController {
 
     private boolean cameraVisible;
     private int currentLensFacing = LENS_BACK;
+    private boolean orientationLocked;
+    private int previousRequestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 
     private Preview previewUseCase;
-    private int lastTargetRotation = Surface.ROTATION_0;
+    // Rotation of the display hosting the preview: fallback for the ImageCapture target
+    // rotation until the sensors report the device orientation.
+    private int displayRotation = Surface.ROTATION_0;
+    // Physical device orientation reported by the sensors: drives the ImageCapture target
+    // rotation, so photos are upright even when the display does not rotate.
+    private int deviceRotation = ROTATION_UNKNOWN;
 
     CameraController(Activity activity, String tag, boolean debug, Listener listener) {
         this.activity = activity;
@@ -113,16 +123,16 @@ final class CameraController {
                 },
                 new CameraRotationController.Listener() {
                     @Override
-                    public void onDisplayRotationCommitted() {
+                    public void onDisplayRotationChanged(int rotation) {
                         if (cameraVisible) {
-                            rebindForRotation();
+                            updateDisplayRotation(rotation);
                         }
                     }
 
                     @Override
-                    public void onStableOrientationChanged(int targetRotation) {
+                    public void onDeviceOrientationChanged(int rotation) {
                         if (cameraVisible) {
-                            updateTargetRotation(targetRotation, false);
+                            updateDeviceRotation(rotation);
                         }
                     }
                 });
@@ -132,7 +142,6 @@ final class CameraController {
                 closeCamera(true);
             }
         });
-        this.lastTargetRotation = resolveTargetRotation();
     }
 
     boolean start(final boolean savePhoto, final File targetFile) {
@@ -147,6 +156,7 @@ final class CameraController {
                         return;
                     }
                     ensureZoomGestureDetector();
+                    lockOrientation();
                     overlayView.attachTo(viewGroup);
                     rotationController.start();
                     backHandler.attach(overlayView.getRoot());
@@ -245,19 +255,21 @@ final class CameraController {
     }
 
     private void bindCameraUseCases() {
-        int targetRotation = resolveTargetRotation();
+        displayRotation = rotationController.getDisplayRotation();
+        // No target rotation on the Preview on purpose
+        ResolutionSelector resolutionSelector = new ResolutionSelector.Builder()
+                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+                .build();
         previewUseCase = new Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(targetRotation)
+                .setResolutionSelector(resolutionSelector)
                 .build();
         previewUseCase.setSurfaceProvider(overlayView.getPreviewView().getSurfaceProvider());
         imageCapture = new ImageCapture.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .setTargetRotation(targetRotation)
+                .setResolutionSelector(resolutionSelector)
+                .setTargetRotation(getCaptureRotation())
                 .build();
         cameraProvider.unbindAll();
         boundCamera = cameraProvider.bindToLifecycle(cameraLifecycleOwner, getCurrentSelector(), previewUseCase, imageCapture);
-        lastTargetRotation = targetRotation;
         if (debug) {
             String lens = currentLensFacing == LENS_FRONT ? "front" : "back";
             Log.v(tag, "Camera bound to " + lens + " lens");
@@ -293,6 +305,13 @@ final class CameraController {
         if (imageCapture == null) {
             Log.e(tag, "Camera imageCapture is null");
             return;
+        }
+
+        // Use the orientation the device has right now, not the debounced one: the photo
+        // must match how the device is held at the moment of capture.
+        int latestRotation = rotationController.getLatestDeviceRotation();
+        if (latestRotation != ROTATION_UNKNOWN) {
+            updateDeviceRotation(latestRotation);
         }
 
         ImageCapture.OutputFileOptions opts = new ImageCapture.OutputFileOptions.Builder(targetFile).build();
@@ -338,9 +357,11 @@ final class CameraController {
                 }
                 overlayView.detachFrom(viewGroup);
                 overlayView.onClosed();
+                unlockOrientation();
                 boundCamera = null;
                 previewUseCase = null;
                 imageCapture = null;
+                deviceRotation = ROTATION_UNKNOWN;
                 cameraVisible = false;
                 if (notifyCancel) {
                     listener.onCancelled();
@@ -349,49 +370,74 @@ final class CameraController {
         });
     }
 
-    private int resolveTargetRotation() {
-        lastTargetRotation = rotationController.getCurrentTargetRotation();
-        return lastTargetRotation;
-    }
-
-    private void rebindForRotation() {
-        if (cameraProvider == null || cameraLifecycleOwner == null) {
+    /**
+     * Locks the activity to its current orientation while the camera overlay is visible,
+     * so the preview keeps following the world seamlessly, and the sensor-driven ImageCapture
+     * target rotation keeps the captured photos upright.
+     */
+    private void lockOrientation() {
+        if (orientationLocked) {
             return;
         }
-        int newRotation = resolveTargetRotation();
-        if (newRotation == lastTargetRotation) {
-            return;
-        }
-        // No cover for rotation rebinds: in COMPATIBLE (TextureView) mode the surface is
-        // NOT destroyed on unbind, so the TextureView freezes on the last frame until the
-        // new stream arrives.  Showing a cover would add an unnecessary ~400 ms black delay.
         try {
-            bindCameraUseCases();
+            previousRequestedOrientation = activity.getRequestedOrientation();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            orientationLocked = true;
         } catch (Exception e) {
-            Log.w(tag, "Rebind after display rotation failed: " + e.getMessage());
+            Log.w(tag, "Camera orientation lock failed: " + e.getMessage());
         }
     }
 
-    private void updateTargetRotation(int targetRotation, boolean rebind) {
-        if (targetRotation == lastTargetRotation) {
+    private void unlockOrientation() {
+        if (!orientationLocked) {
             return;
         }
-        lastTargetRotation = targetRotation;
-        if (previewUseCase != null) {
-            previewUseCase.setTargetRotation(targetRotation);
-        }
-        if (imageCapture != null) {
-            imageCapture.setTargetRotation(targetRotation);
-        }
-        if (rebind && cameraProvider != null && cameraLifecycleOwner != null) {
-            try {
-                bindCameraUseCases();
-            } catch (Exception e) {
-                Log.w(tag, "Rebind after rotation failed: " + e.getMessage());
-            }
+        orientationLocked = false;
+        try {
+            activity.setRequestedOrientation(previousRequestedOrientation);
+        } catch (Exception e) {
+            Log.w(tag, "Camera orientation unlock failed: " + e.getMessage());
         }
     }
 
+    private int getCaptureRotation() {
+        return deviceRotation != ROTATION_UNKNOWN ? deviceRotation : displayRotation;
+    }
+
+    /**
+     * Tracks the display rotation. The preview follows it on its own (see
+     * {@link #bindCameraUseCases()}); here it only serves as the ImageCapture target
+     * rotation until the sensors report the physical device orientation.
+     */
+    private void updateDisplayRotation(int rotation) {
+        if (rotation == displayRotation) {
+            return;
+        }
+        displayRotation = rotation;
+        if (imageCapture != null && deviceRotation == ROTATION_UNKNOWN) {
+            imageCapture.setTargetRotation(rotation);
+        }
+        if (debug) {
+            Log.v(tag, "Camera display rotation changed to " + rotation);
+        }
+    }
+
+    /**
+     * Keeps the ImageCapture target rotation in sync with the physical device orientation,
+     * so captured photos are upright regardless of whether the display rotated.
+     */
+    private void updateDeviceRotation(int rotation) {
+        if (rotation == deviceRotation) {
+            return;
+        }
+        deviceRotation = rotation;
+        if (imageCapture != null) {
+            imageCapture.setTargetRotation(rotation);
+        }
+        if (debug) {
+            Log.v(tag, "Camera device orientation changed to " + rotation);
+        }
+    }
 
     private boolean applyPinchZoom(float scaleFactor) {
         if (boundCamera == null) {
