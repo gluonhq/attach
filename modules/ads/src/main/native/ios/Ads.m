@@ -1,4 +1,4 @@
-#import "Ads.h"
+#include "Ads.h"
 
 JNIEnv *env;
 
@@ -25,8 +25,6 @@ AdsService *adsService; // singleton instance of the native AdsService
 NSMutableDictionary *adRegistry;
 NSMutableDictionary *bannerContainers;
 
-@implementation AdsService
-
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_initAds
 (JNIEnv *env, jclass jClass)
 {
@@ -34,12 +32,12 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_initAds
     if (!adsInitialized) {
         adsInitialized = true;
 
-        jadsServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ads/impl/IOSAdsService"));
+        jadsServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ads/impl/DefaultAdsService"));
         jadsService_invokeCallback = (*env)->GetStaticMethodID(env, jadsServiceClass, "invokeCallback", "(JLjava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V");
 
         adsService = [[AdsService alloc] init];
-        adRegistry = [NSMutableDictionary dictionary];
-        bannerContainers = [NSMutableDictionary dictionary];
+        adRegistry = [[NSMutableDictionary alloc] init];
+        bannerContainers = [[NSMutableDictionary alloc] init];
     }
 }
 
@@ -52,27 +50,33 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeInit
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeSetRequestConfiguration
 (JNIEnv *env, jclass jClass, jstring jageRestrictedTreatment, jstring jmaxAdContentRating, jobjectArray jtestDeviceIds)
 {
-    const char *ageRestrictedTreatmentChars = (*env)->GetStringUTFChars(env, jageRestrictedTreatment, NULL);
+    const jchar *ageRestrictedTreatmentChars = (*env)->GetStringChars(env, jageRestrictedTreatment, NULL);
     NSString *ageRestrictedTreatment = [NSString stringWithCharacters:(UniChar *)ageRestrictedTreatmentChars length:(*env)->GetStringLength(env, jageRestrictedTreatment)];
-    (*env)->ReleaseStringUTFChars(env, jageRestrictedTreatment, ageRestrictedTreatmentChars);
+    (*env)->ReleaseStringChars(env, jageRestrictedTreatment, ageRestrictedTreatmentChars);
 
-    const char *maxAdContentRatingChars = (*env)->GetStringUTFChars(env, jmaxAdContentRating, NULL);
+    const jchar *maxAdContentRatingChars = (*env)->GetStringChars(env, jmaxAdContentRating, NULL);
     NSString *maxAdContentRating = [NSString stringWithCharacters:(UniChar *)maxAdContentRatingChars length:(*env)->GetStringLength(env, jmaxAdContentRating)];
-    (*env)->ReleaseStringUTFChars(env, jmaxAdContentRating, maxAdContentRatingChars);
+    (*env)->ReleaseStringChars(env, jmaxAdContentRating, maxAdContentRatingChars);
 
     int count = (*env)->GetArrayLength(env, jtestDeviceIds);
     NSMutableArray<NSString*> *testDeviceIds = [NSMutableArray arrayWithCapacity:count];
 
     for (jsize i = 0; i < count; i++) {
         jstring jtestDeviceId = (jstring)(*env)->GetObjectArrayElement(env, jtestDeviceIds, i);
-        const char *testDeviceIdString = (*env)->GetStringUTFChars(env, jtestDeviceId, NULL);
+        const jchar *testDeviceIdString = (*env)->GetStringChars(env, jtestDeviceId, NULL);
         NSString *testDeviceId = [NSString stringWithCharacters:(UniChar *)testDeviceIdString length:(*env)->GetStringLength(env, jtestDeviceId)];
-        (*env)->ReleaseStringUTFChars(env, jtestDeviceId, testDeviceIdString);
+        (*env)->ReleaseStringChars(env, jtestDeviceId, testDeviceIdString);
 
         [testDeviceIds addObject:testDeviceId];
     }
 
     [adsService setRequestConfiguration:ageRestrictedTreatment maxAdContentRating:maxAdContentRating testDeviceIds:testDeviceIds];
+}
+
+JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRemoveAd
+(JNIEnv *env, jclass jClass, jlong adId)
+{
+    [adsService removeAd:adId];
 }
 
 // banner
@@ -104,9 +108,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBann
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBannerAdSetAdLayout
 (JNIEnv *env, jclass jClass, long adId, jstring jlayout)
 {
-    const char *layoutChars = (*env)->GetStringUTFChars(env, jlayout, NULL);
+    const jchar *layoutChars = (*env)->GetStringChars(env, jlayout, NULL);
     NSString *layout = [NSString stringWithCharacters:(UniChar *)layoutChars length:(*env)->GetStringLength(env, jlayout)];
-    (*env)->ReleaseStringUTFChars(env, jlayout, layoutChars);
+    (*env)->ReleaseStringChars(env, jlayout, layoutChars);
 
     [adsService bannerAdSetAdLayout:adId layout:layout];
 }
@@ -114,9 +118,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBann
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBannerAdSetAdSize
 (JNIEnv *env, jclass jClass, long adId, jstring jsize)
 {
-    const char *sizeChars = (*env)->GetStringUTFChars(env, jsize, NULL);
+    const jchar *sizeChars = (*env)->GetStringChars(env, jsize, NULL);
     NSString *size = [NSString stringWithCharacters:(UniChar *)sizeChars length:(*env)->GetStringLength(env, jsize)];
-    (*env)->ReleaseStringUTFChars(env, jsize, sizeChars);
+    (*env)->ReleaseStringChars(env, jsize, sizeChars);
 
     [adsService bannerAdSetAdSize:adId size:size];
 }
@@ -124,9 +128,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBann
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBannerAdSetAdUnitId
 (JNIEnv *env, jclass jClass, long adId, jstring jadUnitId)
 {
-    const char *adUnitIdChars = (*env)->GetStringUTFChars(env, jadUnitId, NULL);
+    AttachLog(@"bannerAdSetAdUnitIdNative: %i", adId);
+
+    const jchar *adUnitIdChars = (*env)->GetStringChars(env, jadUnitId, NULL);
     NSString *adUnitId = [NSString stringWithCharacters:(UniChar *)adUnitIdChars length:(*env)->GetStringLength(env, jadUnitId)];
-    (*env)->ReleaseStringUTFChars(env, jadUnitId, adUnitIdChars);
+    (*env)->ReleaseStringChars(env, jadUnitId, adUnitIdChars);
 
     [adsService bannerAdSetAdUnitId:adId adUnitId:adUnitId];
 }
@@ -136,9 +142,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeBann
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeInterstitialAdLoad
 (JNIEnv *env, jclass jClass, long adId, jstring jadUnitId)
 {
-    const char *adUnitIdChars = (*env)->GetStringUTFChars(env, jadUnitId, NULL);
+    const jchar *adUnitIdChars = (*env)->GetStringChars(env, jadUnitId, NULL);
     NSString *adUnitId = [NSString stringWithCharacters:(UniChar *)adUnitIdChars length:(*env)->GetStringLength(env, jadUnitId)];
-    (*env)->ReleaseStringUTFChars(env, jadUnitId, adUnitIdChars);
+    (*env)->ReleaseStringChars(env, jadUnitId, adUnitIdChars);
 
     [adsService interstitialAdLoad:adId adUnitId:adUnitId];
 }
@@ -154,9 +160,9 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeInte
 JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewardedAdLoad
 (JNIEnv *env, jclass jClass, long adId, jstring jadUnitId)
 {
-    const char *adUnitIdChars = (*env)->GetStringUTFChars(env, jadUnitId, NULL);
+    const jchar *adUnitIdChars = (*env)->GetStringChars(env, jadUnitId, NULL);
     NSString *adUnitId = [NSString stringWithCharacters:(UniChar *)adUnitIdChars length:(*env)->GetStringLength(env, jadUnitId)];
-    (*env)->ReleaseStringUTFChars(env, jadUnitId, adUnitIdChars);
+    (*env)->ReleaseStringChars(env, jadUnitId, adUnitIdChars);
 
     [adsService rewardedAdLoad:adId adUnitId:adUnitId];
 }
@@ -169,13 +175,20 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 
 // from native to Java
 
+@implementation AdsService
+
 - (void) initialize {
+    AttachLog(@"Initializing ads service...");
+
     [[GADMobileAds sharedInstance] startWithCompletionHandler:^(GADInitializationStatus * _Nonnull status) {
+        AttachLog(@"Ads service initialized");
         [self invokeCallback:-1 callback:@"" method:@"" params:@[]];
     }];
 }
 
 - (void) setRequestConfiguration:(NSString*)ageRestrictedTreatment maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices {
+    AttachLog(@"setRequestConfiguration");
+
     GADRequestConfiguration *config = GADMobileAds.sharedInstance.requestConfiguration;
 
     if ([ageRestrictedTreatment isEqualToString:@"CHILD"]) {
@@ -190,35 +203,61 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     config.testDeviceIdentifiers = testDevices;
 }
 
+- (void) removeAd:(long)adId {
+    AttachLog(@"removeAd");
+
+    UIView *container = bannerContainers[@(adId)];
+    [container removeFromSuperview];
+
+    [bannerContainers removeObjectForKey:@(adId)];
+    [adRegistry removeObjectForKey:@(adId)];
+}
+
 - (void) bannerAdNew:(long)adId {
+    AttachLog(@"bannerAdNew");
+
+    UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
     GADBannerView *banner = [[GADBannerView alloc] initWithAdSize:GADAdSizeBanner];
-
     UIView *container = [[UIView alloc] init];
-    [container addSubview:banner];
 
-    banner.rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+    banner.translatesAutoresizingMaskIntoConstraints = NO;
+    banner.rootViewController = root;
+
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    container.hidden = YES;
+
+    [container addSubview:banner];
+    [root.view addSubview:container];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [banner.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
+        [banner.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],
+        [banner.topAnchor constraintEqualToAnchor:container.topAnchor],
+        [banner.bottomAnchor constraintEqualToAnchor:container.bottomAnchor],
+        [container.centerXAnchor constraintEqualToAnchor:root.view.safeAreaLayoutGuide.centerXAnchor]
+    ]];
 
     adRegistry[@(adId)] = banner;
     bannerContainers[@(adId)] = container;
 }
 
 - (void) bannerAdShow:(long)adId {
-    UIView *container = bannerContainers[@(adId)];
-    UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
-    [root.view addSubview:container];
+    AttachLog(@"bannerAdShow");
 
-    CGRect frame = container.frame;
-    frame.origin.y = root.view.frame.size.height - 50;
-    frame.origin.x = (root.view.frame.size.width - 320) / 2;
-    container.frame = frame;
+    UIView *container = bannerContainers[@(adId)];
+    container.hidden = NO;
 }
 
 - (void) bannerAdHide:(long)adId {
+    AttachLog(@"bannerAdHide");
+
     UIView *container = bannerContainers[@(adId)];
-    [container removeFromSuperview];
+    container.hidden = YES;
 }
 
 - (void) bannerAdLoad:(long)adId {
+    AttachLog(@"bannerAdLoad");
+
     GADBannerView *banner = adRegistry[@(adId)];
     GADRequest *request = [GADRequest request];
 
@@ -226,21 +265,21 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 }
 
 - (void) bannerAdSetAdLayout:(long)adId layout:(NSString*)layout {
-    GADBannerView *banner = adRegistry[@(adId)];
+    AttachLog(@"bannerAdSetAdLayout");
+
     UIView *container = bannerContainers[@(adId)];
+    UIView *parent = container.superview;
 
-    banner.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint deactivateConstraints:banner.constraints];
+    NSLayoutConstraint *position = [layout isEqualToString:@"TOP"]
+        ? [container.topAnchor constraintEqualToAnchor:parent.safeAreaLayoutGuide.topAnchor]
+        : [container.bottomAnchor constraintEqualToAnchor:parent.safeAreaLayoutGuide.bottomAnchor];
 
-    [NSLayoutConstraint activateConstraints:@[
-        [banner.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
-        [layout isEqualToString:@"TOP"]
-            ? [banner.topAnchor constraintEqualToAnchor:container.topAnchor]
-            : [banner.bottomAnchor constraintEqualToAnchor:container.bottomAnchor]
-    ]];
+    position.active = YES;
 }
 
 - (void) bannerAdSetAdSize:(long)adId size:(NSString*)size {
+    AttachLog(@"bannerAdSetAdSize");
+
     GADBannerView *banner = adRegistry[@(adId)];
 
     if ([size isEqualToString:@"BANNER"]) {
@@ -263,17 +302,21 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 }
 
 - (void) bannerAdSetAdUnitId:(long)adId adUnitId:(NSString*)unitId {
+    AttachLog(@"bannerAdSetAdUnitId");
+
     GADBannerView *banner = adRegistry[@(adId)];
     banner.adUnitID = unitId;
 }
 
 - (void) interstitialAdLoad:(long)adId adUnitId:(NSString*)unitId {
+    AttachLog(@"interstitialAdLoad");
+
     [GADInterstitialAd loadWithAdUnitID:unitId request:[GADRequest request] completionHandler:^(GADInterstitialAd *ad, NSError *error) {
         if (error) {
-            [self invokeCallback:adId callback:@"InterstitialAd" method:@"onAdFailedToLoad" params:@[]];
+            [self invokeCallback:adId callback:@"InterstitialAdLoadCallback" method:@"onAdFailedToLoad" params:@[]];
         } else {
             adRegistry[@(adId)] = ad;
-            [self invokeCallback:adId callback:@"InterstitialAd" method:@"onAdLoaded" params:@[]];
+            [self invokeCallback:adId callback:@"InterstitialAdLoadCallback" method:@"onAdLoaded" params:@[]];
 
             Delegate *delegate = [[Delegate alloc] init];
             delegate.adId = adId;
@@ -285,6 +328,8 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 }
 
 - (void) interstitialAdShow:(long)adId {
+    AttachLog(@"interstitialAdShow");
+
     GADInterstitialAd *ad = adRegistry[@(adId)];
     UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
 
@@ -292,12 +337,14 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 }
 
 - (void) rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId {
+    AttachLog(@"rewardedAdLoad");
+
     [GADRewardedAd loadWithAdUnitID:unitId request:[GADRequest request] completionHandler:^(GADRewardedAd *ad, NSError *error) {
         if (error) {
-            [self invokeCallback:adId callback:@"RewardedAd" method:@"onAdFailedToLoad" params:@[]];
+            [self invokeCallback:adId callback:@"RewardedAdLoadCallback" method:@"onAdFailedToLoad" params:@[]];
         } else {
             adRegistry[@(adId)] = ad;
-            [self invokeCallback:adId callback:@"RewardedAd" method:@"onAdLoaded" params:@[]];
+            [self invokeCallback:adId callback:@"RewardedAdLoadCallback" method:@"onAdLoaded" params:@[]];
 
             Delegate *delegate = [[Delegate alloc] init];
             delegate.adId = adId;
@@ -309,16 +356,20 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 }
 
 - (void) rewardedAdShow:(long)adId {
+    AttachLog(@"rewardedAdShow");
+
     GADRewardedAd *ad = adRegistry[@(adId)];
     UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
 
     [ad presentFromRootViewController:root userDidEarnRewardHandler:^{
         GADAdReward *reward = ad.adReward;
-        [self invokeCallback:adId callback:@"Rewarded" method:@"onUserEarnedReward" params:@[reward.type, [NSString stringWithFormat:@"%ld", (long)reward.amount]]];
+        [self invokeCallback:adId callback:@"Rewarded" method:@"onUserEarnedReward" params:@[reward.type, [NSString stringWithFormat:@"%ld", (long)reward.amount.integerValue]]];
     }];
 }
 
 - (void) invokeCallback:(long)adId callback:(NSString*)callback method:(NSString*)method params:(NSArray<NSString*>*)params {
+    AttachLog(@"invokeCallback");
+
     const char *callbackChars = [callback UTF8String];
     jstring jcallback = (*env)->NewStringUTF(env, callbackChars);
 
@@ -333,7 +384,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
         (*env)->SetObjectArrayElement(env, jparams, i, (*env)->NewStringUTF(env, paramChars));
     }
 
-    (*env)->CallStaticVoidMethod(env, jadsServiceClass, jadsService_invokeCallback, adId, jcallback, jmethod);
+    (*env)->CallStaticVoidMethod(env, jadsServiceClass, jadsService_invokeCallback, adId, jcallback, jmethod, jparams);
 
     (*env)->DeleteLocalRef(env, jcallback);
     (*env)->DeleteLocalRef(env, jmethod);

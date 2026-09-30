@@ -1,9 +1,23 @@
 package com.gluonhq.attach.ads.impl;
 
+import com.gluonhq.attach.ads.BannerAd;
+import com.gluonhq.attach.ads.InterstitialAd;
+import com.gluonhq.attach.ads.RewardedAd;
+
 public class AndroidAdsService extends DefaultAdsService {
 
     static {
         System.loadLibrary("ads");
+    }
+
+    @Override
+    protected String getAdUnitId(String adUnitId) {
+        switch (adUnitId) {
+            case BannerAd.TEST_AD_UNIT_ID: return "ca-app-pub-3940256099942544/6300978111";
+            case InterstitialAd.TEST_AD_UNIT_ID: return "ca-app-pub-3940256099942544/1033173712";
+            case RewardedAd.TEST_AD_UNIT_ID: return "ca-app-pub-3940256099942544/5224354917";
+            default: return adUnitId;
+        }
     }
 
     @Override

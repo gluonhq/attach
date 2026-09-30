@@ -62,7 +62,7 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
         registry.addAd(ad);
         registry.setCallback(ad.getId(), InterstitialAdLoadCallback.class, callback);
 
-        nativeInterstitialAdLoad(ad.getId(), adUnitId);
+        nativeInterstitialAdLoad(ad.getId(), getAdUnitId(adUnitId));
     }
 
     @Override
@@ -72,7 +72,7 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
         registry.addAd(ad);
         registry.setCallback(ad.getId(), RewardedAdLoadCallback.class, callback);
 
-        nativeRewardedAdLoad(ad.getId(), adUnitId);
+        nativeRewardedAdLoad(ad.getId(), getAdUnitId(adUnitId));
     }
 
     @Override
@@ -110,7 +110,7 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
 
     @Override
     public void setAdUnitId(BannerAd ad, String adUnitId) {
-        nativeBannerAdSetAdUnitId(ad.getId(), adUnitId);
+        nativeBannerAdSetAdUnitId(ad.getId(), getAdUnitId(adUnitId));
     }
 
     @Override
@@ -138,6 +138,8 @@ public abstract class DefaultAdsService implements AdsService, BannerAd.Service,
     public void setFullScreenContentCallback(RewardedAd ad, FullScreenContentCallback callback) {
         registry.setCallback(ad.getId(), FullScreenContentCallback.class, callback);
     }
+
+    protected abstract String getAdUnitId(String adUnitId);
 
     private static void invokeCallback(long id, String callback, String method, String[] params) {
         if (id == -1) {

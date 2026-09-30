@@ -9,12 +9,7 @@ public class InterstitialAd extends Ad<InterstitialAd.Service> {
     /**
      * The ad unit ID used for testing.
      */
-    public static String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
-
-    /**
-     * The ad unit ID used for video testing.
-     */
-    public static String VIDEO_TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/8691691433";
+    public static final String TEST_AD_UNIT_ID = "test/interstitial";
 
     /**
      * {@inheritDoc}

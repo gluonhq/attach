@@ -8,7 +8,7 @@ public class RewardedAd extends Ad<RewardedAd.Service> {
     /**
      * The ad unit ID used for testing.
      */
-    public static String TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+    public static final String TEST_AD_UNIT_ID = "test/rewarded";
 
     /**
      * {@inheritDoc}

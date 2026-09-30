@@ -36,6 +36,7 @@
 @interface AdsService : NSObject
 
     - (void) initialize;
+    - (void) removeAd:(long)adId;
     - (void) setRequestConfiguration:(NSString*)ageRestrictedTreatment maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices;
 
     // banner
