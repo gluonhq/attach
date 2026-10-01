@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Gluon
+ * Copyright (c) 2020, 2026, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ public class DalvikVideoService implements TextureView.SurfaceTextureListener, M
         viewGroup = (ViewGroup) activity.getWindow().getDecorView();
         debug = Util.isDebug();
 
-        activity.setVolumeControlStream(AudioManager.STREAM_MUSIC‌​);
+        activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
@@ -345,6 +345,15 @@ public class DalvikVideoService implements TextureView.SurfaceTextureListener, M
         this.rightPadding  = rightPadding;
         this.bottomPadding = bottomPadding;
         this.leftPadding = leftPadding;
+
+        if (showing) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    resizeRelocateVideo();
+                }
+            });
+        }
     }
 
     private void setLooping(boolean looping) {
