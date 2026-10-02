@@ -72,6 +72,11 @@ For instance, the Display service for desktop can be added to the project like:
 </configuration>
 ```
 
+## Developer documentation ##
+
+Additional documentation for contributors (e.g. how a service declares extra
+native Android/iOS dependencies) lives in the [docs](docs/README.md) folder.
+
 ## Issues and Contributions ##
 
 Issues can be reported to the [Issue tracker](https://github.com/gluonhq/attach/issues)
