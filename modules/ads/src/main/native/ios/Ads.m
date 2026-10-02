@@ -207,6 +207,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"removeAd");
 
     UIView *container = bannerContainers[@(adId)];
+
+    if (!container) {
+        return;
+    }
+
     [container removeFromSuperview];
 
     [bannerContainers removeObjectForKey:@(adId)];
@@ -245,6 +250,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"bannerAdShow");
 
     UIView *container = bannerContainers[@(adId)];
+
+    if (!container) {
+        return;
+    }
+
     container.hidden = NO;
 }
 
@@ -252,6 +262,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"bannerAdHide");
 
     UIView *container = bannerContainers[@(adId)];
+
+    if (!container) {
+        return;
+    }
+
     container.hidden = YES;
 }
 
@@ -261,6 +276,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     GADBannerView *banner = adRegistry[@(adId)];
     GADRequest *request = [GADRequest request];
 
+    if (!banner) {
+        return;
+    }
+
     [banner loadRequest:request];
 }
 
@@ -268,6 +287,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"bannerAdSetAdLayout");
 
     UIView *container = bannerContainers[@(adId)];
+
+    if (!container) {
+        return;
+    }
+
     UIView *parent = container.superview;
 
     NSLayoutConstraint *position = [layout isEqualToString:@"TOP"]
@@ -281,6 +305,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"bannerAdSetAdSize");
 
     GADBannerView *banner = adRegistry[@(adId)];
+
+    if (!banner) {
+        return;
+    }
 
     if ([size isEqualToString:@"BANNER"]) {
         banner.adSize = GADAdSizeBanner;
@@ -305,6 +333,11 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     AttachLog(@"bannerAdSetAdUnitId");
 
     GADBannerView *banner = adRegistry[@(adId)];
+
+    if (!banner) {
+        return;
+    }
+
     banner.adUnitID = unitId;
 }
 
@@ -333,6 +366,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
     GADInterstitialAd *ad = adRegistry[@(adId)];
     UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
 
+    if (!ad) {
+        return;
+    }
+
     [ad presentFromRootViewController:root];
 }
 
@@ -360,6 +397,10 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ads_impl_IOSAdsService_nativeRewa
 
     GADRewardedAd *ad = adRegistry[@(adId)];
     UIViewController *root = UIApplication.sharedApplication.keyWindow.rootViewController;
+
+    if (!ad) {
+        return;
+    }
 
     [ad presentFromRootViewController:root userDidEarnRewardHandler:^{
         GADAdReward *reward = ad.adReward;
