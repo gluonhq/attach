@@ -50,9 +50,11 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
+import android.util.SparseArray;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.nio.ByteOrder;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -436,19 +438,35 @@ public class DalvikBleService  {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 BluetoothDevice device = result.getDevice();
-                if (devices.values().contains(device)) {
-                    return;
-                }
                 String address = device.getAddress();
                 if (address == null) {
                     return;
                 }
                 String name = getNameForDevice(device);
+                byte[] advertisingData = null;
+                ScanRecord record = result.getScanRecord();
+                if (record != null) {
+                    SparseArray<byte[]> manufacturerData = record.getManufacturerSpecificData();
+                    if (manufacturerData != null && manufacturerData.size() > 0) {
+                        // To be consistent with iOS, we only pass the first manufacturer data field.
+                        // The data from getManufacturerSpecificData(id) does NOT include the company id.
+                        // The data from iOS's CBAdvertisementDataManufacturerDataKey DOES include the company id.
+                        // To make them consistent, we need to prepend the company id to the Android data.
+                        final int manufacturerId = manufacturerData.keyAt(0);
+                        final byte[] data = manufacturerData.valueAt(0);
+
+                        ByteBuffer buffer = ByteBuffer.allocate(2 + data.length);
+                        buffer.order(ByteOrder.LITTLE_ENDIAN);
+                        buffer.putShort((short) manufacturerId);
+                        buffer.put(data);
+                        advertisingData = buffer.array();
+                    }
+                }
                 devices.put(address, device);
                 if (debug) {
-                    Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address);
+                    Log.v(TAG, "BLE discovered device: " + device + " with name: " + name + " and address: " + address + " and adData: " + Arrays.toString(advertisingData));
                 }
-                scanDeviceDetected(name, address);
+                scanDeviceDetected(name, address, advertisingData);
             }
         };
     }
@@ -466,6 +484,6 @@ public class DalvikBleService  {
     }
 
     // native
-    private native void scanDeviceDetected(String name, String address);
+    private native void scanDeviceDetected(String name, String address, byte[] advertisingData);
 
 }

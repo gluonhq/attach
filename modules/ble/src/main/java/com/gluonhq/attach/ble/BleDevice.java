@@ -27,6 +27,7 @@
  */
 package com.gluonhq.attach.ble;
 
+import java.util.Arrays;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -63,10 +64,12 @@ public class BleDevice {
     
     private final ObservableList<BleProfile> profiles;
     private final ObjectProperty<State> state;
+    private final ObjectProperty<byte[]> advertisingData;
 
     public BleDevice() {
         profiles = FXCollections.observableArrayList();
         state = new SimpleObjectProperty<>(State.STATE_UNKNOWN);
+        advertisingData = new SimpleObjectProperty<>();
     }
 
     public String getAddress() {
@@ -91,9 +94,21 @@ public class BleDevice {
     public final State getState() { return state.get(); }
     public final void setState(State value) { state.set(value); }
 
+    public final byte[] getAdvertisingData() {
+        return advertisingData.get();
+    }
+
+    public final void setAdvertisingData(byte[] value) {
+        this.advertisingData.set(value);
+    }
+
+    public final ObjectProperty<byte[]> advertisingDataProperty() {
+        return advertisingData;
+    }
+
     @Override
     public String toString() {
-        return "BleDevice{" + "name=" + name + ", address=" + address + '}';
+        return "BleDevice{" + "name=" + name + ", address=" + address + ", advertisingData=" + Arrays.toString(advertisingData.get()) + '}';
     }
     
 }

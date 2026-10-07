@@ -56,7 +56,6 @@ public class AndroidBleService implements BleService {
 
     private static final Logger LOG = Logger.getLogger(AndroidBleService.class.getName());
     private static final ObservableList<BleDevice> devices = FXCollections.observableArrayList();
-    private static final List<String> deviceNames = new LinkedList<>();
     private static final List<String> profileNames = new LinkedList<>();
     private static final boolean debug = Util.DEBUG;
 
@@ -105,7 +104,6 @@ public class AndroidBleService implements BleService {
     public ObservableList<BleDevice> startScanningDevices() {
         LOG.fine("AndroidBleService will start scanning devices");
         devices.clear();
-        deviceNames.clear();
         startScanningPeripherals();
         return devices;
     }
@@ -157,17 +155,7 @@ public class AndroidBleService implements BleService {
         if (device == null) {
             return false;
         }
-        if (device.getName() == null) {
-            if (debug) {
-                LOG.log(Level.INFO, "AndroidBleService: Device with null name not allowed");
-            }
-            return false;
-        }
-        final boolean check = deviceNames.contains(device.getName());
-        if (debug) {
-            LOG.log(Level.INFO, "AndroidBleService: Device with name " + device.getName() + " in device list: " + check);
-        }
-        return check;
+        return devices.stream().anyMatch(d -> d.getAddress() != null && d.getAddress().equals(device.getAddress()));
     }
 
     // native BLE Beacons
@@ -197,24 +185,35 @@ public class AndroidBleService implements BleService {
     }
 
     // callbacks BLE Devices
-    private static void gotPeripheral(String name, String address) {
-        if ((name != null && deviceNames.contains(name)) ||
-                (name == null && address != null && deviceNames.contains(address))) {
-            return;
-        }
-        if (name != null && address != null && deviceNames.contains(address)) {
-            deviceNames.remove(address);
-            devices.removeIf(d -> address.equals(d.getAddress()));
-        }
+    private static void gotPeripheral(String name, String address, byte[] adData) {
+        if (address == null) return;
 
-        if (debug) {
-            LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s and address: %s", name, address));
+        Optional<BleDevice> existingDevice = devices.stream()
+                .filter(d -> address.equals(d.getAddress()))
+                .findFirst();
+
+        if (existingDevice.isPresent()) {
+            BleDevice device = existingDevice.get();
+            // Update if necessary
+            if ((name != null && !name.equals(device.getName())) || !Arrays.equals(adData, device.getAdvertisingData())) {
+                final BleDevice target = device;
+                Platform.runLater(() -> {
+                    if (name != null && !name.equals(target.getName())) {
+                        target.setName(name);
+                    }
+                    target.setAdvertisingData(adData);
+                });
+            }
+        } else {
+            if (debug) {
+                LOG.log(Level.INFO, String.format("AndroidBleService got peripheral named %s, address: %s and adData: %s", name, address, Arrays.toString(adData)));
+            }
+            BleDevice dev = new BleDevice();
+            dev.setName(name);
+            dev.setAddress(address);
+            dev.setAdvertisingData(adData);
+            Platform.runLater(() -> devices.add(dev));
         }
-        BleDevice dev = new BleDevice();
-        dev.setName(name);
-        dev.setAddress(address);
-        Platform.runLater(() -> devices.add(dev));
-        deviceNames.add(name != null ? name : address);
     }
 
     private static void gotState(String name, String state) {
@@ -222,8 +221,15 @@ public class AndroidBleService implements BleService {
             LOG.log(Level.INFO, String.format("BLE device %s changed state to %s", name, state));
         }
 
-        getDeviceByName(name).ifPresent(device ->
-                Platform.runLater(() -> device.setState(BleDevice.State.fromName(state))));
+        // name can be "N/A (address)"
+        String address = name;
+        if (name != null && name.contains("N/A (") && name.endsWith(")")) {
+            address = name.substring(name.indexOf("(") + 1, name.length() -1);
+        }
+        final String finalAddress = address;
+
+        getDeviceByAddress(finalAddress).ifPresent(device ->
+            Platform.runLater(() -> device.setState(BleDevice.State.fromName(state))));
     }
 
     private static void gotProfile(String name, String uuid, String type) {
@@ -231,7 +237,14 @@ public class AndroidBleService implements BleService {
             LOG.log(Level.INFO, String.format("BLE device has profile: %s with type: %s", uuid, type));
         }
 
-        getDeviceByName(name).ifPresent(device -> {
+        // name can be "N/A (address)"
+        String address = name;
+        if (name != null && name.contains("N/A (") && name.endsWith(")")) {
+            address = name.substring(name.indexOf("(") + 1, name.length() -1);
+        }
+        final String finalAddress = address;
+
+        getDeviceByAddress(finalAddress).ifPresent(device -> {
             if (!profileNames.contains(uuid)) {
                 profileNames.add(uuid);
 
@@ -252,7 +265,14 @@ public class AndroidBleService implements BleService {
             LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with properties: %s", profileUuid, charUuid, properties));
         }
 
-        getDeviceByName(name).ifPresent(device ->
+        // name can be "N/A (address)"
+        String address = name;
+        if (name != null && name.contains("N/A (") && name.endsWith(")")) {
+            address = name.substring(name.indexOf("(") + 1, name.length() -1);
+        }
+        final String finalAddress = address;
+
+        getDeviceByAddress(finalAddress).ifPresent(device ->
                 device.getProfiles().stream()
                         .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
                         .findAny()
@@ -281,7 +301,14 @@ public class AndroidBleService implements BleService {
             LOG.log(Level.INFO, String.format("BLE profile %s has characteristic: %s with descriptor: %s and value %s", profileUuid, charUuid, descUuid, Arrays.toString(value)));
         }
 
-        getDeviceByName(name).ifPresent(device ->
+        // name can be "N/A (address)"
+        String address = name;
+        if (name != null && name.contains("N/A (") && name.endsWith(")")) {
+            address = name.substring(name.indexOf("(") + 1, name.length() -1);
+        }
+        final String finalAddress = address;
+
+        getDeviceByAddress(finalAddress).ifPresent(device ->
                 device.getProfiles().stream()
                         .filter(p -> p.getUuid().toString().equalsIgnoreCase(profileUuid))
                         .findAny()
@@ -310,7 +337,14 @@ public class AndroidBleService implements BleService {
             LOG.log(Level.INFO, String.format("BLE with characteristic: %s has value %s", charUuid, Arrays.toString(value)));
         }
 
-        getDeviceByName(name).ifPresent(device ->
+        // name can be "N/A (address)"
+        String address = name;
+        if (name != null && name.contains("N/A (") && name.endsWith(")")) {
+            address = name.substring(name.indexOf("(") + 1, name.length() -1);
+        }
+        final String finalAddress = address;
+
+        getDeviceByAddress(finalAddress).ifPresent(device ->
                 device.getProfiles().stream()
                         .flatMap(d -> d.getCharacteristics().stream())
                         .filter(c -> c.getUuid().toString().equalsIgnoreCase(charUuid))
@@ -323,13 +357,13 @@ public class AndroidBleService implements BleService {
                         }));
     }
 
-    private static Optional<BleDevice> getDeviceByName(String name) {
-        if (name == null || !deviceNames.contains(name)) {
+    private static Optional<BleDevice> getDeviceByAddress(String address) {
+        if (address == null) {
             return Optional.empty();
         }
 
         for (BleDevice device : devices) {
-            if (name.equals(device.getName())) {
+            if (address.equals(device.getAddress())) {
                 return Optional.of(device);
             }
         }

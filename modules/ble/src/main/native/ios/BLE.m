@@ -43,7 +43,7 @@ JNI_OnLoad_Ble(JavaVM *vm, void *reserved)
     return JNI_VERSION_1_4;
 #endif
 }
-
+ 
 static int BleInited = 0;
 
 // Ble
@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_com_gluonhq_attach_ble_impl_IOSBleService_initBle
 
     mat_jBleServiceClass = (*env)->NewGlobalRef(env, (*env)->FindClass(env, "com/gluonhq/attach/ble/impl/IOSBleService"));
     mat_jBleService_setDetection = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "setDetection", "(Ljava/lang/String;IIII)V");
-    mat_jBleService_gotPeripheral = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;)V");
+    mat_jBleService_gotPeripheral = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "gotPeripheral", "(Ljava/lang/String;Ljava/lang/String;[B)V");
     mat_jBleService_gotState = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "gotState", "(Ljava/lang/String;Ljava/lang/String;)V");
     mat_jBleService_gotProfile = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "gotProfile", "(Ljava/lang/String;Ljava/lang/String;Z)V");
     mat_jBleService_removeProfile = (*env)->GetStaticMethodID(env, mat_jBleServiceClass, "removeProfile", "(Ljava/lang/String;Ljava/lang/String;)V");
@@ -279,18 +279,30 @@ void setDetection(CLBeacon *foundBeacon) {
     }
 }
 
-void discoveredPeripheral(CBPeripheral *peripheral) {
+void discoveredPeripheral(CBPeripheral *peripheral, NSData *adData) {
     NSString *pname = peripheral.name;
+    if (!pname) {
+        pname = @"";
+    }
     const char *pnamechars = [pname UTF8String];
     jstring jpname = (*env)->NewStringUTF(env,pnamechars);
 
     NSString *puuid = [NSString stringWithFormat:@"%@", [[peripheral identifier] UUIDString]];
     const char *puuidchars = [puuid UTF8String];
     jstring jpuuid = (*env)->NewStringUTF(env,puuidchars);
+    
+    jbyteArray jadData = NULL;
+    if (adData != nil && [adData length] > 0) {
+        jadData = (*env)->NewByteArray(env, [adData length]);
+        (*env)->SetByteArrayRegion(env, jadData, 0, [adData length], (jbyte*)[adData bytes]);
+    }
 
-    (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotPeripheral, jpname, jpuuid);
+    (*env)->CallStaticVoidMethod(env, mat_jBleServiceClass, mat_jBleService_gotPeripheral, jpname, jpuuid, jadData);
     (*env)->DeleteLocalRef(env, jpname);
     (*env)->DeleteLocalRef(env, jpuuid);
+    if (jadData != NULL) {
+        (*env)->DeleteLocalRef(env, jadData);
+    }
 }
 
 void stateChanged(CBPeripheral *peripheral) {
@@ -756,9 +768,11 @@ NSMutableArray *discoveredDevices;
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral
                     advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
 
-    [self logMessage:@"Discovered %@", peripheral];
+    [self logMessage:@"Discovered %@ with advertisement data %@", peripheral, advertisementData];
+    NSData *manufacturerData = [advertisementData objectForKey:CBAdvertisementDataManufacturerDataKey];
+
     [discoveredDevices addObject:peripheral];
-    discoveredPeripheral(peripheral);
+    discoveredPeripheral(peripheral, manufacturerData);
 }
 
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral
@@ -770,7 +784,7 @@ NSMutableArray *discoveredDevices;
     } else {
         [discoveredDevices replaceObjectAtIndex:index withObject:peripheral];
     }
-    discoveredPeripheral(peripheral);
+    discoveredPeripheral(peripheral, nil);
 }
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
