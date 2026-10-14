@@ -35,9 +35,12 @@
 
 @interface AdsService : NSObject
 
+    // init and config
     - (void) initialize;
-    - (void) removeAd:(long)adId;
     - (void) setRequestConfiguration:(NSString*)ageRestrictedTreatment maxAdContentRating:(NSString*)rating testDeviceIds:(NSArray<NSString*>*)testDevices;
+
+    // general
+    - (void) removeAd:(long)adId;
 
     // banner
     - (void) bannerAdNew:(long)adId;
@@ -55,6 +58,9 @@
     // rewarded
     - (void) rewardedAdLoad:(long)adId adUnitId:(NSString*)unitId;
     - (void) rewardedAdShow:(long)adId;
+
+    // callback
+    - (void) invokeCallback:(long)adId callback:(NSString*)callback method:(NSString*)method params:(NSArray<NSString*>*)params;
 
 @end
 
