@@ -1,0 +1,26 @@
+# Pinned, reproducible download of the SDK zip:
+sdk-zip https://dl.google.com/googleadmobadssdk/googlemobileadssdkios-13.5.0.zip
+
+# Static xcframeworks shipped inside the zip above:
+embed GoogleMobileAds.xcframework
+embed UserMessagingPlatform.xcframework
+
+# Extra system frameworks required by GoogleMobileAds.framework's module map:
+framework AdSupport
+framework CFNetwork
+framework CoreTelephony
+framework JavaScriptCore
+framework MessageUI
+framework Network
+framework SafariServices
+framework Security
+framework SystemConfiguration
+# Extra system frameworks required:
+framework AppTrackingTransparency
+
+# Only available on iOS 17.4+ SDKs, so declared weak:
+weak-framework MarketplaceKit
+
+# System libraries linked by GoogleMobileAds.framework:
+library z
+library sqlite3
