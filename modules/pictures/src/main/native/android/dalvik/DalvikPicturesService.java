@@ -92,16 +92,25 @@ public class DalvikPicturesService  {
         return cameraController;
     }
 
+    /**
+     * Verifies the runtime permissions needed to take a photo.
+     *
+     * <p>Only {@code CAMERA} is required: the captured photo is written either to the
+     * app cache or, when saved, to the public Pictures folder as a file owned by the
+     * app, which doesn't require any storage permission since Android 10 (API 29).
+     * On older devices, {@code WRITE_EXTERNAL_STORAGE} is still required to write to
+     * the public Pictures folder.</p>
+     *
+     * <p>Selecting a picture from the gallery uses a system picker and doesn't need any
+     * permission, so {@code READ_MEDIA_IMAGES} and {@code READ_MEDIA_VIDEO} are not
+     * requested nor declared, in line with Google Play's photo and video permissions policy.</p>
+     */
     private boolean verifyPermissions() {
         if (!verified) {
-            if (Build.VERSION.SDK_INT >= 33) {
-                verified = Util.verifyPermissions(Manifest.permission.CAMERA,
-                        Manifest.permission.READ_MEDIA_AUDIO,
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO);
+            if (Build.VERSION.SDK_INT >= 29) {
+                verified = Util.verifyPermissions(Manifest.permission.CAMERA);
             } else {
                 verified = Util.verifyPermissions(Manifest.permission.CAMERA,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
         }

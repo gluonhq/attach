@@ -80,11 +80,16 @@ import javafx.scene.image.Image;
  * <p>The following permissions are required:</p>
  * <ul>
  *     <li><code>android.permission.CAMERA</code> — for taking photos with the device camera</li>
- *     <li><code>android.permission.READ_MEDIA_IMAGES</code> — for reading images from the gallery (Android 13+)</li>
- *     <li><code>android.permission.READ_MEDIA_AUDIO</code> — for reading audio files from the gallery (Android 13+)</li>
- *     <li><code>android.permission.READ_MEDIA_VIDEO</code> — for reading video files from the gallery (Android 13+)</li>
- *     <li><code>android.permission.READ_EXTERNAL_STORAGE</code> — for reading images from the gallery (Android 12 and below)</li>
+ *     <li><code>android.permission.WRITE_EXTERNAL_STORAGE</code> — for saving photos to the public Pictures
+ *     folder (Android 9 and below only)</li>
  * </ul>
+ *
+ * <p>Selecting an image from the gallery uses the system picker, which doesn't require any
+ * permission. In line with
+ * <a href="https://support.google.com/googleplay/android-developer/answer/15800983">Google Play's
+ * photo and video permissions policy</a>, <code>READ_MEDIA_IMAGES</code>, <code>READ_MEDIA_VIDEO</code>
+ * and <code>READ_EXTERNAL_STORAGE</code> are neither requested nor declared, and are not needed in
+ * the application's AndroidManifest.xml.</p>
  *
  *
  * <p><b>iOS Configuration</b></p>
