@@ -49,11 +49,13 @@ import java.util.logging.Logger;
  * <p>Required permissions are automatically declared in AndroidManifest.xml:</p>
  * <ul>
  *     <li><code>android.permission.CAMERA</code></li>
- *     <li><code>android.permission.READ_MEDIA_IMAGES</code> (Android 13+)</li>
- *     <li><code>android.permission.READ_MEDIA_AUDIO</code> (Android 13+)</li>
- *     <li><code>android.permission.READ_MEDIA_VIDEO</code> (Android 13+)</li>
- *     <li><code>android.permission.READ_EXTERNAL_STORAGE</code> (Android 12 and below)</li>
+ *     <li><code>android.permission.WRITE_EXTERNAL_STORAGE</code> (Android 9 and below, only to save photos
+ *     to the public Pictures folder)</li>
  * </ul>
+ *
+ * <p>Selecting an image from the gallery uses a system picker, so no media or storage
+ * permissions (<code>READ_MEDIA_IMAGES</code>, <code>READ_MEDIA_VIDEO</code>,
+ * <code>READ_EXTERNAL_STORAGE</code>) are required.</p>
  */
 public class AndroidPicturesService implements PicturesService {
 
