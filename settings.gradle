@@ -19,6 +19,7 @@ include 'browser'
 include 'cache'
 include 'compass'
 include 'connectivity'
+include 'credentials'
 include 'device'
 include 'dialer'
 include 'display'
@@ -53,6 +54,7 @@ project(':browser').projectDir                 = file('modules/browser')
 project(':cache').projectDir                   = file('modules/cache')
 project(':compass').projectDir                 = file('modules/compass')
 project(':connectivity').projectDir            = file('modules/connectivity')
+project(':credentials').projectDir             = file('modules/credentials')
 project(':device').projectDir                  = file('modules/device')
 project(':dialer').projectDir                  = file('modules/dialer')
 project(':display').projectDir                 = file('modules/display')
