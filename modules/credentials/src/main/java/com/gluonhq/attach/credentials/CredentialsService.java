@@ -56,6 +56,26 @@ import java.util.function.Consumer;
  *   <li>{@link #clearRestoreCredential(Runnable, Consumer)} deletes the restore credential from the
  *   device and its backup.</li>
  * </ul>
+ * <p>Both JSON documents must be produced by the relying party server, exactly as for passkeys:
+ * the server issues the challenge, stores the public key it receives in the registration response,
+ * and verifies the signature in the authentication response against the challenge it issued. The
+ * app passes the documents through unchanged and does not need to build or parse them. Any WebAuthn
+ * server library produces them in this format, for instance java-webauthn-server (Yubico),
+ * webauthn4j, Spring Security or SimpleWebAuthn. For reference, a minimal set of creation options
+ * looks like:</p>
+ * <pre>
+ * {
+ *   "challenge": "&lt;base64url, from the server&gt;",
+ *   "rp": { "id": "example.com", "name": "Example" },
+ *   "user": { "id": "&lt;base64url user id&gt;", "name": "jane", "displayName": "Jane" },
+ *   "pubKeyCredParams": [ { "type": "public-key", "alg": -7 }, { "type": "public-key", "alg": -257 } ],
+ *   "authenticatorSelection": { "residentKey": "required", "userVerification": "preferred" },
+ *   "attestation": "none"
+ * }</pre>
+ * <p>and the request options for {@code getRestoreCredential} carry a fresh {@code challenge} and
+ * the same {@code rpId}. The {@code user.id} given at creation comes back as {@code userHandle} in
+ * the authentication response, which lets the server identify the account to sign in.</p>
+ *
  * <p>Restore Credentials requires Android 9 (API 28) or higher and Google Play services. On devices
  * that do not meet this requirement the calls fail with {@link CredentialsException#UNSUPPORTED}.
  * Only one restore credential per app is kept: creating a new one replaces the previous one.
